@@ -1,233 +1,120 @@
 # Docker Compose 部署
 
-本页使用 fn-knock 官方镜像源和仓库中的 `deploy/docker/compose.remote.yaml`。该文件不含本地构建配置，适合服务器部署；`docker compose up -d` 会在本机没有镜像时自动拉取它。
+选择适合当前网络的镜像来源，使用完整的 Compose 配置，即可在 Linux 主机或基于 Linux 的 NAS 上运行 fn-knock。
 
-需要在飞牛 fnOS 上使用全部功能时，改看[飞牛原生应用 FPK 安装与首次配置](/quick-start/install-and-first-login)。
+[查看原始 Docker Hub 页面](https://hub.docker.com/r/kcilnk/fn-knock)
 
-## 前提与边界
+## 镜像源
 
-- 使用 Linux 宿主机，并已安装 Docker Engine、Docker Compose v2 和 `curl`。
-- 宿主机已启用 IPv6，且 `/proc/net/if_inet6` 至少包含一个全局 IPv6 接口；这是 procfs 虚拟文件，显示大小始终为 `0`，必须读取内容判断。
-- 宿主机的 `7991`、`7999` 未被其他服务占用，或已准备替代端口。
-- 管理入口只应由局域网、VPN 或可信反向代理访问；不要将它直接做公网端口转发。
-
-标准 Compose 只发布管理入口和网关入口。容器内的后端、认证服务和网关内部 gRPC 端口不发布到宿主机。
-
-部署继续使用隔离的 Docker bridge，不使用 `network_mode: host`。Compose 会为 bridge 启用 IPv6，并只读映射宿主机的 IPv6 接口表，让 DDNS 的“从网卡获取”能够列出真实 IPv6 网卡。
-
-| 宿主机端口 | 容器服务 | 用途 |
-| --- | --- | --- |
-| `7991` | 管理后台 | 首次访问时设置 Docker 管理面板密码 |
-| `7999` | 网关入口 | 用户访问映射服务时经过的入口 |
-| 不发布 | `7998`、`7997`、`7996` | 管理后端、认证服务和内部 gRPC |
-
-Docker 管理面板密码和 `fn-knock` 为访问者配置的 TOTP、账号密码或 Passkey 是两套凭据。
-
-## 选择镜像源
-
-| 镜像源 | `FN_KNOCK_IMAGE` | 适用网络 |
+| 镜像源 | 镜像地址 | 适用网络 |
 | --- | --- | --- |
 | 官方镜像源 | `hub.fnknock.cn/kcilnk/fn-knock:latest` | 中国大陆网络；`latest` 每 30 分钟同步一次 |
 | Docker Hub | `kcilnk/fn-knock:latest` | 可稳定访问 Docker Hub 的网络 |
 
-下文默认使用官方镜像源。需要固定版本时，将 `latest` 改为已发布的固定标签。
+下文默认使用官方镜像源。切换镜像源时，只需把拉取命令和 `.env` 中的 `FN_KNOCK_IMAGE` 换成对应地址；如需锁定版本，可将 `latest` 改为已发布的固定标签。
 
 ## 一键安装
 
-以 root 身份在目标主机终端中粘贴下面整段脚本。脚本会检查 Docker 环境、创建 `/opt/fn-knock-docker`、写入默认配置、拉取镜像并启动服务；若目录中已有 `.env` 或 `docker-compose.yml`，脚本会停止且不会覆盖。
+在目标 Linux 主机的 root 终端中粘贴下面整段脚本。脚本会检查 Docker 环境，读取 IPv6 接口表并确认存在全局 IPv6 地址，然后创建启用 IPv6 的 bridge、写入完整 Compose 配置并启动 fn-knock。
+
+<!--@include: ../_shared/docker-quick-install.inc-->
+
+安装目录为 `/opt/fn-knock-docker`。若其中已经存在 `.env` 或 `docker-compose.yml`，脚本会停止且不会覆盖原配置。
+
+## 完整安装步骤
+
+### 01 检查 Docker 环境
+
+需要 Linux 宿主机、Docker Engine 和 Docker Compose 插件。
 
 ```bash
-sh <<'FN_KNOCK_INSTALL'
-set -eu
+docker version
+docker compose version
+```
 
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Please run this installer in a root terminal." >&2
-  exit 1
-fi
+宿主机还必须启用 IPv6，并且 `/proc/net/if_inet6` 中至少有一条 scope 为 `00` 的全局 IPv6 记录。这个 procfs 虚拟文件显示的大小始终为 `0`，因此不要使用 `test -s` 检查；一键安装脚本会直接读取内容判断。
 
-command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
-docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
-if [ ! -r /proc/net/if_inet6 ] || ! awk '$4 == "00" { found=1 } END { exit !found }' /proc/net/if_inet6; then
-  echo "No usable global IPv6 interface was found on this host." >&2
-  exit 1
-fi
+### 02 准备目录并拉取镜像
 
-install_dir=/opt/fn-knock-docker
-mkdir -p "$install_dir"
-cd "$install_dir"
+```bash
+mkdir -p /opt/fn-knock-docker
+cd /opt/fn-knock-docker
+docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
+```
 
-if [ -e .env ] || [ -e docker-compose.yml ]; then
-  echo "Existing .env or docker-compose.yml found; installation stopped." >&2
-  exit 1
-fi
+### 03 创建 `.env`
 
-cat > .env <<'FN_KNOCK_ENV'
-FN_KNOCK_IMAGE=hub.fnknock.cn/kcilnk/fn-knock:latest
-TZ=Asia/Shanghai
-ADMIN_VIEW_PORT=7991
-BACKEND_PORT=7998
-AUTH_PORT=7997
-GO_BACKEND_PORT=7996
-GO_REPROXY_PORT=7999
-FN_KNOCK_DOCKER_IPV4_SUBNET=172.30.0.0/16
-FN_KNOCK_DOCKER_IPV6_SUBNET=fd42:fb33:7f7a:100::/64
-DOCKER_ADMIN_TRUSTED_PROXY_CIDRS=
-DOCKER_DISCOVER_LAN_IP=
-FN_KNOCK_ENV
+将以下内容保存为 `/opt/fn-knock-docker/.env`：
 
-curl -fsSLo docker-compose.yml \
-  https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/deploy/docker/compose.remote.yaml
+<!--@include: ../_shared/docker-env.inc-->
 
+关键配置：
+
+| 配置项 | 默认值 | 说明 |
+| --- | --- | --- |
+| `FN_KNOCK_IMAGE` | `hub.fnknock.cn/kcilnk/fn-knock:latest` | 默认跟随 `latest`；可改为 Docker Hub 地址或固定版本标签 |
+| `ADMIN_VIEW_PORT` / `GO_REPROXY_PORT` | `7991` / `7999` | 管理面板和网关入口的宿主机端口 |
+| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | Docker bridge 的 IPv4 子网；冲突时改为其他私网 CIDR |
+| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | Docker bridge 的 IPv6 ULA `/64` |
+| `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` | 留空 | 仅当 `7991` 位于可信反向代理后时，填写代理出口 IP 或 CIDR |
+| `DOCKER_DISCOVER_LAN_IP` | 留空 | 仅在第三方反代无法自动识别宿主机局域网地址时填写 |
+
+### 04 创建 `docker-compose.yml`
+
+最新部署只需要一个 `fn-knock` 容器，并继续使用隔离的 Docker bridge，不使用 `network_mode: host`。下面的配置会为 bridge 启用 IPv6，并把宿主机 `/proc/net/if_inet6` 只读映射进容器，供 DDNS 的“从网卡获取”读取真实 IPv6 网卡。
+
+<!--@include: ../_shared/docker-compose.inc-->
+
+### 05 启动并检查状态
+
+```bash
+docker compose up -d
+docker compose ps
+docker compose logs -f fn-knock
+```
+
+最后一条命令会持续显示日志，可按 `Ctrl+C` 退出。
+
+## 首次访问与配置
+
+Compose 只向宿主机映射管理面板与网关入口。`7996`–`7998` 保持容器内部使用，IPv6 网卡信息则通过只读文件映射提供给 DDNS。
+
+| 端口 | 服务 | 暴露范围 | 用途 |
+| --- | --- | --- | --- |
+| `7991` | 管理后台入口 | 映射到宿主机 | 首次访问时设置 Docker 管理面板密码 |
+| `7999` | 网关 / 代理入口 | 映射到宿主机 | 外部用户访问代理服务时使用 |
+| `7998` | Rust 后端 | 仅容器内部 | 默认不对宿主机暴露 |
+| `7997` | 认证前端 | 仅容器内部 | 默认不对宿主机暴露 |
+| `7996` | Go 网关管理 | 仅容器内部 | 默认不对宿主机暴露 |
+
+1. 打开 `http://<宿主机IP>:7991`，设置 Docker 管理面板密码并登录。
+2. 在管理后台完成反向代理、子域名、证书和鉴权配置。
+3. 让外部业务流量访问 `7999` 对应的网关入口。
+4. 如果 `7991` 位于可信反向代理后，请在 `.env` 设置 `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS`。
+5. 仅当第三方反代无法自动识别宿主机局域网地址时，才设置 `DOCKER_DISCOVER_LAN_IP`。
+
+## 更新到最新镜像
+
+保持 `.env` 中的 `latest`，然后重新拉取并创建容器。持久化卷不会被删除。
+
+```bash
+cd /opt/fn-knock-docker
 docker compose pull
 docker compose up -d
 docker compose ps
-FN_KNOCK_INSTALL
 ```
 
-安装完成后，按[启动与验证](#启动与验证)检查日志、健康状态和首次访问。需要逐项调整配置时，使用下面的手动步骤。
+## 重设管理面板密码
 
-## 获取发布版 Compose
-
-以 root 身份（或在每条命令前加 `sudo`）建立独立运行目录，并将发布专用 Compose 文件保存为默认文件名：
-
-```bash
-install -d -m 0750 /opt/fn-knock-docker
-cd /opt/fn-knock-docker
-curl -fsSLo docker-compose.yml \
-  https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/deploy/docker/compose.remote.yaml
-```
-
-在同一目录创建 `.env`。下面是默认的生产配置；`compose.remote.yaml` 会从该文件读取镜像、端口和网络范围。
-
-```dotenv
-FN_KNOCK_IMAGE=hub.fnknock.cn/kcilnk/fn-knock:latest
-TZ=Asia/Shanghai
-ADMIN_VIEW_PORT=7991
-BACKEND_PORT=7998
-AUTH_PORT=7997
-GO_BACKEND_PORT=7996
-GO_REPROXY_PORT=7999
-FN_KNOCK_DOCKER_IPV4_SUBNET=172.30.0.0/16
-FN_KNOCK_DOCKER_IPV6_SUBNET=fd42:fb33:7f7a:100::/64
-DOCKER_ADMIN_TRUSTED_PROXY_CIDRS=
-DOCKER_DISCOVER_LAN_IP=
-```
-
-通常只需要修改 `FN_KNOCK_IMAGE`、`ADMIN_VIEW_PORT`、`GO_REPROXY_PORT` 和时区。`BACKEND_PORT`、`AUTH_PORT`、`GO_BACKEND_PORT` 是容器内部组件端口，通常保持默认。Compose 默认使用 IPv4 `172.30.0.0/16` 和 IPv6 `fd42:fb33:7f7a:100::/64`；只有与现有 Docker 网络、VPN 或宿主机路由重叠时，才改为未占用的私有网段。不要为了部署额外添加 Redis 容器或 `REDIS_*` 环境变量，当前发布镜像使用 SQLite。
-
-下载的 Compose 已包含下面这组关键配置，请保留。它不会共享整个宿主机网络，只会把 IPv6 接口表映射为只读文件：
-
-```yaml
-services:
-  fn-knock:
-    environment:
-      DDNS_HOST_IF_INET6_PATH: /host/proc/net/if_inet6
-    volumes:
-      - type: bind
-        source: /proc/net/if_inet6
-        target: /host/proc/net/if_inet6
-        read_only: true
-    networks:
-      - fn_knock_net
-
-networks:
-  fn_knock_net:
-    enable_ipv6: true
-```
-
-不要使用 `test -s /proc/net/if_inet6` 检查 IPv6：procfs 会把这个文件的大小报告为 `0`，即使里面已有地址。上面的一键脚本会自动读取内容，并以 scope `00` 判断是否存在可供 DDNS 使用的全局 IPv6。手动检查可执行 `awk '$4 == "00" { print; found=1 } END { exit !found }' /proc/net/if_inet6`。
-
-如果管理入口必须经过公网反向代理，将代理节点的出口 IP 或 CIDR 写入 `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS`，并让代理传递 `X-Forwarded-For` 或 `X-Real-IP`。不要把 `0.0.0.0/0` 写入可信代理列表。
-
-`DOCKER_DISCOVER_LAN_IP` 只在第三方反向代理无法自动识别 Docker 宿主机局域网地址时作为兜底；正常情况下保持为空。
-
-## 启动与验证
-
-```bash
-cd /opt/fn-knock-docker
-docker compose config
-docker compose up -d
-docker compose ps
-docker compose logs --tail=100 fn-knock
-```
-
-`docker compose config` 应能输出完整配置，`docker compose ps` 中 `fn-knock` 应为运行状态。管理服务健康检查可在宿主机执行：
-
-```bash
-set -a
-. ./.env
-set +a
-curl -fsS "http://127.0.0.1:${ADMIN_VIEW_PORT}/api/admin/healthz"
-```
-
-然后从局域网打开：
-
-```text
-http://<宿主机局域网地址>:<ADMIN_VIEW_PORT>/
-```
-
-`<ADMIN_VIEW_PORT>` 是 `.env` 中的实际管理端口，默认值为 `7991`。按页面提示设置 Docker 管理面板密码，再进入 `fn-knock` 管理后台配置模式、认证和映射。对外服务应进入 `.env` 中 `GO_REPROXY_PORT` 指定的网关端口，默认值为 `7999`；完成映射后，用移动网络等真实外部链路验证，而不是只在宿主机上访问 `127.0.0.1`。
-
-## 数据、备份与恢复入口
-
-Compose 创建两个持久化卷：
-
-| 逻辑卷 | 内容 |
-| --- | --- |
-| `fn_knock_gateway` | 网关配置和 SQLite 数据库 |
-| `fn_knock_data` | secret、备份、FRP / Cloudflared 等运行数据 |
-
-重建容器不会清空这两个卷，但删除卷会。更新或迁移前先导出应用备份，并将两个卷纳入宿主机备份；其中可能含有凭据和密钥，归档不能放在对外可读的目录。
-
-`.knock` 归档和卷备份解决的是不同问题：前者用于恢复可迁移的应用配置，后者保留 SQLite、下载资源和容器运行数据。归档内容、版本限制与恢复验收见[备份、恢复与数据清理](/guide/backup-and-restore)。
-
-如果遗忘的是 Docker 管理面板密码，而不是访问者登录凭据，可执行：
+忘记密码时，登录运行 Docker 的主机并执行：
 
 ```bash
 cd /opt/fn-knock-docker && docker compose exec -T fn-knock fn-knock-reset-panel-password
 ```
 
-该命令只清除管理面板密码、面板登录会话和密码输错后的退避状态，不会删除业务配置、反代规则、证书、白名单、日志或数据卷。执行完成后，下次访问管理入口会重新进入首次设置密码流程。
+再次访问 `7991` 时会重新进入首次设置密码流程。此命令只清除管理面板密码、登录会话和密码输错后的退避状态，不会删除业务配置、反代规则、证书、白名单、日志或数据卷。
 
-### 从旧 Redis 迁移
-
-此步骤只适用于旧 Compose 中仍有 Redis、且需要保留旧数据的升级。全新安装不要添加 Redis，也不需要执行迁移。
-
-先备份旧 Redis 和两个持久化卷。确保旧 Redis 服务与当前 `fn-knock` 容器仍在同一个 Compose 网络中，再执行：
-
-```bash
-docker compose exec \
-  -e FN_KNOCK_LEGACY_REDIS_URL=redis://redis:6379/ \
-  fn-knock /opt/fn-knock/bin/server-admin-rs migrate-redis-to-sqlite
-```
-
-命令成功后会删除 Redis 中的 `fn_knock:*` 键，避免旧数据再次被读取。因此必须先备份，并在移除 Redis 或切换到当前 Compose 前确认管理后台和 SQLite 数据均正常。仅在明确要覆盖已有 SQLite 数据时才追加 `--force`。
-
-## Docker 版的能力限制
-
-| 能力 | Docker Compose 中的处理方式 |
-| --- | --- |
-| 应用内 FPK 更新 | 不支持；通过 Compose 拉取并重建镜像 |
-| 直连模式、宿主机防火墙管理、智能连接 | 不可用；容器不能安全接管宿主机网络策略 |
-| Web 终端、SSH 安全 | 不可用；它们依赖宿主机终端或 SSH 日志 |
-| 自动 HTTPS | 标准 Compose 未发布宿主机 `80` 端口；使用上游反代/证书方案，或手动规划端口与证书 |
-
-这些限制不会阻止子域模式或反代模式使用网关。对 Docker 部署，优先选择不依赖宿主机防火墙放行的模式。
-
-## 更新发布镜像
-
-使用 `latest` 时：
-
-```bash
-cd /opt/fn-knock-docker
-docker compose pull
-docker compose up -d
-docker compose ps
-```
-
-若 `.env` 固定了版本标签，先把 `FN_KNOCK_IMAGE` 改为目标版本，再执行同一组命令。更新完成后，检查管理后台、网关入口、证书以及正在使用的隧道；公网验证必须从外部网络完成。
-
-继续阅读：
+## 继续阅读
 
 - [端口、入口与访问路径](/quick-start/ports-and-entrypoints)
 - [选择访问方案](/quick-start/run-modes)
