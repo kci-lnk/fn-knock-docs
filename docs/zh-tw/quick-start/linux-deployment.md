@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Linux 部署（systemd / OpenRC）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa017c87decae3de51ce2829a75eb1018be8d6ea02fb73f3c1acd7af1e8b5d9e
+translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
 ---
 
 # Linux 部署（systemd / OpenRC）
@@ -96,7 +96,7 @@ sudo knock logs --follow
 
 ## 更新與 Rollback
 
-執行 `sudo knock update` 後，指令會同時顯示本機與線上版本。向最新版本 Manifest 發出的請求會附帶 Cache-busting 參數與 `no-cache` Header，避免 CDN 回傳舊 Manifest。
+執行 `sudo knock update` 後，指令會同時顯示本機與線上版本。更新器會依目前架構從固定網址讀取最新版本 Manifest；發布流程會重新整理該網址的 CDN 快取並回讀驗證，因此指令不再為每次檢查附加隨機 Query Parameter。
 
 即使本機與線上版本相同，仍可確認重新下載並部署該版本。新版本啟動後會檢查管理面板的 Health Status；若啟動失敗，系統會還原原版本、管理指令、對應的 systemd Unit 或 OpenRC Service Script，以及原本的服務啟停狀態。
 

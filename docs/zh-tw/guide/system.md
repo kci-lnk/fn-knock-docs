@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541424b1dc
+translationSourceHash: c072cecadde8393adbe311fe4c4b3b8b146ce69e65d436f371ce51ef8edc8ea8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,7 +25,7 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援，使用內建 Client |
 | 系統時間同步 | 支援 | 不支援 | 支援 | 不支援 | 不支援 | 不支援 |
 | 飛牛 SSL 憑證庫同步 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝 IPK | 依安裝方式手動更新 | 從 DSM 套件中心安裝 SPK | Windows 管理程式 |
+| 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝符合 Firmware 的 IPK／APK | 依安裝方式手動更新 | 從 DSM 套件中心安裝 SPK | Windows 管理程式 |
 | 獨立管理面板密碼 | 使用 fnOS/CGI 入口 | 支援 | 支援 | 支援 | 使用 DSM 桌面 CGI 入口 | 支援；管理入口僅限本機 `127.0.0.1` |
 
 上表以後端回報的 Runtime 能力為準。部分功能入口會顯示為無法使用並附上原因，另一些則會直接隱藏。Windows 不提供直連、內建 FRP / Cloudflared、智慧連線、Web 終端機或 SSH 安全性；其閘道預設在所有 Interface 上監聽 `7999`，但外網是否能連入仍取決於防火牆規則、NAT 與網路政策。Synology DSM 7 SPK 同樣不提供直連、Host 防火牆、智慧連線、Web 終端機或 SSH 安全性。
@@ -40,7 +40,7 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | `屬地` | 設定 IP 地理位置資料庫與 CIDR 位址庫 | [IP 地理位置](/zh-tw/guide/ip-location) |
 | `fnOS` | 管理飛牛分享直通、連接埠圖示接管及可用的網路最佳化 | [飛牛分享直通](/zh-tw/guide/fnos-share-bypass) |
 | `攔截` | Scanner 防火牆、觸發時間窗、門檻及豁免 | [Scanner 攔截](/zh-tw/guide/scanner-interception) |
-| `功能` | 首頁入口狀態、Passkey 綁定提示、自動 HTTPS、SSH 安全性、協定映射及智慧連線入口 | 請參考各功能文件 |
+| `功能` | 首頁入口狀態、Passkey 綁定提示、自動 HTTPS、SSH 安全性、協定映射、側邊欄排序及智慧連線入口 | 請參考各功能文件 |
 | `閘道` | 驗證快取、反代節流、Crawler 攔截、Portal、可見性及 Host 層級轉送選項 | 請參考本頁後續章節 |
 | `WAF`、`Log` | HTTP 規則防護及結構化 Request Log | [WAF](/zh-tw/guide/waf)、[Request Log](/zh-tw/guide/request-logs) |
 | `終端機` | 平台具備 Web 終端機能力，且不是 Synology 時顯示 | [Web 終端機](/zh-tw/guide/web-terminal) |
@@ -48,6 +48,12 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | `面板` | Docker、OpenWrt、Linux 與 Windows 顯示；修改或重設獨立管理面板密碼 | 請參考本頁後續章節 |
 | `Challenge` | 登入前使用 PoW 或 Cloudflare Turnstile | [Challenge](/zh-tw/guide/captcha) |
 | `維護` | 匯出、匯入及清空資料 | 請參考本頁後續章節 |
+
+## 側邊欄選單順序
+
+在 `系統設定 → 功能 → 側邊欄選單排序` 中拖曳選單項目，可調整目前 Instance 左側導覽的顯示順序。拖曳結束後會自動儲存；若要移除所有自訂順序，請按一下 `還原預設順序`。
+
+排序頁只會列出目前執行模式與功能開關下可見的入口。暫時隱藏的入口仍會保留在完整順序中的位置，之後重新啟用功能或切換模式時會回到原本的相對位置，不會被任意附加到最後。此設定只改變導覽順序，不會啟用、停用或授予任何功能權限。
 
 ## 閘道基本設定
 

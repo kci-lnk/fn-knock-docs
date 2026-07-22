@@ -3,7 +3,7 @@ lang: zh-TW
 title: "DDNS 管理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ae7732daa17c7c4c2425dffe08e1c66e670dd56135c32884ae9e5d2c840c80dc
+translationSourceHash: 872f5788286c0aff254e06eb420c0fd5cd752ebe1c2866f1b9a809ab2a7e5cc2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -58,7 +58,7 @@ DDNS 只負責將 DNS Record 更新為目前的公網 IP。它不會開放連接
 
 選擇 `從網卡直接取得` 時，必須明確指定一個網路介面。頁面只會顯示經過篩選的候選 IP，排除明顯的內網 IP、仍在進行位址偵測、衝突偵測失敗或已棄用的位址；Temporary／Privacy IPv6 預設也會排除。沒有候選項目時，請更換網路介面，或改用公網偵測、Static IP 或網域解析。
 
-IP 選擇不再依賴網路介面回傳清單中的 Index。預設的 `自動選擇穩定位址` 會優先繼續使用目前仍可用的 IP，避免候選順序改變造成 DNS Record 來回跳動；目前 IP 失效後，才會改選已設定的優先 IP 或其他穩定候選。舊版本儲存的 IP Index 會在頁面中轉換為穩定選擇規則，儲存後生效；若舊設定沒有選擇規則，或原 Index 已失效，後台也會依自動穩定規則挑選候選，不會只因缺少 Index 就中斷無人值守更新。
+IP 選擇不再依賴網路介面回傳清單中的 Index。手動設定 `優先位址` 後，只要該位址仍符合篩選規則，系統就會優先使用；沒有手動優先位址或該位址已不可用時，才會沿用目前仍可用的位址，最後從其餘候選中穩定選擇。這可確保手動指定優先於系統建議，也能在未指定時避免候選順序改變造成 DNS Record 跳動。舊版本儲存的 IP Index 會在頁面中轉換為穩定選擇規則，儲存後生效；若舊設定沒有選擇規則，或原 Index 已失效，後台也會依自動穩定規則挑選候選，不會只因缺少 Index 就中斷無人值守更新。
 
 切換至另一個網路介面時，頁面會清除原介面的優先 IP、CIDR 與 IPv6 Interface Identifier 等選擇規則，避免舊規則誤套至新介面。切換後請重新檢查預覽結果，並視需求設定規則。
 
@@ -66,7 +66,7 @@ IP 選擇不再依賴網路介面回傳清單中的 Index。預設的 `自動選
 
 | 設定 | 作用 |
 | --- | --- |
-| `優先位址` | 候選中存在該 IP 時優先使用；IP 失效後仍可選擇其他符合項目 |
+| `優先位址` | 候選中存在該 IP 時，優先於目前位址和系統排序使用；IP 失效後仍可選擇其他符合項目 |
 | `包含 CIDR` | 只從指定 IPv4 或 IPv6 網段中選擇 |
 | `排除 CIDR` | 排除不應寫入 DNS 的網段 |
 | `IPv6 介面識別碼（低 64 位元）` | 忽略會變動的 Prefix，沿用相同 Interface Identifier 選擇新的 IPv6 位址 |

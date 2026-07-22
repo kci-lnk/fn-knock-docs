@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1e78b12d7d6821b1271ec6a71825f90d6c26a6a95e4db17a1cd16deb670c0113
+translationSourceHash: aa147245fbd23b9185eedf1d13a256b41e557f54cf86ab8ae83c59fa51ccd2ed
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -80,6 +80,7 @@ alist.example.com -> http://127.0.0.1:5244
 | `停用`／`排程啟用或停用` | 手動下線，或依伺服器本機時間每天控制開放時段 |
 | `顯示傳送門` | 控制登入後頁面中的應用程式切換與登出入口 |
 | `顯示標題` | 覆寫清單、傳送門與書籤中的顯示名稱 |
+| `應用程式圖示` | 使用自動擷取圖示，或上傳目前服務 Host 的自訂圖示 |
 | `略過 Basic Auth` | 向上游請求注入 Basic Auth 使用者名稱與密碼 |
 | `閘道可見性` | 繼承全域規則、使用目前 Host 規則覆寫，或只關閉目前 Host 的可見性限制 |
 | `啟用 WAF` | 服務 Host 預設啟用；關閉後，目前 Host 會略過全域 WAF |
@@ -95,6 +96,12 @@ alist.example.com -> http://127.0.0.1:5244
 它不會建立 fn-knock 帳號、不能取代 `auth.example.com` 登入，也不會變更 `要求登入` 或既有 `strict_whitelist` 規則。憑據應視為敏感設定處理；只有確實需要時才儲存。
 
 使用者名稱與密碼必須同時填寫，且使用者名稱不可包含半形冒號。儲存不完整或無效的設定時，系統會停用該項目並清除憑據，不會保留只設定一半的狀態。
+
+### 應用程式圖示
+
+編輯一般服務 Host 時，開啟 `應用程式圖示` 可預覽目前來源、重新擷取上游圖示，或上傳自訂圖片。支援 PNG、JPG、WebP、AVIF、SVG 與 ICO，原始檔案不可超過 5 MB；瀏覽器會移除 SVG 中的外部內容，將圖片完整縮放到方形畫布並轉換為不超過 128 KiB 的內嵌圖示。
+
+自訂圖示會優先顯示在子網域清單與傳送門中，匯出瀏覽器書籤時也會一併寫入。按一下 `還原自動擷取` 會清除自訂覆寫並重新讀取 Target；若 Target 未回傳圖示，頁面會顯示尚未擷取。身分驗證服務不支援自訂圖示。圖示會包含在設定與 `.knock` 備份中；請勿將敏感的內部圖形當作一般疑難排解附件分享。
 
 ### 單一 Host 的可見性與 WAF
 

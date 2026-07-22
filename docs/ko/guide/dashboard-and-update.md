@@ -3,7 +3,7 @@ lang: ko-KR
 title: "대시보드 및 시스템 업데이트"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd1969ea1
+translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
 ---
 
 # 대시보드 및 시스템 업데이트
@@ -42,7 +42,7 @@ translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd
 
 ## 배포 방식에 따른 업데이트 페이지 동작
 
-경로: `버전 및 업데이트`. 모든 배포 방식에서 현재 버전, 최신 버전, 확인 결과 및 릴리스 노트를 볼 수 있습니다. 페이지에서 업데이트를 내려받고 설치할 수 있는 방식은 fnOS 네이티브 FPK뿐입니다. Synology DSM 7 SPK는 DSM 패키지 센터에서 설치하고 Windows 네이티브 버전은 별도의 `Knock Windows 관리 프로그램`에서 설치합니다. 두 방식 모두 웹 업데이트 페이지에서 설치하지 않습니다.
+경로: `버전 및 업데이트`. 모든 배포 방식에서 현재 버전, 최신 버전, 확인 결과 및 릴리스 노트를 볼 수 있습니다. 관리 화면이 로드된 뒤에는 사이드바에도 현재 버전이 표시되고 주기적으로 업데이트를 확인합니다. 새 버전이 발견되면 페이지 상단에 알림이 나타나며 업데이트 페이지에서 릴리스 노트를 확인할 수 있습니다. 알림에서 웹 설치 작업을 제공하는 방식은 fnOS 네이티브 FPK뿐입니다. Synology DSM 7 SPK는 DSM 패키지 센터에서 설치하고 Windows 네이티브 버전은 별도의 `Knock Windows 관리 프로그램`에서 설치합니다. 두 방식 모두 웹 업데이트 페이지에서 설치하지 않습니다.
 
 | 배포 방식 | 업데이트 페이지에서 가능한 작업 | 실제 업그레이드 방법 |
 | --- | --- | --- |

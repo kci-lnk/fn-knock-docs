@@ -3,7 +3,7 @@ lang: en-US
 title: "Sessions, Source-IP Authorization, and IP Changes"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79463920b
+translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -36,6 +36,8 @@ Under `System settings → Sessions`, configure regular sign-in, `Remember me`, 
 | Custom | Creates a fixed-duration authorization for the current IP; signing out revokes it |
 
 The manual IP Allowlist is independent of sessions and is not deleted when a user signs out.
+
+A credential with `Custom scopes` does not create a general automatic IP record that can open arbitrary Hosts or original ports. If the scope includes an authenticated protocol mapping, the system uses the lifetime setting above to grant the current source IP access to that exact `TCP/UDP + external port`. Disabling post-login IP authorization also prevents these protocol grants from being created.
 
 When post-login IP authorization is disabled, Host-based routing relies primarily on the browser Cookie. Once a root domain is configured, compatible Hosts under the same parent domain can share sign-in state. Hosts outside the shared Cookie domain require separate sign-ins. The page lists incompatible Hosts; review them after changing the root domain or authentication Host.
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Authentication, Sessions, and Service Scopes"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 59c9691e7550cfe7efb06922640b92ccd1f6e56cc358f0771860468163262988
+translationSourceHash: f9be5fdf8b5b35d19bf5aa5fca2a14388120844148f0c1c043c619b547748f1a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,7 +20,7 @@ For a protected service accessed from a non-local source, the request normally p
 2. If no other allow path applies, the sign-in page runs the enabled human-verification challenge.
 3. The visitor authenticates with the active sign-in mode.
 4. fn-knock creates a session and uses the session settings to decide whether to authorize the current IP.
-5. When the visitor opens a Host, fn-knock checks whether the credential's service scope includes it.
+5. When the visitor opens a Host or protected protocol mapping, fn-knock checks whether the credential's service scope includes it.
 
 LAN, loopback, and other private-network sources are locally exempt by default. They do not pass through this entire flow, and credential service scopes do not restrict them. Use a real external network to validate public access.
 
@@ -46,12 +46,13 @@ Switching synchronizes account names, permissions, and linked TOTP credentials. 
 
 ## How credentials relate to permissions
 
-- A TOTP credential is a named identity whose subdomain access can be restricted. Linked Passkeys, QQ, and other OIDC sign-ins inherit its scope.
+- A TOTP credential is a named identity whose subdomain and protocol-mapping access can be restricted. Linked Passkeys, QQ, and other OIDC sign-ins inherit its scope.
 - Accounts in Password sign-in mode can also have service scopes.
-- If a service scope is set to `Custom scopes` with no entry selected, the credential cannot open any protected Host. The built-in select page at `/__select__` is a separate scope item and must also be selected when needed.
+- With `Custom scopes`, the permission dialog separately lists protected subdomains, the built-in select page, and authenticated TCP / UDP protocol mappings. If no scope item is selected, the credential cannot open any protected entry. The built-in select page at `/__select__` must also be selected separately.
 - For a Host with `Require sign-in` enabled, valid manual source authorization can grant access independently. IP authorization created automatically after sign-in normally lets the same source continue to connect, but it cannot override a service-scope denial already attached to a browser request. When no usable source authorization exists, the gateway continues by evaluating the session and credential scope.
 - Post-login automatic IP authorization is controlled under `System settings → Sessions`. It is an allow path for a source IP, not a credential-scope control. If a manual allowlist entry is too broad, that source may open a protected Host directly without signing in through a browser.
-- A sign-in credential with a restricted service scope does not create automatic IP authorization, preventing source-IP authorization from expanding the credential's scope. This includes a restricted TOTP and its linked Passkey / OIDC identities, as well as username/password accounts with restricted scopes. They are not suitable for automatic authorization in Direct mode.
+- A sign-in credential with a restricted service scope does not create general automatic IP authorization that can open arbitrary Hosts or original ports. This prevents source-IP authorization from expanding the credential's scope. It includes a restricted TOTP and its linked Passkey / OIDC identities, as well as username/password accounts with restricted scopes. They are not suitable for automatic authorization in Direct mode.
+- A custom scope may select individual protocol mappings as an exception. When post-login IP authorization is not disabled, the system grants the current source IP access to the exact `TCP/UDP + external port` for the selected mappings, using the session settings for its lifetime. It neither opens unselected protocol mappings nor becomes a general IP allowlist entry.
 
 ## The admin panel password is not a gateway login
 

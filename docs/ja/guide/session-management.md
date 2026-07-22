@@ -3,7 +3,7 @@ lang: ja-JP
 title: "セッション・送信元 IP 許可・IP 変更"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79463920b
+translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -36,6 +36,8 @@ translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79
 | カスタム | 現在の IP に指定期間のアクセス許可を付与し、ログアウト時に取り消します |
 
 手動のホワイトリストはセッションとは独立しており、ログアウトしても削除されません。
+
+認証情報が `カスタム範囲` の場合、任意の Host または元のポートを開ける共通の IP 自動許可は作成されません。範囲に認証が有効なプロトコルマッピングが含まれる場合は、上表の期間設定を使い、現在の送信元 IP に正確な `TCP/UDP + 外部ポート` のアクセス許可を作成します。ログイン後の IP アクセス許可を無効にすると、このプロトコル用許可も作成されません。
 
 ログイン後の IP アクセス許可を無効にした場合、Host ルートは主にブラウザー Cookie に依存します。ルートドメインを設定すると、同じ親ドメイン配下にある互換性のある Host でログイン状態を共有できます。共有 Cookie ドメインに含まれない Host では、個別にログインが必要です。ページには互換性のない Host が表示されるため、ルートドメインまたは認証 Host を変更した後は再確認してください。
 

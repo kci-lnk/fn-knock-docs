@@ -3,7 +3,7 @@ lang: zh-TW
 title: "帳號密碼登入"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d898e49c752900b599a6bab2d9a295f40bce1cec952fc155fb8d2dfcfede8f03
+translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ecb1cd718
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,13 +21,13 @@ translationSourceHash: d898e49c752900b599a6bab2d9a295f40bce1cec952fc155fb8d2dfcf
 - 登入頁面會顯示使用者名稱與密碼欄位；
 - Passkey、QQ 與其他外部帳號登入入口不再顯示；
 - 由 TOTP、Passkey 與 OIDC 建立的既有工作階段會被銷毀，必須使用帳號密碼重新登入；
-- 存取 Host 時，帳號的服務範圍仍會繼續生效。
+- 存取 Host 或受保護的協定映射時，帳號的服務範圍仍會繼續生效。
 
 需要恢復使用 TOTP、Passkey、QQ 或其他 OIDC 時，再切回 `TOTP 登入模式`。切回前，每個帳號都必須關聯至仍然存在的 TOTP；帳號密碼工作階段會在切換時失效。
 
 ## 建立帳號
 
-在 `驗證設定 → 帳號密碼登入` 中建立帳號、設定密碼，並依需求指定可存取的子網域。
+在 `驗證設定 → 帳號密碼登入` 中建立帳號、設定密碼，並依需求指定可存取的子網域與協定映射。
 
 | 欄位 | 後端規則 |
 | --- | --- |
@@ -36,7 +36,7 @@ translationSourceHash: d898e49c752900b599a6bab2d9a295f40bce1cec952fc155fb8d2dfcf
 
 後端允許的最低長度並不是安全建議。請使用足夠長且獨一無二的密碼，不要與管理介面或其他服務共用。
 
-當特定帳號只需存取部分應用程式時，將權限切換為 `自訂子網域`，只選取必要的 Host。自訂範圍為空代表不允許進入任何受保護入口；內建選擇頁需要另外勾選。服務範圍受限的帳號不會取得登入後自動 IP 授權，以免來源授權擴大權限。
+當特定帳號只需存取部分入口時，將權限切換為 `自訂範圍`，只選取必要的 Host、內建選擇頁或已啟用驗證的 TCP／UDP 協定映射。自訂範圍為空代表不允許進入任何受保護入口。受限帳號不會取得通用的登入後自動 IP 授權；若選取了特定協定映射且登入後 IP 授權未停用，只會依對應通訊協定與對外連接埠授權目前來源 IP。
 
 刪除帳號會一併刪除其關聯的 TOTP、Passkey、外部帳號綁定與登入工作階段。需要保留 TOTP 復原路徑時，不要將刪除帳號誤認為只是刪除密碼。
 
@@ -48,7 +48,7 @@ translationSourceHash: d898e49c752900b599a6bab2d9a295f40bce1cec952fc155fb8d2dfcf
 
 - 無法切換：替提示中的帳號補齊密碼，或刪除不再使用的帳號後重試。
 - 登入頁面沒有帳號密碼欄位：檢查目前是否仍處於 TOTP 登入模式，以及是否存取了正確的身分驗證 Host。
-- 登入成功卻無法進入特定子網域：檢查該帳號的服務範圍與映射存取原則。
+- 登入成功卻無法進入特定子網域或協定連接埠：檢查該帳號的自訂範圍、登入後 IP 授權設定與映射存取原則。
 - 登入失敗次數持續增加：前往 `工作階段管理 → 登入退避` 核對來源 IP；共用出口或錯誤的真實 IP 標頭，可能讓多人共用同一筆退避記錄。
 
 - [身分驗證、工作階段與服務範圍](/zh-tw/guide/auth)

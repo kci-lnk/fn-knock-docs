@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541424b1dc
+translationSourceHash: c072cecadde8393adbe311fe4c4b3b8b146ce69e65d436f371ce51ef8edc8ea8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,7 +25,7 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported; uses the built-in client |
 | System clock sync | Supported | Not supported | Supported | Not supported | Not supported | Not supported |
 | fnOS SSL certificate store sync | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Update installation | Update in the web UI | Pull a new image | Install an IPK | Update manually according to the installation method | Install the SPK in DSM Package Center | Windows manager |
+| Update installation | Update in the web UI | Pull a new image | Install an IPK or APK matching the firmware | Update manually according to the installation method | Install the SPK in DSM Package Center | Windows manager |
 | Separate admin panel password | Uses the fnOS/CGI entry point | Supported | Supported | Supported | Uses the DSM desktop CGI entry point | Supported; local `127.0.0.1` admin entry only |
 
 The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, Web Terminal, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, Web Terminal, or SSH Security.
@@ -40,7 +40,7 @@ The table reflects runtime capabilities reported by the server. Some unavailable
 | `Location` | Configures the IP geolocation database and CIDR location database | [IP Geolocation](/en/guide/ip-location) |
 | `fnOS` | Manages fnOS Share Bypass, port-icon takeover, and available network optimizations | [fnOS Share Bypass](/en/guide/fnos-share-bypass) |
 | `Blocking` | Configures the scanner firewall, trigger window, thresholds, and exemptions | [Automated Scan Blocking](/en/guide/scanner-interception) |
-| `Features` | Controls home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, and the Smart Connect entry | See the corresponding feature documentation |
+| `Features` | Controls home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, sidebar ordering, and the Smart Connect entry | See the corresponding feature documentation |
 | `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
 | `WAF`, `Logs` | Manages HTTP rule protection and structured request logs | [Web Application Firewall (WAF)](/en/guide/waf), [Request Logs](/en/guide/request-logs) |
 | `Terminal` | Visible when the platform supports Web Terminal and is not Synology | [Web Terminal](/en/guide/web-terminal) |
@@ -48,6 +48,12 @@ The table reflects runtime capabilities reported by the server. Some unavailable
 | `Panel` | Visible on Docker, OpenWrt, Linux, and Windows; changes or resets the separate admin panel password | See below |
 | `Challenge` | Uses PoW or Cloudflare Turnstile before sign-in | [Challenge](/en/guide/captcha) |
 | `Maintenance` | Exports, imports, and clears data | See below |
+
+## Sidebar Menu Order
+
+Under `System settings → Features → Sidebar menu order`, drag menu items to change the order of the left navigation for this instance. The order saves automatically when a drag ends. Select `Restore default order` to remove all custom ordering.
+
+The page lists only entries visible under the current runtime mode and feature switches. Temporarily hidden entries keep their place in the full order and return to the same relative position when the feature is enabled or the mode changes; they are not appended arbitrarily. This setting changes navigation order only and does not enable, disable, or grant access to any feature.
 
 ## Basic Gateway Settings
 

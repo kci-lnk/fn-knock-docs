@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1e78b12d7d6821b1271ec6a71825f90d6c26a6a95e4db17a1cd16deb670c0113
+translationSourceHash: aa147245fbd23b9185eedf1d13a256b41e557f54cf86ab8ae83c59fa51ccd2ed
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -80,6 +80,7 @@ alist.example.com -> http://127.0.0.1:5244
 | `Disable` / `Schedule enable or disable` | Takes the mapping offline manually or controls its daily open window using server-local time |
 | `Show portal` | Controls the app switcher and sign-out entry shown after sign-in |
 | `Display title` | Overrides the name shown in lists, the portal, and exported bookmarks |
+| `App icon` | Uses the automatically collected icon or uploads a custom icon for this application Host |
 | `Skip Basic Auth` | Injects a Basic Auth username and password into upstream requests |
 | `Visibility` | Inherits the global rules, replaces them with rules for this Host, or disables visibility restrictions only for this Host |
 | `Enable WAF` | Enabled by default for application Hosts; when disabled, this Host skips the global WAF |
@@ -95,6 +96,12 @@ The auth service is a special Host mapping. It must remain public and must not r
 It does not create an fn-knock account, replace sign-in at `auth.example.com`, or change `Require sign-in` or an existing `strict_whitelist` rule. Treat these credentials as sensitive configuration and save them only when needed.
 
 Both the username and password are required, and the username cannot contain a colon. If an incomplete or invalid configuration is saved, the system disables this option and clears the credentials instead of retaining a partial configuration.
+
+### App Icon
+
+When editing a regular application Host, open `App icon` to preview the current source, recollect the upstream icon, or upload a custom image. PNG, JPG, WebP, AVIF, SVG, and ICO are supported, with a 5 MB source-file limit. The browser removes external SVG content, fits the image inside a square canvas without cropping, and converts it into an embedded icon no larger than 128 KiB.
+
+A custom icon takes priority in the subdomain list and portal, and is embedded when browser bookmarks are exported. `Restore automatic collection` removes the custom override and reads the Target again. If the Target returns no icon, the page shows that none has been collected. The authentication service does not support a custom icon. Icons are included in the configuration and `.knock` backups; do not share sensitive internal artwork in routine troubleshooting attachments.
 
 ### Per-Host Visibility and WAF
 

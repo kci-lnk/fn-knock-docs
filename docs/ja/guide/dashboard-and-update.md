@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダッシュボードとシステム更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd1969ea1
+translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd
 
 ## デプロイ方式ごとに異なる更新方法
 
-画面の場所は `バージョンとアップデート` です。どのデプロイ方式でも現在のバージョン、最新バージョン、確認結果、リリースノートが表示されますが、画面からアップデートをダウンロードしてインストールできるのは fnOS ネイティブ FPK だけです。Synology DSM 7 SPK は DSM パッケージセンター、Windows ネイティブ版は独立した `fn-knock Windows 管理アプリ` からインストールし、Web の更新画面では実行しません。
+画面の場所は `バージョンとアップデート` です。どのデプロイ方式でも現在のバージョン、最新バージョン、確認結果、リリースノートが表示されます。管理画面の読み込み後は、サイドバーにも現在のバージョンが表示され、更新が定期的に確認されます。新しいバージョンが見つかるとページ上部に通知が表示され、更新画面でリリースノートを確認できます。通知から Web 上でインストールできるのは fnOS ネイティブ FPK だけです。Synology DSM 7 SPK は DSM パッケージセンター、Windows ネイティブ版は独立した `fn-knock Windows 管理アプリ` からインストールし、Web の更新画面では実行しません。
 
 | デプロイ方式 | 更新画面でできること | 実際の更新方法 |
 | --- | --- | --- |

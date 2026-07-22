@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd1969ea1
+translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ From the upper-right corner of the Dashboard, you can choose `Default`, `Hermes 
 
 ## How the Update Page Varies by Deployment
 
-Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes. Only the native fnOS FPK can download and install an update from this page. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
+Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
 
 | Deployment | What the update page can do | How to upgrade |
 | --- | --- | --- |

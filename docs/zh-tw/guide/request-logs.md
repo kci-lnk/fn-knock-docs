@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求記錄"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: aa4b4677da4800f95014eb136d37d5fb3ac346ce024fde174ea86b03c77f555c
+translationSourceHash: efc4056649508d23562afdbadd597386208709360096236f7fcc4e88a2bcb169
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -24,7 +24,7 @@ translationSourceHash: aa4b4677da4800f95014eb136d37d5fb3ac346ce024fde174ea86b03c
 | 方法、Host、路徑 | 判斷請求命中哪個服務 |
 | 路由類型、上游 Target | 判斷 Host／路徑規則是否命中正確目標 |
 | 驗證狀態 | 判斷結果來自工作階段、允許清單、本地豁免、進階驗證臨時憑據，或未授權 |
-| 子網域規則組 ID／臨時憑據狀態 | 進階驗證命中時，確認實際規則組，以及憑據為已簽發、已續期或已重複使用 |
+| 子網域規則組 ID／臨時憑據狀態 | 進階驗證命中時，確認實際規則組，以及目前為單次放行、已簽發、已續期或已重複使用 |
 | Status Code、處理時間 | 區分閘道拒絕、上游錯誤與回應緩慢 |
 
 請求記錄可能包含存取路徑、Query、來源 IP、User-Agent、驗證結果與上游 URL，應視為敏感維運資料處理。分享疑難排解片段前，請移除 Token、Query Parameter、內部 URL 與可識別個人的資訊。
@@ -41,7 +41,7 @@ translationSourceHash: aa4b4677da4800f95014eb136d37d5fb3ac346ce024fde174ea86b03c
 
 如果只有部分請求缺少記錄，請檢查閘道 Rate Limit 是否直接中斷連線，以及記錄設定頁面是否出現 Queue 捨棄警告。若 Status Code 來自閘道而非上游，請繼續檢查身分驗證、可見性、WAF 與映射；若已顯示正確的上游 Target，再轉往應用程式本身的 Log。
 
-啟用子網域進階驗證後，驗證結果 `子網域規則放行` 代表請求透過進階驗證臨時憑據放行。詳細資訊中的規則組 ID 可用來定位觸發設定；憑據狀態為 `已簽發` 表示本次新建憑據，`已續期` 表示重新計算閒置有效期，`已重複使用` 表示繼續沿用既有憑據。規則行為請參閱[子網域進階驗證](/zh-tw/guide/advanced-auth)。
+啟用子網域進階驗證後，驗證結果 `子網域規則放行` 代表請求已透過進階驗證放行。詳細資訊中的規則組 ID 可用來定位觸發設定；`單次請求放行` 表示本次請求命中規則但未建立持久憑據，常見於首次 Cookie 探測、不儲存 Cookie 的用戶端、WebSocket Upgrade 或持久化降級；`已簽發` 表示本次建立持久憑據，`已續期` 表示重新計算閒置有效期，`已重複使用` 表示繼續沿用既有憑據。規則行為請參閱[子網域進階驗證](/zh-tw/guide/advanced-auth)。
 
 ## 處理可疑 IP
 

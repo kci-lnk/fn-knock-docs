@@ -3,7 +3,7 @@ lang: ko-KR
 title: "세션, 출발지 IP 허용 및 IP 변경"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79463920b
+translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
 ---
 
 # 세션, 출발지 IP 허용 및 IP 변경
@@ -34,6 +34,8 @@ translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79
 | 사용자 지정 | 현재 IP에 고정 기간의 접근 권한을 부여하며 로그아웃하면 해제됨 |
 
 수동 허용 목록은 세션과 독립적이므로 로그아웃해도 삭제되지 않습니다.
+
+자격 증명에서 `사용자 지정 범위`를 사용하면 모든 Host나 원본 포트를 허용하는 일반 자동 IP 레코드가 만들어지지 않습니다. 범위에서 인증을 켠 프로토콜 매핑을 선택하면 시스템은 위 표의 기간 설정을 그대로 사용하여 현재 출발지 IP에 정확한 `TCP/UDP + 외부 포트` 프로토콜 접근 권한을 만듭니다. 로그인 후 IP 접근 허용을 끄면 이 프로토콜 접근 권한도 만들어지지 않습니다.
 
 로그인 후 IP 접근 허용을 끄면 Host 라우트는 주로 브라우저 쿠키를 사용합니다. 루트 도메인을 설정하면 같은 상위 도메인 아래의 호환 Host끼리 로그인 상태를 공유할 수 있습니다. 공유 쿠키 도메인 밖에 있는 Host에는 따로 로그인합니다. 페이지에 호환되지 않는 Host가 표시되므로 루트 도메인이나 인증 Host를 변경한 뒤 다시 확인합니다.
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Dynamic DNS (DDNS)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ae7732daa17c7c4c2425dffe08e1c66e670dd56135c32884ae9e5d2c840c80dc
+translationSourceHash: 872f5788286c0aff254e06eb420c0fd5cd752ebe1c2866f1b9a809ab2a7e5cc2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -58,7 +58,7 @@ The two values must form a wildcard/base pair, and the base must match the provi
 
 When you select `Use interface directly`, you must explicitly choose an interface. The page shows only filtered candidate addresses. It excludes obviously private addresses, as well as addresses that are still tentative, failed duplicate-address detection, or deprecated; temporary/privacy IPv6 addresses are also excluded by default. If no candidates remain, choose another interface or switch to public detection, a static IP, or domain resolution.
 
-Address selection no longer depends on an address's position in the interface list. The default `Automatically choose a stable address` mode keeps using the current address while it remains available, preventing record churn when candidate ordering changes. When the current address becomes invalid, it selects the configured preferred address or another stable candidate. Address positions saved by older versions are converted to stable selection rules on the page and take effect after saving. If an older configuration has no selection rule or its old position is no longer valid, the backend also applies the automatic stable-selection rule; unattended updates do not stop merely because a position is missing.
+Address selection no longer depends on an address's position in the interface list. If you set a `Preferred address`, the system uses it first whenever it still satisfies the filter rules. Only when no preferred address is set or it is unavailable does the system keep the current usable address, then choose stably from the remaining candidates. This keeps an explicit choice ahead of the system recommendation while preventing record churn when no choice is set. Address positions saved by older versions are converted to stable selection rules on the page and take effect after saving. If an older configuration has no selection rule or its old position is no longer valid, the backend also applies the automatic stable-selection rule; unattended updates do not stop merely because a position is missing.
 
 When you switch to a different interface, the page clears selection rules associated with the old interface, including its preferred address, CIDRs, and IPv6 interface ID. This prevents old rules from being applied to the new interface. Review the preview and configure any required rules again after switching.
 
@@ -66,7 +66,7 @@ You can set a `Preferred address` in either automatic or custom mode. To narrow 
 
 | Setting | Effect |
 | --- | --- |
-| `Preferred address` | Uses this address first when it is among the candidates; if it becomes unavailable, another matching candidate may still be selected |
+| `Preferred address` | Uses this address ahead of the current address and system ranking when it is a candidate; if it becomes unavailable, another matching candidate may still be selected |
 | `Included CIDRs` | Selects only from the specified IPv4 or IPv6 networks |
 | `Excluded CIDRs` | Excludes networks that should not be written to DNS |
 | `IPv6 interface ID (lower 64 bits)` | Ignores a changing prefix and selects a new IPv6 address with the same interface ID |

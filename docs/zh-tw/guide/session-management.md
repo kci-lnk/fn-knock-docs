@@ -3,7 +3,7 @@ lang: zh-TW
 title: "工作階段、IP 授權與 IP 漂移"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79463920b
+translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -36,6 +36,8 @@ translationSourceHash: 34a0a19efd4768f099f8a50909648a764d3a7a94000fe37da88e73e79
 | 自訂有效時間 | 替目前 IP 建立固定有效時間的授權；登出時會撤銷 |
 
 手動允許清單獨立於工作階段，不會因登出而刪除。
+
+憑據使用 `自訂範圍` 時，不會建立可放行任意 Host 或原始連接埠的通用自動 IP 記錄。若範圍中選取了已啟用驗證的協定映射，系統會沿用上表的有效時間設定，為目前來源 IP 建立精確到 `TCP/UDP + 對外連接埠` 的協定授權；停用登入後 IP 授權時，也不會建立這類協定授權。
 
 停用登入後 IP 授權時，Host 路由主要依賴瀏覽器 Cookie。設定根網域後，同一父網域下的相容 Host 可共用登入狀態；不在共用 Cookie Domain 中的 Host 必須分別登入。頁面會列出不相容的 Host，修改根網域或身分驗證 Host 後應重新核對。
 

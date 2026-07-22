@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f5432bc2cfe0a0c7ead7c3a7085d570742c31091eff31a5dc325eff32e13d75a
+translationSourceHash: dc06c83e625cd689de61e9022f3c0c0095814a7765046bb174c91f07f860d59f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -48,15 +48,17 @@ The same port can have separate TCP and UDP rules, such as `53/tcp` and `53/udp`
 
 The Target must be reachable from the fn-knock runtime environment. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a host or LAN target.
 
-## Authentication Is a Source-IP Check
+## Authentication Checks Source IP and Credential Scope
 
 Clients such as SSH, MySQL, and Redis do not open an fn-knock sign-in page. With `Require auth` enabled, use this flow:
 
 1. Open the fn-knock web entry point in a browser and sign in.
-2. If session settings and the credential permit it, sign-in creates an authorization record for the current public egress IP; otherwise, add the IP/CIDR manually.
+2. If `System settings → Sessions → Post-login IP authorization` is not disabled, sign-in creates protocol access for the current public egress IP; otherwise, add the IP/CIDR manually.
 3. Connect to the external port from a protocol client using that same egress IP.
 
-If the egress IP changes, authorization expires, or the protocol client uses another network, the connection is rejected immediately. Sign in again or update the manual authorization. A browser Cookie is not sent with a TCP or UDP connection; the protocol entry point depends on source-IP authorization. A sign-in credential with a restricted service scope does not create automatic IP authorization, so use an unrestricted credential or add the source manually. See [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) for sessions and IP changes, and [Authentication, Sessions, and Service Scopes](/en/guide/auth) for authentication methods.
+With `All scopes`, protocol access applies to every protocol mapping that requires authentication. With `Custom scopes`, select the exact `TCP/UDP + external port` under `Auth → Permission`. The system authorizes the current source IP only for the selected mapping; an unselected protocol or port is still denied. Changing the credential scope also reconciles protocol access for existing sessions.
+
+If the egress IP changes, authorization expires, post-login IP authorization is disabled, or the protocol client uses another network, the connection is rejected immediately. Sign in again or update the manual authorization. A browser Cookie is not sent with a TCP or UDP connection; the protocol entry point checks source IP, protocol, and external port. Manual IP/CIDR authorization remains an independent allow path. See [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) for sessions and IP changes, and [Authentication, Sessions, and Service Scopes](/en/guide/auth) for custom scopes.
 
 Disabling `Require auth` makes the listening port a public forward. You must still configure the target service's own SSH keys, database password, TLS, and least-privilege access.
 
@@ -88,7 +90,7 @@ Regardless of automatic firewall support, the router's port forwarding, cloud se
 2. Check that the protocol and External port match the client.
 3. Connect to the Target directly from the fn-knock runtime environment.
 4. Check container port publishing, the host firewall, router forwarding, and cloud security group.
-5. With authentication enabled, confirm that the browser sign-in and protocol client use the same public egress IP.
+5. With authentication enabled, confirm that the browser sign-in and protocol client use the same public egress IP, post-login IP authorization is enabled, and a custom credential includes the current protocol and external port.
 6. If the listener is still absent after saving, select `Sync gateway`, then review status and logs.
 
 See [System Settings and Maintenance](/en/guide/system) for the related feature switch.

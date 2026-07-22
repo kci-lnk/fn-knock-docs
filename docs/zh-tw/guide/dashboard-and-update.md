@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd1969ea1
+translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ translationSourceHash: ef2d7fbe2f0bb6a3223819b5528c1226d51b7bd2dcc8bea3ce067b8bd
 
 ## 更新頁面依部署型態運作
 
-路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes；只有飛牛原生 FPK 能直接從頁面下載並安裝更新。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
+路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes；管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
 
 | 部署型態 | 更新頁面提供的功能 | 實際升級方式 |
 | --- | --- | --- |

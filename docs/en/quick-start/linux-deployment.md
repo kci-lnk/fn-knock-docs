@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Linux (systemd / OpenRC)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa017c87decae3de51ce2829a75eb1018be8d6ea02fb73f3c1acd7af1e8b5d9e
+translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -98,7 +98,7 @@ On systemd, these commands read `journalctl`. On OpenRC, they read or follow `/v
 
 ## Update and roll back
 
-`sudo knock update` displays both the installed and latest available versions. The request for the latest release manifest includes a cache-busting parameter and a `no-cache` header to prevent a CDN from returning a stale manifest.
+`sudo knock update` displays both the installed and latest available versions. The updater reads the architecture-specific release manifest from a stable URL. The release pipeline refreshes that URL in the CDN and verifies it by reading it back, so the command no longer adds a random query parameter to every check.
 
 Even when the installed and available versions match, you can confirm that you want to download and deploy that version again. After starting the new version, the installer checks the admin panel health endpoint. If startup fails, it restores the previous version, management command, matching systemd unit or OpenRC service script, and the previous enabled/running state.
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "시스템 설정 및 유지 관리"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541424b1dc
+translationSourceHash: c072cecadde8393adbe311fe4c4b3b8b146ce69e65d436f371ce51ef8edc8ea8
 ---
 
 # 시스템 설정 및 유지 관리
@@ -23,7 +23,7 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | ACME DNS-01 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원, 내장 클라이언트 사용 |
 | 시스템 시간 동기화 | 지원 | 미지원 | 지원 | 미지원 | 미지원 | 미지원 |
 | fnOS SSL 인증서 라이브러리 동기화 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
-| 업데이트 설치 | 웹 페이지에서 업데이트 | 새 이미지 가져오기 | IPK 설치 | 설치 방식에 따라 수동 업데이트 | DSM 패키지 센터에서 SPK 설치 | Windows 관리 프로그램 |
+| 업데이트 설치 | 웹 페이지에서 업데이트 | 새 이미지 가져오기 | 펌웨어에 맞는 IPK / APK 설치 | 설치 방식에 따라 수동 업데이트 | DSM 패키지 센터에서 SPK 설치 | Windows 관리 프로그램 |
 | 독립 관리 패널 비밀번호 | fnOS/CGI 진입점 사용 | 지원 | 지원 | 지원 | DSM 데스크톱 CGI 진입점 사용 | 지원, 로컬 `127.0.0.1` 관리 진입점 전용 |
 
 위 표는 서버에서 전달한 런타임 기능을 기준으로 합니다. 일부 기능 메뉴는 사용할 수 없음으로 표시되면서 이유를 안내하고, 다른 메뉴는 바로 숨겨집니다. Windows는 직접 연결, 내장 FRP / Cloudflared, Smart Connect, 웹 터미널 또는 SSH 보안을 제공하지 않습니다. 게이트웨이 `7999`는 기본적으로 모든 인터페이스에서 수신 대기하지만 외부 접근 가능 여부는 여전히 방화벽 규칙, NAT 및 네트워크 정책에 달려 있습니다. Synology DSM 7 SPK도 직접 연결, 호스트 방화벽, Smart Connect, 웹 터미널 또는 SSH 보안을 제공하지 않습니다.
@@ -38,7 +38,7 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | `위치` | IP 식별 데이터베이스와 CIDR 주소 데이터베이스 설정 | [IP 위치](/ko/guide/ip-location) |
 | `fnOS` | fnOS 공유 우회, 포트별 서비스 아이콘 연결 및 지원되는 네트워크 최적화 관리 | [fnOS 공유 우회](/ko/guide/fnos-share-bypass) |
 | `차단` | 스캐너 방화벽, 집계 시간, 임계값 및 예외 설정 | [스캔 차단](/ko/guide/scanner-interception) |
-| `기능` | 홈 화면 진입점 상태, 패스키 등록 안내, 자동 HTTPS, SSH 보안, 프로토콜 매핑 및 Smart Connect 메뉴 | 각 기능 문서 |
+| `기능` | 홈 화면 진입점 상태, 패스키 등록 안내, 자동 HTTPS, SSH 보안, 프로토콜 매핑, 사이드바 정렬 및 Smart Connect 메뉴 | 각 기능 문서 |
 | `게이트웨이` | 인증 캐시, 리버스 프록시 요청 제한, 크롤러 차단, 포털, 접근 범위 및 Host별 전달 옵션 | 아래 내용 |
 | `WAF`, `로그` | HTTP 규칙 보호 및 구조화된 요청 로그 | [WAF](/ko/guide/waf), [요청 로그](/ko/guide/request-logs) |
 | `터미널` | 웹 터미널 기능을 지원하고 Synology가 아닐 때 표시 | [웹 터미널](/ko/guide/web-terminal) |
@@ -46,6 +46,12 @@ translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541
 | `패널` | Docker, OpenWrt, Linux 및 Windows에서 표시되며 독립 관리 패널 비밀번호 변경 또는 초기화 | 아래 내용 |
 | `보안 인증` | 로그인 전에 PoW 또는 Cloudflare Turnstile 사용 | [보안 인증](/ko/guide/captcha) |
 | `유지보수` | 데이터 내보내기, 가져오기 및 지우기 | 아래 내용 |
+
+## 사이드바 메뉴 순서
+
+`시스템 설정 → 기능 → 사이드바 메뉴 정렬`에서 메뉴 항목을 드래그하여 현재 인스턴스 왼쪽 탐색 메뉴의 표시 순서를 바꿀 수 있습니다. 드래그가 끝나면 자동으로 저장됩니다. 사용자 지정 순서를 모두 취소하려면 `기본 순서 복원`을 클릭합니다.
+
+정렬 페이지에는 현재 실행 모드와 기능 스위치에서 보이는 항목만 표시됩니다. 일시적으로 숨겨진 항목도 전체 순서에서 상대 위치를 유지하므로 기능을 다시 켜거나 모드를 전환하면 임의 위치에 추가되지 않고 원래 자리로 돌아옵니다. 이 설정은 탐색 순서만 바꾸며 기능을 활성화하거나 비활성화하거나 권한을 변경하지 않습니다.
 
 ## 게이트웨이 기본 설정
 

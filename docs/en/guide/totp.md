@@ -3,7 +3,7 @@ lang: en-US
 title: "TOTP Authenticator Apps"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 429be9b6f78125c14c21e6c60295856b5dbc2fedb1eb6ecfc2843ba215954a5a
+translationSourceHash: 0abfe75a5862233be3e6af3aeea4c4c59466cee80b2b67cb50157480a99cd0f7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,9 +23,9 @@ Do not keep your only TOTP on a single phone. A lost device, operating-system re
 
 ## Service Scopes
 
-In the TOTP list, `Permission` can be set to `All scopes` or `Custom scopes`. The custom list shows only application Hosts that require sign-in and includes the built-in select page. Hosts that were removed from mappings but remain in the permission list are marked `Unavailable`. When the custom scope is empty, the credential cannot access any protected entry point.
+In the TOTP list, `Permission` can be set to `All scopes` or `Custom scopes`. The custom list groups application Hosts that require sign-in, the built-in select page, and authenticated TCP / UDP protocol mappings. Entries removed from the mappings but retained in the permission are marked `Unavailable`. When the custom scope is empty, the credential cannot access any protected entry point.
 
-This restriction also applies to linked Passkeys, QQ accounts, and other OIDC external accounts. A TOTP with a restricted service scope does not create automatic post-login IP authorization. Separate credentials for personal, family, automation, and administrative use so that each can be revoked and audited independently.
+This restriction also applies to linked Passkeys, QQ accounts, and other OIDC external accounts. A TOTP with a restricted service scope does not create general automatic post-login IP authorization. If the scope includes a specific protocol mapping and post-login IP authorization is enabled, the system authorizes the current source IP only for that protocol and external port. Separate credentials for personal, family, automation, and administrative use so that each can be revoked and audited independently.
 
 `Manage quick login` lets you view or remove linked Passkeys, inspect external-account bindings, and generate a binding invite valid for 30 minutes. Passkeys themselves are created on the visitor status page after TOTP sign-in, not directly in the admin table.
 

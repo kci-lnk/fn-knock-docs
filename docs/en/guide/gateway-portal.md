@@ -3,7 +3,7 @@ lang: en-US
 title: "Gateway Portal"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6e1c03829c32f49e5e0b86fd3499d4f0122acead22b6045589b8e317082d5851
+translationSourceHash: b53d82b49a9f480732b149d385b3cb8e9d9c560bea091349dd94371a66d1380c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ Under `System settings → Gateway → Portal settings`, you can control whether
 | `Enable portal` | When enabled, signed-in users see an app-switching toolbar while visiting application subdomains |
 | `Portal display` | Selects the domain or site title; an empty title falls back to the domain |
 | `Portal icon drag position` | `Corners` snaps the icon to a corner, while `Free` lets it remain anywhere in the viewport |
-| `Show app icons` | Shows icons only for entries whose icons have been collected; entries without an icon do not reserve blank space |
+| `Show app icons` | Shows entries with an automatically collected or custom icon; entries without an icon do not reserve blank space |
 
 These options are saved and synchronized as soon as you select them. You do not need to return to the main Gateway page and run a separate save. Changing the display style does not end the sign-in session.
 
@@ -36,7 +36,7 @@ If the display is incorrect, check in this order:
 1. Confirm that the global portal is enabled and that the current Host has not disabled `Show portal`.
 2. Confirm that the current request is signed in and uses a routing mode that supports Host entries.
 3. Check the mapping's site title. In title mode, an empty title displays the domain.
-4. If an icon is missing, visit the application again so the gateway can collect it. An entry still without an icon does not reserve a space.
+4. If an icon is missing, edit the corresponding Host under `Domains`, open `App icon`, then recollect it or upload a custom image. An entry still without an icon does not reserve a space.
 5. Compare the credential's service scope. Seeing an entry in the list does not mean the credential can access it.
 
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)

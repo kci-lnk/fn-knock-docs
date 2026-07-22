@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道入口頁"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6e1c03829c32f49e5e0b86fd3499d4f0122acead22b6045589b8e317082d5851
+translationSourceHash: b53d82b49a9f480732b149d385b3cb8e9d9c560bea091349dd94371a66d1380c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ translationSourceHash: 6e1c03829c32f49e5e0b86fd3499d4f0122acead22b6045589b8e3170
 | `啟用傳送門` | 開啟後，已登入使用者存取服務子網域時，會顯示用來切換應用程式的工具列 |
 | `傳送門顯示` | 選擇顯示網域或網站標題；標題為空時改用網域 |
 | `傳送門圖示拖曳位置` | `四個角落` 會將圖示吸附至角落，`自由` 則允許停留在 Viewport 內任意位置 |
-| `顯示應用程式圖示` | 只顯示已擷取到圖示的入口；沒有圖示的入口不會保留空位 |
+| `顯示應用程式圖示` | 顯示已有自動擷取或自訂圖示的入口；沒有圖示的入口不會保留空位 |
 
 點選這些選項後會立即儲存並同步，不必回到閘道頁面再次按下統一儲存。修改顯示樣式不會結束登入工作階段。
 
@@ -36,7 +36,7 @@ translationSourceHash: 6e1c03829c32f49e5e0b86fd3499d4f0122acead22b6045589b8e3170
 1. 確認全域傳送門已啟用，且目前 Host 未停用「顯示傳送門」。
 2. 確認目前請求已完成登入，且採用支援 Host 入口的路由方式。
 3. 檢查映射的網站標題；標題模式下若標題為空，會顯示網域。
-4. 沒有圖示時，請重新存取應用程式，讓閘道完成圖示擷取；仍無圖示的入口不會占用空間。
+4. 沒有圖示時，請在 `子網域映射` 中編輯對應 Host，開啟 `應用程式圖示` 後重新擷取或上傳自訂圖片；仍無圖示的入口不會占用空間。
 5. 對照憑據的服務範圍；能在清單中看到入口，不代表具備存取權。
 
 - [身分驗證、工作階段與服務範圍](/zh-tw/guide/auth)

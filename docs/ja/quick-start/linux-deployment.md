@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Linux へデプロイ（systemd / OpenRC）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa017c87decae3de51ce2829a75eb1018be8d6ea02fb73f3c1acd7af1e8b5d9e
+translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -98,7 +98,7 @@ systemd では `journalctl` を読み、OpenRC では `/var/log/fn-knock.log` �
 
 ## 更新とロールバック
 
-`sudo knock update` を実行すると、ローカルと配布元のバージョンが並んで表示されます。最新バージョンのマニフェストを取得するリクエストにはキャッシュ回避用パラメーターと `no-cache` ヘッダーが付き、CDN から古いマニフェストが返るのを防ぎます。
+`sudo knock update` を実行すると、ローカルと配布元のバージョンが並んで表示されます。アップデーターは現在のアーキテクチャ用マニフェストを固定 URL から取得します。リリース処理がその URL の CDN キャッシュを更新して読み戻し検証を行うため、コマンドは確認のたびにランダムなクエリパラメーターを追加しません。
 
 ローカルと配布元のバージョンが同じ場合でも、確認のうえ同じバージョンを再ダウンロードして再配置できます。新バージョンの起動後は管理パネルのヘルスチェックが行われます。起動に失敗した場合は、以前のバージョン、管理コマンド、対応する systemd ユニットまたは OpenRC サービススクリプト、サービスの起動・停止状態が復元されます。
 

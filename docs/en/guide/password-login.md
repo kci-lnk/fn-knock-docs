@@ -3,7 +3,7 @@ lang: en-US
 title: "Username and Password Sign-in"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d898e49c752900b599a6bab2d9a295f40bce1cec952fc155fb8d2dfcfede8f03
+translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ecb1cd718
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,13 +21,13 @@ After switching:
 - The sign-in page displays username and password fields;
 - Passkey, QQ, and other external account sign-in entries are hidden;
 - Existing sessions created through TOTP, Passkey, or OIDC are destroyed, and users must sign in again with a username and password;
-- Each account's service scope continues to apply when it accesses a Host.
+- Each account's service scope continues to apply when it accesses a Host or protected protocol mapping.
 
 To use TOTP, Passkey, QQ, or another OIDC provider again, switch back to `TOTP sign-in mode`. Before switching back, every account must be linked to a TOTP credential that still exists. Username/password sessions become invalid when the mode changes.
 
 ## Create an Account
 
-Under `Auth → Password sign-in accounts`, create an account, set its password, and optionally restrict the subdomains it can access.
+Under `Auth → Password sign-in accounts`, create an account, set its password, and optionally restrict the subdomains and protocol mappings it can access.
 
 | Field | Backend rules |
 | --- | --- |
@@ -36,7 +36,7 @@ Under `Auth → Password sign-in accounts`, create an account, set its password,
 
 The backend's minimum accepted length is not a security recommendation. Use a sufficiently long, unique password and do not reuse an admin-panel password or a password from another service.
 
-If an account needs only a subset of applications, change its permission to `Custom scopes` and select only the required Hosts. An empty custom scope allows no protected entry; select the built-in entry separately when needed. An account with a restricted service scope does not receive automatic post-sign-in IP authorization, preventing source authorization from expanding its permissions.
+If an account needs only a subset of entry points, change its permission to `Custom scopes` and select only the required Hosts, built-in select page, or authenticated TCP / UDP protocol mappings. An empty custom scope allows no protected entry. A restricted account receives no general automatic post-login IP authorization. If a specific protocol mapping is selected and post-login IP authorization is enabled, only its protocol and external port are authorized for the current source IP.
 
 Deleting an account also deletes its linked TOTP, Passkeys, external account bindings, and sign-in sessions. If you need to preserve a TOTP recovery path, do not treat account deletion as an operation that removes only the password.
 
@@ -48,7 +48,7 @@ A credential export includes accounts, password hashes, linked TOTP secrets, and
 
 - **Switching is blocked:** Set passwords for the accounts listed in the prompt, or delete accounts that are no longer needed, then retry.
 - **The sign-in page has no username or password fields:** Check whether TOTP sign-in mode is still active and whether you opened the correct authentication Host.
-- **Sign-in succeeds, but an application subdomain is denied:** Check the account's service scope and the mapping's access policy.
+- **Sign-in succeeds, but a subdomain or protocol port is denied:** Check the account's custom scope, post-login IP authorization setting, and the mapping's access policy.
 - **The failed-sign-in count keeps increasing:** Under `Sessions & Security → Login backoff`, check the source IP. A shared egress address or incorrect real-IP headers can cause multiple people to share one backoff record.
 
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)

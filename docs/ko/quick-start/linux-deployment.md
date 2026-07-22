@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Linux 배포(systemd / OpenRC)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa017c87decae3de51ce2829a75eb1018be8d6ea02fb73f3c1acd7af1e8b5d9e
+translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
 ---
 
 # Linux 배포(systemd / OpenRC)
@@ -96,7 +96,7 @@ systemd에서는 두 명령 모두 `journalctl`을 읽고 OpenRC에서는 `/var/
 
 ## 업데이트 및 롤백
 
-`sudo knock update`를 실행하면 로컬 버전과 온라인 버전을 함께 표시합니다. 최신 버전 manifest 요청에는 캐시 무효화 매개변수와 `no-cache` 요청 헤더를 사용하여 CDN이 이전 manifest를 반환하지 않도록 합니다.
+`sudo knock update`를 실행하면 로컬 버전과 온라인 버전을 함께 표시합니다. 업데이트 프로그램은 현재 아키텍처의 최신 버전 manifest를 고정 주소에서 읽습니다. 릴리스 과정에서 해당 주소의 CDN 캐시를 갱신하고 다시 읽어 검증하므로, 명령은 확인할 때마다 임의의 쿼리 매개변수를 붙이지 않습니다.
 
 로컬 버전과 온라인 버전이 같아도 해당 버전을 다시 다운로드하여 배포할 수 있습니다. 새 버전을 시작한 뒤 관리 패널 헬스 체크를 실행합니다. 시작에 실패하면 이전 버전, 관리 명령, 해당 systemd 유닛 또는 OpenRC 서비스 스크립트와 서비스 활성화·실행 상태를 복원합니다.
 

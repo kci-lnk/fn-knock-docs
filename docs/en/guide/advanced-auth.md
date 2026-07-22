@@ -3,14 +3,14 @@ lang: en-US
 title: "Advanced Authentication for Subdomains"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 56f67db373d7e45efa8eef5ad9316a7a05e92f9a0563e5666747fbc8fb6654d3
+translationSourceHash: 7935017e44e4c972067b5e804299e41a1cebb8e63a45f920f08a0f0ab418a340
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Advanced Authentication for Subdomains
 
-Subdomain advanced authentication adds conditional allow rules to an HTTP or HTTPS application Host that has `Require sign-in` enabled. When a request first matches a rule, the system issues a temporary grant limited to the current Host. Requests that do not match continue through the normal sign-in, session, and service-scope flow.
+Subdomain advanced authentication adds conditional allow rules to an HTTP or HTTPS application Host that has `Require sign-in` enabled. When a request first matches a rule, that request receives one-request access and a short-lived capability probe is returned to clients that support Cookies. The system creates a persistent temporary grant limited to the current Host only after a later request returns the probe. Requests that do not match continue through the normal sign-in, session, and service-scope flow.
 
 A temporary grant is not a system login: it does not create a login session or IP authorization, does not display the portal, and cannot access another Host. Advanced authentication is an independent allow path, not an additional check layered on top of the existing sign-in rules.
 
@@ -25,9 +25,11 @@ In the `Domains` list, open the menu on the right of the application Host and se
 
 ## Scope of a temporary grant
 
-Rules are evaluated only when issuing a temporary grant. After the grant is issued, requests to other paths or methods on the current Host do not have to satisfy the original conditions again during its validity period. Path, Header, and Query conditions therefore cannot serve as continuous per-request access control.
+After a Cookie-capable client completes the probe and receives a persistent temporary grant, requests to other paths or methods on the current Host do not have to satisfy the original conditions again during its validity period. Path, Header, and Query conditions therefore cannot serve as continuous per-request access control.
 
-For example, a rule that matches only `/health` does not grant access to `/health` alone. After the first match, the entire current Host is allowed for the lifetime of the temporary grant. To expose only a few fixed paths, use [Static Path Responses](/en/guide/gateway-path-response), split them onto a separate Host, or continue enforcing permissions in the upstream application.
+Apps, scripts, and other clients that do not return Cookies create no persistent state. Every request from those clients must match the rule again and receives access for that request only. A WebSocket upgrade is also allowed only for the current handshake because `101 Switching Protocols` is not a reliable Cookie-delivery channel; reconnecting evaluates the rules again. `One-request access` in Request Logs identifies this state.
+
+For example, a rule that matches only `/health` does not limit a persistent grant to `/health`. After the browser completes the probe, the entire current Host is allowed for the lifetime of the temporary grant. To expose only a few fixed paths, use [Static Path Responses](/en/guide/gateway-path-response), split them onto a separate Host, or continue enforcing permissions in the upstream application.
 
 Protective denials such as the general blacklist, WAF, and a legacy strict allowlist still take precedence. Advanced authentication cannot bypass these security boundaries.
 
@@ -38,7 +40,7 @@ Protective denials such as the general blacklist, WAF, and a legacy strict allow
 | `Expire after no access for` | 24 hours | 5 minutes–30 days | The idle timer restarts after each valid request |
 | `Maximum time the grant can be used` | 30 days | 5 minutes–365 days | Counted from initial issuance and not extended by continuous use |
 
-The maximum lifetime cannot be shorter than the no-access expiry. Saving a change to the rules, validity period, or enabled state rotates the policy version and immediately invalidates existing temporary grants. Disabling advanced authentication preserves the draft rules so they can be enabled again later.
+These two periods apply only to persistent temporary grants created after the Cookie probe; one-request access does not continue to a later request. The maximum lifetime cannot be shorter than the no-access expiry. Saving a change to the rules, validity period, or enabled state rotates the policy version and immediately invalidates existing temporary grants. Disabling advanced authentication preserves the draft rules so they can be enabled again later.
 
 ## Organize rule groups
 
@@ -74,7 +76,7 @@ A single Host is also subject to these hard limits:
 | CIDRs resolved from region and network conditions | 100000 |
 | Advanced authentication configuration request | 8 MiB |
 
-A temporary grant is issued only on the first match when no reusable grant exists. For the same Host and client IP, the system issues at most 10 grants every 60 seconds; across a single Host, it issues at most 1000 grants every 60 seconds and retains at most 100000 active grants. Exceeding the issuance rate returns `429 Too Many Requests` with `Retry-After: 60`. A shared proxy egress counts multiple clients as one source, so deployments behind an upstream proxy must first verify real client IP detection.
+A persistent temporary grant is created only when a client returns a valid probe and no reusable grant exists. For the same Host and client IP, the system creates at most 10 grants every 60 seconds; across a single Host, it creates at most 1000 grants every 60 seconds and retains at most 100000 active grants. If the creation rate or capacity is reached, or persistent storage is temporarily unavailable, an already matched request falls back to `One-request access` instead of being denied because it could not be persisted; the next request must match the rule again. A shared proxy egress counts multiple clients as one source, so deployments behind an upstream proxy must first verify real client IP detection.
 
 ## Match targets
 
@@ -83,7 +85,7 @@ A temporary grant is issued only on the first match when no reusable grant exist
 | Source IP | equals, not equals, in CIDR, not in CIDR | Supports IPv4 and IPv6; enter one address or network per line |
 | Source region | belongs to, does not belong to | Select a province, city, province-wide, or operator scope; resolved to fixed CIDRs when saved |
 | URL path | equals, not equals, path prefix, not a prefix, contains, does not contain, RE2 regular expression, not RE2 regular expression | Matches the request path without the domain |
-| Request header | exists / does not exist, equals / not equals, contains / does not contain, starts with / does not start with, ends with / does not end with, RE2 regular expression / not RE2 regular expression | Enter the header name first; values are case-sensitive by default |
+| Request header | exists / does not exist, equals / not equals, contains / does not contain, starts with / does not start with, ends with / does not end with, RE2 regular expression / not RE2 regular expression | Select a common name or enter a custom header directly; values are case-sensitive by default |
 | Query parameter | exists / does not exist, equals / not equals, contains / does not contain, starts with / does not start with, ends with / does not end with, RE2 regular expression / not RE2 regular expression | Parameter names and values are included in configuration backups |
 | HTTP method | method is in, method is not in | Enter one method per line, such as `GET` or `HEAD` |
 
@@ -108,9 +110,10 @@ The system issues a temporary grant for the current Host only when both conditio
 
 1. Send a matching request from a real external network.
 2. In `Request Logs`, confirm that `Auth result` is `Allowed by subdomain rule`.
-3. Confirm that `Subdomain rule group ID` identifies the expected group and that `Temporary grant state` is `Issued`, `Renewed`, or `Reused`.
+3. Confirm that `Subdomain rule group ID` identifies the expected group and that `Temporary grant state` is `One-request access`, `Issued`, `Renewed`, or `Reused`. A browser's first request normally uses one-request access; the state becomes Issued after the browser returns the probe Cookie.
 4. Test again from a source that does not meet the conditions and confirm that the request returns to the normal sign-in flow.
-5. Change and save the rule, then confirm that the temporary grant held by an existing browser becomes invalid immediately.
+5. Send two consecutive requests from a client that does not store Cookies and confirm that each request is re-evaluated and logged as one-request access. Then use a browser to confirm that the probe becomes a persistent grant.
+6. Change and save the rule, then confirm that the temporary grant held by an existing browser becomes invalid immediately.
 
 If a source-IP or region rule behaves incorrectly, first inspect `Client IP` and `Connection source IP` in the log. If a rule cannot be saved, check its condition values, CIDR address family, RE2 regular expression, region data source, and gateway version.
 

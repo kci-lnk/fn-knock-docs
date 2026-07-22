@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f5432bc2cfe0a0c7ead7c3a7085d570742c31091eff31a5dc325eff32e13d75a
+translationSourceHash: dc06c83e625cd689de61e9022f3c0c0095814a7765046bb174c91f07f860d59f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -48,15 +48,17 @@ UDP :53   -> 127.0.0.1:53
 
 Target 必須能從 fn-knock 所在環境連線。在 Docker 中，`127.0.0.1` 代表 Container 本身；Host 或區域網路 Target 必須使用 Container 可連線的 IP。
 
-## 驗證機制是檢查來源 IP
+## 驗證機制會檢查來源 IP 與憑據範圍
 
 SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要求驗證` 後，使用順序如下：
 
 1. 在瀏覽器中開啟 fn-knock 的 Web 入口並完成登入。
-2. 若工作階段設定與所用憑據允許，登入流程會替目前公網出口 IP 建立授權記錄；否則請手動新增該 IP／CIDR。
+2. 若 `系統設定 → 工作階段 → 登入後 IP 授權` 未停用，登入流程會替目前公網出口 IP 建立協定存取授權；否則請手動新增該 IP／CIDR。
 3. 再從相同出口 IP，使用通訊協定用戶端連線至對外連接埠。
 
-出口 IP 變更、授權到期，或用戶端改走其他網路時，連線會被直接拒絕，必須重新登入或更新手動授權。瀏覽器 Cookie 本身不會隨 TCP／UDP 連線傳送；通訊協定入口依賴的是來源 IP 授權。服務範圍受限的登入憑據不會建立自動 IP 授權，必須改用範圍未受限的憑據，或手動加入來源。工作階段與 IP 變化請參閱[工作階段管理與 IP 軌跡](/zh-tw/guide/session-management)，驗證方式請參閱[身分驗證總覽](/zh-tw/guide/auth)。
+憑據使用 `所有範圍` 時，協定授權可套用至所有已啟用驗證的協定映射。使用 `自訂範圍` 時，必須在 `驗證設定 → 權限` 中選取精確的 `TCP/UDP + 對外連接埠`；系統只會為所選映射授權目前來源 IP，未選取的協定或連接埠仍會拒絕。修改憑據範圍後，既有工作階段的協定授權也會同步調整。
+
+出口 IP 變更、授權到期、登入後 IP 授權停用，或用戶端改走其他網路時，連線會被直接拒絕，必須重新登入或更新手動授權。瀏覽器 Cookie 本身不會隨 TCP／UDP 連線傳送；通訊協定入口會檢查來源 IP、通訊協定與對外連接埠。手動 IP／CIDR 授權仍是獨立放行路徑。工作階段與 IP 變化請參閱[工作階段管理與 IP 軌跡](/zh-tw/guide/session-management)，驗證方式與自訂範圍請參閱[身分驗證總覽](/zh-tw/guide/auth)。
 
 停用 `要求驗證` 會將該 Listen Port 公開轉送。Target Service 本身的 SSH Key、資料庫密碼、TLS 與最小權限仍必須妥善設定。
 
@@ -88,7 +90,7 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 2. 檢查通訊協定與對外連接埠是否和用戶端一致。
 3. 從 fn-knock Runtime 環境直接連線至 Target。
 4. 檢查 Container Port Publishing、Host 防火牆、路由器轉送與 Cloud Security Group。
-5. 啟用驗證時，確認瀏覽器登入與通訊協定用戶端使用相同的公網出口 IP。
+5. 啟用驗證時，確認瀏覽器登入與通訊協定用戶端使用相同的公網出口 IP、登入後 IP 授權未停用，且自訂憑據已選取目前通訊協定與對外連接埠。
 6. 儲存後仍未 Listen 時，按下 `同步閘道`，再查看狀態與 Log。
 
 相關功能開關請參閱[系統設定](/zh-tw/guide/system)。
