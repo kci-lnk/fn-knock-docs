@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30d02435e
+translationSourceHash: 2b632872a143dace421c0e0a4ff8040e19c4dded02f605780371ba03bf26ae2a
 ---
 
 # Docker Compose 部署
@@ -15,7 +15,7 @@ translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30
 ## 前置需求與限制
 
 - 使用 Linux 主機，並已安裝 Docker Engine、Docker Compose v2 與 `curl`。
-- 主機已啟用 IPv6，且 `/proc/net/if_inet6` 存在並至少包含一個 IPv6 介面；正式版 Compose 會將此檔案唯讀映射進 Container。
+- 主機已啟用 IPv6，且 `/proc/net/if_inet6` 至少包含一個全域 IPv6 介面；這是 procfs 虛擬檔案，顯示大小始終為 `0`，必須讀取內容判斷。
 - 主機的 `7991`、`7999` 尚未被其他服務占用，或已規劃替代連接埠。
 - 管理入口只應開放給區域網路、VPN 或可信任的反向代理；請勿直接將其連接埠轉送至公網。
 
@@ -55,7 +55,10 @@ fi
 
 command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
 docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
-[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+if [ ! -r /proc/net/if_inet6 ] || ! awk '$4 == "00" { found=1 } END { exit !found }' /proc/net/if_inet6; then
+  echo "No usable global IPv6 interface was found on this host." >&2
+  exit 1
+fi
 
 install_dir=/opt/fn-knock-docker
 mkdir -p "$install_dir"
@@ -140,7 +143,7 @@ networks:
     enable_ipv6: true
 ```
 
-若主機沒有 `/proc/net/if_inet6` 或該檔案為空，應先在主機啟用 IPv6，而不是刪除這項映射。可用 `test -s /proc/net/if_inet6 && cat /proc/net/if_inet6` 檢查。
+不要使用 `test -s /proc/net/if_inet6` 檢查 IPv6：procfs 即使已有位址，也會將檔案大小回報為 `0`。上方一鍵指令碼會自動讀取內容，並以 scope `00` 判斷是否存在可供 DDNS 使用的全域 IPv6。手動檢查可執行 `awk '$4 == "00" { print; found=1 } END { exit !found }' /proc/net/if_inet6`。
 
 如果管理入口必須經由公網反向代理，請將 Proxy 節點的出口 IP 或 CIDR 填入 `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS`，並讓 Proxy 傳遞 `X-Forwarded-For` 或 `X-Real-IP`。請勿將 `0.0.0.0/0` 加入可信任 Proxy 清單。
 

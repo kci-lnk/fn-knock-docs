@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30d02435e
+translationSourceHash: 2b632872a143dace421c0e0a4ff8040e19c4dded02f605780371ba03bf26ae2a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -17,7 +17,7 @@ fnOS ネイティブ FPK を使用する場合は、[fnOS ネイティブ FPK �
 ## 前提条件と制約
 
 - Linux ホストに Docker Engine、Docker Compose v2、`curl` がインストールされていること。
-- ホストで IPv6 が有効で、`/proc/net/if_inet6` に少なくとも 1 つの IPv6 インターフェイスが記録されていること。リリース用 Compose はこのファイルだけを読み取り専用でコンテナへマウントします。
+- ホストで IPv6 が有効で、`/proc/net/if_inet6` に少なくとも 1 つのグローバル IPv6 インターフェイスがあること。この procfs 仮想ファイルの表示サイズは常に `0` なので、内容を読み取って判定します。
 - ホストの `7991` と `7999` が空いているか、代わりのポートを用意していること。
 - 管理画面へのアクセスは LAN、VPN、または信頼できるリバースプロキシ経由に限定し、インターネットへ直接ポートフォワーディングしないこと。
 
@@ -55,7 +55,10 @@ fi
 
 command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
 docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
-[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+if [ ! -r /proc/net/if_inet6 ] || ! awk '$4 == "00" { found=1 } END { exit !found }' /proc/net/if_inet6; then
+  echo "No usable global IPv6 interface was found on this host." >&2
+  exit 1
+fi
 
 install_dir=/opt/fn-knock-docker
 mkdir -p "$install_dir"
@@ -138,7 +141,7 @@ networks:
     enable_ipv6: true
 ```
 
-`/proc/net/if_inet6` がない、または空の場合はマウントを削除せず、先にホストで IPv6 を有効にします。`test -s /proc/net/if_inet6 && cat /proc/net/if_inet6` で確認できます。
+IPv6 の確認に `test -s /proc/net/if_inet6` を使わないでください。procfs はアドレスがあってもサイズを `0` と報告します。一括インストーラーは内容を読み、scope `00` のグローバル IPv6 を自動判定します。手動では `awk '$4 == "00" { print; found=1 } END { exit !found }' /proc/net/if_inet6` を実行します。
 
 管理画面を公開リバースプロキシの背後に置く場合は、そのプロキシの送信元 IP または CIDR だけを `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` に設定します。`0.0.0.0/0` は設定しないでください。`DOCKER_DISCOVER_LAN_IP` は、自動検出できない場合だけ使用します。
 

@@ -7,7 +7,7 @@
 ## 前提与边界
 
 - 使用 Linux 宿主机，并已安装 Docker Engine、Docker Compose v2 和 `curl`。
-- 宿主机已启用 IPv6，且 `/proc/net/if_inet6` 存在并至少包含一个 IPv6 接口；发布版 Compose 会将这个文件只读映射进容器。
+- 宿主机已启用 IPv6，且 `/proc/net/if_inet6` 至少包含一个全局 IPv6 接口；这是 procfs 虚拟文件，显示大小始终为 `0`，必须读取内容判断。
 - 宿主机的 `7991`、`7999` 未被其他服务占用，或已准备替代端口。
 - 管理入口只应由局域网、VPN 或可信反向代理访问；不要将它直接做公网端口转发。
 
@@ -47,7 +47,10 @@ fi
 
 command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
 docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
-[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+if [ ! -r /proc/net/if_inet6 ] || ! awk '$4 == "00" { found=1 } END { exit !found }' /proc/net/if_inet6; then
+  echo "No usable global IPv6 interface was found on this host." >&2
+  exit 1
+fi
 
 install_dir=/opt/fn-knock-docker
 mkdir -p "$install_dir"
@@ -132,7 +135,7 @@ networks:
     enable_ipv6: true
 ```
 
-宿主机没有 `/proc/net/if_inet6` 或该文件为空时，应先在宿主机启用 IPv6，而不是删除这项映射。可用 `test -s /proc/net/if_inet6 && cat /proc/net/if_inet6` 检查。
+不要使用 `test -s /proc/net/if_inet6` 检查 IPv6：procfs 会把这个文件的大小报告为 `0`，即使里面已有地址。上面的一键脚本会自动读取内容，并以 scope `00` 判断是否存在可供 DDNS 使用的全局 IPv6。手动检查可执行 `awk '$4 == "00" { print; found=1 } END { exit !found }' /proc/net/if_inet6`。
 
 如果管理入口必须经过公网反向代理，将代理节点的出口 IP 或 CIDR 写入 `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS`，并让代理传递 `X-Forwarded-For` 或 `X-Real-IP`。不要把 `0.0.0.0/0` 写入可信代理列表。
 

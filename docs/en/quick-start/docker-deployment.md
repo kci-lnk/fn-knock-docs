@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy with Docker Compose"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30d02435e
+translationSourceHash: 2b632872a143dace421c0e0a4ff8040e19c4dded02f605780371ba03bf26ae2a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -17,7 +17,7 @@ To install and set up the native fnOS FPK instead, see [Install and Set Up the N
 ## Requirements and boundaries
 
 - Use a Linux host with Docker Engine, Docker Compose v2, and `curl` installed.
-- IPv6 is enabled on the host, and `/proc/net/if_inet6` exists with at least one IPv6 interface. The release Compose file mounts it read-only into the container.
+- IPv6 is enabled on the host, and `/proc/net/if_inet6` contains at least one global IPv6 interface. This procfs virtual file always reports a size of `0`, so its contents must be read.
 - Host ports `7991` and `7999` are free, or you have chosen replacement ports.
 - The admin endpoint is reachable only from your LAN, VPN, or a trusted reverse proxy. Never port-forward it directly to the public internet.
 
@@ -57,7 +57,10 @@ fi
 
 command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
 docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
-[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+if [ ! -r /proc/net/if_inet6 ] || ! awk '$4 == "00" { found=1 } END { exit !found }' /proc/net/if_inet6; then
+  echo "No usable global IPv6 interface was found on this host." >&2
+  exit 1
+fi
 
 install_dir=/opt/fn-knock-docker
 mkdir -p "$install_dir"
@@ -142,7 +145,7 @@ networks:
     enable_ipv6: true
 ```
 
-If `/proc/net/if_inet6` is missing or empty, enable IPv6 on the host instead of deleting the mount. Check it with `test -s /proc/net/if_inet6 && cat /proc/net/if_inet6`.
+Do not check IPv6 with `test -s /proc/net/if_inet6`: procfs reports a size of `0` even when addresses are present. The one-paste installer reads the file and looks for scope `00`, which identifies a global IPv6 address usable by DDNS. For a manual check, run `awk '$4 == "00" { print; found=1 } END { exit !found }' /proc/net/if_inet6`.
 
 If the admin endpoint must sit behind an internet-facing reverse proxy, add only that proxy's egress IP or CIDR to `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` and configure it to pass `X-Forwarded-For` or `X-Real-IP`. Never put `0.0.0.0/0` in the trusted proxy list.
 

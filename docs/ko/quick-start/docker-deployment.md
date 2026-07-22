@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Docker Compose로 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30d02435e
+translationSourceHash: 2b632872a143dace421c0e0a4ff8040e19c4dded02f605780371ba03bf26ae2a
 ---
 
 # Docker Compose로 배포
@@ -15,7 +15,7 @@ fnOS 네이티브 FPK를 사용하려면 [fnOS 네이티브 FPK 설치 및 초�
 ## 사전 요구 사항과 적용 범위
 
 - Linux 호스트에 Docker Engine, Docker Compose v2, `curl`이 설치되어 있어야 합니다.
-- 호스트에서 IPv6가 활성화되어 있고 `/proc/net/if_inet6`에 하나 이상의 IPv6 인터페이스가 있어야 합니다. 배포용 Compose는 이 파일만 컨테이너에 읽기 전용으로 마운트합니다.
+- 호스트에서 IPv6가 활성화되어 있고 `/proc/net/if_inet6`에 하나 이상의 글로벌 IPv6 인터페이스가 있어야 합니다. 이 procfs 가상 파일은 표시 크기가 항상 `0`이므로 내용을 읽어 판단합니다.
 - 호스트의 `7991`, `7999` 포트가 비어 있거나 대체 포트를 준비해야 합니다.
 - 관리 엔드포인트는 LAN, VPN 또는 신뢰할 수 있는 리버스 프록시에서만 접근하고 인터넷으로 직접 포트 포워딩하지 않습니다.
 
@@ -53,7 +53,10 @@ fi
 
 command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
 docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
-[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+if [ ! -r /proc/net/if_inet6 ] || ! awk '$4 == "00" { found=1 } END { exit !found }' /proc/net/if_inet6; then
+  echo "No usable global IPv6 interface was found on this host." >&2
+  exit 1
+fi
 
 install_dir=/opt/fn-knock-docker
 mkdir -p "$install_dir"
@@ -136,7 +139,7 @@ networks:
     enable_ipv6: true
 ```
 
-`/proc/net/if_inet6`가 없거나 비어 있다면 마운트를 삭제하지 말고 먼저 호스트에서 IPv6를 활성화합니다. `test -s /proc/net/if_inet6 && cat /proc/net/if_inet6`로 확인할 수 있습니다.
+IPv6 확인에 `test -s /proc/net/if_inet6`를 사용하지 마세요. procfs는 주소가 있어도 파일 크기를 `0`으로 보고합니다. 한 번에 설치 스크립트는 내용을 읽고 scope `00`인 글로벌 IPv6를 자동으로 찾습니다. 수동 확인은 `awk '$4 == "00" { print; found=1 } END { exit !found }' /proc/net/if_inet6`를 실행합니다.
 
 관리 엔드포인트를 공개 리버스 프록시 뒤에 둘 경우 해당 프록시의 출발지 IP 또는 CIDR만 `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS`에 설정합니다. `0.0.0.0/0`은 사용하지 않습니다. `DOCKER_DISCOVER_LAN_IP`는 자동 감지가 실패할 때만 사용합니다.
 
