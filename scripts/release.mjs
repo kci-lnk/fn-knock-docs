@@ -58,4 +58,4 @@ if (existingTag.status === 0) {
 git(['tag', '--annotate', tag, '--message', `Release ${tag}`])
 git(['push', 'origin', `refs/tags/${tag}`])
 
-console.log(`Published ${tag}. GitHub Actions will now trigger the EdgeOne deployment.`)
+console.log(`Published ${tag}.`)
