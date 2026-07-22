@@ -1,0 +1,100 @@
+---
+lang: en-US
+title: "System Settings and Maintenance"
+sourceLocale: zh-CN
+translationStatus: translated
+translationSourceHash: 8abcc85fd2a43427a0d3a999b56ba2313f5b2a05a558abde08ef58541424b1dc
+---
+
+<!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
+
+# System Settings and Maintenance
+
+`System settings` brings together runtime modes, tunnel resources, certificate tools, gateway and session controls, feature switches, and maintenance actions. Tabs appear dynamically according to the runtime mode and deployment capabilities. If a tab is missing, check the current platform and runtime mode before repeatedly refreshing the page.
+
+## Deployment Capability Differences
+
+| Capability | Native fnOS FPK | Docker | OpenWrt | Linux service | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Direct mode and host firewall | Supported; the process needs host permissions | Not supported | Supported; the process needs root permissions | Not supported | Not supported | Not supported |
+| Smart Connect | Supported | Not supported | Supported; depends on an existing `dnsmasq` installation and an included `/etc/dnsmasq.d/` directory, so the UI's automatic `apt-get` installation does not apply | Not supported | Not supported | Not supported |
+| Web Terminal | Supported | Not supported | Not supported | Supported; requires `tmux` | Not supported | Not supported |
+| Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Not supported |
+| SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Automatic HTTPS | Supported | Not supported | Not supported | Supported; requires an available port `80` | Not supported | Supported; the Windows inbound path must still be opened |
+| ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported; uses the built-in client |
+| System clock sync | Supported | Not supported | Supported | Not supported | Not supported | Not supported |
+| fnOS SSL certificate store sync | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Update installation | Update in the web UI | Pull a new image | Install an IPK | Update manually according to the installation method | Install the SPK in DSM Package Center | Windows manager |
+| Separate admin panel password | Uses the fnOS/CGI entry point | Supported | Supported | Supported | Uses the DSM desktop CGI entry point | Supported; local `127.0.0.1` admin entry only |
+
+The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, Web Terminal, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, Web Terminal, or SSH Security.
+
+## Settings Map
+
+| Tab or section | When it appears and what it manages | Details |
+| --- | --- | --- |
+| `Mode` | Always visible; selects direct, reverse-proxy, or subdomain mode and its routing method | [Choose a Runtime Mode](/en/quick-start/run-modes) |
+| `FRP`, `Cloudflared` | Visible in reverse proxy mode when the platform has the corresponding capability; downloads and installs tunnel binaries | [NAT Traversal and Tunnels](/en/guide/tunnel) |
+| `ACME` | Visible when the platform supports it and is not Windows; manages the `acme.sh` resource and default CA | [TLS Certificates and HTTPS](/en/guide/ssl) |
+| `Location` | Configures the IP geolocation database and CIDR location database | [IP Geolocation](/en/guide/ip-location) |
+| `fnOS` | Manages fnOS Share Bypass, port-icon takeover, and available network optimizations | [fnOS Share Bypass](/en/guide/fnos-share-bypass) |
+| `Blocking` | Configures the scanner firewall, trigger window, thresholds, and exemptions | [Automated Scan Blocking](/en/guide/scanner-interception) |
+| `Features` | Controls home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, and the Smart Connect entry | See the corresponding feature documentation |
+| `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
+| `WAF`, `Logs` | Manages HTTP rule protection and structured request logs | [Web Application Firewall (WAF)](/en/guide/waf), [Request Logs](/en/guide/request-logs) |
+| `Terminal` | Visible when the platform supports Web Terminal and is not Synology | [Web Terminal](/en/guide/web-terminal) |
+| `Sessions` | Manages standard sessions, Remember me, post-login IP authorization, and IP drift | [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) |
+| `Panel` | Visible on Docker, OpenWrt, Linux, and Windows; changes or resets the separate admin panel password | See below |
+| `Challenge` | Uses PoW or Cloudflare Turnstile before sign-in | [Challenge](/en/guide/captcha) |
+| `Maintenance` | Exports, imports, and clears data | See below |
+
+## Basic Gateway Settings
+
+Settings at the top of `System settings → Gateway` are synchronized directly to the Go gateway. The Host-level editor is available only for Host routing in subdomain mode, and the auth service Host does not appear in the editable list.
+
+| Setting | Behavior and considerations |
+| --- | --- |
+| `Successful auth cache duration` | Caches a successful result for the same client and authentication target; `0` validates every request in real time |
+| `Failed auth cache duration` | Caches a failed authentication result; `0` does not reuse denials. When troubleshooting a recent permission change, account for an earlier failed result that may not have expired |
+| `Enable gateway reverse proxy throttling` | Limits traffic per client IP using requests per second and burst tokens, then closes connections directly for the configured penalty period |
+| `Block crawler requests` | Blocks requests recognized as crawlers by the gateway; it does not replace WAF or stop requests that bypass the gateway |
+| `Portal settings` | Controls the app switcher shown after sign-in |
+| `Visibility` | Limits which sources can reach the gateway by region or CIDR |
+| `Proxy headers` | Controls whether the gateway sends `X-Forwarded-*` to specified Targets |
+| `Host response` | Controls whether the gateway preserves the visitor's requested `Host` for specified Targets |
+| `Path responses` | Adds path-level proxying or fixed responses to application Hosts |
+
+The initial reverse-proxy throttling configuration allows `100` requests per second and `200` burst tokens per client IP, with a `30`-second penalty after exceeding the limit. Requests terminated directly by throttling are not written to request logs. If a client connection closes without a corresponding log entry, check this layer as well. Host-level switches in the UI are ultimately compiled by Target: when multiple Hosts point to the exact same Target, they share proxy-header and Host-preservation behavior.
+
+## Verification Order After Changing Settings
+
+1. Keep one working admin entry point available on the LAN.
+2. After changing the runtime mode, Host, certificate, or gateway settings, wait for the page to confirm that runtime synchronization has completed.
+3. Test the authentication flow in a private browsing window, then test the application Host from a real external network.
+4. Check the client IP, route type, authentication result, and upstream Target in request logs.
+5. Check Event Center for synchronization, certificate, tunnel, or notification errors.
+
+For gateway throttling, WAF, and scan blocking, begin in observation mode or with a permissive configuration. These controls may affect health checks, third-party callbacks, application updates, or long-lived client connections.
+
+## Backup and Restore
+
+The `.knock` archive exported from the Maintenance tab contains configuration, certificate private keys, TOTP seeds, and several types of service credentials. Treat it as a plaintext backup of secret material. Import is replacement, not merge: it replaces the current fn-knock application data and then synchronizes gateway, WAF, SSL, and other runtime state. A synchronization warning does not trigger an automatic full rollback.
+
+See [Backup, Restore, and Data Cleanup](/en/guide/backup-and-restore) for archive security, versions, the `128 MiB` limit, platform entry points, full restoration acceptance testing, and failure handling. An application backup is not a filesystem or container-volume backup, and it does not include external DNS, host-firewall configuration, or upstream application data.
+
+## Clear All Data
+
+`System settings → Maintenance → Cleanup → Clear all data` completely reinitializes the current instance. You must enter `Clear all data` to confirm. The operation clears server-side configuration, accounts, sessions, logs, and other application storage, then clears local data in the current browser and reloads the page.
+
+The database schema and previously exported backup files do not restore content automatically. This action cannot be undone; use it only after verifying that a usable backup exists and intentionally deciding to reinitialize the instance.
+
+## Admin Panel Password
+
+The admin panel password on Docker, OpenWrt, Linux, and Windows is separate from visitors' gateway sign-in credentials. If you forget it, use the reset command or manager documented for that deployment. A reset clears only the panel password, panel sessions, and sign-in backoff; it does not delete application mappings or certificate configuration.
+
+- [Dashboard and System Updates](/en/guide/dashboard-and-update)
+- [Authentication, Sessions, and Service Scopes](/en/guide/auth)
+- [Security Boundaries and Baseline](/en/guide/security)
+- [Deploy on Synology DSM 7 (x86_64 / ARM)](/en/quick-start/synology-deployment)
+- [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment)

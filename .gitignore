@@ -1,0 +1,17 @@
+node_modules
+.vitepress/cache
+.vitepress/dist
+.DS_Store
+
+# Generated documentation output and local OS/editor files
+docs/.vitepress/cache
+docs/.vitepress/dist
+**/.DS_Store
+Thumbs.db
+Desktop.ini
+
+
+docs/.vitepress/dist
+docs/.vitepress/cache
+dist
+dist.zip
