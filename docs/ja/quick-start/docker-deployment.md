@@ -3,69 +3,156 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: efd17576c9922af7b163e51a729df52d857eb01e58e179275383dbb565311a9e
+translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30d02435e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Docker Compose でデプロイ
 
-このページでは、公開済みの `kcilnk/fn-knock` イメージと、リポジトリにある `deploy/docker/compose.remote.yaml` を使用します。このファイルにはローカルビルド用の設定が含まれておらず、サーバーへのデプロイに適しています。ローカルにイメージがなければ、`docker compose up -d` の実行時に自動で取得されます。
+このページでは、fn-knock の公式イメージミラーと、リポジトリにある `deploy/docker/compose.remote.yaml` を使用します。このファイルにはローカルビルド設定が含まれず、サーバーへのデプロイに適しています。ローカルにイメージがなければ、`docker compose up -d` の実行時に自動で取得されます。
 
-fnOS ネイティブ FPK をインストールする場合は、[fnOS ネイティブ FPK のインストールと初期設定](/ja/quick-start/install-and-first-login)を参照してください。
+fnOS ネイティブ FPK を使用する場合は、[fnOS ネイティブ FPK のインストールと初期設定](/ja/quick-start/install-and-first-login)を参照してください。
 
 ## 前提条件と制約
 
-- Docker Engine と Docker Compose v2 がインストール済みであること。
-- ホストの `7991` と `7999` が他のサービスに使われていないか、代わりのポートを用意していること。
-- 管理画面へのアクセスは LAN、VPN、または信頼できるリバースプロキシ経由に限定すること。管理ポートをインターネットへ直接ポートフォワーディングしないでください。
+- Linux ホストに Docker Engine、Docker Compose v2、`curl` がインストールされていること。
+- ホストで IPv6 が有効で、`/proc/net/if_inet6` に少なくとも 1 つの IPv6 インターフェイスが記録されていること。リリース用 Compose はこのファイルだけを読み取り専用でコンテナへマウントします。
+- ホストの `7991` と `7999` が空いているか、代わりのポートを用意していること。
+- 管理画面へのアクセスは LAN、VPN、または信頼できるリバースプロキシ経由に限定し、インターネットへ直接ポートフォワーディングしないこと。
 
-標準の Compose 設定でホストへ公開するのは、管理画面とゲートウェイ入口だけです。コンテナ内の管理バックエンド、認証サービス、ゲートウェイ内部の gRPC ポートはホストへ公開しません。
+デプロイは分離された Docker bridge を使用し、`network_mode: host` は使用しません。Compose は bridge で IPv6 を有効にし、ホストの IPv6 インターフェイス表だけをマウントするため、DDNS の「インターフェイスから取得」で実際のホスト IPv6 インターフェイスを選択できます。
 
 | ホスト側ポート | コンテナ内のサービス | 用途 |
 | --- | --- | --- |
 | `7991` | 管理画面 | 初回アクセス時に Docker 管理パネルのパスワードを設定 |
-| `7999` | ゲートウェイ入口 | ユーザーがマッピング済みサービスへアクセスするときに通る入口 |
+| `7999` | ゲートウェイ入口 | マッピング済みサービスへアクセスするための入口 |
 | 非公開 | `7998`、`7997`、`7996` | 管理バックエンド、認証サービス、内部 gRPC |
 
-Docker 管理パネルのパスワードと、`fn-knock` で利用者向けに設定する TOTP、ユーザー名とパスワード、パスキーは、別々の認証情報です。
+Docker 管理パネルのパスワードと、利用者向けに設定する TOTP、ユーザー名とパスワード、Passkey は別の認証情報です。
 
-## リリース用 Compose ファイルを取得する
+## イメージソースを選択
 
-root で（または各コマンドの先頭に `sudo` を付けて）専用の実行ディレクトリを作成し、リリース用 Compose ファイルをデフォルトのファイル名で保存します。
+| イメージソース | `FN_KNOCK_IMAGE` | 推奨ネットワーク |
+| --- | --- | --- |
+| 公式ミラー | `hub.fnknock.cn/kcilnk/fn-knock:latest` | 中国本土のネットワーク。`latest` は 30 分ごとに同期 |
+| Docker Hub | `kcilnk/fn-knock:latest` | Docker Hub に安定して接続できるネットワーク |
+
+以下では公式ミラーを使用します。バージョンを固定する場合は、`latest` を公開済みの固定タグへ変更してください。
+
+## 一括インストール
+
+対象ホストの root ターミナルへ以下のスクリプト全体を貼り付けます。Docker と IPv6 を確認し、`/opt/fn-knock-docker` を作成して設定とイメージを準備し、サービスを起動します。`.env` または `docker-compose.yml` がすでにある場合は上書きせず停止します。
 
 ```bash
-install -d -m 0750 /opt/fn-knock
-cd /opt/fn-knock
-curl -fsSLo compose.yaml \
+sh <<'FN_KNOCK_INSTALL'
+set -eu
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run this installer in a root terminal." >&2
+  exit 1
+fi
+
+command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
+docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
+[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+
+install_dir=/opt/fn-knock-docker
+mkdir -p "$install_dir"
+cd "$install_dir"
+
+if [ -e .env ] || [ -e docker-compose.yml ]; then
+  echo "Existing .env or docker-compose.yml found; installation stopped." >&2
+  exit 1
+fi
+
+cat > .env <<'FN_KNOCK_ENV'
+FN_KNOCK_IMAGE=hub.fnknock.cn/kcilnk/fn-knock:latest
+TZ=Asia/Shanghai
+ADMIN_VIEW_PORT=7991
+BACKEND_PORT=7998
+AUTH_PORT=7997
+GO_BACKEND_PORT=7996
+GO_REPROXY_PORT=7999
+FN_KNOCK_DOCKER_IPV4_SUBNET=172.30.0.0/16
+FN_KNOCK_DOCKER_IPV6_SUBNET=fd42:fb33:7f7a:100::/64
+DOCKER_ADMIN_TRUSTED_PROXY_CIDRS=
+DOCKER_DISCOVER_LAN_IP=
+FN_KNOCK_ENV
+
+curl -fsSLo docker-compose.yml \
+  https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/deploy/docker/compose.remote.yaml
+
+docker compose pull
+docker compose up -d
+docker compose ps
+FN_KNOCK_INSTALL
+```
+
+インストール後は[起動と確認](#起動と確認)に従ってログ、ヘルス状態、初回アクセスを確認してください。設定を個別に変更する場合は、以下の手動手順を使用します。
+
+## リリース用 Compose を取得
+
+```bash
+install -d -m 0750 /opt/fn-knock-docker
+cd /opt/fn-knock-docker
+curl -fsSLo docker-compose.yml \
   https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/deploy/docker/compose.remote.yaml
 ```
 
-同じディレクトリに `.env` を作成します。次は本番環境向けのデフォルト設定です。`compose.remote.yaml` は、このファイルからイメージ、ポート、ネットワーク範囲を読み取ります。
+同じディレクトリに `.env` を作成します。
 
 ```dotenv
-FN_KNOCK_IMAGE=kcilnk/fn-knock:latest
+FN_KNOCK_IMAGE=hub.fnknock.cn/kcilnk/fn-knock:latest
 TZ=Asia/Shanghai
 ADMIN_VIEW_PORT=7991
+BACKEND_PORT=7998
+AUTH_PORT=7997
+GO_BACKEND_PORT=7996
 GO_REPROXY_PORT=7999
+FN_KNOCK_DOCKER_IPV4_SUBNET=172.30.0.0/16
+FN_KNOCK_DOCKER_IPV6_SUBNET=fd42:fb33:7f7a:100::/64
 DOCKER_ADMIN_TRUSTED_PROXY_CIDRS=
+DOCKER_DISCOVER_LAN_IP=
 ```
 
-通常、変更が必要なのは `ADMIN_VIEW_PORT`、`GO_REPROXY_PORT`、タイムゾーンだけです。Compose はデフォルトで IPv4 の `172.30.0.0/16` と IPv6 の `fd42:fb33:7f7a:100::/64` を使用します。既存の Docker ネットワーク、VPN、ホストのルーティングと重複する場合に限り、`.env` に `FN_KNOCK_DOCKER_IPV4_SUBNET` と `FN_KNOCK_DOCKER_IPV6_SUBNET` を追加し、未使用のプライベートアドレス範囲へ変更してください。現在のリリースイメージは SQLite を使用するため、Redis コンテナや `REDIS_*` 環境変数を追加する必要はありません。
+通常はイメージ、公開ポート、タイムゾーンだけを変更します。内部ポートは既定値のままにしてください。IPv4 `172.30.0.0/16` または IPv6 `fd42:fb33:7f7a:100::/64` が既存ネットワークと重複する場合だけ、未使用のプライベート範囲へ変更します。現在のリリースは SQLite を使用するため、Redis は追加しません。
 
-管理画面へインターネット側のリバースプロキシを経由してアクセスする必要がある場合は、プロキシノードの送信元 IP または CIDR を `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` に設定し、プロキシから `X-Forwarded-For` または `X-Real-IP` を渡します。信頼済みプロキシのリストに `0.0.0.0/0` を設定しないでください。
+ダウンロードした Compose にある次の設定は削除しないでください。ホストネットワーク全体は共有せず、IPv6 インターフェイス表だけを読み取り専用で公開します。
 
-## 起動と動作確認
+```yaml
+services:
+  fn-knock:
+    environment:
+      DDNS_HOST_IF_INET6_PATH: /host/proc/net/if_inet6
+    volumes:
+      - type: bind
+        source: /proc/net/if_inet6
+        target: /host/proc/net/if_inet6
+        read_only: true
+    networks:
+      - fn_knock_net
+
+networks:
+  fn_knock_net:
+    enable_ipv6: true
+```
+
+`/proc/net/if_inet6` がない、または空の場合はマウントを削除せず、先にホストで IPv6 を有効にします。`test -s /proc/net/if_inet6 && cat /proc/net/if_inet6` で確認できます。
+
+管理画面を公開リバースプロキシの背後に置く場合は、そのプロキシの送信元 IP または CIDR だけを `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` に設定します。`0.0.0.0/0` は設定しないでください。`DOCKER_DISCOVER_LAN_IP` は、自動検出できない場合だけ使用します。
+
+## 起動と確認
 
 ```bash
-cd /opt/fn-knock
+cd /opt/fn-knock-docker
 docker compose config
 docker compose up -d
 docker compose ps
 docker compose logs --tail=100 fn-knock
 ```
 
-`docker compose config` で完全な設定が出力され、`docker compose ps` で `fn-knock` が稼働中になっていることを確認します。管理サービスのヘルスチェックはホスト上で実行できます。
+ヘルスチェックを実行します。
 
 ```bash
 set -a
@@ -74,39 +161,23 @@ set +a
 curl -fsS "http://127.0.0.1:${ADMIN_VIEW_PORT}/api/admin/healthz"
 ```
 
-続いて、LAN 内から次の URL を開きます。
+LAN から `http://<ホストのLANアドレス>:<ADMIN_VIEW_PORT>/` を開き、Docker 管理パネルのパスワード、動作モード、認証、マッピングを設定します。外部トラフィックは `GO_REPROXY_PORT`（既定値 `7999`）へ送ります。設定後はモバイル回線など実際の外部ネットワークから確認してください。
 
-```text
-http://<ホストのLAN内アドレス>:<ADMIN_VIEW_PORT>/
-```
+## データ、バックアップ、復旧
 
-`<ADMIN_VIEW_PORT>` は `.env` で指定した実際の管理ポートで、デフォルトは `7991` です。画面の案内に従って Docker 管理パネルのパスワードを設定し、`fn-knock` の管理画面で動作モード、認証、マッピングを設定します。外部向けサービスのトラフィックは、`.env` の `GO_REPROXY_PORT` で指定したゲートウェイポートへ送ります。デフォルトは `7999` です。マッピングを設定したら、ホスト上の `127.0.0.1` だけで済ませず、モバイル回線など実際の外部ネットワークから確認してください。
+Compose は `fn_knock_gateway`（ゲートウェイ設定と SQLite）と `fn_knock_data`（シークレット、バックアップ、FRP / Cloudflared リソース）の 2 つの永続ボリュームを作成します。コンテナを再作成しても保持されますが、ボリュームを削除するとデータも失われます。詳細は[バックアップ・復元・データ消去](/ja/guide/backup-and-restore)を参照してください。
 
-## データ、バックアップ、復旧手段
-
-Compose は 2 つの永続ボリュームを作成します。
-
-| ボリューム | 内容 |
-| --- | --- |
-| `fn_knock_gateway` | ゲートウェイ設定と SQLite データベース |
-| `fn_knock_data` | シークレット、バックアップ、FRP / Cloudflared などの実行データ |
-
-コンテナを作り直してもこの 2 つのボリュームは消えませんが、ボリューム自体を削除するとデータも失われます。更新や移行の前にアプリのバックアップを書き出し、両方のボリュームをホスト側のバックアップ対象にも含めてください。認証情報や秘密鍵が含まれる可能性があるため、バックアップファイルを外部から読み取れるディレクトリに置かないでください。
-
-`.knock` アーカイブとボリュームのバックアップは用途が異なります。前者は移行可能なアプリ設定の復元に使い、後者は SQLite、ダウンロード済みリソース、コンテナの実行データをそのまま保持します。アーカイブの内容、バージョン上の制約、復元後の確認項目は[バックアップ・復元・データ消去](/ja/guide/backup-and-restore)を参照してください。
-
-利用者のログイン認証情報ではなく Docker 管理パネルのパスワードを忘れた場合は、実行ディレクトリで次のコマンドを実行します。
+Docker 管理パネルのパスワードを忘れた場合は、次を実行します。
 
 ```bash
-docker compose exec fn-knock \
-  fn-knock-reset-panel-password
+cd /opt/fn-knock-docker && docker compose exec -T fn-knock fn-knock-reset-panel-password
 ```
 
-### 旧 Redis から移行する
+このコマンドは管理パネルのパスワード、ログインセッション、ログイン失敗のバックオフ状態だけを消去します。アプリ設定、プロキシルール、証明書、許可リスト、ログ、データボリュームは削除しません。
 
-この手順は、旧 Compose 構成に Redis が残っており、そのデータを引き継いでアップグレードする場合だけ必要です。新規インストールでは Redis を追加せず、この移行も実行しないでください。
+### 旧 Redis から移行
 
-最初に、旧 Redis と 2 つの永続ボリュームをバックアップします。旧 Redis サービスと現在の `fn-knock` コンテナが同じ Compose ネットワークに残っていることを確認してから、次のコマンドを実行します。
+旧 Compose の Redis データを維持する必要がある場合だけ、バックアップ後に次を実行します。
 
 ```bash
 docker compose exec \
@@ -114,31 +185,22 @@ docker compose exec \
   fn-knock /opt/fn-knock/bin/server-admin-rs migrate-redis-to-sqlite
 ```
 
-コマンドが成功すると、古いデータが再び読み込まれないよう Redis 内の `fn_knock:*` キーが削除されます。そのため、必ず先にバックアップを取り、Redis を外す、または現在の Compose 構成へ切り替える前に、管理画面と SQLite のデータがどちらも正常であることを確認してください。既存の SQLite データを上書きする意思が明確な場合にだけ `--force` を追加します。
+成功すると Redis の `fn_knock:*` キーが削除されるため、事前バックアップは必須です。既存 SQLite を意図的に上書きする場合だけ `--force` を追加します。
 
 ## Docker 版の機能制限
 
-| 機能 | Docker Compose での扱い |
-| --- | --- |
-| アプリ内 FPK 更新 | 非対応。Compose でイメージを取得し、コンテナを再作成します |
-| 直接接続モード、ホストのファイアウォール管理、スマート接続 | 利用不可。Docker コンテナからホストのネットワークポリシーを安全に引き継ぐことはできません |
-| Web ターミナル、SSH セキュリティ | 利用不可。ホストのターミナルや SSH ログに依存する機能です |
-| 自動 HTTPS | 標準 Compose ではホストの `80` 番ポートを公開しません。前段のリバースプロキシと証明書を使うか、ポートと証明書を手動で設計します |
+アプリ内 FPK 更新、ホストファイアウォール管理、Web ターミナル、SSH セキュリティは利用できません。自動 HTTPS が必要な場合は、前段のリバースプロキシと証明書を使用するか、必要なポートを手動で設計してください。
 
-これらの制限があっても、サブドメインモードやリバースプロキシモードでゲートウェイを利用できます。Docker 環境では、ホストのファイアウォールによる動的なポート開放を必要としないモードを優先してください。
-
-## リリースイメージを更新する
-
-`latest` を使用している場合：
+## リリースイメージを更新
 
 ```bash
-cd /opt/fn-knock
+cd /opt/fn-knock-docker
 docker compose pull
 docker compose up -d
 docker compose ps
 ```
 
-`.env` でバージョンタグを固定している場合は、先に `FN_KNOCK_IMAGE` を更新先のバージョンへ変更してから、同じコマンドを実行します。更新後は、管理画面、ゲートウェイ入口、証明書、使用中のトンネルを確認してください。インターネット側からの確認は、必ず実際の外部ネットワークから行います。
+更新後は管理画面、ゲートウェイ入口、証明書、トンネルを確認し、公開経路は実際の外部ネットワークからテストしてください。
 
 次に読むページ：
 

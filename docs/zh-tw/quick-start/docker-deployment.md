@@ -3,22 +3,25 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: efd17576c9922af7b163e51a729df52d857eb01e58e179275383dbb565311a9e
+translationSourceHash: c9f1a8811555a1470459c0ede1e0ead8a5b0df8137c9feb468e557d30d02435e
 ---
 
 # Docker Compose 部署
 
-本頁使用已發布的 `kcilnk/fn-knock` Image，以及儲存庫中的 `deploy/docker/compose.remote.yaml`。此檔案不含本機建置設定，適合部署在伺服器上；執行 `docker compose up -d` 時，若本機尚無 Image，Docker 會自動拉取。
+本頁使用 fn-knock 官方映像源，以及儲存庫中的 `deploy/docker/compose.remote.yaml`。此檔案不含本機建置設定，適合部署在伺服器上；執行 `docker compose up -d` 時，若本機尚無 Image，Docker 會自動拉取。
 
 若要在 fnOS 上使用完整功能，請改看 [fnOS 原生 FPK 安裝與初始設定](/zh-tw/quick-start/install-and-first-login)。
 
 ## 前置需求與限制
 
-- 已安裝 Docker Engine 與 Docker Compose v2。
+- 使用 Linux 主機，並已安裝 Docker Engine、Docker Compose v2 與 `curl`。
+- 主機已啟用 IPv6，且 `/proc/net/if_inet6` 存在並至少包含一個 IPv6 介面；正式版 Compose 會將此檔案唯讀映射進 Container。
 - 主機的 `7991`、`7999` 尚未被其他服務占用，或已規劃替代連接埠。
 - 管理入口只應開放給區域網路、VPN 或可信任的反向代理；請勿直接將其連接埠轉送至公網。
 
 標準 Compose 只會發布管理入口與閘道入口。Container 內的後端、身分驗證服務與閘道內部 gRPC 連接埠不會發布到主機。
+
+部署仍使用隔離的 Docker bridge，不使用 `network_mode: host`。Compose 會為 bridge 啟用 IPv6，並唯讀映射主機的 IPv6 介面表，讓 DDNS 的「從網卡取得」能列出真實 IPv6 網卡。
 
 | 主機連接埠 | Container 服務 | 用途 |
 | --- | --- | --- |
@@ -28,35 +31,125 @@ translationSourceHash: efd17576c9922af7b163e51a729df52d857eb01e58e179275383dbb56
 
 Docker 管理面板密碼，與 `fn-knock` 為訪客設定的 TOTP、帳號密碼或 Passkey，是兩套不同的憑證。
 
+## 選擇映像來源
+
+| 映像來源 | `FN_KNOCK_IMAGE` | 適用網路 |
+| --- | --- | --- |
+| 官方映像源 | `hub.fnknock.cn/kcilnk/fn-knock:latest` | 中國大陸網路；`latest` 每 30 分鐘同步一次 |
+| Docker Hub | `kcilnk/fn-knock:latest` | 可穩定存取 Docker Hub 的網路 |
+
+下方範例預設使用官方映像源。如需鎖定版本，請將 `latest` 改為已發布的固定 Tag。
+
+## 一鍵安裝
+
+請以 root 身分在目標主機的終端機中貼上下方整段指令碼。指令碼會檢查 Docker 環境、建立 `/opt/fn-knock-docker`、寫入預設設定、拉取映像並啟動服務；若目錄中已有 `.env` 或 `docker-compose.yml`，指令碼會停止且不會覆寫。
+
+```bash
+sh <<'FN_KNOCK_INSTALL'
+set -eu
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run this installer in a root terminal." >&2
+  exit 1
+fi
+
+command -v docker >/dev/null 2>&1 || { echo "Docker is not installed." >&2; exit 1; }
+docker compose version >/dev/null 2>&1 || { echo "Docker Compose is not available." >&2; exit 1; }
+[ -s /proc/net/if_inet6 ] || { echo "IPv6 is not enabled or /proc/net/if_inet6 is empty." >&2; exit 1; }
+
+install_dir=/opt/fn-knock-docker
+mkdir -p "$install_dir"
+cd "$install_dir"
+
+if [ -e .env ] || [ -e docker-compose.yml ]; then
+  echo "Existing .env or docker-compose.yml found; installation stopped." >&2
+  exit 1
+fi
+
+cat > .env <<'FN_KNOCK_ENV'
+FN_KNOCK_IMAGE=hub.fnknock.cn/kcilnk/fn-knock:latest
+TZ=Asia/Shanghai
+ADMIN_VIEW_PORT=7991
+BACKEND_PORT=7998
+AUTH_PORT=7997
+GO_BACKEND_PORT=7996
+GO_REPROXY_PORT=7999
+FN_KNOCK_DOCKER_IPV4_SUBNET=172.30.0.0/16
+FN_KNOCK_DOCKER_IPV6_SUBNET=fd42:fb33:7f7a:100::/64
+DOCKER_ADMIN_TRUSTED_PROXY_CIDRS=
+DOCKER_DISCOVER_LAN_IP=
+FN_KNOCK_ENV
+
+curl -fsSLo docker-compose.yml \
+  https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/deploy/docker/compose.remote.yaml
+
+docker compose pull
+docker compose up -d
+docker compose ps
+FN_KNOCK_INSTALL
+```
+
+安裝完成後，請依照[啟動與驗證](#啟動與驗證)檢查日誌、健康狀態與首次存取。需要逐項調整設定時，請使用下方手動步驟。
+
 ## 取得正式版 Compose
 
 請以 root 身分（或在每行指令前加上 `sudo`）建立獨立的執行目錄，並將發布專用的 Compose 檔案儲存為預設檔名：
 
 ```bash
-install -d -m 0750 /opt/fn-knock
-cd /opt/fn-knock
-curl -fsSLo compose.yaml \
+install -d -m 0750 /opt/fn-knock-docker
+cd /opt/fn-knock-docker
+curl -fsSLo docker-compose.yml \
   https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/deploy/docker/compose.remote.yaml
 ```
 
 在同一個目錄中建立 `.env`。以下是預設的正式環境設定；`compose.remote.yaml` 會從此檔案讀取 Image、連接埠與網段。
 
 ```dotenv
-FN_KNOCK_IMAGE=kcilnk/fn-knock:latest
+FN_KNOCK_IMAGE=hub.fnknock.cn/kcilnk/fn-knock:latest
 TZ=Asia/Shanghai
 ADMIN_VIEW_PORT=7991
+BACKEND_PORT=7998
+AUTH_PORT=7997
+GO_BACKEND_PORT=7996
 GO_REPROXY_PORT=7999
+FN_KNOCK_DOCKER_IPV4_SUBNET=172.30.0.0/16
+FN_KNOCK_DOCKER_IPV6_SUBNET=fd42:fb33:7f7a:100::/64
 DOCKER_ADMIN_TRUSTED_PROXY_CIDRS=
+DOCKER_DISCOVER_LAN_IP=
 ```
 
-通常只需要修改 `ADMIN_VIEW_PORT`、`GO_REPROXY_PORT` 與時區。Compose 預設使用 IPv4 `172.30.0.0/16` 和 IPv6 `fd42:fb33:7f7a:100::/64`；只有當它們與既有 Docker Network、VPN 或主機路由重疊時，才需要在 `.env` 中加入 `FN_KNOCK_DOCKER_IPV4_SUBNET`、`FN_KNOCK_DOCKER_IPV6_SUBNET`，並改成尚未占用的私有網段。請勿為了部署額外加入 Redis Container 或 `REDIS_*` 環境變數；目前的正式 Image 使用 SQLite。
+通常只需要修改 `FN_KNOCK_IMAGE`、`ADMIN_VIEW_PORT`、`GO_REPROXY_PORT` 與時區。`BACKEND_PORT`、`AUTH_PORT`、`GO_BACKEND_PORT` 是 Container 內部元件連接埠，通常維持預設值。Compose 預設使用 IPv4 `172.30.0.0/16` 和 IPv6 `fd42:fb33:7f7a:100::/64`；只有與既有 Docker Network、VPN 或主機路由重疊時，才改成尚未占用的私有網段。請勿為了部署額外加入 Redis Container 或 `REDIS_*` 環境變數；目前的正式 Image 使用 SQLite。
+
+下載的 Compose 已包含以下關鍵設定，請保留。它不會共享整個主機網路，只會把 IPv6 介面表映射成唯讀檔案：
+
+```yaml
+services:
+  fn-knock:
+    environment:
+      DDNS_HOST_IF_INET6_PATH: /host/proc/net/if_inet6
+    volumes:
+      - type: bind
+        source: /proc/net/if_inet6
+        target: /host/proc/net/if_inet6
+        read_only: true
+    networks:
+      - fn_knock_net
+
+networks:
+  fn_knock_net:
+    enable_ipv6: true
+```
+
+若主機沒有 `/proc/net/if_inet6` 或該檔案為空，應先在主機啟用 IPv6，而不是刪除這項映射。可用 `test -s /proc/net/if_inet6 && cat /proc/net/if_inet6` 檢查。
 
 如果管理入口必須經由公網反向代理，請將 Proxy 節點的出口 IP 或 CIDR 填入 `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS`，並讓 Proxy 傳遞 `X-Forwarded-For` 或 `X-Real-IP`。請勿將 `0.0.0.0/0` 加入可信任 Proxy 清單。
+
+`DOCKER_DISCOVER_LAN_IP` 只在第三方反向代理無法自動識別 Docker 主機區域網路位址時作為備援；一般情況請保持空白。
 
 ## 啟動與驗證
 
 ```bash
-cd /opt/fn-knock
+cd /opt/fn-knock-docker
 docker compose config
 docker compose up -d
 docker compose ps
@@ -93,12 +186,13 @@ Compose 會建立兩個持久化 Volume：
 
 `.knock` 封存檔與 Volume 備份解決的是不同問題：前者用於還原可移轉的應用程式設定，後者則保留 SQLite、下載資源與 Container 執行資料。封存內容、版本限制與還原驗收方式請參閱[備份、還原與資料清理](/zh-tw/guide/backup-and-restore)。
 
-如果忘記的是 Docker 管理面板密碼，而不是訪客登入憑證，可在執行目錄中執行：
+如果忘記的是 Docker 管理面板密碼，而不是訪客登入憑證，可執行：
 
 ```bash
-docker compose exec fn-knock \
-  fn-knock-reset-panel-password
+cd /opt/fn-knock-docker && docker compose exec -T fn-knock fn-knock-reset-panel-password
 ```
+
+此指令只會清除管理面板密碼、面板登入工作階段和密碼輸入錯誤後的退避狀態，不會刪除業務設定、反向代理規則、憑證、允許清單、日誌或資料 Volume。完成後，下次存取管理入口會重新進入首次設定密碼流程。
 
 ### 從舊版 Redis 遷移
 
@@ -130,7 +224,7 @@ docker compose exec \
 使用 `latest` 時：
 
 ```bash
-cd /opt/fn-knock
+cd /opt/fn-knock-docker
 docker compose pull
 docker compose up -d
 docker compose ps
