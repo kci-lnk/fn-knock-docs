@@ -8,6 +8,7 @@
     "build:sites": "npm run build && node scripts/prepare-sites-dist.mjs",
     "build:zip": "npm run build:sites && rm -f dist.zip && zip -qr dist.zip dist",
     "preview": "vitepress preview docs --host 0.0.0.0",
+    "release": "node scripts/release.mjs",
     "i18n:sync": "node --experimental-strip-types scripts/sync-i18n.mts",
     "check:i18n": "node --experimental-strip-types scripts/sync-i18n.mts --check",
     "check:docs": "node scripts/check-docs.mjs && npm run check:i18n"

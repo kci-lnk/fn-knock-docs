@@ -64,6 +64,16 @@ npm run build:zip
 
 构建产物位于 `docs/.vitepress/dist/`；`build:sites` 会生成用于部署的 `dist/` 目录。两者均为生成文件，不应提交到 Git。
 
+## 发布与部署
+
+在 GitHub 仓库的 Actions secrets 中配置 `TENCENT_EO_DEPLOY_HOOK_URL`，值为腾讯云 EdgeOne 项目生成的部署 Hook。发布时从已同步的 `main` 分支执行：
+
+```bash
+npm run release -- v1.2.3
+```
+
+命令会创建并推送带注释的 Git tag；GitHub Actions 收到 `v*` tag 后，会向 EdgeOne Hook 发送 `POST` 请求并触发 `main` 分支部署。Hook URL 是部署凭证，不应写入代码、日志或提交历史。
+
 ## 国际化贡献
 
 新增或调整简体中文页面时，请同步维护其他语言的对应页面和链接，并运行：
