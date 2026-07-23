@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841e4085e5
+translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,9 +23,18 @@ translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841
 
 以下では公式ミラーを使用します。ソースを切り替える場合は、pull コマンドと `.env` の `FN_KNOCK_IMAGE` を対応するアドレスに変更してください。バージョンを固定する場合は、`latest` を公開済みの固定タグに変更します。
 
+## ネットワークモード
+
+| ネットワークモード | 推奨 | 説明 |
+| --- | --- | --- |
+| HOST ネットワーク | 推奨・既定 | ホストネットワークを直接使用し、実際のインターフェイスと IPv6 を認識できます |
+| ブリッジネットワーク | 任意 | 分離されたデュアルスタック bridge とポートマッピングを使用しますが、DDNS がホストのインターフェイスや IPv6 を検出できない場合があります |
+
+DDNS の「インターフェイスから取得」を使用する場合や、ホスト IPv6 に依存する場合は HOST ネットワークを使用してください。ブリッジは、ホストインターフェイスの検出よりもネットワーク分離を優先する場合に選択します。
+
 ## 一括インストール
 
-対象 Linux ホストの root ターミナルへ以下のスクリプト全体を貼り付けます。Docker を確認し、IPv6 インターフェイス表を読み取ってグローバル IPv6 アドレスを検証してから、IPv6 対応 bridge の作成、完全な Compose 設定の書き込み、fn-knock の起動を行います。
+対象 Linux ホストの root ターミナルへ以下のスクリプト全体を貼り付けます。既定では推奨の HOST ネットワークを使用し、完全な Compose 設定を書き込んで fn-knock を起動します。
 
 <!--@include: ../../_shared/docker-quick-install.inc-->
 
@@ -42,7 +51,7 @@ docker version
 docker compose version
 ```
 
-ホストで IPv6 が有効になっており、`/proc/net/if_inet6` に scope が `00` のグローバル IPv6 レコードが 1 つ以上必要です。この procfs 仮想ファイルの表示サイズは常に `0` なので、`test -s` では確認しないでください。一括インストールスクリプトは内容を直接読み取ります。
+以下では HOST ネットワークを使用します。このモードは `ports` やカスタム bridge を宣言せず、サービスはホストポートで直接待ち受けます。
 
 ### 02 ディレクトリを準備してイメージを取得
 
@@ -64,16 +73,26 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 | --- | --- | --- |
 | `FN_KNOCK_IMAGE` | `hub.fnknock.cn/kcilnk/fn-knock:latest` | デフォルトでは `latest`。Docker Hub のイメージまたは固定バージョンタグへ変更可能 |
 | `ADMIN_VIEW_PORT` / `GO_REPROXY_PORT` | `7991` / `7999` | 管理パネルと公開ゲートウェイのホスト側ポート |
-| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | Docker bridge の IPv4 サブネット。競合する場合は別のプライベート CIDR に変更 |
-| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | Docker bridge の IPv6 ULA `/64` |
+| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | ブリッジモード専用。競合する場合は別のプライベート CIDR に変更 |
+| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | ブリッジモード専用。Docker bridge の IPv6 ULA `/64` |
 | `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` | 空 | `7991` が信頼済みリバースプロキシの背後にある場合のみ、プロキシの送信元 IP または CIDR を設定 |
 | `DOCKER_DISCOVER_LAN_IP` | 空 | サードパーティー製リバースプロキシがホストの LAN アドレスを自動検出できない場合のみ設定 |
 
 ### 04 `docker-compose.yml` を作成
 
-現在のデプロイでは、分離された Docker bridge 上で 1 つの `fn-knock` コンテナだけを使用し、`network_mode: host` は使用しません。次の設定は bridge で IPv6 を有効にし、ホストの `/proc/net/if_inet6` を読み取り専用でマウントするため、DDNS の「インターフェイスから取得」で実際のホスト IPv6 インターフェイスを読み取れます。
+推奨設定は 1 つの `fn-knock` コンテナと HOST ネットワークを使用し、ホストの実インターフェイスと IPv6 に直接アクセスします。
 
 <!--@include: ../../_shared/docker-compose.inc-->
+
+#### 任意：ブリッジネットワークへ切り替える
+
+ブリッジでは DDNS がホストのインターフェイスや IPv6 を検出できない場合があります。「インターフェイスから取得」に依存しないことを確認してから、`.env` を次に置き換えます。
+
+<!--@include: ../../_shared/docker-env-bridge.inc-->
+
+さらに `docker-compose.yml` を次に置き換えます。
+
+<!--@include: ../../_shared/docker-compose-bridge.inc-->
 
 ### 05 起動して状態を確認
 
@@ -87,15 +106,15 @@ docker compose logs -f fn-knock
 
 ## 初回アクセスと設定
 
-Compose がホストにマッピングするのは管理パネルとゲートウェイだけです。`7996`～`7998` はコンテナ内部にとどまり、DDNS は読み取り専用ファイルマウントを通してホストの IPv6 インターフェイスを参照します。
+既定の HOST モードはホストのネットワーク名前空間を直接使用します。管理パネルは `7991`、ゲートウェイは `7999` で待ち受け、その他のサービスは内部またはホスト loopback に留まります。
 
 | ポート | サービス | 公開範囲 | 用途 |
 | --- | --- | --- | --- |
-| `7991` | 管理パネル | ホストにマッピング | 初回アクセス時に Docker 管理パネルのパスワードを設定 |
-| `7999` | ゲートウェイ / プロキシ入口 | ホストにマッピング | 外部クライアントがプロキシ対象サービスへアクセスするときに使用 |
-| `7998` | Rust バックエンド | コンテナ内部のみ | デフォルトではホストに公開しない |
-| `7997` | 認証フロントエンド | コンテナ内部のみ | デフォルトではホストに公開しない |
-| `7996` | Go ゲートウェイ管理 | コンテナ内部のみ | デフォルトではホストに公開しない |
+| `7991` | 管理パネル | HOST ネットワーク | 初回アクセス時に Docker 管理パネルのパスワードを設定 |
+| `7999` | ゲートウェイ / プロキシ入口 | HOST ネットワーク | 外部クライアントがプロキシ対象サービスへアクセスするときに使用 |
+| `7998` | Rust バックエンド | ホスト loopback / 内部 | 通常は既定値のまま使用 |
+| `7997` | 認証フロントエンド | ホスト loopback / 内部 | 通常は既定値のまま使用 |
+| `7996` | Go ゲートウェイ管理 | ホスト loopback / 内部 | 通常は既定値のまま使用 |
 
 1. `http://<ホストIP>:7991` を開き、Docker 管理パネルのパスワードを設定してログインします。
 2. 管理パネルでリバースプロキシ、サブドメイン、証明書、認証を設定します。

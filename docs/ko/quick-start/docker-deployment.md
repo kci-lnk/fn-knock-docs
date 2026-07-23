@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Docker Compose로 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841e4085e5
+translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
 ---
 
 # Docker Compose로 배포
@@ -21,9 +21,18 @@ translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841
 
 아래 예시는 공식 미러를 사용합니다. 소스를 전환하려면 pull 명령과 `.env`의 `FN_KNOCK_IMAGE`를 해당 주소로 바꿉니다. 버전을 고정하려면 `latest`를 게시된 고정 태그로 변경합니다.
 
+## 네트워크 모드
+
+| 네트워크 모드 | 권장 | 설명 |
+| --- | --- | --- |
+| HOST 네트워크 | 권장 및 기본값 | 호스트 네트워크를 직접 사용하여 실제 인터페이스와 IPv6를 인식합니다 |
+| 브리지 네트워크 | 선택 사항 | 격리된 듀얼 스택 bridge와 포트 매핑을 사용하지만 DDNS가 호스트 인터페이스나 IPv6를 찾지 못할 수 있습니다 |
+
+DDNS의 “인터페이스에서 가져오기”를 사용하거나 호스트 IPv6가 필요하면 HOST 네트워크를 사용합니다. 호스트 인터페이스 감지보다 네트워크 격리가 더 중요할 때만 브리지를 선택합니다.
+
 ## 한 번에 설치
 
-대상 Linux 호스트의 root 터미널에 아래 전체 스크립트를 붙여넣습니다. Docker를 확인하고 IPv6 인터페이스 테이블을 읽어 글로벌 IPv6 주소를 검증한 다음, IPv6가 활성화된 bridge를 만들고 전체 Compose 설정을 작성하여 fn-knock를 시작합니다.
+대상 Linux 호스트의 root 터미널에 아래 전체 스크립트를 붙여넣습니다. 기본적으로 권장 HOST 네트워크를 사용하고 전체 Compose 설정을 작성하여 fn-knock를 시작합니다.
 
 <!--@include: ../../_shared/docker-quick-install.inc-->
 
@@ -40,7 +49,7 @@ docker version
 docker compose version
 ```
 
-호스트에서 IPv6가 활성화되어 있어야 하며 `/proc/net/if_inet6`에 scope가 `00`인 글로벌 IPv6 레코드가 하나 이상 있어야 합니다. 이 procfs 가상 파일은 표시 크기가 항상 `0`이므로 `test -s`로 확인하지 않습니다. 한 번에 설치 스크립트는 내용을 직접 읽어 판단합니다.
+아래 단계는 HOST 네트워크를 기본으로 사용합니다. 이 모드는 `ports`나 사용자 지정 bridge를 선언하지 않으며 서비스가 호스트 포트에서 직접 수신합니다.
 
 ### 02 디렉터리 준비 및 이미지 가져오기
 
@@ -62,16 +71,26 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 | --- | --- | --- |
 | `FN_KNOCK_IMAGE` | `hub.fnknock.cn/kcilnk/fn-knock:latest` | 기본적으로 `latest` 사용. 필요하면 Docker Hub 이미지 또는 고정 버전 태그로 변경 |
 | `ADMIN_VIEW_PORT` / `GO_REPROXY_PORT` | `7991` / `7999` | 관리 패널과 공개 게이트웨이의 호스트 포트 |
-| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | Docker bridge IPv4 서브넷. 충돌하면 다른 사설 CIDR로 변경 |
-| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | Docker bridge IPv6 ULA `/64` |
+| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | 브리지 모드 전용. 충돌하면 다른 사설 CIDR로 변경 |
+| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | 브리지 모드 전용. Docker bridge IPv6 ULA `/64` |
 | `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` | 비움 | `7991`이 신뢰할 수 있는 리버스 프록시 뒤에 있을 때만 프록시 송신 IP 또는 CIDR 설정 |
 | `DOCKER_DISCOVER_LAN_IP` | 비움 | 타사 리버스 프록시가 호스트 LAN 주소를 자동 감지하지 못할 때만 설정 |
 
 ### 04 `docker-compose.yml` 만들기
 
-현재 배포는 격리된 Docker bridge에서 하나의 `fn-knock` 컨테이너만 사용하며 `network_mode: host`는 사용하지 않습니다. 아래 설정은 bridge에서 IPv6를 활성화하고 호스트의 `/proc/net/if_inet6`를 읽기 전용으로 마운트하므로 DDNS의 “인터페이스에서 가져오기”가 실제 호스트 IPv6 인터페이스를 읽을 수 있습니다.
+권장 설정은 하나의 `fn-knock` 컨테이너와 HOST 네트워크를 사용하여 호스트의 실제 인터페이스와 IPv6에 직접 접근합니다.
 
 <!--@include: ../../_shared/docker-compose.inc-->
+
+#### 선택 사항: 브리지 네트워크로 전환
+
+브리지에서는 DDNS가 호스트 인터페이스나 IPv6를 찾지 못할 수 있습니다. “인터페이스에서 가져오기”에 의존하지 않는지 확인한 다음 `.env`를 다음으로 교체합니다.
+
+<!--@include: ../../_shared/docker-env-bridge.inc-->
+
+그리고 `docker-compose.yml`을 다음으로 교체합니다.
+
+<!--@include: ../../_shared/docker-compose-bridge.inc-->
 
 ### 05 시작 및 상태 확인
 
@@ -85,15 +104,15 @@ docker compose logs -f fn-knock
 
 ## 첫 접속 및 설정
 
-Compose는 관리 패널과 게이트웨이만 호스트에 매핑합니다. `7996`–`7998`은 컨테이너 내부에서만 사용하며, DDNS는 읽기 전용 파일 마운트를 통해 호스트 IPv6 인터페이스를 확인합니다.
+기본 HOST 모드는 호스트 네트워크 네임스페이스를 직접 사용합니다. 관리 패널은 `7991`, 게이트웨이는 `7999`에서 수신하며 나머지 서비스는 내부 또는 호스트 loopback에 유지됩니다.
 
 | 포트 | 서비스 | 공개 범위 | 용도 |
 | --- | --- | --- | --- |
-| `7991` | 관리 패널 | 호스트에 매핑 | 첫 접속 시 Docker 관리 패널 비밀번호 설정 |
-| `7999` | 게이트웨이 / 프록시 진입점 | 호스트에 매핑 | 외부 클라이언트가 프록시 서비스에 접근할 때 사용 |
-| `7998` | Rust 백엔드 | 컨테이너 내부 전용 | 기본적으로 호스트에 공개하지 않음 |
-| `7997` | 인증 프런트엔드 | 컨테이너 내부 전용 | 기본적으로 호스트에 공개하지 않음 |
-| `7996` | Go 게이트웨이 관리 | 컨테이너 내부 전용 | 기본적으로 호스트에 공개하지 않음 |
+| `7991` | 관리 패널 | HOST 네트워크 | 첫 접속 시 Docker 관리 패널 비밀번호 설정 |
+| `7999` | 게이트웨이 / 프록시 진입점 | HOST 네트워크 | 외부 클라이언트가 프록시 서비스에 접근할 때 사용 |
+| `7998` | Rust 백엔드 | 호스트 loopback / 내부 | 일반적으로 기본값 유지 |
+| `7997` | 인증 프런트엔드 | 호스트 loopback / 내부 | 일반적으로 기본값 유지 |
+| `7996` | Go 게이트웨이 관리 | 호스트 loopback / 내부 | 일반적으로 기본값 유지 |
 
 1. `http://<호스트IP>:7991`을 열고 Docker 관리 패널 비밀번호를 설정한 뒤 로그인합니다.
 2. 관리 패널에서 리버스 프록시, 서브도메인, 인증서, 인증을 설정합니다.

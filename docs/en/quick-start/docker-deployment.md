@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy with Docker Compose"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841e4085e5
+translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,9 +23,18 @@ Choose the image source that works best on your network, then use the complete C
 
 The examples below use the official mirror. To switch sources, replace the image in the pull command and `FN_KNOCK_IMAGE` in `.env`. To pin a release, replace `latest` with a published version tag.
 
+## Network mode
+
+| Network mode | Recommendation | Description |
+| --- | --- | --- |
+| Host network | Recommended and default | Uses the host network directly so the container can detect real interfaces and IPv6 |
+| Bridge network | Optional | Uses an isolated dual-stack bridge and mapped ports, but DDNS may not find the host interfaces or IPv6 |
+
+Use host networking when DDNS must obtain an address from a network interface or when the deployment depends on host IPv6. Choose the bridge only when stronger isolation matters more and host-interface detection is not required.
+
 ## One-paste install
 
-Paste the complete script below into a root terminal on the target Linux host. It checks Docker, reads the IPv6 interface table and verifies a global IPv6 address, then creates an IPv6-enabled bridge, writes the complete Compose configuration, and starts fn-knock.
+Paste the complete script below into a root terminal on the target Linux host. It uses the recommended host network by default, writes the complete Compose configuration, and starts fn-knock.
 
 <!--@include: ../../_shared/docker-quick-install.inc-->
 
@@ -42,7 +51,7 @@ docker version
 docker compose version
 ```
 
-IPv6 must also be enabled on the host, and `/proc/net/if_inet6` must contain at least one global IPv6 record with scope `00`. This procfs virtual file always reports a size of `0`, so do not check it with `test -s`; the one-paste installer reads its contents instead.
+The steps below use host networking by default. This mode declares neither `ports` nor a custom bridge; services listen directly on host ports.
 
 ### 02 Prepare a directory and pull the image
 
@@ -64,16 +73,26 @@ Key settings:
 | --- | --- | --- |
 | `FN_KNOCK_IMAGE` | `hub.fnknock.cn/kcilnk/fn-knock:latest` | Follows `latest` by default; use the Docker Hub image or a fixed version tag when needed |
 | `ADMIN_VIEW_PORT` / `GO_REPROXY_PORT` | `7991` / `7999` | Host ports for the admin panel and public gateway |
-| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | Docker bridge IPv4 subnet; change to another private CIDR if it conflicts |
-| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | Docker bridge IPv6 ULA `/64` |
+| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | Bridge mode only; change to another private CIDR if it conflicts |
+| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | Bridge mode only; IPv6 ULA `/64` for the Docker bridge |
 | `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` | Empty | Set a proxy egress IP or CIDR only when `7991` is behind a trusted reverse proxy |
 | `DOCKER_DISCOVER_LAN_IP` | Empty | Set only when a third-party reverse proxy cannot detect the host LAN address automatically |
 
 ### 04 Create `docker-compose.yml`
 
-The current deployment uses one `fn-knock` container on an isolated Docker bridge; it does not use `network_mode: host`. The configuration below enables IPv6 on the bridge and mounts the host's `/proc/net/if_inet6` read-only so DDNS “from interface” can read real host IPv6 interfaces.
+The recommended configuration uses one `fn-knock` container with host networking so it can access the host's real interfaces and IPv6:
 
 <!--@include: ../../_shared/docker-compose.inc-->
+
+#### Optional: switch to bridge networking
+
+A bridge can prevent DDNS from finding the host's interfaces or IPv6. After confirming that the deployment does not depend on “from interface,” replace `.env` with:
+
+<!--@include: ../../_shared/docker-env-bridge.inc-->
+
+Then replace `docker-compose.yml` with:
+
+<!--@include: ../../_shared/docker-compose-bridge.inc-->
 
 ### 05 Start and verify
 
@@ -87,15 +106,15 @@ The final command follows the logs. Press `Ctrl+C` to stop following them.
 
 ## First access and setup
 
-Compose maps only the admin panel and gateway to the host. Ports `7996`–`7998` stay internal, while a read-only file mount gives DDNS access to the host's IPv6 interfaces.
+The default host mode uses the host network namespace directly. The admin panel listens on `7991`, the gateway on `7999`, and the remaining services stay internal or on host loopback.
 
 | Port | Service | Exposure | Purpose |
 | --- | --- | --- | --- |
-| `7991` | Admin panel | Mapped to host | Set the Docker admin-panel password on your first visit |
-| `7999` | Gateway / proxy entry | Mapped to host | Used by external clients to reach proxied services |
-| `7998` | Rust backend | Container only | Not exposed to the host by default |
-| `7997` | Authentication frontend | Container only | Not exposed to the host by default |
-| `7996` | Go gateway administration | Container only | Not exposed to the host by default |
+| `7991` | Admin panel | Host network | Set the Docker admin-panel password on your first visit |
+| `7999` | Gateway / proxy entry | Host network | Used by external clients to reach proxied services |
+| `7998` | Rust backend | Host loopback / internal | Normally leave unchanged |
+| `7997` | Authentication frontend | Host loopback / internal | Normally leave unchanged |
+| `7996` | Go gateway administration | Host loopback / internal | Normally leave unchanged |
 
 1. Open `http://<host-ip>:7991`, set the Docker admin-panel password, and sign in.
 2. Configure reverse proxies, subdomains, certificates, and authentication in the admin panel.

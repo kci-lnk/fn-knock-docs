@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841e4085e5
+translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
 ---
 
 # Docker Compose 部署
@@ -21,9 +21,18 @@ translationSourceHash: 97365fd9d189e2f5d9f1ad5e1489b3c5c982f21395a8897de030ce841
 
 下方預設使用官方映像源。切換來源時，只需將拉取指令和 `.env` 中的 `FN_KNOCK_IMAGE` 換成對應位址；如需鎖定版本，可將 `latest` 改為已發布的固定標籤。
 
+## 網路模式
+
+| 網路模式 | 建議程度 | 說明 |
+| --- | --- | --- |
+| HOST 網路 | 建議、預設 | 容器直接使用主機網路，可識別真實網卡與 IPv6 |
+| 橋接網路 | 可選 | 使用隔離的雙棧 bridge 並映射連接埠，但 DDNS 可能找不到主機網卡或 IPv6 |
+
+需要使用 DDNS「從網卡取得」或依賴主機 IPv6 時，請使用 HOST 網路。橋接網路適合更重視網路隔離、且不依賴主機網卡識別的部署。
+
 ## 一鍵安裝
 
-在目標 Linux 主機的 root 終端機中貼上下方整段指令碼。指令碼會檢查 Docker 環境，讀取 IPv6 介面表並確認存在全域 IPv6 位址，然後建立啟用 IPv6 的 bridge、寫入完整 Compose 設定並啟動 fn-knock。
+在目標 Linux 主機的 root 終端機中貼上下方整段指令碼。指令碼預設使用建議的 HOST 網路，寫入完整 Compose 設定並啟動 fn-knock。
 
 <!--@include: ../../_shared/docker-quick-install.inc-->
 
@@ -40,7 +49,7 @@ docker version
 docker compose version
 ```
 
-主機還必須啟用 IPv6，且 `/proc/net/if_inet6` 中至少有一筆 scope 為 `00` 的全域 IPv6 記錄。這個 procfs 虛擬檔案顯示的大小始終為 `0`，因此不要使用 `test -s` 檢查；一鍵安裝指令碼會直接讀取內容判斷。
+下方預設使用 HOST 網路。此模式不宣告 `ports` 或自訂 bridge，服務直接監聽主機連接埠。
 
 ### 02 準備目錄並拉取映像
 
@@ -62,16 +71,26 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 | --- | --- | --- |
 | `FN_KNOCK_IMAGE` | `hub.fnknock.cn/kcilnk/fn-knock:latest` | 預設跟隨 `latest`；可改為 Docker Hub 位址或固定版本標籤 |
 | `ADMIN_VIEW_PORT` / `GO_REPROXY_PORT` | `7991` / `7999` | 管理面板與閘道入口的主機連接埠 |
-| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | Docker bridge 的 IPv4 子網；衝突時改用其他私有 CIDR |
-| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | Docker bridge 的 IPv6 ULA `/64` |
+| `FN_KNOCK_DOCKER_IPV4_SUBNET` | `172.30.0.0/16` | 僅橋接網路使用；衝突時改用其他私有 CIDR |
+| `FN_KNOCK_DOCKER_IPV6_SUBNET` | `fd42:fb33:7f7a:100::/64` | 僅橋接網路使用；Docker bridge 的 IPv6 ULA `/64` |
 | `DOCKER_ADMIN_TRUSTED_PROXY_CIDRS` | 留空 | 僅當 `7991` 位於可信反向代理後時，填寫代理出口 IP 或 CIDR |
 | `DOCKER_DISCOVER_LAN_IP` | 留空 | 僅在第三方反代無法自動識別主機區域網路位址時填寫 |
 
 ### 04 建立 `docker-compose.yml`
 
-最新部署只需要一個 `fn-knock` 容器，並繼續使用隔離的 Docker bridge，不使用 `network_mode: host`。下方設定會為 bridge 啟用 IPv6，並將主機 `/proc/net/if_inet6` 唯讀映射進容器，供 DDNS 的「從網卡取得」讀取真實 IPv6 網卡。
+建議設定只需要一個 `fn-knock` 容器，並使用 HOST 網路直接存取主機的真實網卡與 IPv6：
 
 <!--@include: ../../_shared/docker-compose.inc-->
+
+#### 可選：切換到橋接網路
+
+橋接網路可能使 DDNS 找不到主機網卡或 IPv6。確認部署不依賴「從網卡取得」後，將 `.env` 替換為：
+
+<!--@include: ../../_shared/docker-env-bridge.inc-->
+
+並將 `docker-compose.yml` 替換為：
+
+<!--@include: ../../_shared/docker-compose-bridge.inc-->
 
 ### 05 啟動並檢查狀態
 
@@ -85,15 +104,15 @@ docker compose logs -f fn-knock
 
 ## 首次存取與設定
 
-Compose 只將管理面板與閘道入口映射到主機。`7996`–`7998` 保持容器內部使用，IPv6 網卡資訊則透過唯讀檔案映射提供給 DDNS。
+預設 HOST 網路直接使用主機網路命名空間。管理面板監聽 `7991`，閘道入口監聽 `7999`，其餘服務保持內部或主機 Loopback 存取。
 
 | 連接埠 | 服務 | 暴露範圍 | 用途 |
 | --- | --- | --- | --- |
-| `7991` | 管理後台入口 | 映射到主機 | 首次存取時設定 Docker 管理面板密碼 |
-| `7999` | 閘道 / 代理入口 | 映射到主機 | 外部使用者存取代理服務時使用 |
-| `7998` | Rust 後端 | 僅容器內部 | 預設不對主機暴露 |
-| `7997` | 驗證前端 | 僅容器內部 | 預設不對主機暴露 |
-| `7996` | Go 閘道管理 | 僅容器內部 | 預設不對主機暴露 |
+| `7991` | 管理後台入口 | HOST 網路 | 首次存取時設定 Docker 管理面板密碼 |
+| `7999` | 閘道 / 代理入口 | HOST 網路 | 外部使用者存取代理服務時使用 |
+| `7998` | Rust 後端 | 主機 Loopback / 內部 | 通常維持預設值 |
+| `7997` | 驗證前端 | 主機 Loopback / 內部 | 通常維持預設值 |
+| `7996` | Go 閘道管理 | 主機 Loopback / 內部 | 通常維持預設值 |
 
 1. 開啟 `http://<主機IP>:7991`，設定 Docker 管理面板密碼並登入。
 2. 在管理後台完成反向代理、子網域、憑證和驗證設定。

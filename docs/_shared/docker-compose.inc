@@ -3,6 +3,7 @@ services:
   fn-knock:
     image: ${FN_KNOCK_IMAGE}
     restart: unless-stopped
+    network_mode: host
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       FN_KNOCK_RUNTIME_TARGET: docker
@@ -15,21 +16,11 @@ services:
       GO_REPROXY_PORT: ${GO_REPROXY_PORT:-7999}
       DOCKER_ADMIN_TRUSTED_PROXY_CIDRS: ${DOCKER_ADMIN_TRUSTED_PROXY_CIDRS:-}
       DOCKER_DISCOVER_LAN_IP: ${DOCKER_DISCOVER_LAN_IP:-}
-      DDNS_HOST_IF_INET6_PATH: /host/proc/net/if_inet6
       ADMIN_VIEW_HOST: 0.0.0.0
       BACKEND_HOST: 127.0.0.1
-    ports:
-      - "${ADMIN_VIEW_PORT:-7991}:${ADMIN_VIEW_PORT:-7991}"
-      - "${GO_REPROXY_PORT:-7999}:${GO_REPROXY_PORT:-7999}"
-    networks:
-      - fn_knock_net
     volumes:
       - fn_knock_data:/var/lib/fn-knock
       - fn_knock_gateway:/usr/local/etc/fn-knock
-      - type: bind
-        source: /proc/net/if_inet6
-        target: /host/proc/net/if_inet6
-        read_only: true
     healthcheck:
       test:
         [
@@ -44,12 +35,4 @@ services:
 volumes:
   fn_knock_data:
   fn_knock_gateway:
-
-networks:
-  fn_knock_net:
-    enable_ipv6: true
-    ipam:
-      config:
-        - subnet: ${FN_KNOCK_DOCKER_IPV4_SUBNET:-172.30.0.0/16}
-        - subnet: ${FN_KNOCK_DOCKER_IPV6_SUBNET:-fd42:fb33:7f7a:100::/64}
 ```
