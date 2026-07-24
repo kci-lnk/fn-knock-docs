@@ -123,6 +123,58 @@ sudo knock nginx
 
 在反向代理上启用 TLS，并限制可信来源 IP、VPN 网段或额外认证。Linux 运行模式不会修改主机防火墙；只开放业务实际需要的端口。管理入口和业务网关入口的区别见[端口与入口](/quick-start/ports-and-entrypoints)。
 
+### 挂载到现有业务域名的子路径
+
+云服务器已经使用 Nginx 提供 `https://www.example.com` 时，可以不新增域名或公网端口，而是把 fn-knock 管理面板挂载到一个子路径。以下示例建议使用 `/fn-knock/`，也可以改成其他未被现有业务占用的路径。将配置加入 `www.example.com` 对应的 HTTPS `server {}`：
+
+```nginx
+# 自定义路径时，只需修改下一行中的 /fn-knock
+location ~ ^(?<panel_prefix>/fn-knock)(?<panel_uri>/.*)?$ {
+    if ($panel_uri = "") {
+        return 308 $panel_prefix/$is_args$args;
+    }
+
+    include /etc/nginx/snippets/migrated-proxy-headers.conf;
+
+    proxy_http_version 1.1;
+
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-Prefix $panel_prefix;
+
+    proxy_redirect ~^(/.*)$ $panel_prefix$1;
+
+    proxy_read_timeout 3600s;
+    proxy_send_timeout 3600s;
+
+    rewrite ^ $panel_uri break;
+    proxy_pass http://127.0.0.1:7991;
+}
+```
+
+这个示例假定管理面板仍使用默认端口 `7991`；如果安装时修改过端口，应同步修改 `proxy_pass`。`/etc/nginx/snippets/migrated-proxy-headers.conf` 也必须已经存在并提供当前站点的通用代理请求头；若现有站点使用其他公共代理配置，请把 `include` 路径改为实际文件。
+
+Nginx 的 `location` 不能直接引用通过 `set` 定义的变量。这个示例改用正则命名捕获：`/fn-knock` 只出现一次，并保存为 `$panel_prefix`，所以改用 `/knock-admin` 等路径时只需修改 `location` 这一行。`$panel_uri` 保存前缀之后的请求路径，供转发时移除外部前缀。若同一个 `server` 中还有其他正则 `location`，请把这段配置放在可能与它冲突的规则之前。
+
+- 不带尾斜杠的前缀会以 `308` 重定向到带 `/` 的地址，并保留原查询参数。
+- `rewrite` 使用 `$panel_uri` 在转发到管理面板前移除外部前缀；`X-Forwarded-Prefix` 告知管理面板对外路径，`proxy_redirect` 则把上游返回的根路径重定向改写回相同前缀。
+- `X-Forwarded-Host` 和 `X-Forwarded-Port` 保留访问者实际使用的域名与端口。
+
+保存配置后先检查语法，再按主机使用的服务管理器重新加载 Nginx：
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Alpine Linux 使用：
+
+```sh
+sudo rc-service nginx reload
+```
+
+重新加载成功后，示例中的管理面板可通过 `https://www.example.com/fn-knock/` 访问；若修改了建议路径，访问地址也使用相同的新前缀。打开不带尾斜杠的地址会自动跳转。这个路径只代理 `7991` 管理入口，不会替代 `7999` 业务网关入口。公网可访问时，仍应为该路径限制来源 IP、接入 VPN 或增加额外认证。
+
 ## 卸载
 
 ```bash

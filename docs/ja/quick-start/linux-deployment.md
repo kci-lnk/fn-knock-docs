@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Linux へデプロイ（systemd / OpenRC）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
+translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -132,6 +132,58 @@ sudo knock nginx
 ```
 
 リバースプロキシで TLS を有効にし、信頼できる送信元 IP、VPN のアドレス範囲、または追加認証でアクセスを制限します。Linux 版はホストのファイアウォールを変更しません。サービスに本当に必要なポートだけを開放してください。管理画面とサービス用ゲートウェイ入口の違いは、[ポートと入口](/ja/quick-start/ports-and-entrypoints)を参照してください。
+
+### 既存の業務ドメインのサブパスに配置する
+
+クラウドサーバー上の Nginx がすでに `https://www.example.com` を提供している場合は、別のドメインや公開ポートを追加せずに、fn-knock の管理パネルをサブパスに配置できます。次の例では `/fn-knock/` を推奨値として使用していますが、既存のサービスが使っていない別のパスへ変更できます。`www.example.com` に対応する HTTPS の `server {}` ブロックへ設定を追加します。
+
+```nginx
+# パスを変更する場合は、次の行の /fn-knock だけを変更する
+location ~ ^(?<panel_prefix>/fn-knock)(?<panel_uri>/.*)?$ {
+    if ($panel_uri = "") {
+        return 308 $panel_prefix/$is_args$args;
+    }
+
+    include /etc/nginx/snippets/migrated-proxy-headers.conf;
+
+    proxy_http_version 1.1;
+
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-Prefix $panel_prefix;
+
+    proxy_redirect ~^(/.*)$ $panel_prefix$1;
+
+    proxy_read_timeout 3600s;
+    proxy_send_timeout 3600s;
+
+    rewrite ^ $panel_uri break;
+    proxy_pass http://127.0.0.1:7991;
+}
+```
+
+この例では、管理パネルがデフォルトのポート `7991` を使用していることを前提としています。インストール時にポートを変更した場合は、`proxy_pass` も変更してください。`/etc/nginx/snippets/migrated-proxy-headers.conf` がすでに存在し、現在のサイトで共通利用するプロキシリクエストヘッダーを設定している必要もあります。既存サイトが別の共通プロキシ設定を使用している場合は、`include` のパスを実際のファイルへ変更してください。
+
+Nginx の `location` では、`set` で定義した変数を直接参照できません。この例では代わりに正規表現の名前付きキャプチャを使用します。`/fn-knock` は一度だけ記述され、`$panel_prefix` に保存されるため、たとえば `/knock-admin` へ変更するときも `location` の行だけを編集します。`$panel_uri` はプレフィックスより後ろのリクエストパスを保持し、プロキシする前に外部プレフィックスを取り除くために使われます。同じ `server` に別の正規表現 `location` がある場合は、同じリクエストに一致する可能性があるルールより前にこのブロックを配置してください。
+
+- 末尾のスラッシュがないプレフィックスは、元のクエリパラメーターを保持したまま、ステータス `308` で `/` 付きの URL へリダイレクトされます。
+- `rewrite` は `$panel_uri` を使って、管理パネルへ転送する前に外部プレフィックスを取り除きます。`X-Forwarded-Prefix` は管理パネルに外部パスを伝え、`proxy_redirect` はアップストリームが返したルート相対のリダイレクトを同じプレフィックス配下へ書き換えます。
+- `X-Forwarded-Host` と `X-Forwarded-Port` は、アクセスに使われた実際のドメインとポートを保持します。
+
+設定を保存したら構文を確認し、ホストが使用するサービスマネージャーで Nginx をリロードします。
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Alpine Linux では次を使用します。
+
+```sh
+sudo rc-service nginx reload
+```
+
+リロードに成功すると、この例では `https://www.example.com/fn-knock/` から管理パネルへアクセスできます。推奨パスを変更した場合は、アクセス URL にも同じ新しいプレフィックスを使用します。末尾のスラッシュがない URL は自動的にリダイレクトされます。このパスがプロキシするのは `7991` の管理入口だけであり、`7999` のサービス用ゲートウェイ入口を置き換えるものではありません。インターネットから到達できる場合は、送信元 IP の制限、VPN、または追加認証で引き続き保護してください。
 
 ## アンインストール
 

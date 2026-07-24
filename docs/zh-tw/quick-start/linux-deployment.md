@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Linux 部署（systemd / OpenRC）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
+translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
 ---
 
 # Linux 部署（systemd / OpenRC）
@@ -130,6 +130,58 @@ sudo knock nginx
 ```
 
 請在反向代理上啟用 TLS，並限制可信任的來源 IP、VPN 網段或加入額外身分驗證。Linux 執行模式不會修改主機防火牆；只開放業務實際需要的連接埠。管理入口與業務閘道入口的差異請參閱[連接埠與入口](/zh-tw/quick-start/ports-and-entrypoints)。
+
+### 掛載至現有業務網域的子路徑
+
+若雲端伺服器已使用 Nginx 提供 `https://www.example.com`，可以不新增網域或公網連接埠，直接將 fn-knock 管理面板掛載至子路徑。以下範例建議使用 `/fn-knock/`，也可以改為其他未被現有業務占用的路徑。請將設定加入 `www.example.com` 對應的 HTTPS `server {}`：
+
+```nginx
+# 自訂路徑時，只需修改下一行中的 /fn-knock
+location ~ ^(?<panel_prefix>/fn-knock)(?<panel_uri>/.*)?$ {
+    if ($panel_uri = "") {
+        return 308 $panel_prefix/$is_args$args;
+    }
+
+    include /etc/nginx/snippets/migrated-proxy-headers.conf;
+
+    proxy_http_version 1.1;
+
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-Prefix $panel_prefix;
+
+    proxy_redirect ~^(/.*)$ $panel_prefix$1;
+
+    proxy_read_timeout 3600s;
+    proxy_send_timeout 3600s;
+
+    rewrite ^ $panel_uri break;
+    proxy_pass http://127.0.0.1:7991;
+}
+```
+
+此範例假設管理面板仍使用預設連接埠 `7991`；若安裝時曾修改連接埠，請一併調整 `proxy_pass`。`/etc/nginx/snippets/migrated-proxy-headers.conf` 也必須已存在，並提供目前網站的通用代理請求標頭；若現有網站使用其他共用代理設定，請將 `include` 路徑改為實際檔案。
+
+Nginx 的 `location` 無法直接引用透過 `set` 定義的變數。此範例改用正規表示式命名擷取：`/fn-knock` 只出現一次，並儲存為 `$panel_prefix`，因此改用 `/knock-admin` 等路徑時，只需修改 `location` 這一行。`$panel_uri` 會保留前綴之後的請求路徑，供轉送時移除外部前綴。若同一個 `server` 中還有其他正規表示式 `location`，請將此設定放在可能與其衝突的規則之前。
+
+- 未帶結尾斜線的前綴會以 `308` 重新導向至帶有 `/` 的網址，並保留原有查詢參數。
+- `rewrite` 會使用 `$panel_uri`，在轉送至管理面板前移除外部前綴；`X-Forwarded-Prefix` 會告知管理面板對外路徑，`proxy_redirect` 則會將上游傳回的根路徑重新導向改寫回相同前綴。
+- `X-Forwarded-Host` 與 `X-Forwarded-Port` 會保留訪客實際使用的網域與連接埠。
+
+儲存設定後，請先檢查語法，再依主機使用的 Service Manager 重新載入 Nginx：
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Alpine Linux 請使用：
+
+```sh
+sudo rc-service nginx reload
+```
+
+重新載入成功後，範例中的管理面板可透過 `https://www.example.com/fn-knock/` 存取；若修改了建議路徑，存取網址也應使用相同的新前綴。開啟未帶結尾斜線的網址時會自動重新導向。此路徑只代理 `7991` 管理入口，不會取代 `7999` 業務閘道入口。可從公網連線時，仍應為此路徑限制來源 IP、接入 VPN 或加入額外身分驗證。
 
 ## 解除安裝
 

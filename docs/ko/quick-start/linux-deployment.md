@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Linux 배포(systemd / OpenRC)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8e0c9fbe684f1f3ef08fda5e3fa6b9844e4e5227d81423ed0011cef48d4035f6
+translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
 ---
 
 # Linux 배포(systemd / OpenRC)
@@ -130,6 +130,58 @@ sudo knock nginx
 ```
 
 리버스 프록시에서 TLS를 활성화하고 신뢰할 수 있는 출발지 IP, VPN 대역 또는 추가 인증으로 접근을 제한합니다. Linux 실행 모드는 호스트 방화벽을 변경하지 않습니다. 서비스에 실제로 필요한 포트만 엽니다. 관리 및 서비스 게이트웨이 엔드포인트의 차이는 [포트 및 엔드포인트](/ko/quick-start/ports-and-entrypoints)를 참고합니다.
+
+### 기존 업무 도메인의 하위 경로에 연결
+
+클라우드 서버의 Nginx가 이미 `https://www.example.com`을 제공하고 있다면 도메인이나 공용 포트를 추가하지 않고 fn-knock 관리 패널을 하위 경로에 연결할 수 있습니다. 다음 예시는 `/fn-knock/`를 권장 경로로 사용하지만 기존 서비스가 사용하지 않는 다른 경로로 바꿀 수 있습니다. `www.example.com`에 해당하는 HTTPS `server {}` 블록에 설정을 추가합니다.
+
+```nginx
+# 경로를 변경할 때는 다음 줄의 /fn-knock만 수정
+location ~ ^(?<panel_prefix>/fn-knock)(?<panel_uri>/.*)?$ {
+    if ($panel_uri = "") {
+        return 308 $panel_prefix/$is_args$args;
+    }
+
+    include /etc/nginx/snippets/migrated-proxy-headers.conf;
+
+    proxy_http_version 1.1;
+
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-Prefix $panel_prefix;
+
+    proxy_redirect ~^(/.*)$ $panel_prefix$1;
+
+    proxy_read_timeout 3600s;
+    proxy_send_timeout 3600s;
+
+    rewrite ^ $panel_uri break;
+    proxy_pass http://127.0.0.1:7991;
+}
+```
+
+이 예시는 관리 패널이 기본 포트 `7991`을 계속 사용한다고 가정합니다. 설치할 때 포트를 변경했다면 `proxy_pass`도 함께 수정합니다. `/etc/nginx/snippets/migrated-proxy-headers.conf` 파일이 이미 존재하고 현재 사이트의 공통 프록시 요청 헤더를 제공해야 합니다. 기존 사이트가 다른 공통 프록시 설정을 사용한다면 `include` 경로를 실제 파일로 변경합니다.
+
+Nginx `location`은 `set`으로 정의한 변수를 직접 참조할 수 없습니다. 이 예시는 대신 정규식 이름 지정 캡처를 사용합니다. `/fn-knock`는 한 번만 나타나고 `$panel_prefix`에 저장되므로 경로를 `/knock-admin` 등으로 변경할 때 `location` 줄만 수정하면 됩니다. `$panel_uri`는 접두사 뒤의 요청 경로를 저장하여 프록시하기 전에 외부 접두사를 제거하는 데 사용합니다. 같은 `server`에 다른 정규식 `location`이 있다면 동일한 요청과 충돌할 수 있는 규칙보다 이 블록을 앞에 배치합니다.
+
+- 끝에 슬래시가 없는 접두사는 기존 쿼리 문자열을 보존한 채 상태 코드 `308`로 `/`가 붙은 URL에 리디렉션됩니다.
+- `rewrite`는 `$panel_uri`를 사용하여 관리 패널에 요청을 전달하기 전에 외부 접두사를 제거합니다. `X-Forwarded-Prefix`는 관리 패널에 외부 경로를 알리고, `proxy_redirect`는 업스트림이 반환한 루트 상대 리디렉션을 같은 접두사 아래 경로로 다시 작성합니다.
+- `X-Forwarded-Host`와 `X-Forwarded-Port`는 방문자가 실제 사용한 도메인과 포트를 보존합니다.
+
+설정을 저장한 후 구문을 검사하고 호스트에서 사용하는 서비스 관리자로 Nginx를 다시 로드합니다.
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Alpine Linux에서는 다음 명령을 사용합니다.
+
+```sh
+sudo rc-service nginx reload
+```
+
+다시 로드한 후 이 예시에서는 `https://www.example.com/fn-knock/`에서 관리 패널에 접근할 수 있습니다. 권장 경로를 변경했다면 URL에도 같은 새 접두사를 사용합니다. 끝에 슬래시가 없는 URL은 자동으로 리디렉션됩니다. 이 경로는 `7991` 관리 엔드포인트만 프록시하며 `7999` 서비스 게이트웨이 엔드포인트를 대체하지 않습니다. 공용 인터넷에서 접근할 수 있다면 출발지 IP 제한, VPN 또는 추가 인증으로 계속 보호합니다.
 
 ## 제거
 
