@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy with Docker Compose"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
+translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -132,6 +132,27 @@ docker compose pull
 docker compose up -d
 docker compose ps
 ```
+
+## Automate updates with Watchtower
+
+When `.env` uses `latest`, you can run Watchtower on the same Docker host. By default, it checks all running containers every 24 hours. When the digest behind an image tag changes, Watchtower pulls the new image and recreates the container with its existing configuration. The fn-knock mounted volumes are preserved, but the update causes a brief restart. A fixed version tag is not automatically changed to a different tag.
+
+```bash
+docker run -d \
+  --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  nickfedor/watchtower
+```
+
+Confirm that Watchtower is running and inspect its check history:
+
+```bash
+docker ps --filter name=watchtower
+docker logs watchtower
+```
+
+> This basic configuration manages every running container on the host and receives highly privileged access to Docker through the Docker socket. Use it only on a trusted host, and back up fn-knock before enabling it. If other containers must not be updated automatically, follow the [official Watchtower documentation](https://watchtower.nickfedor.com/) to limit the update scope with container names, labels, or a scope.
 
 ## Reset the admin-panel password
 

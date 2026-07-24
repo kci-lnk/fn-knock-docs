@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
+translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -132,6 +132,27 @@ docker compose pull
 docker compose up -d
 docker compose ps
 ```
+
+## Watchtower で自動更新
+
+`.env` で `latest` を使用している場合は、同じ Docker ホストで Watchtower を実行できます。デフォルトでは、実行中のすべてのコンテナを 24 時間ごとに確認します。イメージタグのダイジェストが変わると、新しいイメージを取得し、既存の設定でコンテナを再作成します。fn-knock のマウント済みボリュームは保持されますが、更新時には短時間の再起動が発生します。固定バージョンタグから別のタグへ自動的に移行することはありません。
+
+```bash
+docker run -d \
+  --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  nickfedor/watchtower
+```
+
+Watchtower が起動していることを確認し、チェック履歴を表示します。
+
+```bash
+docker ps --filter name=watchtower
+docker logs watchtower
+```
+
+> この基本設定はホスト上で実行中のすべてのコンテナを管理し、Docker Socket を通じて Docker を管理できる強い権限を取得します。信頼できるホストでのみ使用し、有効にする前に fn-knock をバックアップしてください。自動更新してはいけないコンテナがある場合は、[Watchtower 公式ドキュメント](https://watchtower.nickfedor.com/)に従って、コンテナ名、ラベル、または Scope で更新対象を制限してください。
 
 ## 管理パネルのパスワードをリセット
 

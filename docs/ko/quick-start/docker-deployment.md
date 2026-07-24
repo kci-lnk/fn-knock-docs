@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Docker Compose로 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
+translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
 ---
 
 # Docker Compose로 배포
@@ -130,6 +130,27 @@ docker compose pull
 docker compose up -d
 docker compose ps
 ```
+
+## Watchtower로 자동 업데이트
+
+`.env`에서 `latest`를 사용한다면 같은 Docker 호스트에서 Watchtower를 실행할 수 있습니다. 기본적으로 실행 중인 모든 컨테이너를 24시간마다 확인합니다. 이미지 태그의 다이제스트가 변경되면 새 이미지를 가져오고 기존 설정으로 컨테이너를 다시 생성합니다. fn-knock의 마운트된 볼륨은 유지되지만 업데이트 중에는 잠시 재시작됩니다. 고정 버전 태그가 다른 태그로 자동 변경되지는 않습니다.
+
+```bash
+docker run -d \
+  --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  nickfedor/watchtower
+```
+
+Watchtower가 시작되었는지 확인하고 검사 기록을 봅니다.
+
+```bash
+docker ps --filter name=watchtower
+docker logs watchtower
+```
+
+> 이 기본 설정은 호스트에서 실행 중인 모든 컨테이너를 관리하며 Docker Socket을 통해 Docker를 관리할 수 있는 높은 권한을 얻습니다. 신뢰할 수 있는 호스트에서만 사용하고 활성화하기 전에 fn-knock 데이터를 백업하십시오. 자동 업데이트하면 안 되는 다른 컨테이너가 있다면 [Watchtower 공식 문서](https://watchtower.nickfedor.com/)에 따라 컨테이너 이름, 레이블 또는 Scope로 업데이트 범위를 제한하십시오.
 
 ## 관리 패널 비밀번호 재설정
 

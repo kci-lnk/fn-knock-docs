@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0ee89f785b71a22c2a6313b4e9615a7542f109ac0635b30f7a060844b134f447
+translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
 ---
 
 # Docker Compose 部署
@@ -130,6 +130,27 @@ docker compose pull
 docker compose up -d
 docker compose ps
 ```
+
+## 使用 Watchtower 自動更新
+
+當 `.env` 使用 `latest` 時，可以在同一台 Docker 主機上執行 Watchtower。預設情況下，它每 24 小時檢查所有執行中的容器；發現同一映像標籤的摘要發生變化後，會拉取新映像並使用原有設定重新建立容器。fn-knock 的掛載磁碟區會保留，但更新過程會造成短暫重新啟動。固定版本標籤不會自動跨標籤升級。
+
+```bash
+docker run -d \
+  --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  nickfedor/watchtower
+```
+
+確認 Watchtower 已啟動並查看檢查記錄：
+
+```bash
+docker ps --filter name=watchtower
+docker logs watchtower
+```
+
+> 此基礎設定預設管理主機上的所有執行中容器，並透過 Docker Socket 取得管理 Docker 的高權限。僅在可信任的主機上使用；啟用前請先備份 fn-knock 資料。如果其他容器不應自動更新，請先依照 [Watchtower 官方文件](https://watchtower.nickfedor.com/)使用容器名稱、標籤或 Scope 限制更新範圍。
 
 ## 重設管理面板密碼
 

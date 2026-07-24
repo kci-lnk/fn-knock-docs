@@ -123,6 +123,27 @@ docker compose up -d
 docker compose ps
 ```
 
+## 使用 Watchtower 自动更新
+
+当 `.env` 使用 `latest` 时，可以在同一台 Docker 主机上运行 Watchtower。默认情况下，它每 24 小时检查所有正在运行的容器；发现同一镜像标签的摘要发生变化后，会拉取新镜像并使用原配置重新创建容器。fn-knock 的挂载卷会保留，但更新过程会造成短暂重启。固定版本标签不会自动跨标签升级。
+
+```bash
+docker run -d \
+  --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  nickfedor/watchtower
+```
+
+确认 Watchtower 已启动并查看检查记录：
+
+```bash
+docker ps --filter name=watchtower
+docker logs watchtower
+```
+
+> 此基础配置默认管理主机上的所有运行中容器，并通过 Docker Socket 获得管理 Docker 的高权限。仅在可信主机上使用；启用前先备份 fn-knock 数据。如果其他容器不应自动更新，请先按 [Watchtower 官方文档](https://watchtower.nickfedor.com/) 使用容器名称、标签或 Scope 限制更新范围。
+
 ## 重设管理面板密码
 
 忘记密码时，登录运行 Docker 的主机并执行：
