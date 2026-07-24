@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
+translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -142,8 +142,10 @@ docker run -d \
   --name watchtower \
   --restart unless-stopped \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  nickfedor/watchtower
+  nickfedor/watchtower --cleanup
 ```
+
+`--cleanup` は、コンテナの更新が正常に完了した後、置き換えられた古いイメージを削除します。このオプションを付けない場合、Watchtower はデフォルトで古いイメージを削除しないため、リポジトリ名とタグが `<none>` のダングリングイメージが残ることがあります。このオプションは fn-knock の名前付きデータボリュームを削除しません。
 
 Watchtower が起動していることを確認し、チェック履歴を表示します。
 

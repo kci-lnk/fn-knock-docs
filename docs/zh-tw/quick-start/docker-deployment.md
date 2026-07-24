@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
+translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
 ---
 
 # Docker Compose 部署
@@ -140,8 +140,10 @@ docker run -d \
   --name watchtower \
   --restart unless-stopped \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  nickfedor/watchtower
+  nickfedor/watchtower --cleanup
 ```
+
+`--cleanup` 會在容器成功更新後刪除已被取代的舊映像。若未加入此參數，Watchtower 預設不清理舊映像，更新後可能留下儲存庫與標籤顯示為 `<none>` 的懸空映像；此參數不會刪除 fn-knock 的具名資料磁碟區。
 
 確認 Watchtower 已啟動並查看檢查記錄：
 

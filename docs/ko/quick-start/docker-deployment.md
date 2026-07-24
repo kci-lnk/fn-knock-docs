@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Docker Compose로 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
+translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
 ---
 
 # Docker Compose로 배포
@@ -140,8 +140,10 @@ docker run -d \
   --name watchtower \
   --restart unless-stopped \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  nickfedor/watchtower
+  nickfedor/watchtower --cleanup
 ```
+
+`--cleanup`은 컨테이너 업데이트가 성공한 후 교체된 이전 이미지를 삭제합니다. 이 옵션을 추가하지 않으면 Watchtower는 기본적으로 이전 이미지를 정리하지 않으므로 저장소와 태그가 `<none>`으로 표시되는 댕글링 이미지가 남을 수 있습니다. 이 옵션은 fn-knock의 이름 있는 데이터 볼륨을 삭제하지 않습니다.
 
 Watchtower가 시작되었는지 확인하고 검사 기록을 봅니다.
 

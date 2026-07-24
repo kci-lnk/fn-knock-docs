@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy with Docker Compose"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5dbe558d2335cf9dd862fa1a6258676286d0409d9d7c3351c3025ae79cd554aa
+translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -142,8 +142,10 @@ docker run -d \
   --name watchtower \
   --restart unless-stopped \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  nickfedor/watchtower
+  nickfedor/watchtower --cleanup
 ```
+
+`--cleanup` removes superseded images after a container is updated successfully. Without this option, Watchtower does not clean up old images by default, so dangling images with a repository and tag shown as `<none>` may remain. This option does not remove the fn-knock named data volumes.
 
 Confirm that Watchtower is running and inspect its check history:
 

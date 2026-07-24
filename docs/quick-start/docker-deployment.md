@@ -132,8 +132,10 @@ docker run -d \
   --name watchtower \
   --restart unless-stopped \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  nickfedor/watchtower
+  nickfedor/watchtower --cleanup
 ```
+
+`--cleanup` 会在容器成功更新后删除已被替换的旧镜像。若不添加此参数，Watchtower 默认不清理旧镜像，更新后可能留下仓库和标签显示为 `<none>` 的悬空镜像；此参数不会删除 fn-knock 的具名数据卷。
 
 确认 Watchtower 已启动并查看检查记录：
 
