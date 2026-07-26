@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: aa147245fbd23b9185eedf1d13a256b41e557f54cf86ab8ae83c59fa51ccd2ed
+translationSourceHash: 999f15e5f9dd42954e5d329e208a5a78ad3c93ae58ed68907826ac128cc86dc6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -50,6 +50,8 @@ translationSourceHash: aa147245fbd23b9185eedf1d13a256b41e557f54cf86ab8ae83c59fa5
 
 身分驗證服務公網 HTTPS 連接埠只會影響外部 URL，不會修改程式 Listen Port，也不會替路由器、Container 或 Edge 平台開放連接埠或建立 NAT Forwarding。
 
+根網域與 Host 映射都不能包含 `*`。根網域應填寫 `example.com`，服務映射填寫 `nas` 或 `nas.example.com`；DNS 是否另外設定 `*.example.com` Wildcard Record 是不同層級的設定，請勿將 Wildcard 寫入 fn-knock 的根網域或 Host。
+
 ### EdgeOne / ESA
 
 公網直連子網域模式可啟用騰訊雲 EdgeOne／阿里雲 ESA 支援。啟用後，公開 URL 可省略 `:7999`，閘道會依平台 Header 讀取真實用戶端 IP：
@@ -78,6 +80,7 @@ alist.example.com -> http://127.0.0.1:5244
 | `Target` | HTTP／HTTPS 上游 URL，必須能從 fn-knock 所在環境連線 |
 | `要求登入` | 尚未登入時導向身分驗證 Host，完成後返回原始 URL |
 | `停用`／`排程啟用或停用` | 手動下線，或依伺服器本機時間每天控制開放時段 |
+| `群組` | 將服務 Host 放入現有群組；身分驗證服務不能分組 |
 | `顯示傳送門` | 控制登入後頁面中的應用程式切換與登出入口 |
 | `顯示標題` | 覆寫清單、傳送門與書籤中的顯示名稱 |
 | `應用程式圖示` | 使用自動擷取圖示，或上傳目前服務 Host 的自訂圖示 |
@@ -85,9 +88,17 @@ alist.example.com -> http://127.0.0.1:5244
 | `閘道可見性` | 繼承全域規則、使用目前 Host 規則覆寫，或只關閉目前 Host 的可見性限制 |
 | `啟用 WAF` | 服務 Host 預設啟用；關閉後，目前 Host 會略過全域 WAF |
 
-服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。
+服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
 
 身分驗證服務是一筆特殊的 Host 映射：它必須公開，不能再啟用要求登入或 Basic Auth 注入，否則登入入口會形成 Redirect Loop 或被自身攔截。
+
+### 群組檢視
+
+開啟清單上方的 `群組檢視` 後，可在 `管理群組` 中建立、重新命名、排序或刪除群組，並透過單筆編輯、批次移動或拖曳將服務 Host 放入群組。最多可建立 `32` 個群組；名稱必須為 `1`～`40` 個字元，且忽略大小寫後不得重複。刪除仍有映射的群組不會刪除 Host，而是將它們移至「未分組」。
+
+群組順序與 Host 順序會同步到登入後的傳送門及內建 `/__select__` 選擇頁；匯出瀏覽器書籤時也會建立對應的群組資料夾。切回清單檢視後，群組歸屬仍會保留，但傳送門、選擇頁及新匯出的書籤會使用扁平順序。搜尋時只顯示命中的群組與 Host，並暫時展開結果；收合狀態只儲存在目前瀏覽器。
+
+群組只會改變導覽與管理順序，不會修改驗證、可見性、WAF 或 Target。身分驗證服務永遠位於群組之外，憑據的 Host 服務範圍仍依實際存取權限判斷。
 
 ### Basic Auth 是上游憑據注入
 
@@ -99,7 +110,7 @@ alist.example.com -> http://127.0.0.1:5244
 
 ### 應用程式圖示
 
-編輯一般服務 Host 時，開啟 `應用程式圖示` 可預覽目前來源、重新擷取上游圖示，或上傳自訂圖片。支援 PNG、JPG、WebP、AVIF、SVG 與 ICO，原始檔案不可超過 5 MB；瀏覽器會移除 SVG 中的外部內容，將圖片完整縮放到方形畫布並轉換為不超過 128 KiB 的內嵌圖示。
+編輯一般服務 Host 時，開啟 `應用程式圖示` 可預覽目前來源、重新擷取上游圖示，或上傳自訂圖片。支援 PNG、JPG、WebP、AVIF、SVG 與 ICO，原始檔案不可超過 5 MB；瀏覽器會移除 SVG 中的外部內容，伺服器也會拒絕包含不安全 `DOCTYPE` 或 Entity Declaration 的 SVG，再將圖片完整縮放到方形畫布並轉換為不超過 128 KiB 的內嵌圖示。
 
 自訂圖示會優先顯示在子網域清單與傳送門中，匯出瀏覽器書籤時也會一併寫入。按一下 `還原自動擷取` 會清除自訂覆寫並重新讀取 Target；若 Target 未回傳圖示，頁面會顯示尚未擷取。身分驗證服務不支援自訂圖示。圖示會包含在設定與 `.knock` 備份中；請勿將敏感的內部圖形當作一般疑難排解附件分享。
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dc06c83e625cd689de61e9022f3c0c0095814a7765046bb174c91f07f860d59f
+translationSourceHash: e8c258b0b128b9aa38985c4e7f29a9d65ae499b76f01bc6ce2d62c8ddf9f7597
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -59,6 +59,8 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 憑據使用 `所有範圍` 時，協定授權可套用至所有已啟用驗證的協定映射。使用 `自訂範圍` 時，必須在 `驗證設定 → 權限` 中選取精確的 `TCP/UDP + 對外連接埠`；系統只會為所選映射授權目前來源 IP，未選取的協定或連接埠仍會拒絕。修改憑據範圍後，既有工作階段的協定授權也會同步調整。
 
 出口 IP 變更、授權到期、登入後 IP 授權停用，或用戶端改走其他網路時，連線會被直接拒絕，必須重新登入或更新手動授權。瀏覽器 Cookie 本身不會隨 TCP／UDP 連線傳送；通訊協定入口會檢查來源 IP、通訊協定與對外連接埠。手動 IP／CIDR 授權仍是獨立放行路徑。工作階段與 IP 變化請參閱[工作階段管理與 IP 軌跡](/zh-tw/guide/session-management)，驗證方式與自訂範圍請參閱[身分驗證總覽](/zh-tw/guide/auth)。
+
+通訊協定用戶端沒有瀏覽器 Cookie，因此閘道會將目前工作階段確認過的來源 IP 與通訊協定授權關聯。工作階段仍有效時，其目前來源 IP 在整個通訊協定授權有效期內都可繼續使用；因行動網路產生的其他漂移 IP 只在設定的漂移時間窗內有效。工作階段或通訊協定授權到期後都會拒絕連線，不會因為曾經登入過就永久保留舊 IP。
 
 停用 `要求驗證` 會將該 Listen Port 公開轉送。Target Service 本身的 SSH Key、資料庫密碼、TLS 與最小權限仍必須妥善設定。
 

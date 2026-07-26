@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透與隧道"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 484e31df2a08db12c32d71138b3eb11a2fc29bfb557732f747a920b8d20ffa9a
+translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa08100fb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -83,6 +83,14 @@ Tunnel 不會取代 fn-knock 登入、允許清單或憑據範圍。Host 編輯�
 - Cloudflared 請使用專用的內網穿透子網域路徑，不要套用 EdgeOne / ESA 開關。
 - 啟動後請從行動網路存取，並在 Request Log 中確認 Client IP 是訪客的公網位址，而不是 `127.0.0.1`、Container 位址或 Tunnel Node 位址。
 
+## Process 守護與失敗診斷
+
+由 fn-knock 管理的 FRP 與 Cloudflared Process 會顯示 `已停止`、`啟動中`、`執行中` 或 `等待重新啟動`。已設定持續執行的 Process 意外結束後，系統會自動重啟，並以約 `1、2、5、10、30、60、120、300` 秒逐步退避（含少量隨機抖動）；穩定執行約 `5` 分鐘後，連續失敗計數會重設。手動停止會取消後續重試。
+
+等待重啟時，頁面會顯示連續失敗次數、下次重試時間與最近診斷。Log 會保留 Process PID、啟動與結束時間、執行時長、Exit Code 或 Signal、失敗摘要，以及最近的 stdout/stderr，可用來區分 Token、TLS、網路、設定與執行檔問題。分享 Log 前仍須遮蔽 Token、網域、公網位址與 Server 資訊。
+
+fn-knock 服務本身重新啟動後，會恢復已儲存為持續執行的 Tunnel，並在可驗證時接管仍存在的 Process。此守護只涵蓋由 fn-knock 啟動的內建 FRP / Cloudflared；Windows 或其他外部獨立 Process 仍由管理員負責。
+
 ## 平台限制
 
 - Tunnel 是 Outbound Connection，不需要 fn-knock 寫入 Host 防火牆；Docker 也能使用。
@@ -97,7 +105,7 @@ Tunnel 不會取代 fn-knock 登入、允許清單或憑據範圍。Host 編輯�
 
 1. 儲存路由方式、驗證 Host 及至少一條服務映射。
 2. 儲存 FRP 或 Cloudflared 設定並啟動。
-3. 確認執行狀態顯示為已連線，再檢查 Log 中是否有重新連線、Token、TLS 或連接埠錯誤。
+3. 確認執行狀態顯示為已連線；若顯示 `等待重新啟動`，請查看連續失敗次數、下次重試時間與最近診斷，再檢查 Token、TLS、網路或連接埠錯誤。
 4. 從外部網路存取驗證 Host 與服務 Host。
 5. 在 Request Log 中核對 Host、Client IP、授權類型及 Upstream Target。
 

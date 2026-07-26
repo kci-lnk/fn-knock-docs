@@ -3,7 +3,7 @@ lang: en-US
 title: "Install and Set Up the Native fnOS FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e6560f97889fff7b3cfe3e7dbc4f798fa0fa33b7225cd8931d1f56ab46580813
+translationSourceHash: 875e2271fb5a0ba2970a8f22845a89289ac602f695af6763c83c4900a6679527
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ Use the official direct-download link for your fnOS device architecture. Native 
 
 > **Use the native FPK from the official website**
 >
-> The native fnOS FPK available from the official website is the most feature-complete fn-knock edition and supports the full feature set. If you installed fn-knock from fnOS App Center, that app is the Docker-based edition, not the native FPK. Back up your current configuration and data, uninstall the App Center edition, then use the official link above to download the native FPK for your device architecture and install it manually. Do not run both editions at the same time, because their ports may conflict.
+> The standard fnOS FPK from the official website is the most feature-complete fn-knock edition. If the installed app is named `Knock Lite`, it is a native non-root package, not a Docker edition. It supports reverse proxying, authentication, DDNS, certificates, WAF, built-in tunnels, and monitoring, but not Direct mode and host-firewall management, network optimization, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. To migrate, export a `.knock` backup from Lite and stop or uninstall Lite before installing the standard FPK for your architecture and importing the archive. Do not run both editions at the same time, because their ports may conflict.
 
 Do not install the ARM64 package on a 32-bit ARM device, and do not try to install a package intended for another deployment method as a native FPK. The setup wizard asks for four ports. Keep the defaults unless they conflict with another service. Every value must be between `1` and `65535`, and the four values must be unique.
 
@@ -35,6 +35,8 @@ Do not install the ARM64 package on a 32-bit ARM device, and do not try to insta
 | `7999` | Go proxy port | Gateway endpoint through which external service traffic normally enters |
 
 Do not forward `7998`, `7997`, or `7996` as public endpoints. To publish services, expose only the gateway port and its domain names. The exact ingress setup depends on the run mode you choose.
+
+Lite defaults to ports `8998 / 8997 / 8996 / 8999`, and its setup wizard accepts only `1024`–`65535`. The remaining steps and default `799x` ports on this page describe the standard FPK from the official website. Confirm the app name before troubleshooting against either port set.
 
 ## Install on fnOS
 

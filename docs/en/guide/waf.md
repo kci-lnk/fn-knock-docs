@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b43b61bc0baa2b46b8131002c14c44fa63f3a2062223f824302a6a33e519157f
+translationSourceHash: db97ca504b3859840b8237329798bf441587b0f7faf3afc081b7cc1fae75d9a0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -77,6 +77,16 @@ Administrators are responsible for maintaining custom rules:
 WAF is enabled by default in the advanced settings of application Hosts under subdomain mapping. To isolate a false positive or compatibility problem, you can disable WAF for one Host. That Host then skips the global WAF while other Hosts remain protected.
 
 The per-Host switch is not an independent WAF instance: it provides no protection while the global WAF is disabled. After troubleshooting, adjust the rules based on logs and restore protection for the Host instead of treating disabled WAF as a permanent compatibility workaround.
+
+## Route FN Connect Traffic Through WAF
+
+On the standard fnOS FPK, `System settings → fnOS → Route FN Connect traffic through WAF` sends traffic from the fnOS remote-access service to the local fnOS HTTP port through the same WAF. The switch affects only IPv4 and IPv6 loopback requests made by the FN Connect service process; it does not redirect unrelated local processes or ordinary LAN access. Request and WAF logs identify the route type as `FN Connect`.
+
+Enabling ingress does not by itself block attacks: the global WAF and relevant rules must also be enabled. The status area distinguishes Protected, Detection only, WAF inactive, and Degraded, and reports the detected fnOS port, ingress status, and last synchronization error. The system reconciles the rules about every `5` seconds and follows changes to the fnOS HTTP port.
+
+The current release does not intercept the plaintext FN Connect path when fnOS `Force HTTPS` is enabled; redirection remains disabled when that setting is detected. If the port is unreachable, firewall rules cannot be installed, or the local WAF ingress fails, fn-knock fails open by removing redirection and stopping the corresponding ingress, prioritizing FN Connect availability. Fix the reported error rather than assuming that continued remote access means WAF is still active.
+
+This feature is available only in the standard FPK from the official website and requires host network permissions. It is hidden in `Knock Lite`, Docker, OpenWrt, generic Linux, Synology, and Windows. Keep an fnOS desktop or LAN admin path before enabling it, then make an identifiable request over FN Connect and confirm the route type and rule action in request and WAF logs.
 
 ## View WAF Logs
 

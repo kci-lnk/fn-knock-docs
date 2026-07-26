@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dc06c83e625cd689de61e9022f3c0c0095814a7765046bb174c91f07f860d59f
+translationSourceHash: e8c258b0b128b9aa38985c4e7f29a9d65ae499b76f01bc6ce2d62c8ddf9f7597
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -59,6 +59,8 @@ Clients such as SSH, MySQL, and Redis do not open an fn-knock sign-in page. With
 With `All scopes`, protocol access applies to every protocol mapping that requires authentication. With `Custom scopes`, select the exact `TCP/UDP + external port` under `Auth → Permission`. The system authorizes the current source IP only for the selected mapping; an unselected protocol or port is still denied. Changing the credential scope also reconciles protocol access for existing sessions.
 
 If the egress IP changes, authorization expires, post-login IP authorization is disabled, or the protocol client uses another network, the connection is rejected immediately. Sign in again or update the manual authorization. A browser Cookie is not sent with a TCP or UDP connection; the protocol entry point checks source IP, protocol, and external port. Manual IP/CIDR authorization remains an independent allow path. See [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) for sessions and IP changes, and [Authentication, Sessions, and Service Scopes](/en/guide/auth) for custom scopes.
+
+Protocol clients have no browser Cookie, so the gateway associates the source IP confirmed by the current session with the protocol grant. While the session remains valid, its current source IP stays eligible for the full lifetime of that protocol grant. Additional IPs observed through mobile-network drift are valid only within the configured mobility window. Once the session or protocol grant expires, connections are denied; an IP is not retained permanently merely because it was used for an earlier sign-in.
 
 Disabling `Require auth` makes the listening port a public forward. You must still configure the target service's own SSH keys, database password, TLS, and least-privilege access.
 

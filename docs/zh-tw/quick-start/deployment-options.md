@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇部署與存取方案"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 864d6c653b9a318f10adffa3005157d2a80b7718d3631dfff494c19b2e608c48
+translationSourceHash: 3f0f54ad4cbdde3ffb9e2fc080cfa1b27d683650b5372a7f09cfa4cbe8df06f9
 ---
 
 # 選擇部署與存取方案
@@ -24,6 +24,8 @@ fn-knock 用於收斂入口並提供前置身分驗證，不能取代系統更�
 | [Windows x86_64](/zh-tw/quick-start/windows-deployment) | 管理程式開啟本機 `127.0.0.1:7991` | `7999`，預設監聽所有介面 | 需要 Windows Service 與本機系統匣管理程式 | 仍須設定防火牆與 NAT；不支援直連授權、內建 FRP / Cloudflared、智慧連線、Web Terminal 與 SSH 安全性 |
 
 Docker、OpenWrt、Linux 與 Windows 的管理入口需要另行設定面板密碼。這組密碼只保護管理面板，與閘道入口使用的 TOTP、帳號密碼或 Passkey 並不是同一套憑證。
+
+fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 部署，也不具備表中標準 FPK 的完整 Host 權限。Lite 支援 Host 反代、驗證、DDNS、憑證、WAF、內建 FRP / Cloudflared 與監控；不支援直連與 Host 防火牆、智慧連線、系統時間同步、自動 HTTPS、飛牛憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。需要這些能力時，請匯出 Lite 的 `.knock` 後停止 Lite，再安裝官網標準 FPK 並匯入。
 
 安裝說明：
 

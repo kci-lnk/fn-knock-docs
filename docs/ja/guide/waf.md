@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Web Application Firewall（WAF）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b43b61bc0baa2b46b8131002c14c44fa63f3a2062223f824302a6a33e519157f
+translationSourceHash: db97ca504b3859840b8237329798bf441587b0f7faf3afc081b7cc1fae75d9a0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -77,6 +77,16 @@ WAF 全体を有効にすると、最初にシステムルールの更新を試�
 サービス用 Host では、サブドメインマッピングの詳細設定で WAF がデフォルトで有効になっています。誤検知や互換性の問題を切り分ける場合は、特定の Host だけ WAF を無効にできます。その Host は全体の WAF を省略し、他の Host は引き続き保護されます。
 
 Host ごとの設定は、独立した WAF インスタンスではありません。WAF 全体が無効な場合、Host 側の設定だけでは保護されません。トラブルシューティング後は、ログに基づいてルールを調整し、Host の保護を元に戻してください。WAF の無効化を長期的な互換性対策にしないでください。
+
+## FN Connect トラフィックを WAF へ接続する
+
+標準版 fnOS FPK では、`システム設定 → fnOS → FN Connect トラフィックを WAF へ接続` を使い、fnOS のリモートアクセスサービス FN Connect からローカル fnOS HTTP ポートへのトラフィックを同じ WAF へ送れます。このスイッチが対象とするのは、FN Connect サービスプロセスがループバックアドレスへ送る IPv4 / IPv6 リクエストだけです。他のローカルプロセスや通常の LAN 直結トラフィックはリダイレクトしません。リクエストログと WAF ログのルート種別は `FN Connect` と表示されます。
+
+入口を有効にするだけでは攻撃をブロックできません。グローバル WAF と対象ルールも有効にする必要があります。状態欄は、保護中、検出のみ、WAF 無効、デグレードを区別し、検出した fnOS ポート、入口状態、直近の同期エラーを表示します。システムは約 `5` 秒ごとにルールを再確認し、fnOS HTTP ポートの変更にも追従します。
+
+現在のバージョンは、fnOS の `HTTPS を強制` が有効な場合、平文の FN Connect 経路を引き継ぎません。この設定を検出するとリダイレクトを有効にしません。ポートへ到達できない、ルールを書き込めない、ローカル WAF 入口が異常な場合は Fail-open としてリダイレクトを削除し、対応する入口を停止して FN Connect 全体の停止を避けます。リモートアクセスできることを WAF が動作中である証拠とせず、表示されたエラーを修正してください。
+
+この機能は公式サイトの標準 FPK だけで利用でき、ホストネットワーク権限が必要です。`Knock Lite`、Docker、OpenWrt、一般的な Linux、Synology、Windows では表示されません。有効にする前に fnOS デスクトップまたは LAN の管理経路を確保し、FN Connect から識別可能なリクエストを送って、リクエストログと WAF ログでルート種別とルール動作を確認してください。
 
 ## WAF ログを確認する
 

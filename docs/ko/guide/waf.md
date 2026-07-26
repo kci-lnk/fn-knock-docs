@@ -3,7 +3,7 @@ lang: ko-KR
 title: "웹 애플리케이션 방화벽(WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b43b61bc0baa2b46b8131002c14c44fa63f3a2062223f824302a6a33e519157f
+translationSourceHash: db97ca504b3859840b8237329798bf441587b0f7faf3afc081b7cc1fae75d9a0
 ---
 
 # 웹 애플리케이션 방화벽(WAF)
@@ -75,6 +75,16 @@ fn-knock는 Coraza로 시스템 규칙과 사용자 지정 규칙을 불러옵�
 서비스 Host는 서브도메인 매핑의 고급 설정에서 기본적으로 WAF가 활성화됩니다. 오탐 차단이나 호환성 문제를 분리해야 할 때 특정 Host의 WAF만 끌 수 있습니다. 해당 Host는 전역 WAF를 건너뛰고 다른 Host는 계속 보호됩니다.
 
 Host별 스위치는 독립적인 WAF 인스턴스가 아닙니다. 전역 WAF가 꺼져 있으면 Host 스위치만으로 보호되지 않습니다. 문제를 해결한 뒤에는 로그에 따라 규칙을 조정하고 Host 보호를 복원해 WAF 비활성화를 장기적인 호환성 대책으로 사용하지 않습니다.
+
+## FN Connect 트래픽을 WAF로 전달
+
+표준 fnOS FPK에서는 `시스템 설정 → fnOS → FN Connect 트래픽을 WAF로 전달`을 사용해 fnOS 원격 접근 서비스 FN Connect가 로컬 fnOS HTTP 포트로 보내는 트래픽을 같은 WAF로 전달할 수 있습니다. 이 스위치는 FN Connect 서비스 프로세스가 루프백 주소로 보내는 IPv4 / IPv6 요청만 처리하며 다른 로컬 프로세스나 일반 LAN 직접 접속 트래픽은 리디렉션하지 않습니다. 요청 로그와 WAF 로그의 라우트 유형은 `FN Connect`로 표시됩니다.
+
+전달을 활성화하는 것만으로 공격을 차단하지는 않습니다. 전역 WAF와 관련 규칙도 활성화해야 합니다. 상태 영역은 보호 중, 탐지만, WAF 비활성 또는 성능 저하를 구분하고 감지한 fnOS 포트, 진입 상태 및 최근 동기화 오류를 표시합니다. 시스템은 약 `5`초마다 규칙을 다시 확인하고 fnOS HTTP 포트 변경도 따라갑니다.
+
+현재 버전은 fnOS `HTTPS 강제`가 활성화된 경우 평문 FN Connect 경로를 가로채지 않으며 이 설정을 감지하면 리디렉션을 활성화하지 않습니다. 포트에 접근할 수 없거나 규칙을 설치하지 못하거나 로컬 WAF 진입점에 오류가 생기면 Fail-open으로 리디렉션을 지우고 해당 진입점을 중지해 FN Connect 전체 중단을 우선 방지합니다. 원격 접근이 계속된다는 사실을 WAF가 작동 중이라는 뜻으로 보지 말고 표시된 오류를 해결합니다.
+
+이 기능은 공식 웹사이트의 표준 FPK에서만 제공하며 호스트 네트워크 권한이 필요합니다. `Knock Lite`, Docker, OpenWrt, 일반 Linux, Synology 및 Windows에서는 표시되지 않습니다. 활성화 전에 fnOS 데스크톱 또는 LAN 관리 경로를 유지하고 FN Connect에서 식별 가능한 요청을 보낸 뒤 요청 로그와 WAF 로그에서 라우트 유형과 규칙 동작을 확인합니다.
 
 ## WAF 로그 확인
 

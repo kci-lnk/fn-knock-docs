@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: aa147245fbd23b9185eedf1d13a256b41e557f54cf86ab8ae83c59fa51ccd2ed
+translationSourceHash: 999f15e5f9dd42954e5d329e208a5a78ad3c93ae58ed68907826ac128cc86dc6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -50,6 +50,8 @@ For the complete direct-public-access workflow, see [Public IP Access with Subdo
 
 The public HTTPS port for the auth service affects external URLs only. It does not change the application's listening port, open a port, or create NAT forwarding on a router, container, or edge platform.
 
+The root domain and Host mappings cannot contain `*`. Enter `example.com` as the root domain and `nas` or `nas.example.com` as an application mapping. A DNS wildcard such as `*.example.com` is configured at a different layer and must not be entered as an fn-knock root domain or Host.
+
 ### EdgeOne / ESA
 
 Direct-public `Subdomain mode` can enable Tencent Cloud EdgeOne or Alibaba Cloud ESA support. Once enabled, public URLs can omit `:7999`, and the gateway reads the real client IP from the platform-specific header:
@@ -78,6 +80,7 @@ alist.example.com -> http://127.0.0.1:5244
 | `Target` | HTTP / HTTPS upstream URL; it must be reachable from the fn-knock runtime |
 | `Require sign-in` | Redirects unsigned-in users to the auth Host, then returns them to the original URL |
 | `Disable` / `Schedule enable or disable` | Takes the mapping offline manually or controls its daily open window using server-local time |
+| `Group` | Places an application Host in an existing group; the auth service cannot be grouped |
 | `Show portal` | Controls the app switcher and sign-out entry shown after sign-in |
 | `Display title` | Overrides the name shown in lists, the portal, and exported bookmarks |
 | `App icon` | Uses the automatically collected icon or uploads a custom icon for this application Host |
@@ -85,9 +88,17 @@ alist.example.com -> http://127.0.0.1:5244
 | `Visibility` | Inherits the global rules, replaces them with rules for this Host, or disables visibility restrictions only for this Host |
 | `Enable WAF` | Enabled by default for application Hosts; when disabled, this Host skips the global WAF |
 
-Whenever possible, bind application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container.
+Whenever possible, bind application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
 
 The auth service is a special Host mapping. It must remain public and must not require sign-in or inject Basic Auth credentials, or the sign-in entry point will loop or block itself.
+
+### Grouped View
+
+After enabling `Grouped view` above the list, use `Manage groups` to create, rename, reorder, or delete groups. Assign application Hosts through the single-item editor, bulk move, or drag and drop. You can create up to `32` groups. Names must contain `1`–`40` characters and must be unique when compared case-insensitively. Deleting a non-empty group does not delete its Hosts; they move to `Ungrouped`.
+
+Group order and Host order synchronize to the signed-in portal and built-in `/__select__` page. Exported browser bookmarks also use matching group folders. Switching back to list view preserves group assignments, but the portal, selection page, and newly exported bookmarks use a flat order. Search shows only matching groups and Hosts and expands results temporarily; collapsed state is stored only in the current browser.
+
+Grouping changes navigation and management order only. It does not change authentication, visibility, WAF, or the Target. The auth service always remains outside groups, and credential Host scopes still determine actual access.
 
 ### Basic Auth Injects Upstream Credentials
 
@@ -99,7 +110,7 @@ Both the username and password are required, and the username cannot contain a c
 
 ### App Icon
 
-When editing a regular application Host, open `App icon` to preview the current source, recollect the upstream icon, or upload a custom image. PNG, JPG, WebP, AVIF, SVG, and ICO are supported, with a 5 MB source-file limit. The browser removes external SVG content, fits the image inside a square canvas without cropping, and converts it into an embedded icon no larger than 128 KiB.
+When editing a regular application Host, open `App icon` to preview the current source, recollect the upstream icon, or upload a custom image. PNG, JPG, WebP, AVIF, SVG, and ICO are supported, with a 5 MB source-file limit. The browser removes external SVG content, and the server rejects SVG files with unsafe `DOCTYPE` or entity declarations. The image is then fitted inside a square canvas without cropping and converted into an embedded icon no larger than 128 KiB.
 
 A custom icon takes priority in the subdomain list and portal, and is embedded when browser bookmarks are exported. `Restore automatic collection` removes the custom override and reads the Target again. If the Target returns no icon, the page shows that none has been collected. The authentication service does not support a custom icon. Icons are included in the configuration and `.knock` backups; do not share sensitive internal artwork in routine troubleshooting attachments.
 

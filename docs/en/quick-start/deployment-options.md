@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Deployment and Access Pattern"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 864d6c653b9a318f10adffa3005157d2a80b7718d3631dfff494c19b2e608c48
+translationSourceHash: 3f0f54ad4cbdde3ffb9e2fc080cfa1b27d683650b5372a7f09cfa4cbe8df06f9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,6 +26,8 @@ fn-knock consolidates ingress and places authentication in front of your service
 | [Windows x86_64](/en/quick-start/windows-deployment) | Manager opens local `127.0.0.1:7991` | `7999`, listening on all interfaces by default | A Windows service managed from a local system-tray app | Firewall and NAT still require manual setup; no Direct mode authorization, built-in FRP / Cloudflared, Smart Connect, web terminal, or SSH security |
 
 Docker, OpenWrt, Linux, and Windows deployments require a separate panel password for the admin endpoint. That password protects the admin panel and is unrelated to the TOTP, username and password, or Passkey used at the gateway.
+
+If the app on an fnOS device is named `Knock Lite`, it is a native non-root package, not a Docker deployment, and does not have the full host permissions of the standard FPK in the table. Lite supports Host proxying, authentication, DDNS, certificates, WAF, built-in FRP / Cloudflared, and monitoring. It does not support Direct mode and the host firewall, Smart Connect, system clock sync, automatic HTTPS, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. To use those capabilities, export Lite's `.knock`, stop Lite, install the standard FPK from the official website, and import the archive.
 
 Installation guides:
 

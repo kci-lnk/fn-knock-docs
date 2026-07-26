@@ -3,14 +3,14 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a2d5e31f0cf0f5e8b14f22cf8e12065a27ce5cdaed133e9b34c067ce1ab8c647
+translationSourceHash: c335d9bafc06e7cb8d739617e601fb345e9249ea5d7b292963643fb01281e212
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Backup, Restore, and Data Cleanup
 
-Use `System settings → Maintenance` to export or import application-level fn-knock configuration, or to clear the current instance. A `.knock` archive is suitable for migration and configuration rollback, but it is not a backup of the entire machine, container volumes, or upstream application data.
+Use `System settings → Maintenance` to create automatic or manual backups, import application-level fn-knock configuration, or clear the current instance. A `.knock` archive is suitable for migration and configuration rollback, but it is not a backup of the entire machine, container volumes, or upstream application data.
 
 ## What a backup contains
 
@@ -38,6 +38,16 @@ Treat it as a plaintext backup of your secrets:
 - Apply independent strong encryption before transferring it through a cloud drive, email, or chat.
 - Never upload it to a public issue, group chat, public share, or diagnostic attachment.
 - Remove old copies regularly and restrict backup read access to the people who actually maintain the system.
+
+## Automatic backups
+
+Under `System settings → Maintenance → Automatic backups`, fn-knock can periodically write `.knock` archives to `backups/automatic` inside the server data directory. The feature is disabled by default, with a default interval of `24` hours and retention of `7` days. The interval may be `1`–`8760` hours and retention may be `1`–`3650` days.
+
+Enabling the feature for the first time creates a backup immediately, followed by the configured schedule. The page shows the actual directory, last successful run, next scheduled run, and most recent error. A failed run is retried early, no later than about `1` hour. Cleanup removes only expired `.knock` archives from the automatic-backup directory; unrelated files are not treated as old backups.
+
+Automatic and manual archives have the same contents, compatibility rules, and security boundary. Automatic copies live on the current server data disk or container volume, so they do not protect against disk failure, volume loss, or complete host failure. Regularly copy important archives to another device or controlled off-site storage.
+
+During restore, select `Choose automatic backup` to read an archive directly from the server-side directory without first downloading it to the browser device. Restore preserves the current automatic-backup schedule so an older archive cannot unexpectedly replace it. After `Clear all data`, existing automatic-backup files remain in the server directory, but the schedule configuration is reset to disabled. Review old-file retention before enabling it again.
 
 ## Export a backup
 
@@ -80,7 +90,7 @@ A backup exported by a newer release therefore cannot be restored directly to an
 
 ## Restore from a backup
 
-1. On the Maintenance page, select a local `.knock` file. When shared-directory support is available, you can also select one from `fn-knock / backup`.
+1. On the Maintenance page, select a local `.knock` file or one from the server-side automatic-backup directory. When shared-directory support is available, you can also select one from `fn-knock / backup`.
 2. Verify the filename, size, and source, then click `Start import`.
 3. Read and confirm the overwrite warning.
 4. Wait for the import result. The page reloads after a successful import.

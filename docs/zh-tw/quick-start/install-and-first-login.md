@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 原生 FPK 安裝與初始設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e6560f97889fff7b3cfe3e7dbc4f798fa0fa33b7225cd8931d1f56ab46580813
+translationSourceHash: 875e2271fb5a0ba2970a8f22845a89289ac602f695af6763c83c4900a6679527
 ---
 
 # fnOS 原生 FPK 安裝與初始設定
@@ -21,7 +21,7 @@ translationSourceHash: e6560f97889fff7b3cfe3e7dbc4f798fa0fa33b7225cd8931d1f56ab4
 
 > **建議使用官網原生 FPK**
 >
-> 官網提供的 fnOS 原生 FPK 是 fn-knock 功能最完整的版本，支援目前所有功能。若您先前從 fnOS 應用中心（App Center）安裝 fn-knock，該應用程式實際上是 Docker 版本，並非原生 FPK。建議先備份現有設定與資料、解除安裝應用中心版本，再依裝置架構從上方官網連結下載並手動安裝原生 FPK；請勿同時執行兩個版本，以免連接埠衝突。
+> 官網提供的標準 fnOS FPK 是 fn-knock 功能最完整的版本。若裝置中顯示的是 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 版：支援反向 Proxy、驗證、DDNS、憑證、WAF、內建 Tunnel 與監控，但不提供直連與 Host 防火牆、網路最佳化、飛牛憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。移轉時請先從 Lite 匯出 `.knock` 備份並停止或解除安裝 Lite，再依裝置架構安裝標準 FPK 後匯入；請勿同時執行兩個版本，以免連接埠衝突。
 
 請勿在 32 位元 ARM 裝置上安裝 ARM64 套件，也不要將其他部署格式當成原生 FPK 安裝。安裝精靈會要求設定四個連接埠；若沒有衝突，保留預設值即可。四個數值都必須介於 `1`–`65535`，且不得重複。
 
@@ -33,6 +33,8 @@ translationSourceHash: e6560f97889fff7b3cfe3e7dbc4f798fa0fa33b7225cd8931d1f56ab4
 | `7999` | Go Proxy 連接埠 | 閘道入口；外部存取服務時通常會經過此連接埠 |
 
 `7998`、`7997` 與 `7996` 不應轉送為公網入口。需要對外提供服務時，只需規劃閘道連接埠及其網域名稱；實際開放方式取決於所選模式。
+
+Lite 的預設連接埠為 `8998 / 8997 / 8996 / 8999`，安裝精靈只允許 `1024`～`65535`。本頁後續步驟與預設 `799x` 連接埠均針對官網標準 FPK；請先確認應用程式名稱，再依對應連接埠排查。
 
 ## 在 fnOS 中安裝
 

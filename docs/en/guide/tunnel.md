@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal and Tunnels"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 484e31df2a08db12c32d71138b3eb11a2fc29bfb557732f747a920b8d20ffa9a
+translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa08100fb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -83,6 +83,14 @@ Authentication decisions use the client IP ultimately recognized by the gateway.
 - Use Cloudflared's dedicated reverse-proxy subdomain path; do not apply the EdgeOne / ESA switch to it.
 - After startup, connect over a mobile network and verify in request logs that the client IP is the visitor's public address, not `127.0.0.1`, a container address, or the tunnel node's address.
 
+## Process Supervision and Failure Diagnostics
+
+FRP and Cloudflared processes managed by fn-knock show `Stopped`, `Starting`, `Running`, or `Waiting to restart`. If a process that should remain running exits unexpectedly, the system restarts it with progressive delays of roughly `1, 2, 5, 10, 30, 60, 120, and 300` seconds, with a small random jitter. The consecutive-failure count resets after about `5` minutes of stable runtime. A manual stop cancels pending retries.
+
+While waiting to restart, the page shows the consecutive failure count, next retry time, and latest diagnosis. Logs preserve the PID, start and exit times, uptime, exit code or signal, failure summary, and recent stdout/stderr. Use these fields to distinguish Token, TLS, network, configuration, and binary failures. Redact Tokens, domains, public addresses, and server details before sharing logs.
+
+After the fn-knock service itself restarts, it resumes tunnels saved as desired-running and can adopt a still-running process when it can be validated. This supervisor covers only built-in FRP / Cloudflared processes started by fn-knock. Administrators remain responsible for Windows and other external processes.
+
 ## Platform Boundaries
 
 - Tunnels use outbound connections and do not depend on fn-knock changing the host firewall, so Docker can use them as well.
@@ -97,7 +105,7 @@ Authentication decisions use the client IP ultimately recognized by the gateway.
 
 1. Save the routing method, auth Host, and at least one application mapping.
 2. Save the FRP or Cloudflared configuration and start the tunnel.
-3. Confirm that the runtime status is `Connected`, then check logs for reconnect, Token, TLS, or port errors.
+3. Confirm that the runtime status is `Connected`. If it shows `Waiting to restart`, inspect the consecutive failure count, next retry time, and latest diagnosis, then check for Token, TLS, network, or port errors.
 4. Access the auth Host and application Host from an external network.
 5. Verify the Host, client IP, authorization type, and upstream Target in request logs.
 

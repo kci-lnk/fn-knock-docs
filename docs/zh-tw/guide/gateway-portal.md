@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道入口頁"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b53d82b49a9f480732b149d385b3cb8e9d9c560bea091349dd94371a66d1380c
+translationSourceHash: 4f46439df051e7e39e904ad83f439f895cc77764433fdad2363d4f370b3ba6c7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,6 +29,8 @@ translationSourceHash: b53d82b49a9f480732b149d385b3cb8e9d9c560bea091349dd94371a6
 
 服務是否出現在傳送門中，取決於目前的路由方式與映射狀態。Host 可透過自身的「顯示傳送門」設定單獨隱藏；路徑映射目前沒有對應的單項隱藏開關。隱藏 Host 只會影響導覽顯示，不會改變服務的私人或公開狀態。
 
+子網域映射啟用 `群組檢視` 時，傳送門與內建 `/__select__` 選擇頁會使用相同的群組名稱、群組順序與 Host 順序；切回清單檢視後，兩處會恢復為扁平清單，但已儲存的群組歸屬不會遺失。群組只改變導覽結構，憑據服務範圍與每筆映射的驗證設定仍會照常執行。
+
 完成設定後，請從受保護的服務 Host 登入，確認工具列、標題、圖示與拖曳方式符合預期。傳送門本身不會授予權限；即使清單中出現某個 Host，受限憑據能否存取，仍以實際請求的服務範圍判斷。
 
 顯示不正確時，請依下列順序檢查：
@@ -37,7 +39,8 @@ translationSourceHash: b53d82b49a9f480732b149d385b3cb8e9d9c560bea091349dd94371a6
 2. 確認目前請求已完成登入，且採用支援 Host 入口的路由方式。
 3. 檢查映射的網站標題；標題模式下若標題為空，會顯示網域。
 4. 沒有圖示時，請在 `子網域映射` 中編輯對應 Host，開啟 `應用程式圖示` 後重新擷取或上傳自訂圖片；仍無圖示的入口不會占用空間。
-5. 對照憑據的服務範圍；能在清單中看到入口，不代表具備存取權。
+5. 群組或順序不正確時，確認子網域映射目前是否使用 `群組檢視`，並在 `管理群組` 中檢查順序。
+6. 對照憑據的服務範圍；能在清單中看到入口，不代表具備存取權。
 
 - [身分驗證、工作階段與服務範圍](/zh-tw/guide/auth)
 - [子網域映射](/zh-tw/guide/subdomain-proxy)

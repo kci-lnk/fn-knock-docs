@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c072cecadde8393adbe311fe4c4b3b8b146ce69e65d436f371ce51ef8edc8ea8
+translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e17d63d92
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,6 +30,8 @@ translationSourceHash: c072cecadde8393adbe311fe4c4b3b8b146ce69e65d436f371ce51ef8
 
 The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, Web Terminal, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, Web Terminal, or SSH Security.
 
+If the app on an fnOS device is named `Knock Lite`, it is a native non-root package rather than the full FPK shown in the table. It supports Host proxying, authentication, DDNS, certificates, WAF, built-in tunnels, and monitoring, but not Direct mode and the host firewall, network optimization, fnOS certificate-store sync, Web Terminal, or in-app updates. To gain full host integration, export a Lite backup and stop Lite before installing the standard FPK from the official website and importing the archive. Do not let both instances compete for the same ports.
+
 ## Settings Map
 
 | Tab or section | When it appears and what it manages | Details |
@@ -38,7 +40,7 @@ The table reflects runtime capabilities reported by the server. Some unavailable
 | `FRP`, `Cloudflared` | Visible in reverse proxy mode when the platform has the corresponding capability; downloads and installs tunnel binaries | [NAT Traversal and Tunnels](/en/guide/tunnel) |
 | `ACME` | Visible when the platform supports it and is not Windows; manages the `acme.sh` resource and default CA | [TLS Certificates and HTTPS](/en/guide/ssl) |
 | `Location` | Configures the IP geolocation database and CIDR location database | [IP Geolocation](/en/guide/ip-location) |
-| `fnOS` | Manages fnOS Share Bypass, port-icon takeover, and available network optimizations | [fnOS Share Bypass](/en/guide/fnos-share-bypass) |
+| `fnOS` | Manages fnOS Share Bypass, port-icon takeover, available network optimizations, and FN Connect WAF ingress on the standard FPK | [fnOS Share Bypass](/en/guide/fnos-share-bypass), [WAF](/en/guide/waf#route-fn-connect-traffic-through-waf) |
 | `Blocking` | Configures the scanner firewall, trigger window, thresholds, and exemptions | [Automated Scan Blocking](/en/guide/scanner-interception) |
 | `Features` | Controls home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, sidebar ordering, and the Smart Connect entry | See the corresponding feature documentation |
 | `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
@@ -47,7 +49,7 @@ The table reflects runtime capabilities reported by the server. Some unavailable
 | `Sessions` | Manages standard sessions, Remember me, post-login IP authorization, and IP drift | [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) |
 | `Panel` | Visible on Docker, OpenWrt, Linux, and Windows; changes or resets the separate admin panel password | See below |
 | `Challenge` | Uses PoW or Cloudflare Turnstile before sign-in | [Challenge](/en/guide/captcha) |
-| `Maintenance` | Exports, imports, and clears data | See below |
+| `Maintenance` | Manages automatic backups, manual exports, imports, and data cleanup | See below |
 
 ## Sidebar Menu Order
 
@@ -65,6 +67,8 @@ Settings at the top of `System settings → Gateway` are synchronized directly t
 | `Failed auth cache duration` | Caches a failed authentication result; `0` does not reuse denials. When troubleshooting a recent permission change, account for an earlier failed result that may not have expired |
 | `Enable gateway reverse proxy throttling` | Limits traffic per client IP using requests per second and burst tokens, then closes connections directly for the configured penalty period |
 | `Block crawler requests` | Blocks requests recognized as crawlers by the gateway; it does not replace WAF or stop requests that bypass the gateway |
+| `Unmatched routes` | `Show error page` returns a friendly page; `Reset connection` terminates requests that match no configured route |
+| `Show error information when the upstream fails` | Defaults to `Show less`, hiding the upstream IP, port, and low-level connection error; use `Show more` only temporarily for troubleshooting |
 | `Portal settings` | Controls the app switcher shown after sign-in |
 | `Visibility` | Limits which sources can reach the gateway by region or CIDR |
 | `Proxy headers` | Controls whether the gateway sends `X-Forwarded-*` to specified Targets |
@@ -72,6 +76,12 @@ Settings at the top of `System settings → Gateway` are synchronized directly t
 | `Path responses` | Adds path-level proxying or fixed responses to application Hosts |
 
 The initial reverse-proxy throttling configuration allows `100` requests per second and `200` burst tokens per client IP, with a `30`-second penalty after exceeding the limit. Requests terminated directly by throttling are not written to request logs. If a client connection closes without a corresponding log entry, check this layer as well. Host-level switches in the UI are ultimately compiled by Target: when multiple Hosts point to the exact same Target, they share proxy-header and Host-preservation behavior.
+
+### Unmatched routes and upstream errors
+
+Unmatched routes default to `Show error page`, which returns a welcome, selection, or error page. With `Reset connection`, HTTP/1.x connections are reset and the current HTTP/2 stream is aborted. Default-domain fallback is temporarily disabled, but its saved configuration is retained and resumes when you switch back to the error page. Request logs label these requests as unmatched-route blocks.
+
+`Show error information when the upstream fails` defaults to `Show less`: visitors see only that the upstream is unavailable, without its internal IP, port, or connection failure. `Show more` returns the complete connection error and can expose network topology. Use it only for short troubleshooting in a controlled environment, then switch back to `Show less`.
 
 ## Verification Order After Changing Settings
 
@@ -85,7 +95,7 @@ For gateway throttling, WAF, and scan blocking, begin in observation mode or wit
 
 ## Backup and Restore
 
-The `.knock` archive exported from the Maintenance tab contains configuration, certificate private keys, TOTP seeds, and several types of service credentials. Treat it as a plaintext backup of secret material. Import is replacement, not merge: it replaces the current fn-knock application data and then synchronizes gateway, WAF, SSL, and other runtime state. A synchronization warning does not trigger an automatic full rollback.
+Automatic and manually exported `.knock` archives contain configuration, certificate private keys, TOTP seeds, and several types of service credentials. Treat them as plaintext backups of secret material. Automatic backups are disabled by default; when enabled, they are stored in the server data directory with a configurable interval and retention period. If that directory is on the same disk or container volume as the active data, it is not a substitute for an off-device backup. Import is replacement, not merge: it replaces the current fn-knock application data and then synchronizes gateway, WAF, SSL, and other runtime state. A synchronization warning does not trigger an automatic full rollback.
 
 See [Backup, Restore, and Data Cleanup](/en/guide/backup-and-restore) for archive security, versions, the `128 MiB` limit, platform entry points, full restoration acceptance testing, and failure handling. An application backup is not a filesystem or container-volume backup, and it does not include external DNS, host-firewall configuration, or upstream application data.
 

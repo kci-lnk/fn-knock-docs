@@ -3,7 +3,7 @@ lang: zh-TW
 title: "DDNS 管理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 872f5788286c0aff254e06eb420c0fd5cd752ebe1c2866f1b9a809ab2a7e5cc2
+translationSourceHash: 908388f447dc5fd37bfad203d5937507661ce3b6ef567c1c11a28647d6bd6ce0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -59,6 +59,8 @@ DDNS 只負責將 DNS Record 更新為目前的公網 IP。它不會開放連接
 選擇 `從網卡直接取得` 時，必須明確指定一個網路介面。頁面只會顯示經過篩選的候選 IP，排除明顯的內網 IP、仍在進行位址偵測、衝突偵測失敗或已棄用的位址；Temporary／Privacy IPv6 預設也會排除。沒有候選項目時，請更換網路介面，或改用公網偵測、Static IP 或網域解析。
 
 IP 選擇不再依賴網路介面回傳清單中的 Index。手動設定 `優先位址` 後，只要該位址仍符合篩選規則，系統就會優先使用；沒有手動優先位址或該位址已不可用時，才會沿用目前仍可用的位址，最後從其餘候選中穩定選擇。這可確保手動指定優先於系統建議，也能在未指定時避免候選順序改變造成 DNS Record 跳動。舊版本儲存的 IP Index 會在頁面中轉換為穩定選擇規則，儲存後生效；若舊設定沒有選擇規則，或原 Index 已失效，後台也會依自動穩定規則挑選候選，不會只因缺少 Index 就中斷無人值守更新。
+
+自動同步時，如果目前已發布的位址仍可用，而先前的優先 IPv6 剛重新出現，系統會等待它連續 `3` 輪都被偵測到後才切回，避免短暫恢復造成 DNS 往返跳動。手動立即更新不使用這段穩定等待；需要立即切回時，請先確認連線路徑已穩定。
 
 切換至另一個網路介面時，頁面會清除原介面的優先 IP、CIDR 與 IPv6 Interface Identifier 等選擇規則，避免舊規則誤套至新介面。切換後請重新檢查預覽結果，並視需求設定規則。
 
