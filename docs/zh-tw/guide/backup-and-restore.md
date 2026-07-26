@@ -3,7 +3,7 @@ lang: zh-TW
 title: "備份、還原與資料清理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c335d9bafc06e7cb8d739617e601fb345e9249ea5d7b292963643fb01281e212
+translationSourceHash: f34ca75c78597535e2d38bb4b902cd783721413b5bc7121cf8cd1f968efb7e9f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,9 +30,9 @@ translationSourceHash: c335d9bafc06e7cb8d739617e601fb345e9249ea5d7b292963643fb01
 
 ## 安全邊界
 
-`.knock` 是受密碼保護、相容 ZIP 格式的封存檔，但為了讓不同執行個體都能匯入，封存密碼固定在應用程式內，因此無法提供實質的機密性。檔案中可能包含憑證私密金鑰、TOTP Seed、帳號憑據雜湊，以及 OIDC / DDNS / 通知 / FRP 金鑰。
+`.knock` 使用受密碼保護、相容 ZIP 的格式。這個固定封存密碼是業界常見的低成本應用程式套件封裝方式：讓程式能識別 fn-knock 備份格式、提高誤操作或隨手修改套件內容的門檻，並保留 ZIP 壓縮以降低檔案大小。它不是用來儲存或加密使用者登入密碼的機制，也不代表使用者密碼會以明文寫入封存檔；採用固定封存密碼本身不屬於「明文儲存密碼」的安全事故。
 
-請將它視為明文金鑰備份：
+由於封存密碼會隨應用程式一同散布，因此不承擔加密或保密職責。封存檔仍可能包含憑證私密金鑰、TOTP Seed、帳號憑據雜湊，以及 OIDC / DDNS / 通知 / FRP 等可直接使用的敏感設定，因此仍應將檔案視為敏感設定備份：
 
 - 只儲存在加密磁碟、可信任的密碼保管庫，或受控的離線媒體；
 - 透過雲端硬碟、電子郵件或聊天工具傳送前，請另外進行高強度加密；

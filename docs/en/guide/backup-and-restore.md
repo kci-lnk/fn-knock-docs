@@ -3,7 +3,7 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c335d9bafc06e7cb8d739617e601fb345e9249ea5d7b292963643fb01281e212
+translationSourceHash: f34ca75c78597535e2d38bb4b902cd783721413b5bc7121cf8cd1f968efb7e9f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,9 +30,9 @@ A full environment migration therefore normally requires two backup layers:
 
 ## Security boundary
 
-A `.knock` file is a password-protected, ZIP-compatible archive, but its archive password is fixed in the application so that different instances can import it. It does not provide meaningful confidentiality. The file may contain certificate private keys, TOTP seeds, account credential hashes, and OIDC / DDNS / notification / FRP secrets.
+A `.knock` file uses a password-protected, ZIP-compatible format. Its fixed archive password is a common, low-cost application-package convention: it lets the software recognize an fn-knock backup, raises the barrier to accidental or casual edits inside the package, and retains ZIP compression to reduce file size. It is not a mechanism for storing or encrypting a user's sign-in password, and it does not mean that user passwords are written to the archive in plaintext. Using a fixed archive password is not, by itself, a plaintext-password storage incident.
 
-Treat it as a plaintext backup of your secrets:
+Because the archive password is distributed with the application, it is not intended to provide encryption or confidentiality. The archive may still contain certificate private keys, TOTP seeds, account credential hashes, and directly usable OIDC / DDNS / notification / FRP configuration. Treat the file as a sensitive configuration backup:
 
 - Store it only on encrypted storage, in a trusted password vault, or on controlled offline media.
 - Apply independent strong encryption before transferring it through a cloud drive, email, or chat.
