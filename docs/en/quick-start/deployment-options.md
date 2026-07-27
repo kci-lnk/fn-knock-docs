@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Deployment and Access Pattern"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3f0f54ad4cbdde3ffb9e2fc080cfa1b27d683650b5372a7f09cfa4cbe8df06f9
+translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ fn-knock consolidates ingress and places authentication in front of your service
 
 Docker, OpenWrt, Linux, and Windows deployments require a separate panel password for the admin endpoint. That password protects the admin panel and is unrelated to the TOTP, username and password, or Passkey used at the gateway.
 
-If the app on an fnOS device is named `Knock Lite`, it is a native non-root package, not a Docker deployment, and does not have the full host permissions of the standard FPK in the table. Lite supports Host proxying, authentication, DDNS, certificates, WAF, built-in FRP / Cloudflared, and monitoring. It does not support Direct mode and the host firewall, Smart Connect, system clock sync, automatic HTTPS, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. To use those capabilities, export Lite's `.knock`, stop Lite, install the standard FPK from the official website, and import the archive.
+If the app on an fnOS device is named `Knock Lite`, it is a native non-root package, not a Docker deployment, and does not have the full host permissions of the standard FPK in the table. Lite supports Host proxying, authentication, DDNS, certificates, WAF, built-in FRP / Cloudflared, and monitoring. It does not support Direct mode and the host firewall, Smart Connect, system clock sync, automatic HTTPS, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. Here, “automatic HTTPS” means the standard-port public-ingress helper used when the ISP and inbound path allow TCP `80 / 443`; it does not mean Lite lacks certificates or HTTPS. See [fnOS App Store Lite vs. the Standard FPK](/en/quick-start/fpk-lite-vs-standard) for the complete boundary and migration procedure.
 
 Installation guides:
 

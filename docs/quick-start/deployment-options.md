@@ -17,7 +17,7 @@ fn-knock 用于收敛入口和前置认证，不能替代系统更新、备份�
 
 Docker、OpenWrt、Linux 与 Windows 的管理入口需要单独设置面板密码。这个密码保护管理面板，与网关入口使用的 TOTP、账号密码或 Passkey 不是同一套凭据。
 
-飞牛设备中若应用名称为 `敲门 knock Lite`，它是原生非 root 精简包，不是 Docker 部署，也不具备表中标准 FPK 的完整宿主机权限。Lite 支持 Host 反代、认证、DDNS、证书、WAF、内置 FRP / Cloudflared 和监控；不支持直连与宿主机防火墙、智能连接、系统时钟同步、自动 HTTPS、飞牛证书库同步、Web 终端、FN Connect WAF 接入或应用内更新。需要这些能力时，导出 Lite 的 `.knock` 后停止 Lite，再安装官网标准 FPK 并导入。
+飞牛设备中若应用名称为 `敲门 knock Lite`，它是原生非 root 精简包，不是 Docker 部署，也不具备表中标准 FPK 的完整宿主机权限。Lite 支持 Host 反代、认证、DDNS、证书、WAF、内置 FRP / Cloudflared 和监控；不支持直连与宿主机防火墙、智能连接、系统时钟同步、自动 HTTPS、飞牛证书库同步、Web 终端、FN Connect WAF 接入或应用内更新。这里的“自动 HTTPS”特指运营商和入站链路允许 TCP `80 / 443` 时的标准端口直达辅助能力，不代表 Lite 不能使用证书和 HTTPS。完整边界与迁移方法见[应用商店 Lite 与官网标准 FPK 的区别](/quick-start/fpk-lite-vs-standard)。
 
 安装说明：
 

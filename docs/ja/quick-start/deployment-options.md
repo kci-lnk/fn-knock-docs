@@ -3,7 +3,7 @@ lang: ja-JP
 title: "デプロイ方法とアクセス構成を選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3f0f54ad4cbdde3ffb9e2fc080cfa1b27d683650b5372a7f09cfa4cbe8df06f9
+translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ fn-knock は公開口の集約と前段認証を担うものです。OS やア�
 
 Docker、OpenWrt、Linux、Windows の管理画面には、専用のパネルパスワードを設定します。このパスワードは管理画面を保護するためのもので、ゲートウェイ入口で使う TOTP、ユーザー名とパスワード、パスキーとは別の認証情報です。
 
-fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプロイではなくネイティブの非 root 簡易パッケージで、表にある標準 FPK の完全なホスト権限を持ちません。Lite は Host プロキシ、認証、DDNS、証明書、WAF、組み込み FRP / Cloudflared、監視に対応します。ダイレクトモードとホストのファイアウォール、スマート接続、システム時刻同期、自動 HTTPS、fnOS 証明書ストア同期、Web ターミナル、FN Connect WAF 接続、アプリ内更新には対応しません。これらが必要な場合は、Lite の `.knock` をエクスポートして Lite を停止し、公式サイトの標準 FPK をインストールしてインポートしてください。
+fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプロイではなくネイティブの非 root 簡易パッケージで、表にある標準 FPK の完全なホスト権限を持ちません。Lite は Host プロキシ、認証、DDNS、証明書、WAF、組み込み FRP / Cloudflared、監視に対応します。ダイレクトモードとホストのファイアウォール、スマート接続、システム時刻同期、自動 HTTPS、fnOS 証明書ストア同期、Web ターミナル、FN Connect WAF 接続、アプリ内更新には対応しません。ここでいう「自動 HTTPS」は、ISP と受信経路が TCP `80 / 443` を許可している場合の標準ポート直結支援機能です。Lite が証明書や HTTPS を利用できないという意味ではありません。完全な境界と移行方法は、[アプリストア Lite と標準 FPK の違い](/ja/quick-start/fpk-lite-vs-standard)を参照してください。
 
 インストール手順：
 

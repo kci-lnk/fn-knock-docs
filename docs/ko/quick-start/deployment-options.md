@@ -3,7 +3,7 @@ lang: ko-KR
 title: "배포 및 접근 방식 선택"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3f0f54ad4cbdde3ffb9e2fc080cfa1b27d683650b5372a7f09cfa4cbe8df06f9
+translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
 ---
 
 # 배포 및 접근 방식 선택
@@ -25,7 +25,7 @@ fn-knock는 외부 엔드포인트를 한곳으로 모으고 서비스 앞단에
 
 Docker, OpenWrt, Linux, Windows의 관리 엔드포인트에는 별도의 패널 비밀번호를 설정합니다. 이 비밀번호는 관리 패널을 보호하며, 게이트웨이 엔드포인트에서 사용하는 TOTP, 사용자 이름과 비밀번호 또는 패스키와는 별개의 자격 증명입니다.
 
-fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네이티브 비 root 경량 패키지이며 표의 표준 FPK가 가진 완전한 호스트 권한은 없습니다. Lite는 Host 프록시, 인증, DDNS, 인증서, WAF, 내장 FRP / Cloudflared 및 모니터링을 지원합니다. 직접 연결과 호스트 방화벽, Smart Connect, 시스템 시간 동기화, 자동 HTTPS, fnOS 인증서 저장소 동기화, 웹 터미널, FN Connect WAF 연결 또는 앱 내 업데이트는 지원하지 않습니다. 이러한 기능이 필요하면 Lite의 `.knock`를 내보내고 Lite를 중지한 뒤 공식 웹사이트의 표준 FPK를 설치하고 가져옵니다.
+fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네이티브 비 root 경량 패키지이며 표의 표준 FPK가 가진 완전한 호스트 권한은 없습니다. Lite는 Host 프록시, 인증, DDNS, 인증서, WAF, 내장 FRP / Cloudflared 및 모니터링을 지원합니다. 직접 연결과 호스트 방화벽, Smart Connect, 시스템 시간 동기화, 자동 HTTPS, fnOS 인증서 저장소 동기화, 웹 터미널, FN Connect WAF 연결 또는 앱 내 업데이트는 지원하지 않습니다. 여기서 “자동 HTTPS”는 ISP와 인바운드 경로가 TCP `80 / 443`을 허용할 때 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 인증서나 HTTPS를 지원하지 않는다는 뜻이 아닙니다. 전체 범위와 마이그레이션 방법은 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
 
 설치 문서:
 

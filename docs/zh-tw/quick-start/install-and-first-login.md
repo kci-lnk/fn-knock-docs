@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 原生 FPK 安裝與初始設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 875e2271fb5a0ba2970a8f22845a89289ac602f695af6763c83c4900a6679527
+translationSourceHash: b6e745c3267459146e2902d348543e722b336b442a23575339165ce93c84e425
 ---
 
 # fnOS 原生 FPK 安裝與初始設定
@@ -21,7 +21,7 @@ translationSourceHash: 875e2271fb5a0ba2970a8f22845a89289ac602f695af6763c83c4900a
 
 > **建議使用官網原生 FPK**
 >
-> 官網提供的標準 fnOS FPK 是 fn-knock 功能最完整的版本。若裝置中顯示的是 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 版：支援反向 Proxy、驗證、DDNS、憑證、WAF、內建 Tunnel 與監控，但不提供直連與 Host 防火牆、網路最佳化、飛牛憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。移轉時請先從 Lite 匯出 `.knock` 備份並停止或解除安裝 Lite，再依裝置架構安裝標準 FPK 後匯入；請勿同時執行兩個版本，以免連接埠衝突。
+> 官網提供的標準 fnOS FPK 是 fn-knock 功能最完整的版本。若裝置中顯示的是 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 版：支援反向 Proxy、驗證、DDNS、憑證、WAF、內建 Tunnel 與監控，但不提供直連與 Host 防火牆、網路最佳化、fnOS 憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。Lite 仍然支援憑證和 HTTPS；它缺少的「自動 HTTPS」是公網 TCP `80 / 443` 可連線時的標準連接埠直連輔助能力。移轉時請先從 Lite 匯出 `.knock` 備份並停止或解除安裝 Lite，再依裝置架構安裝標準 FPK 後匯入；請勿同時執行兩個版本，以免連接埠衝突。完整比較請參閱[應用程式商店 Lite 與官網標準 FPK 的差異](/zh-tw/quick-start/fpk-lite-vs-standard)。
 
 請勿在 32 位元 ARM 裝置上安裝 ARM64 套件，也不要將其他部署格式當成原生 FPK 安裝。安裝精靈會要求設定四個連接埠；若沒有衝突，保留預設值即可。四個數值都必須介於 `1`–`65535`，且不得重複。
 

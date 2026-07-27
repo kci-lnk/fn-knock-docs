@@ -3,7 +3,7 @@ lang: en-US
 title: "Install and Set Up the Native fnOS FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 875e2271fb5a0ba2970a8f22845a89289ac602f695af6763c83c4900a6679527
+translationSourceHash: b6e745c3267459146e2902d348543e722b336b442a23575339165ce93c84e425
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ Use the official direct-download link for your fnOS device architecture. Native 
 
 > **Use the native FPK from the official website**
 >
-> The standard fnOS FPK from the official website is the most feature-complete fn-knock edition. If the installed app is named `Knock Lite`, it is a native non-root package, not a Docker edition. It supports reverse proxying, authentication, DDNS, certificates, WAF, built-in tunnels, and monitoring, but not Direct mode and host-firewall management, network optimization, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. To migrate, export a `.knock` backup from Lite and stop or uninstall Lite before installing the standard FPK for your architecture and importing the archive. Do not run both editions at the same time, because their ports may conflict.
+> The standard fnOS FPK from the official website is the most feature-complete fn-knock edition. If the installed app is named `Knock Lite`, it is a native non-root package, not a Docker edition. It supports reverse proxying, authentication, DDNS, certificates, WAF, built-in tunnels, and monitoring, but not Direct mode and host-firewall management, network optimization, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. Lite still supports certificates and HTTPS; the missing “automatic HTTPS” capability is a standard-port public-ingress helper used when public TCP `80 / 443` are reachable. To migrate, export a `.knock` backup from Lite and stop or uninstall Lite before installing the standard FPK for your architecture and importing the archive. Do not run both editions at the same time, because their ports may conflict. See [fnOS App Store Lite vs. the Standard FPK](/en/quick-start/fpk-lite-vs-standard) for the full comparison.
 
 Do not install the ARM64 package on a 32-bit ARM device, and do not try to install a package intended for another deployment method as a native FPK. The setup wizard asks for four ports. Keep the defaults unless they conflict with another service. Every value must be between `1` and `65535`, and the four values must be unique.
 

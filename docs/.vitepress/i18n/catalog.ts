@@ -599,6 +599,13 @@ export const PAGE_TITLES = {
     ja: 'Docker Compose でデプロイ',
     ko: 'Docker Compose로 배포',
   },
+  'quick-start/fpk-lite-vs-standard': {
+    root: '飞牛应用商店 Lite 与官网标准 FPK',
+    'zh-tw': 'fnOS 應用程式商店 Lite 與官網標準 FPK',
+    en: 'fnOS App Store Lite vs. the Standard FPK',
+    ja: 'fnOS アプリストア Lite と標準 FPK の違い',
+    ko: 'fnOS 앱 스토어 Lite와 표준 FPK 비교',
+  },
   'quick-start/install-and-first-login': {
     root: '飞牛原生 FPK 安装与首次配置',
     'zh-tw': 'fnOS 原生 FPK 安裝與初始設定',
@@ -727,6 +734,7 @@ const SIDEBAR_SECTIONS = [
         label: 'gettingStarted',
         items: [
           'quick-start/deployment-options',
+          'quick-start/fpk-lite-vs-standard',
           'quick-start/install-and-first-login',
           'quick-start/ports-and-entrypoints',
         ],

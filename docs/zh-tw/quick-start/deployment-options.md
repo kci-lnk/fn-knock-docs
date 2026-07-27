@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇部署與存取方案"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3f0f54ad4cbdde3ffb9e2fc080cfa1b27d683650b5372a7f09cfa4cbe8df06f9
+translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
 ---
 
 # 選擇部署與存取方案
@@ -25,7 +25,7 @@ fn-knock 用於收斂入口並提供前置身分驗證，不能取代系統更�
 
 Docker、OpenWrt、Linux 與 Windows 的管理入口需要另行設定面板密碼。這組密碼只保護管理面板，與閘道入口使用的 TOTP、帳號密碼或 Passkey 並不是同一套憑證。
 
-fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 部署，也不具備表中標準 FPK 的完整 Host 權限。Lite 支援 Host 反代、驗證、DDNS、憑證、WAF、內建 FRP / Cloudflared 與監控；不支援直連與 Host 防火牆、智慧連線、系統時間同步、自動 HTTPS、飛牛憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。需要這些能力時，請匯出 Lite 的 `.knock` 後停止 Lite，再安裝官網標準 FPK 並匯入。
+fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 部署，也不具備表中標準 FPK 的完整 Host 權限。Lite 支援 Host 反代、驗證、DDNS、憑證、WAF、內建 FRP / Cloudflared 與監控；不支援直連與 Host 防火牆、智慧連線、系統時間同步、自動 HTTPS、fnOS 憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。這裡的「自動 HTTPS」特指 ISP 與入站路徑允許 TCP `80 / 443` 時的標準連接埠直連輔助能力，不代表 Lite 無法使用憑證和 HTTPS。完整邊界與移轉方式請參閱[應用程式商店 Lite 與官網標準 FPK 的差異](/zh-tw/quick-start/fpk-lite-vs-standard)。
 
 安裝說明：
 
