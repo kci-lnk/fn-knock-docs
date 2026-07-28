@@ -3,7 +3,7 @@ lang: en-US
 title: "SSH Hardening"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 19d9bb31865da91b9b7b75831a6c49d23971ca9601686f110dd682cb5247bae0
+translationSourceHash: 07ad3f7930657b453cf219c2ef9de4852cd6fdb280e1411fc2712336e4223c6f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,9 +20,9 @@ Keep a working local console or trusted-network recovery path before enabling th
 
 1. Under `System settings → Features`, enable the `SSH security` menu.
 2. Open `SSH security` and confirm the availability state, detected SSH ports, allowed-CIDR count, and active-block count in the summary.
-3. Expand `SSH security configuration`, save the rules, and then select `Sync firewall`.
+3. Expand `SSH security configuration` and save the rules. A successful save applies them immediately. Use `Sync firewall` to rebuild the rules after SSH ports or host-firewall state changes.
 
-The feature-menu switch controls whether the page and backend capability are enabled. `Enable SSH security` in the configuration card determines whether protection is enforced from logs, regions, and thresholds. Allowed CIDRs and active blocks are fully pushed to the detected SSH ports only after the configuration is saved and the firewall synchronizes successfully.
+The feature-menu switch controls whether the page and backend capability are enabled. `Enable SSH security` in the configuration card determines whether protection is enforced from logs, regions, and thresholds. Saving pushes allowed CIDRs and active blocks to the detected SSH ports immediately. `Sync firewall` reapplies them after a port, rule-chain, or other firewall-state change.
 
 ## Configuration Fields
 
@@ -32,10 +32,12 @@ The feature-menu switch controls whether the page and backend capability are ena
 | Window | 10 minutes by default; 1–1440 minutes | Counts failures from one source within this window |
 | Failure threshold | 5 by default; 1–1000 | Adds the source to the block list when the threshold is reached |
 | Block duration | 1 day by default; numeric value 1–365 | Unit can be minutes, hours, or days; the block is removed automatically at expiration |
-| Regions allowed to access SSH | Empty by default | With no entries, regions are unrestricted; otherwise only selected regions and custom CIDRs are allowed |
-| Custom CIDRs | Empty by default; one per line | Adds VPNs, office public egress addresses, or other fixed IPv4/IPv6 networks |
+| Regions allowed to access SSH | Empty by default | With no entries, regions are unrestricted; otherwise only selected regions, custom CIDRs, and built-in local sources are allowed |
+| Custom CIDRs | Empty by default; one per line | Adds non-standard VPNs, office public egress addresses, or other fixed IPv4/IPv6 networks |
 
 Regions can be selected by province, city, and carrier. Filtering CIDRs by China Telecom, China Unicom, or China Mobile requires CIDR database version `0.1.3` or later. If the region list cannot be loaded, do not submit an unverified restriction; use only fixed CIDRs until it is available.
+
+Built-in local sources include loopback, RFC 1918 private networks, IPv4 link-local, Tailscale's `100.64.0.0/10`, and IPv6 ULA/link-local addresses. Region and failed-attempt blocks do not apply to these sources, so Tailscale access should still be controlled by tailnet ACLs. If Headscale, WireGuard, ZeroTier, or another overlay uses a different address pool, add its observed source range under Custom CIDRs.
 
 The page validates custom CIDRs and cannot save while any entry has an invalid format. Before adding a regional restriction, include your current trusted egress and backup management network under Custom CIDRs.
 
@@ -75,17 +77,17 @@ The page supports search, pagination, and individual or batch removal. Removing 
 ## Recommended Configuration Order
 
 1. Leave regional restrictions empty and configure only a forgiving Failure threshold and Block duration.
-2. Save and synchronize the firewall, then test SSH sign-in from both a trusted and a test network.
+2. Save, then test SSH sign-in from both a trusted and a test network.
 3. Check that Login logs identify the user, source IP, authentication method, and port correctly.
 4. Add fixed VPN, office egress, and backup networks under Custom CIDRs.
-5. Add regional restrictions, synchronize, and test once from both an allowed and disallowed source.
+5. Add regional restrictions, save, and test once from both an allowed and disallowed source.
 6. Confirm that blocking, automatic expiration, manual removal, and retriggering all work as expected.
 
 Regions and CIDRs are only supporting controls. Mobile networks, corporate egress, and VPN geolocation can change. For a management entry point, SSH keys, disabled password authentication, a minimal allowed CIDR set, a separate VPN path, and upstream firewall restrictions are more reliable.
 
 ## Common Problems
 
-### Saving Succeeds, but SSH Is Still Unrestricted
+### Firewall State Does Not Match the Page After Saving
 
 Run `Sync firewall` and verify the SSH ports in the success message. If another host firewall manager overwrites the rules, synchronize again after it reloads.
 
