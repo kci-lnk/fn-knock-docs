@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求記錄"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: efc4056649508d23562afdbadd597386208709360096236f7fcc4e88a2bcb169
+translationSourceHash: 7bdb9ba812ca5916a1cff51c5a9e2b28d612f2e1e5bcf4b7abf7da480d56444f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: efc4056649508d23562afdbadd597386208709360096236f7fcc4e88a
 請求記錄會記下經過閘道的 HTTP Request，用來確認請求是否到達 fn-knock、命中哪個 Host 或路徑，以及最終轉送至何處。它不是登入記錄，也不會記下未進入閘道的原始連接埠連線。
 
 請在 `系統設定 → 記錄` 啟用閘道請求記錄並設定保留週期，最少保留 1 天。Go 閘道會在 Runtime 目錄下的 `logs` 目錄，依日期寫入結構化 JSON 檔案；後台的 `請求記錄` 頁面則依日期讀取、搜尋並顯示詳細資訊。記錄功能會增加儲存空間與寫入負擔，完成疑難排解後，請依實際需求設定保留時間。
+
+`記錄來自127.0.0.1本機回環的記錄` 預設關閉，因此本機健康檢查、同機反向 Proxy 或其他經由 `127.0.0.1` 進入閘道的請求，通常不會出現在清單中。需要排查本機呼叫鏈時再開啟；此選項只改變記錄範圍，不會變更回環來源的存取權限。
 
 寫入作業採用非同步 Queue。設定頁面顯示累計捨棄數時，代表 Queue 曾經壅塞，部分請求未寫入磁碟；此數字不是遭閘道拒絕的請求數量。閘道因反向 Proxy Rate Limit 而直接中斷的請求，也不會寫入 Access Log。
 
@@ -37,7 +39,7 @@ translationSourceHash: efc4056649508d23562afdbadd597386208709360096236f7fcc4e88a
 4. 檢查驗證狀態與存取原則。
 5. 再檢查上游 Target、Status Code 與應用程式本身的 Log。
 
-如果記錄中完全找不到請求，問題通常發生在 DNS、CDN、Tunnel、路由器或連接埠發布等更前端的環節；不要一開始就修改映射規則。
+如果記錄中完全找不到請求，請先確認測試流量是否來自 `127.0.0.1`，以及回環記錄開關是否已開啟。排除本機請求後，問題通常發生在 DNS、CDN、Tunnel、路由器或連接埠發布等更前端的環節；不要一開始就修改映射規則。
 
 如果只有部分請求缺少記錄，請檢查閘道 Rate Limit 是否直接中斷連線，以及記錄設定頁面是否出現 Queue 捨棄警告。若 Status Code 來自閘道而非上游，請繼續檢查身分驗證、可見性、WAF 與映射；若已顯示正確的上游 Target，再轉往應用程式本身的 Log。
 

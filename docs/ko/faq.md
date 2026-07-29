@@ -3,7 +3,7 @@ lang: ko-KR
 title: "자주 묻는 질문"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4e8c4b6f884ac5c3246201b7daf66b0bc04ca3b13b0136966ce914d78756a494
+translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
 ---
 
 # 자주 묻는 질문
@@ -251,7 +251,7 @@ fnOS 클라이언트에서 웹 인증 리디렉션을 처리하고 쿠키를 재
 
 ### fnOS 공유 링크가 차단됨
 
-fnOS 공유 우회는 서브도메인 라우팅과 리버스 프록시 모드에서 사용할 수 있으며 직접 연결 모드에는 적용되지 않습니다. 요청이 실제 fnOS를 가리키는 Host 매핑이나 기본 라우트와 일치하는지 확인합니다. [fnOS 공유 우회](/ko/guide/fnos-share-bypass)를 참고합니다.
+fnOS 공유 우회는 서브도메인 라우팅과 리버스 프록시 모드에서 사용할 수 있으며 직접 연결 모드에는 적용되지 않습니다. `/s/...` 요청에 실제로 선택된 라우트가 fnOS를 가리키는지 확인합니다. 다른 경로 규칙이나 잘못된 기본 라우트가 요청을 가져가면 우회가 동작하지 않습니다. [fnOS 공유 우회](/ko/guide/fnos-share-bypass)를 참고합니다.
 
 ### 요청 로그 활성화
 

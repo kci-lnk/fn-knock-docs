@@ -3,7 +3,7 @@ lang: zh-TW
 title: "常見問題"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4e8c4b6f884ac5c3246201b7daf66b0bc04ca3b13b0136966ce914d78756a494
+translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -253,7 +253,7 @@ OpenWrt 還要確認系統已安裝並執行 `dnsmasq`，且主要設定已納�
 
 ### 飛牛分享連結遭到攔截
 
-飛牛分享直通可以用於子網域路由與內網穿透，不適用於直連模式。請確認 Request 命中真正指向飛牛的 Host 映射或預設路由。請參考[飛牛分享直通](/zh-tw/guide/fnos-share-bypass)。
+飛牛分享直通可以用於子網域路由與內網穿透，不適用於直連模式。請確認 `/s/...` Request 的實際路由結果指向飛牛；若由其他 Path Rule 或錯誤的預設路由接管，直通不會生效。請參考[飛牛分享直通](/zh-tw/guide/fnos-share-bypass)。
 
 ### 在哪裡啟用 Request Log
 

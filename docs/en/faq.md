@@ -3,7 +3,7 @@ lang: en-US
 title: "Frequently Asked Questions"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4e8c4b6f884ac5c3246201b7daf66b0bc04ca3b13b0136966ce914d78756a494
+translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -253,7 +253,7 @@ The current Host editor does not expose a strict-allowlist selector. For a legac
 
 ### fnOS Share Link Is Blocked
 
-fnOS Share Bypass works with subdomain routing and NAT traversal, not Direct mode. Confirm that the request matches an actual Host mapping or default route pointing to fnOS. See [fnOS Share Bypass](/en/guide/fnos-share-bypass).
+fnOS Share Bypass works with subdomain routing and NAT traversal, not Direct mode. Confirm that the actual route selected for `/s/...` points to fnOS; bypass does not apply if another path rule or an incorrect default route takes over the request. See [fnOS Share Bypass](/en/guide/fnos-share-bypass).
 
 ### Where Do I Enable Request Logs?
 

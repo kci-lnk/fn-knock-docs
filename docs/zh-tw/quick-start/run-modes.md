@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇執行模式"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6b7c9e7d3ae8cd2946a52604c5d43392a60a9fe0af3522b98ec4893032fc1d38
+translationSourceHash: 15c4f10cf088191f9677cf249dae5abca699ee4b010b70b53912dedb28cfd084
 ---
 
 # 選擇執行模式
@@ -96,7 +96,7 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 
 - 從路徑模式切換至任一子網域路由後，路徑映射會隱藏；進入公網直連子網域模式時，介面會詢問是否清除路徑規則。
 - `內網穿透` 的子網域映射與路徑模式都可使用 FRP / Cloudflared；切離內網穿透時，系統會嘗試停止正在執行的 Tunnel。
-- 離開公網直連子網域模式後，通訊協定映射功能會關閉；關閉功能開關會清除既有的通訊協定映射。
+- 離開公網直連子網域模式後，通訊協定映射功能會關閉並停止 Listener，但已儲存的規則會保留；重新進入該模式並開啟功能後即可恢復。
 - 直連模式仰賴主機防火牆。Docker、Synology DSM 7 SPK、Windows，以及不具備主機管理能力的部署方式無法選擇此模式。
 - Docker 不會寫入主機防火牆，也不支援智慧連線；OpenWrt 不提供 SSH 安全性、Web Terminal 與應用程式內 FPK 更新，但支援智慧連線。OpenWrt 的智慧連線要求既有的 `dnsmasq` 已啟用並 Include `/etc/dnsmasq.d/`，頁面無法透過 `apt-get` 自動安裝相依套件。
 - Windows 不支援直連授權、應用程式內主機防火牆管理、智慧連線、內建 FRP / Cloudflared、Web Terminal 或 SSH 安全性；網頁版更新頁面也無法安裝 Windows 更新。

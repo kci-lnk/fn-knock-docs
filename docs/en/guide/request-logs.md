@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Logs"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: efc4056649508d23562afdbadd597386208709360096236f7fcc4e88a2bcb169
+translationSourceHash: 7bdb9ba812ca5916a1cff51c5a9e2b28d612f2e1e5bcf4b7abf7da480d56444f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: efc4056649508d23562afdbadd597386208709360096236f7fcc4e88a
 Request Logs record HTTP requests that pass through the gateway. Use them to confirm whether a request reached fn-knock, which Host or path it matched, and where it was ultimately forwarded. They are not sign-in logs and do not record connections to original ports that never enter the gateway.
 
 Under `System settings → Logs`, enable gateway request logging and set a retention period of at least 1 day. The Go gateway writes daily JSON structured files to the `logs` directory under its runtime directory. The admin console's `Request logs` page reads them by date and supports search and detailed inspection. Logging adds storage and write overhead, so choose a retention period appropriate for your needs after troubleshooting.
+
+`Log requests from local loopback 127.0.0.1` is disabled by default. As a result, local health checks, same-host reverse proxies, and other requests entering the gateway through `127.0.0.1` normally do not appear in the list. Enable it only while tracing a local request path; it changes what is logged, not the access permissions granted to loopback sources.
 
 Writes use an asynchronous queue. If the settings page shows a cumulative dropped count, the queue was congested and some requests were not written to disk. This number is not a count of requests rejected by the gateway. Requests disconnected immediately by gateway reverse-proxy throttling are also absent from the access log.
 
@@ -37,7 +39,7 @@ Request Logs can contain access paths, Query parameters, source IPs, User-Agent 
 4. Check the authentication result and access policy.
 5. Then inspect the upstream target, status code, and the application's own logs.
 
-If no request appears at all, the problem is usually earlier in the path—DNS, CDN, tunnel, router, or port exposure. Do not start by changing mapping rules.
+If no request appears at all, first check whether the test traffic came from `127.0.0.1` and whether loopback logging was enabled. After excluding local traffic, the problem is usually earlier in the path—DNS, CDN, tunnel, router, or port exposure. Do not start by changing mapping rules.
 
 If only some requests are missing, check whether gateway throttling disconnected them immediately and whether the log settings page reports a dropped-queue warning. If the status code came from the gateway rather than the upstream, continue with authentication, Visibility, WAF, and mapping checks. If the correct Upstream target is already shown, move on to the application's own logs.
 

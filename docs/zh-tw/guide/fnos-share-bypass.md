@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 分享直通"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cd8d2d6cc54ac50fc73046832cb2ef2be999e734af1c8ef558931829cbfee971
+translationSourceHash: de87c78d54a3a78127fe62ef5498b5c9632f71db2cda72d8b8e60f09d8104492
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -17,7 +17,7 @@ translationSourceHash: cd8d2d6cc54ac50fc73046832cb2ef2be999e734af1c8ef558931829c
 ## 生效條件
 
 1. 外部請求必須先進入 fn-knock 閘道。
-2. 系統必須能從目前的路由設定中找到真正的飛牛 OS HTTP 上游。
+2. 目前請求必須命中一筆真正指向飛牛 OS 的 HTTP 路由。
 3. 連結必須是由飛牛產生的標準 `/s/{shareId}` 分享入口。
 4. 在 `系統設定 → 飛牛` 開啟 `飛牛分享直通`。
 
@@ -27,7 +27,7 @@ Host 路由中應保留一筆明確指向飛牛的服務映射，例如：
 fnos.example.com -> http://127.0.0.1:5666
 ```
 
-閘道會探測候選 Host Target，以識別飛牛上游。在路徑模式中，將飛牛映射保留為預設路由最穩妥；若預設路由指向其他應用程式，分享驗證可能找不到正確的上游。
+閘道會使用目前請求實際命中的 Target、Host 與路由識別碼探測飛牛上游，不再從其他映射猜測後端。路徑模式不要求飛牛成為預設路由，但 `/s/...` 與相關資源路徑必須命中同一筆飛牛路由；若由其他路徑規則或預設路由接管，分享直通會拒絕處理。
 
 相關設定請參閱[子網域映射](/zh-tw/guide/subdomain-proxy)或[路徑映射](/zh-tw/guide/reverse-proxy)。
 
@@ -45,14 +45,14 @@ fnos.example.com -> http://127.0.0.1:5666
 
 ## 工作階段範圍
 
-合法分享會寫入 `fn-knock-fnos-share-session` Cookie，其 Path 限制為 `/s`。工作階段記錄會綁定一個 `shareId`，只允許該分享所需的路徑群組，包括：
+合法分享會寫入 `fn-knock-fnos-share-session` Cookie，其 Path 限制為 `/s`。工作階段記錄會同時綁定一個 `shareId` 與目前命中的飛牛後端，只允許該後端上此分享所需的路徑群組，包括：
 
 - `/s/{shareId}` 及其子路徑
 - `/s/preview/{shareId}`
 - `/s/thumb/{shareId}`
 - `/s/static/...`、`/s/busstatic/...` 和 `/s/download/...`
 
-存取符合規則的資源時會延長有效期。攜帶此 Cookie 存取其他分享，或超出允許路徑時，閘道會清除 Cookie 並回到根入口。
+存取符合規則的資源時會延長有效期。攜帶此 Cookie 存取其他分享、另一個 Host 或路由後端，或超出允許路徑時，閘道會清除 Cookie；分享工作階段不能跨後端重複使用。
 
 此工作階段與 fn-knock 的一般登入工作階段彼此隔離，不能用來開啟管理頁面、飛牛桌面或其他應用程式。
 
@@ -87,7 +87,7 @@ fnos.example.com -> http://127.0.0.1:5666
 ## 啟用與驗證
 
 1. 確認目前不是直連模式。
-2. 在 Host 路由中保留飛牛映射；使用路徑模式時，確認預設路由指向飛牛。
+2. 在 Host 路由中保留飛牛映射；使用路徑模式時，確認 `/s/...` 與相關資源路徑實際命中飛牛 Target。
 3. 從 fn-knock 的 Runtime 環境直接開啟飛牛 Target 與一個有效分享。
 4. 在 `系統設定 → 飛牛` 開啟此功能。
 5. 建立一個真實分享連結，並使用行動網路上的無痕視窗或未登入裝置開啟。
@@ -99,8 +99,8 @@ fnos.example.com -> http://127.0.0.1:5666
 ## 疑難排解
 
 1. **仍進入登入頁面或回到根入口**：確認功能已啟用，且系統能識別飛牛 Target。
-2. **Host 路由失敗**：保留明確的飛牛 Host 映射，並檢查 Target 是否可連線。
-3. **路徑模式失敗**：將飛牛映射設為預設路由，再重新同步路由。
+2. **Host 路由失敗**：保留明確的飛牛 Host 映射，確認目前 Host 實際命中該路由，並檢查 Target 是否可連線。
+3. **路徑模式失敗**：檢查 `/s/...` 是否由其他路徑規則或預設路由接管，調整順序或比對範圍後再重新同步路由。
 4. **入口可開啟，但資源載入失敗**：檢查 `/s/preview`、`/s/thumb`、靜態資源或下載請求是否經過同一個閘道。
 5. **剛修改分享狀態，仍顯示舊結果**：等待約 `30` 秒，讓 Cache 過期後再試。
 6. **偶發逾時**：先排查飛牛負載、Target IP 與中間 Proxy，不要直接將整個 Host 改成公開。

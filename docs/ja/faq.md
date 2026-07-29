@@ -3,7 +3,7 @@ lang: ja-JP
 title: "よくある質問"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4e8c4b6f884ac5c3246201b7daf66b0bc04ca3b13b0136966ce914d78756a494
+translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -253,7 +253,7 @@ OpenWrt では、`dnsmasq` がインストールされ実行中であること�
 
 ### 飛牛の共有リンクがブロックされる
 
-飛牛の共有リンクパススルーは、サブドメインルーティングと NAT 越えで使用でき、直接接続モードには対応していません。リクエストが、実際に飛牛を参照する Host マッピングまたはデフォルトルートへ一致していることを確認してください。[fnOS 共有リンクのパススルー](/ja/guide/fnos-share-bypass)も参照してください。
+飛牛の共有リンクパススルーは、サブドメインルーティングと NAT 越えで使用でき、直接接続モードには対応していません。`/s/...` に対して実際に選択されたルートが飛牛を参照していることを確認してください。別のパスルールや誤ったデフォルトルートがリクエストを引き受けると、パススルーは機能しません。[fnOS 共有リンクのパススルー](/ja/guide/fnos-share-bypass)も参照してください。
 
 ### リクエストログはどこで有効にするか
 

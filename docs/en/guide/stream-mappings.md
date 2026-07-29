@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e8c258b0b128b9aa38985c4e7f29a9d65ae499b76f01bc6ce2d62c8ddf9f7597
+translationSourceHash: a9c5fc790c1c2c088f944701b6b811f001125c4f4046a448b5e684d2ffae18e4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,7 +21,7 @@ This feature is available only as an addition to direct public `Subdomain mode`.
 1. `System settings → Mode` is set to `Subdomain mode`.
 2. `System settings → Features → Protocol mapping` is enabled.
 
-Turning off the feature switch clears existing protocol mappings; it does not merely hide the menu. The feature is also disabled when you leave Subdomain mode, so record any rules you still need before changing modes.
+Turning off the feature switch stops the Protocol mapping listeners and hides the menu, but preserves the saved rules. Enabling it again restores the previous configuration. Leaving Subdomain mode also disables the feature and stops its listeners while preserving the rules.
 
 Although `Reverse proxy mode → Subdomain mapping` also uses Host-based routing, it does not provide Protocol mappings. To carry another protocol through FRP or Cloudflare, configure it separately on that platform; you cannot reuse fn-knock's HTTP Host entry point.
 
@@ -41,12 +41,15 @@ A domain only resolves to the entry-point address and does not participate in pr
 | --- | --- |
 | `Transport protocol` | `TCP`, `UDP`, or both; selecting both creates two rules when saved |
 | `External port` | The port used by the client, from `1-65535` |
+| `Comment` | Optional context for distinguishing and searching similar mappings |
 | `Target address` | Plain `host:port`, without `http://` or a path |
 | `Require auth` | Checks fn-knock source-IP authorization before accepting the connection |
 
 The same port can have separate TCP and UDP rules, such as `53/tcp` and `53/udp`. A protocol-and-port pair cannot be duplicated.
 
 The Target must be reachable from the fn-knock runtime environment. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a host or LAN target.
+
+The list search matches protocol, External port, Comment, Target address, and authentication state. You can edit a Comment directly in the list; use the mapping editor for protocol, port, Target, or authentication changes.
 
 ## Authentication Checks Source IP and Credential Scope
 
@@ -76,7 +79,7 @@ Therefore:
 
 ## Save, Synchronize, and Open the Firewall
 
-Saving a rule updates the configuration, refreshes gateway listeners, and opens the port on supported deployments. `Sync gateway` replays the complete configuration after several consecutive rule changes; you normally do not need to select it after every edit.
+Create, edit, delete, and Comment updates are saved in sequence so consecutive actions do not overwrite each other. Rule changes that affect listeners refresh the gateway and open the port on supported deployments. Comments are used only for management and search and do not affect forwarding. `Sync gateway` explicitly replays the complete configuration; you normally do not need to select it after every edit.
 
 Platform boundaries:
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Runtime Mode"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6b7c9e7d3ae8cd2946a52604c5d43392a60a9fe0af3522b98ec4893032fc1d38
+translationSourceHash: 15c4f10cf088191f9677cf249dae5abca699ee4b010b70b53912dedb28cfd084
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -98,7 +98,7 @@ When the gateway identifies a loopback, private, or link-local source, authentic
 
 - After switching from Path mode to either form of subdomain routing, path mappings are hidden. When entering Subdomain mode with direct public ingress, the UI asks whether to remove path rules.
 - Both Subdomain mapping and Path mode under Reverse proxy mode can use FRP or Cloudflared. When leaving Reverse proxy mode, the system attempts to stop any running tunnels.
-- After leaving Subdomain mode with direct public ingress, TCP/UDP stream proxying is disabled. Turning off its feature switch clears all existing stream mappings.
+- After leaving Subdomain mode with direct public ingress, TCP/UDP stream proxying is disabled and its listeners stop, but saved rules are preserved. Re-enter the mode and enable the feature to restore them.
 - Direct mode depends on the host firewall. It is unavailable on Docker, Synology DSM 7 SPK, Windows, and any deployment without host-management capability.
 - Docker does not write host firewall rules and does not support Smart Connect. OpenWrt supports Smart Connect but not SSH security, the web terminal, or in-app FPK updates. Smart Connect on OpenWrt requires an existing enabled `dnsmasq` whose configuration includes `/etc/dnsmasq.d/`; the UI cannot install its dependencies with `apt-get`.
 - Windows does not support Direct mode authorization, in-app host firewall management, Smart Connect, built-in FRP / Cloudflared, the web terminal, or SSH security. The web update page also cannot install Windows updates.

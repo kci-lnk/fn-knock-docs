@@ -3,7 +3,7 @@ lang: ja-JP
 title: "実行モードを選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6b7c9e7d3ae8cd2946a52604c5d43392a60a9fe0af3522b98ec4893032fc1d38
+translationSourceHash: 15c4f10cf088191f9677cf249dae5abca699ee4b010b70b53912dedb28cfd084
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -98,7 +98,7 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 
 - パスモードからサブドメインルーティングへ切り替えると、パスマッピングは非表示になります。グローバル IP から直接公開するサブドメインモードへ切り替える際は、パスルールを削除するか画面で確認されます。
 - リバースプロキシモードのサブドメインマッピングとパスモードは、どちらも FRP / Cloudflared を利用できます。リバースプロキシモードから切り替えると、実行中のトンネルを停止しようとします。
-- グローバル IP から直接公開するサブドメインモードを終了すると、プロトコルマッピング機能は無効になります。機能スイッチをオフにすると、既存のプロトコルマッピングも消去されます。
+- グローバル IP から直接公開するサブドメインモードを終了すると、プロトコルマッピング機能が無効になりリスナーも停止しますが、保存済みのルールは保持されます。このモードへ戻って機能を有効にすると復元できます。
 - 直接接続モードはホストのファイアウォールに依存します。Docker、Synology DSM 7 SPK、Windows、ホストを管理できないデプロイ方式では選択できません。
 - Docker はホストのファイアウォールを書き換えず、スマート接続にも対応しません。OpenWrt は SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新には対応しませんが、スマート接続は利用できます。OpenWrt でスマート接続を使うには、既存の `dnsmasq` が有効で、設定から `/etc/dnsmasq.d/` を読み込む必要があります。画面から `apt-get` を使って依存パッケージを自動インストールすることはできません。
 - Windows は、直接接続の IP 許可、アプリ内からのホストファイアウォール管理、スマート接続、内蔵 FRP / Cloudflared、Web ターミナル、SSH セキュリティに対応していません。Web の更新画面から Windows 版を更新することもできません。

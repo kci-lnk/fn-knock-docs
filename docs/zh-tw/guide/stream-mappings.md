@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e8c258b0b128b9aa38985c4e7f29a9d65ae499b76f01bc6ce2d62c8ddf9f7597
+translationSourceHash: a9c5fc790c1c2c088f944701b6b811f001125c4f4046a448b5e684d2ffae18e4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,7 +21,7 @@ translationSourceHash: e8c258b0b128b9aa38985c4e7f29a9d65ae499b76f01bc6ce2d62c8dd
 1. `系統設定 → 模式` 為 `子網域模式`。
 2. `系統設定 → 功能 → 通訊協定映射` 已啟用。
 
-關閉功能開關會清除所有既有通訊協定映射，而不只是隱藏選單。切離子網域模式時，此功能也會停用；變更前請先記錄仍需保留的規則。
+關閉功能開關會停止通訊協定映射 Listener 並隱藏選單，但會保留已儲存的規則；重新開啟後會依原設定恢復。切離子網域模式時，此功能也會自動停用並停止 Listener，規則同樣會保留。
 
 `內網穿透 → 子網域映射` 雖然同樣使用 Host 路由，但不提供通訊協定映射。若要讓 FRP 或 Cloudflare 承載其他通訊協定，必須在對應平台另外設定，不能共用 fn-knock 的 HTTP Host 入口。
 
@@ -41,12 +41,15 @@ UDP :53   -> 127.0.0.1:53
 | --- | --- |
 | `傳輸通訊協定` | `TCP`、`UDP`，可同時選取；儲存後拆成兩條規則 |
 | `對外連接埠` | 用戶端連線使用的連接埠，範圍為 `1-65535` |
+| `備註` | 選填說明，用來區分及搜尋用途相近的映射 |
 | `Target` | 純 `host:port`，不可包含 `http://` 或路徑 |
 | `要求驗證` | 連線前依來源 IP 查詢 fn-knock 授權狀態 |
 
 同一個連接埠可各有一條 TCP 與 UDP 規則，例如 `53/tcp` 與 `53/udp`；相同通訊協定、相同連接埠不可重複。
 
 Target 必須能從 fn-knock 所在環境連線。在 Docker 中，`127.0.0.1` 代表 Container 本身；Host 或區域網路 Target 必須使用 Container 可連線的 IP。
+
+清單搜尋會比對通訊協定、對外連接埠、備註、Target 與驗證狀態。備註可直接在清單中修改；通訊協定、連接埠、Target 或驗證狀態仍需透過編輯映射調整。
 
 ## 驗證機制會檢查來源 IP 與憑據範圍
 
@@ -76,7 +79,7 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 
 ## 儲存、同步與防火牆
 
-儲存規則會更新設定、重新整理閘道 Listener，並在支援的部署環境中同步連接埠放行。`同步閘道` 可在連續修改多條規則後，主動重新套用全部設定，通常不需要每次都按。
+新增、編輯、刪除或修改備註會依序儲存，避免連續操作互相覆蓋。涉及 Listener 的規則變更會重新整理閘道，並在支援的部署環境中同步連接埠放行；備註只用於管理與搜尋，不影響轉送。`同步閘道` 用於主動重新套用全部設定，通常不需要在每次修改後按下。
 
 平台限制如下：
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bc896f0aa14b94540fdbb569c9152f21ade8b0a5d830ea9b2aae0679f45904a1
+translationSourceHash: dc78b71224d6aea001fa1da5a522b5432c5af1604718c073190c444519d88479
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,10 +26,10 @@ translationSourceHash: bc896f0aa14b94540fdbb569c9152f21ade8b0a5d830ea9b2aae0679f
 
 ## 事件頁面
 
-事件頁面目前可識別下列 20 類系統事件：
+事件頁面目前可識別下列 21 類系統事件：
 
 - 身分驗證：登入成功、登出、登入失敗、工作階段 IP 漂移；
-- 安全性：掃描器攔截、閘道 Rate Limit 封鎖、WAF 阻擋；
+- 安全性：掃描器攔截、閘道 Rate Limit 封鎖、閘道可見性攔截、WAF 阻擋；
 - SSH：登入成功、登入失敗、IP 封鎖；
 - 網路：DDNS 更新、FRP 連線／中斷、Cloudflared 連線／中斷；
 - 系統：應用程式更新提示、CPU 告警／恢復、記憶體告警／恢復。
@@ -46,7 +46,7 @@ translationSourceHash: bc896f0aa14b94540fdbb569c9152f21ade8b0a5d830ea9b2aae0679f
 
 「清除事件」會刪除事件中心保存的所有事件；括號中的數量只代表目前 View 符合的筆數，並不表示只清除目前的篩選結果。此操作無法復原，但不會清除通知規則與投遞記錄。
 
-事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、資源 Threshold 等欄位。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log 或 Tunnel Log 交叉比對。
+事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log 或 Tunnel Log 交叉比對。
 
 ## CPU 與記憶體監控
 
@@ -119,6 +119,7 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 規則建立後，可逐條編輯觸發條件。彙總維度包括全域、IP、工作階段、主體物件、Hostname 與供應商。自動建議範例如下：
 
 - 登入失敗、掃描器、閘道 Rate Limit、WAF 與 SSH 事件依 IP；
+- 閘道可見性攔截依全域彙總；
 - 工作階段 IP 漂移依工作階段；
 - DDNS 更新依供應商；
 - CPU 與記憶體事件依 Hostname；
@@ -131,6 +132,7 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 
 - 登入失敗：依 IP 彙總，在短時間窗內達到多次後再通知；
 - 掃描器、閘道 Rate Limit、WAF 與 SSH 封鎖：依 IP 彙總；
+- 閘道可見性攔截：預設依全域彙總；流量較大時提高臨界值或延長 Cooldown，避免同一策略產生通知風暴；
 - DDNS：依供應商彙總，重點關注失敗結果；
 - FRP 與 Cloudflared：依主體物件區分不同 Tunnel；
 - CPU、記憶體：同時替告警與恢復事件設定規則；

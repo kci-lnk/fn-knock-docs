@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bc896f0aa14b94540fdbb569c9152f21ade8b0a5d830ea9b2aae0679f45904a1
+translationSourceHash: dc78b71224d6aea001fa1da5a522b5432c5af1604718c073190c444519d88479
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,10 +26,10 @@ Deleting events does not delete delivery records that have already been created.
 
 ## Events
 
-The Events page currently recognizes 20 system event types:
+The Events page currently recognizes 21 system event types:
 
 - Authentication: `Login success`, `Logout`, `Login failure`, and `Session IP drift`;
-- Security: `Scanner blocked`, `Gateway throttle blocked`, and `WAF blocked`;
+- Security: `Scanner blocked`, `Gateway throttle blocked`, `Gateway visibility blocked`, and `WAF blocked`;
 - SSH: `SSH login success`, `SSH login failure`, and `SSH IP blocked`;
 - Network: `DDNS updated`, FRP connected/disconnected, and Cloudflared connected/disconnected;
 - System: `App update available`, CPU alert/recovered, and memory alert/recovered.
@@ -46,7 +46,7 @@ The page lets you:
 
 `Clear events` deletes every event stored in the Event Center. The count shown in parentheses describes how many events match the current view; it does not mean that only filtered results will be cleared. This operation cannot be undone, but it does not clear notification rules or delivery records.
 
-Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, resource threshold, and other fields. When troubleshooting, copy the details and compare them with request logs, WAF logs, or tunnel logs.
+Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, or tunnel logs.
 
 ## CPU and Memory Monitoring
 
@@ -119,6 +119,7 @@ Batch creation uses these default trigger conditions:
 After creating rules, you can edit their trigger conditions individually. Aggregation options are `Global`, `IP`, `Session`, `Subject`, `Hostname`, and `Provider`. Examples of the automatic recommendations are:
 
 - Login failures, scanner, gateway throttle, WAF, and SSH events are grouped by IP;
+- Gateway visibility blocks are grouped globally;
 - Session IP drift is grouped by session;
 - DDNS updates are grouped by provider;
 - CPU and memory events are grouped by hostname;
@@ -131,6 +132,7 @@ A rule can contain multiple providers, but each provider can be added to that ru
 
 - Login failure: group by IP and notify after several failures within a short window;
 - Scanner, gateway throttle, WAF, and SSH blocks: group by IP;
+- Gateway visibility blocks: group globally by default; for busy gateways, raise the threshold or extend cooldown to prevent one policy from producing a notification storm;
 - DDNS: group by provider and pay attention to failed results;
 - FRP and Cloudflared: group by subject to distinguish tunnels;
 - CPU and memory: configure rules for both alert and recovery events;

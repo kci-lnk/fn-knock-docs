@@ -431,6 +431,13 @@ export const PAGE_TITLES = {
     ja: '外部アカウント認証（OIDC / OAuth）',
     ko: '외부 계정 로그인(OIDC / OAuth)',
   },
+  'guide/openapi': {
+    root: 'OpenAPI：开放管理 API 与 AI Agent',
+    'zh-tw': 'OpenAPI：開放管理 API 與 AI Agent',
+    en: 'OpenAPI: Management API Access and AI Agents',
+    ja: 'OpenAPI：管理 API の公開と AI Agent',
+    ko: 'OpenAPI: 관리 API 공개와 AI Agent',
+  },
   'guide/passkey': {
     root: 'Passkey',
     'zh-tw': 'Passkey',
@@ -818,6 +825,7 @@ const SIDEBAR_SECTIONS = [
           'guide/reverse-proxy',
           'guide/gateway-path-response',
           'guide/stream-mappings',
+          'guide/openapi',
           'guide/gateway-proxy-headers',
           'guide/gateway-host-response',
           'guide/gateway-portal',
