@@ -585,6 +585,13 @@ export const PAGE_TITLES = {
     ja: 'fn-knock を開発した理由',
     ko: 'fn-knock를 만든 이유',
   },
+  'origin/performance-benchmark': {
+    root: '性能与资源效率测试',
+    'zh-tw': '效能與資源效率測試',
+    en: 'Performance and Resource Efficiency Benchmark',
+    ja: 'パフォーマンスとリソース効率の検証',
+    ko: '성능 및 리소스 효율 벤치마크',
+  },
   'quick-start/deployment-options': {
     root: '选择部署与访问方案',
     'zh-tw': '選擇部署與存取方案',
@@ -900,7 +907,7 @@ const SIDEBAR_SECTIONS = [
     groups: [
       {
         label: 'productVision',
-        items: ['origin/why-knock'],
+        items: ['origin/why-knock', 'origin/performance-benchmark'],
       },
     ],
   },
