@@ -3,27 +3,29 @@ lang: en-US
 title: "Performance and Resource Efficiency Benchmark"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a37706ac07861597ecacf65c82b5e5c5d7a6e6f17806a6f3f9f6935720417d3b
+translationSourceHash: b846207b28fe57b1d61f64c90045bc33836bf315fb1bf76adebdfe083e29909b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Performance and Resource Efficiency Benchmark
 
-This report records a load-test comparison between the fn-knock gateway and another product in the same controlled environment. It shows relative performance for the tested versions, configuration, and request model. It is neither third-party certification nor a performance guarantee for arbitrary hardware or production traffic.
+We ran fn-knock and another product in the same environment with the same load-test settings. These numbers describe this test only. They are not third-party certification, and different hardware or real application traffic may produce different results.
+
+<PerformanceBenchmarkCharts />
 
 ## Summary
 
-In the primary HTTPS unmatched-route scenario, fn-knock delivered better throughput, P99 latency, throughput per CPU core, and memory usage:
+The main test sent the same HTTPS 404 requests through both gateways. In this run, fn-knock handled more requests, had lower P99 latency, completed more work per CPU core, and used less memory. P99 is the time within which 99% of requests completed; lower is better.
 
 | Metric | fn-knock | Other product | Result |
 | --- | ---: | ---: | --- |
 | Throughput at 512 concurrent connections | 13,026 req/s | 4,642 req/s | fn-knock: `2.81×` |
 | P99 at 512 concurrent connections | 498.68 ms | 573.10 ms | fn-knock: `12.99%` lower |
-| Throughput per CPU core | 2,242 req/s/core | 1,063 req/s/core | fn-knock: `110.89%` higher |
-| Average RSS under load | 153.4 MiB | 325.6 MiB | fn-knock: `52.90%` lower |
+| Per-core throughput | 2,242 req/s/core | 1,063 req/s/core | fn-knock: `110.89%` higher |
+| Average memory under load (RSS) | 153.4 MiB | 325.6 MiB | fn-knock: `52.90%` lower |
 
-After request logging for loopback sources was disabled, fn-knock throughput did not change significantly, while high-concurrency P99, CPU use, and memory variation improved slightly. The benchmark requests also stopped generating access-log writes.
+Disabling request logs for loopback addresses barely changed fn-knock throughput. P99, CPU use, and memory variation improved slightly, and the benchmark requests no longer wrote to the access log.
 
 ## Test Conditions
 
@@ -33,12 +35,12 @@ After request logging for loopback sources was disabled, fn-knock throughput did
 | Load generator | `wrk` with 8 threads |
 | Concurrency levels | 64, 256, and 512 |
 | Primary request | HTTPS with Host `loadtest.invalid`, matching no route and returning 404 |
-| Resource sampling | `pidstat` averages for the target service process CPU and RSS |
-| Environment control | The load generator and both services shared the same 8-core test resources; every run used the same tool and concurrency parameters |
+| Resource recording | `pidstat` recorded average CPU and RSS for each target process; RSS is the physical memory held by the process |
+| Test environment | `wrk` and both services shared the same 8-core resources; every run used the same tool and concurrency settings |
 
-This setup reduces differences in network paths, but the load generator also competes for CPU. The results therefore reflect the combined limit of the complete test environment, not the absolute capacity of either service on dedicated hardware or over a real public network.
+This keeps network-path differences small, but `wrk` also uses CPU. The numbers are therefore the result of the whole 8-core environment working together. They are not the limit of either service on dedicated hardware and do not include real Internet latency.
 
-## Throughput and Tail Latency
+## Throughput and P99 Latency
 
 | Concurrency | fn-knock throughput | Other-product throughput | fn-knock advantage | fn-knock P99 | Other-product P99 |
 | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -46,7 +48,7 @@ This setup reduces differences in network paths, but the load generator also com
 | 256 | 12,982 req/s | 4,251 req/s | `205.36%` | 242.29 ms | 272.92 ms |
 | 512 | 13,026 req/s | 4,642 req/s | `180.63%` | 498.68 ms | 573.10 ms |
 
-fn-knock had already reached approximately 13.5k req/s at a concurrency of 64. Increasing concurrency further did not raise stable throughput; it mainly increased queueing and tail latency. For the other product, increasing concurrency from 256 to 512 raised throughput by approximately `9.2%`, while P99 rose by approximately `110%`. Both paths were therefore near their capacity knee for this request model.
+fn-knock had already reached approximately 13.5k req/s at 64 concurrent connections. Adding more concurrency did not noticeably improve throughput; it mainly increased waiting time. For the other product, moving from 256 to 512 concurrent connections raised throughput by only `9.2%`, while P99 rose by approximately `110%`. At that point, adding concurrency mostly increased latency instead of useful throughput.
 
 ## Resource Efficiency at 512 Concurrent Connections
 
@@ -54,27 +56,27 @@ fn-knock had already reached approximately 13.5k req/s at a concurrency of 64. I
 | --- | ---: | ---: | --- |
 | Service CPU | 5.81 cores | 4.37 cores | fn-knock used `33.07%` more CPU |
 | Throughput | 13,026 req/s | 4,642 req/s | fn-knock processed `180.63%` more requests |
-| Throughput per CPU core | 2,242 req/s/core | 1,063 req/s/core | fn-knock was `110.89%` higher |
-| Average RSS under load | 153.4 MiB | 325.6 MiB | fn-knock used `52.90%` less |
+| Per-core throughput | 2,242 req/s/core | 1,063 req/s/core | fn-knock was `110.89%` higher |
+| Average memory under load (RSS) | 153.4 MiB | 325.6 MiB | fn-knock used `52.90%` less |
 
-fn-knock used more CPU during the high-concurrency run, but its throughput gain was much larger than the CPU increase, so it still achieved higher per-core efficiency. Lower CPU usage is not inherently better; it must be evaluated together with completed request volume, tail latency, and error rate.
+fn-knock used more CPU at 512 concurrent connections, but the extra request volume was much larger than the CPU increase. Each core still completed more work. CPU usage should be read together with throughput, P99, and error rate rather than on its own.
 
-## Memory Lifecycle
+## Memory Before and After the Load Test
 
 | Stage | fn-knock | Other product | Other product / fn-knock |
 | --- | ---: | ---: | ---: |
 | Before the load test | 58.3 MiB | 121.4 MiB | `2.08×` |
-| Average under load | 153.4 MiB | 325.6 MiB | `2.12×` |
+| Average under heavy load | 153.4 MiB | 325.6 MiB | `2.12×` |
 | Recorded peak | 228.6 MiB | 610.0 MiB | `2.67×` |
 | After cooldown in the same run | 132.8 MiB | 201.7 MiB | `1.52×` |
 
-The other product reached a recorded peak of 610.0 MiB. A subsequent repeat run also produced 6 timeouts and a P99 of up to 1.12 seconds. The fn-knock repeat run produced no timeouts and did not raise its recorded memory peak further.
+The other product reached a memory peak of 610.0 MiB. In a repeat run, it also produced 6 timeouts and a P99 of up to 1.12 seconds. fn-knock had no timeouts in the repeat run, and its memory peak did not rise further.
 
-A short repeat test can show high-water marks and an initial reclamation trend only. Detecting slow growth, fragmentation, or leaks still requires a sustained load of at least 30–60 minutes, a stable request model, and multiple independent runs.
+The repeat run was short, so it shows only the short-term peak and cooldown. Checking for continuing growth or a leak requires a fixed workload for at least 30–60 minutes and several separate runs.
 
 ## Effect of Disabling Benchmark Request Logs
 
-After fn-knock stopped logging requests from loopback sources, the following changes were observed relative to the preceding run with logging enabled:
+After fn-knock stopped logging requests from loopback addresses, the following changed from the preceding run with logging enabled:
 
 | Concurrency | Throughput change | P99 change | Mean latency change |
 | ---: | ---: | ---: | ---: |
@@ -82,34 +84,33 @@ After fn-knock stopped logging requests from loopback sources, the following cha
 | 256 | `−0.72%` | `−10.63%` | `−10.08%` |
 | 512 | `+0.32%` | `−6.83%` | `−5.03%` |
 
-At a concurrency of 512, the throughput difference was only `0.32%` and can be treated as measurement variation. P99 fell by `6.83%`, average CPU use fell by `0.96%`, and average RSS under load fell by `5.39%`. The run issued 593,792 requests and added 0 bytes to the access log.
+At 512 concurrent connections, throughput differed by only `0.32%`, which is small enough to treat as test variation. P99 fell by `6.83%`, average CPU use by `0.96%`, and average memory by `5.39%`. The run sent 593,792 requests and added nothing to the access log.
 
-Request logging was therefore not the primary throughput bottleneck in this scenario. Its main benefit was reducing disk writes and resource variation rather than materially increasing RPS. Whether production deployments should log loopback or trusted-source requests depends on audit requirements, storage cost, and troubleshooting practices.
+Request logging was not the main performance limit in this test. Disabling it did not materially improve RPS; it mainly reduced disk writes and made CPU and memory steadier. In production, decide whether to log loopback or trusted-source requests based on audit, storage, and troubleshooting needs.
 
-## The Management API Path Is Reference Data Only
+## The 7998 Management API Is Not Directly Comparable
 
-The run also sampled the readiness path of the fn-knock management API on `7998` to show the approximate resource position of the control plane:
+The test also recorded the readiness endpoint on the `7998` management API:
 
-| Path | Request | Throughput | P99 | Service CPU | Average RSS under load |
+| Path | Request | Throughput | P99 | Service CPU | Average memory (RSS) |
 | --- | --- | ---: | ---: | ---: | ---: |
 | fn-knock gateway `7999` | HTTPS 404 with CIDR evaluation and routing | 13,026 req/s | 498.68 ms | 5.81 cores | 153.4 MiB |
 | Other product | HTTPS 404 | 4,642 req/s | 573.10 ms | 4.37 cores | 325.6 MiB |
 | Management API `7998` | HTTP readiness including a gateway status check | 5,157 req/s | 162.46 ms | 2.01 cores | 169.3 MiB |
 
-Port `7998` is the control plane. Its readiness request is not equivalent to the HTTPS gateway data plane on `7999`. These numbers cannot be used to infer reverse-proxy capacity, and the management API must not be used as an application traffic entry point. See [OpenAPI: Management API Access and AI Agents](/en/guide/openapi) for exposure options and security boundaries.
+Port `7998` is the management interface; `7999` is the gateway that handles user traffic. The two requests do different work, so their numbers should not be ranked directly, and `7998` cannot be used to estimate reverse-proxy capacity. The management API is not an application entry point. Read [OpenAPI: Management API Access and AI Agents](/en/guide/openapi) before exposing it.
 
-## How to Interpret the Results
+## When Using These Numbers
 
-1. **fn-knock was more efficient for this request model.** In the stable run at 512 concurrent connections, it delivered approximately `2.81×` the throughput of the other product, with lower P99 and `110.89%` higher per-core throughput.
-2. **More concurrency does not necessarily mean more useful capacity.** fn-knock reached a throughput plateau near 64 concurrent connections; additional concurrency mainly increased queueing latency.
-3. **Memory findings require long-duration confirmation.** fn-knock had lower short-run averages and peaks, but a single test cannot replace long-term stability testing.
-4. **Logging policy affects resource variation and disk writes.** Decisions to exclude request classes from logs should follow operational and audit requirements, not benchmark scores alone.
-5. **Control-plane and data-plane paths must be evaluated separately.** The `7998` readiness figures are contextual only and cannot be ranked directly against HTTPS proxy requests.
+- fn-knock was already close to its throughput limit near 64 concurrent connections in this test. More concurrency mainly added waiting time.
+- fn-knock used less memory in the short run, but a longer sustained test is still needed to judge long-term stability.
+- Choose what to log from operational and audit needs, not just to improve a benchmark score.
+- Ports `7998` and `7999` handle different work. Do not rank their results together.
 
 ## Scope and Limitations
 
 - Both primary paths used HTTPS, the same Host, and an unmatched-route 404, but response sizes differed: approximately 11.5 KiB for fn-knock and 65 B for the other product. fn-knock still achieved higher throughput with the larger response.
-- This run measured TLS, CIDR evaluation, route matching, and gateway-generated response handling. It did not include an application upstream and cannot represent end-to-end performance for arbitrary workloads.
-- “Other product” refers only to the specific version and configuration tested. The result must not be generalized to its other versions, deployment modes, or the entire product category.
-- Hardware, kernel, TLS implementation, certificates, logging, connection reuse, response size, and network path can all change the result. Evaluate your deployment with repeated runs of the same script and record throughput, P99, error rate, CPU, RSS, and connection count together.
-- Capacity plans require headroom. When tail latency matters, determine an acceptable concurrency limit with the real request model instead of adopting the concurrency figures on this page directly.
+- This run covered TLS, CIDR checks, route matching, and a gateway-generated 404 response. It did not include an application upstream, so it does not represent every workload's real end-to-end speed.
+- “Other product” means only the version and configuration used in this test. The result does not describe its other versions, other deployment modes, or every similar product.
+- Hardware, kernel, TLS, certificates, logging, connection reuse, response size, and network path can all change the result. To test your deployment, keep the script and settings fixed, run it several times, and record throughput, P99, error rate, CPU, memory, and connection count together.
+- Leave headroom in production. If response time matters, test an acceptable concurrency limit with real requests instead of copying the figures from this page.
