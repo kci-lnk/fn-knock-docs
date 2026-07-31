@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 999f15e5f9dd42954e5d329e208a5a78ad3c93ae58ed68907826ac128cc86dc6
+translationSourceHash: 2febfd2cbb94b2c7361b1244cc5d6fe872b9bcadcb4e730715254ab7b6fee159
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -54,7 +54,7 @@ translationSourceHash: 999f15e5f9dd42954e5d329e208a5a78ad3c93ae58ed68907826ac128
 
 ### EdgeOne / ESA
 
-公網直連子網域模式可啟用騰訊雲 EdgeOne／阿里雲 ESA 支援。啟用後，公開 URL 可省略 `:7999`，閘道會依平台 Header 讀取真實用戶端 IP：
+公網直連子網域模式可啟用騰訊雲 EdgeOne／阿里雲 ESA 支援。啟用後，公開 URL 可省略 `:7999`，子網域清單、映射 URL 與身分驗證服務也只顯示公開 Host，不再附加舊設定中殘留的閘道連接埠。這只影響訪客端顯示；Edge Origin 仍需指向 fn-knock 的實際 Listen Port。閘道也會依平台 Header 讀取真實用戶端 IP：
 
 | 平台 | 用戶端 IP Header |
 | --- | --- |
@@ -72,12 +72,13 @@ Edge 平台負責外部 `80 / 443` 時，Origin 仍應指向 fn-knock 的實際�
 ```text
 nas.example.com   -> http://127.0.0.1:5666
 alist.example.com -> http://127.0.0.1:5244
+photos.example.com -> http://127.0.0.1:5666/photos/
 ```
 
 | 欄位 | 行為 |
 | --- | --- |
 | `Host／子網域名稱` | 比對請求的 Host；已儲存根網域時可只填 `nas` |
-| `Target` | HTTP／HTTPS 上游 URL，必須能從 fn-knock 所在環境連線 |
+| `Target` | HTTP、HTTPS、WS 或 WSS 上游 URL，可包含 Base Path，且必須能從 fn-knock 所在環境連線 |
 | `要求登入` | 尚未登入時導向身分驗證 Host，完成後返回原始 URL |
 | `停用`／`排程啟用或停用` | 手動下線，或依伺服器本機時間每天控制開放時段 |
 | `群組` | 將服務 Host 放入現有群組；身分驗證服務不能分組 |
@@ -89,6 +90,8 @@ alist.example.com -> http://127.0.0.1:5244
 | `啟用 WAF` | 服務 Host 預設啟用；關閉後，目前 Host 會略過全域 WAF |
 
 服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
+
+Target 包含 Path 時，閘道會保留這段 Base Path，並在其後接上訪客 Request Path，可用於掛載在子路徑下的 fnOS 相簿、音樂等服務。儲存後必須實際驗證首頁、靜態資源、Redirect、Cookie 與 WebSocket；若上游只支援根路徑部署，單純填入 Base Path 無法取代應用程式端改寫。標題與圖示擷取會使用完整 Target，並保留明確連接埠。
 
 身分驗證服務是一筆特殊的 Host 映射：它必須公開，不能再啟用要求登入或 Basic Auth 注入，否則登入入口會形成 Redirect Loop 或被自身攔截。
 
@@ -175,9 +178,9 @@ alist.example.com -> http://127.0.0.1:5244
 ## 平台限制
 
 - Host 路由可在飛牛 FPK、Docker、OpenWrt、Linux、Synology DSM 7 SPK 及 Windows 上使用；實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
-- 自動寫入 Host 防火牆及智慧連線，都依賴 Host 管理能力；Docker 不提供這些能力。
+- 自動寫入 Host 防火牆及智慧連線，只由具備對應 Runtime 能力的飛牛標準 FPK 提供；Docker、OpenWrt、Linux、Synology 與 Windows 均不提供。
 - 協定映射只會顯示在公網直連子網域模式中。即使 Docker 額外 Publish Port，也不會由 fn-knock 管理 Host 防火牆。
-- OpenWrt 具備 root Host 能力時可以管理防火牆；智慧連線依賴現有 `dnsmasq`，且 `/etc/dnsmasq.d/` 必須已納入設定；頁面內的 `apt-get` 自動安裝不適用於 OpenWrt。它不提供 SSH 安全性、Web 終端機或應用程式內 FPK 更新。
+- OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理或智慧連線，也不提供 SSH 安全性、Web 終端機或應用程式內 FPK 更新。
 - fn-knock 不會自動關閉 Upstream Service 原有的公網監聽，也無法取代 Upstream 更新、備份及最小權限設定。
 
 ## 驗證與疑難排解

@@ -103,10 +103,12 @@ logread -e fn-knock
 ```text
 /etc/config/fn-knock
 /etc/fn-knock/gateway
-/var/lib/fn-knock
+/etc/fn-knock/data
 ```
 
-其中网关目录保存 SQLite 数据库，运行目录可能保存 secret、隧道资源和更新状态。升级前将这三处纳入备份；它们含有敏感信息，不应上传到公开位置。
+`/etc/config/fn-knock` 保存 UCI 端口与目录配置，`/etc/fn-knock/gateway` 保存网关运行配置，`/etc/fn-knock/data` 保存 SQLite、认证密钥及其他持久化数据。升级前将这三处纳入备份；它们含有敏感信息，不应上传到公开位置。
+
+从旧版本升级且 UCI 仍使用默认 `/var/lib/fn-knock` 时，安装脚本会先停止服务，把旧数据复制到 `/etc/fn-knock/data`，再更新 `fn-knock.main.data_dir`。自定义过数据目录的实例不会被强制迁移。升级后先确认 LuCI 中的数据目录、管理登录和原有配置正常，再处理遗留的旧目录；不要在验证前手工删除它。
 
 同时从维护页导出 `.knock` 应用备份。目录备份用于保留 SQLite 和平台运行数据，`.knock` 用于迁移可恢复配置；内容范围、版本限制和恢复验收见[备份、恢复与数据清理](/guide/backup-and-restore)。
 
@@ -139,13 +141,11 @@ fn-knock-reset-panel-password
 | 能力 | OpenWrt 软件包中的状态 |
 | --- | --- |
 | 应用内 FPK 更新 | 不支持；使用 `opkg` 或 `apk` 安装匹配的新包 |
-| 直连模式、宿主机防火墙管理 | 支持；服务需以 root 运行，并应先保留 LuCI 或本地控制台回退路径 |
-| 智能连接 | 支持；依赖已安装并运行的 `dnsmasq`，且主配置包含 `/etc/dnsmasq.d/`；页面的 `apt-get` 自动安装不适用于 OpenWrt |
+| 直连模式、宿主机防火墙管理 | 不支持；使用 OpenWrt 自身的防火墙、VPN 或上级网关控制原始端口 |
+| 智能连接 | 不支持；需要分流时在 OpenWrt 的 `dnsmasq`、DHCP 或其他本地 DNS 中自行配置 |
 | SSH 安全 | 不支持；使用 OpenWrt 自身的 SSH 日志、防火墙或安全插件 |
 | Web 终端 | 不支持 |
 | 自动 HTTPS | 当前 OpenWrt 软件包不支持 |
-
-智能连接会写入 `/etc/dnsmasq.d/fn-knock-smart-connect.conf`，再通过 `service dnsmasq restart` 重启服务。首次启用前应在 SSH 中确认 `dnsmasq` 已就绪，并保留 LuCI 或控制台恢复入口；页面若提示安装 `dnsmasq`，请使用当前固件的 `opkg` 或 `apk` 自行安装，而不是依赖页面安装按钮。
 
 `fn-knock` 不能替代 OpenWrt 固件更新、路由器备份和防火墙最小暴露原则。
 

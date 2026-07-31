@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
+translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f4
 
 ## 更新頁面依部署型態運作
 
-路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes；管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
+路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes，並提供官方網站、使用文件與 GitHub 專案的快捷連結。Release Notes 會安全呈現 Markdown 標題、清單、強調與 HTTPS Link，而不是任意 HTML 頁面。管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
 
 | 部署型態 | 更新頁面提供的功能 | 實際升級方式 |
 | --- | --- | --- |
@@ -102,7 +102,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 若 `/tmp` 中保留多個版本，請使用完整檔名取代 Wildcard。
 
-本機 `.apk` 的 `--allow-untrusted` 只能用於從可信發布管道取得的套件。升級會保留 `/etc/config/fn-knock`、`/etc/fn-knock/gateway` 與 `/var/lib/fn-knock`；即使會保留，升級前仍應先備份。
+本機 `.apk` 的 `--allow-untrusted` 只能用於從可信發布管道取得的套件。升級會保留 `/etc/config/fn-knock`、`/etc/fn-knock/gateway` 與 `/etc/fn-knock/data`；即使會保留，升級前仍應先備份。舊版仍使用預設 `/var/lib/fn-knock` 時，安裝 Script 會將資料複製到新目錄並更新 UCI；自訂資料目錄不會被強制遷移。確認登入、設定與原有資料正常前，不要手動刪除舊目錄。
 
 ## 更新群暉 DSM 7 SPK
 

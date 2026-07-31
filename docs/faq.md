@@ -31,7 +31,7 @@ OpenWrt 默认管理端口是 `7991`，网关仍是 `7999`。Windows 管理页�
 
 - 新安装：检查数据目录权限、端口冲突和服务日志。
 - 从早期 Redis 版本升级：保留旧 Redis 数据卷，按 [Docker 部署](./quick-start/docker-deployment.md) 的迁移步骤处理。
-- OpenWrt：确认 `/etc/fn-knock/gateway` 和 `/var/lib/fn-knock` 仍然存在。
+- OpenWrt：确认 `/etc/fn-knock/gateway` 和 `/etc/fn-knock/data` 仍然存在；从旧版本升级时再检查 UCI 数据目录是否已由 `/var/lib/fn-knock` 迁移。
 
 不要为新安装额外创建空 Redis。旧数据迁移完成并确认后台正常后，再移除旧 Redis 服务和数据卷。
 
@@ -163,14 +163,14 @@ Cloudflared 与 fn-knock 在不同容器时，`localhost` 指向错误的容器�
 
 ### 回到家庭 Wi-Fi 后仍走公网
 
-客户端仍在使用公网 DNS 结果。飞牛原生 FPK 或 OpenWrt 使用智能连接时，检查：
+客户端仍在使用公网 DNS 结果。飞牛标准 FPK 使用智能连接时，检查：
 
 - `系统设置 → 功能 → 智能连接` 是否启用。
 - 本机局域网 IP 是否正确。
 - 路由器 DHCP DNS 或客户端 DNS 是否指向 fn-knock 所在设备。
 - 客户端 DNS 缓存是否刷新。
 
-OpenWrt 还要确认系统已安装并运行 `dnsmasq`，其主配置包含 `/etc/dnsmasq.d/`；页面的自动安装调用 `apt-get`，不适用于 OpenWrt。智能连接只用于子域模式的局域网 DNS 优化，不会修改公网 DNS。Docker 不提供该能力。见 [智能连接](./guide/smart-connect.md)。
+智能连接只用于飞牛标准 FPK 子域模式的局域网 DNS 优化，不会修改公网 DNS。OpenWrt、Docker 和其他部署不提供该能力；需要分流时应在路由器或独立 DNS 中自行配置。见 [智能连接](./guide/smart-connect.md)。
 
 ## 登录或会话异常
 
@@ -272,7 +272,7 @@ HTTPS 保护登录凭据和会话 Cookie，也是 Passkey 的正常使用条件�
 
 OpenWrt 支持匹配架构的 `.ipk` 和 `.apk` 包。安装后入口为 `服务 → 敲门 Knock`。
 
-升级时安装新版软件包；应用内 FPK 更新不适用于 OpenWrt。正常升级会保留 `/etc/config/fn-knock` 和 `/var/lib/fn-knock`。完整命令见 [OpenWrt 部署](./quick-start/openwrt-deployment.md)。
+升级时安装新版软件包；应用内 FPK 更新不适用于 OpenWrt。正常升级会保留 `/etc/config/fn-knock`、`/etc/fn-knock/gateway` 和 `/etc/fn-knock/data`；旧版默认 `/var/lib/fn-knock` 会在升级时迁移到新的持久化数据目录。完整命令见 [OpenWrt 部署](./quick-start/openwrt-deployment.md)。
 
 ### Docker 升级后数据为空
 
@@ -298,10 +298,10 @@ OpenWrt 支持匹配架构的 `.ipk` 和 `.apk` 包。安装后入口为 `服务
 
 | 能力 | 飞牛 fnOS FPK | Docker | OpenWrt | Linux 服务 | 群晖 DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 主机防火墙与直连授权 | 支持 | 不支持 | 支持 | 不支持 | 不支持 | 不支持 |
+| 主机防火墙与直连授权 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
 | 自动 HTTPS | 支持 | 不支持 | 不支持 | 支持；需 `80` 端口与入站链路 | 不支持 | 支持；仍需打通防火墙、NAT 与入站链路 |
 | ACME DNS-01 | 支持 | 支持 | 支持 | 支持 | 支持 | 支持；内置客户端，固定 Let's Encrypt |
-| 智能连接 | 支持 | 不支持 | 支持；依赖现有 `dnsmasq` 与配置包含 | 不支持 | 不支持 | 不支持 |
+| 智能连接 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
 | SSH 安全 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
 | Web 终端 | 支持 | 不支持 | 不支持 | 支持；依赖 `tmux` | 不支持 | 不支持 |
 | 内置 FRP / Cloudflared | 支持 | 支持 | 支持 | 支持 | 支持 | 不支持 |

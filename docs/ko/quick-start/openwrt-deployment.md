@@ -3,7 +3,7 @@ lang: ko-KR
 title: "OpenWrt 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 277cb83222e1e08a1c6745b3936c716b103813a63d9127565fb6b5647479b338
+translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
 ---
 
 # OpenWrt 배포
@@ -111,10 +111,12 @@ logread -e fn-knock
 ```text
 /etc/config/fn-knock
 /etc/fn-knock/gateway
-/var/lib/fn-knock
+/etc/fn-knock/data
 ```
 
-게이트웨이 디렉터리에는 SQLite 데이터베이스가 저장되고, 데이터 디렉터리에는 시크릿, 터널 리소스, 업데이트 상태 등이 저장될 수 있습니다. 업그레이드 전에 세 경로를 모두 백업합니다. 민감한 정보가 들어 있으므로 공개 위치에 업로드하면 안 됩니다.
+`/etc/config/fn-knock`에는 UCI 포트와 디렉터리 설정, `/etc/fn-knock/gateway`에는 게이트웨이 런타임 설정, `/etc/fn-knock/data`에는 SQLite, 인증 키 및 기타 영구 데이터가 저장됩니다. 업그레이드 전에 세 경로를 모두 백업합니다. 민감한 정보가 들어 있으므로 공개 위치에 업로드하면 안 됩니다.
+
+이전 버전에서 업그레이드할 때 UCI가 기본 `/var/lib/fn-knock`를 계속 사용하면 설치 스크립트가 서비스를 중지하고 기존 데이터를 `/etc/fn-knock/data`로 복사한 뒤 `fn-knock.main.data_dir`을 업데이트합니다. 사용자 지정 데이터 디렉터리는 강제로 마이그레이션하지 않습니다. LuCI 데이터 디렉터리, 관리 로그인 및 기존 설정을 확인하기 전에 이전 디렉터리를 삭제하지 않습니다.
 
 유지보수 페이지에서도 `.knock` 설정 백업을 내보냅니다. 디렉터리 백업은 SQLite와 플랫폼 런타임 데이터를 보존하고 `.knock`는 복원 가능한 설정을 다른 환경으로 옮길 때 사용합니다. 내용 범위, 버전 제한, 복원 검증 절차는 [백업, 복원 및 데이터 정리](/ko/guide/backup-and-restore)를 참고합니다.
 
@@ -147,13 +149,11 @@ fn-knock-reset-panel-password
 | 기능 | OpenWrt 패키지 지원 상태 |
 | --- | --- |
 | 웹 관리 패널 FPK 업데이트 | 미지원. `opkg` 또는 `apk`로 아키텍처가 맞는 새 패키지를 설치합니다. |
-| 직접 연결 모드, 호스트 방화벽 관리 | 지원. 서비스가 root로 실행되어야 하며 먼저 LuCI 또는 로컬 콘솔 복구 경로를 확보합니다. |
-| Smart Connect | 지원. 실행 중인 `dnsmasq`와 기본 설정의 `/etc/dnsmasq.d/` 포함 구성이 필요합니다. 페이지의 `apt-get` 자동 설치는 OpenWrt에서 사용할 수 없습니다. |
+| 직접 연결 모드, 호스트 방화벽 관리 | 미지원. OpenWrt 자체 방화벽, VPN 또는 상위 게이트웨이에서 원본 포트를 관리합니다. |
+| Smart Connect | 미지원. OpenWrt의 `dnsmasq`, DHCP 또는 다른 로컬 DNS에서 분할 DNS를 직접 구성합니다. |
 | SSH 보안 | 미지원. OpenWrt 자체 SSH 로그, 방화벽 또는 보안 플러그인을 사용합니다. |
 | 웹 터미널 | 미지원 |
 | 자동 HTTPS | 현재 OpenWrt 패키지에서는 미지원 |
-
-Smart Connect는 `/etc/dnsmasq.d/fn-knock-smart-connect.conf`를 작성한 뒤 `service dnsmasq restart`로 서비스를 다시 시작합니다. 처음 활성화하기 전에 SSH에서 `dnsmasq`가 정상인지 확인하고 LuCI 또는 콘솔 복구 경로를 확보합니다. 페이지에서 `dnsmasq` 설치가 필요하다고 표시되면 페이지의 설치 버튼에 의존하지 말고 현재 OpenWrt의 `opkg` 또는 `apk` 패키지 관리자로 직접 설치합니다.
 
 `fn-knock`는 OpenWrt 펌웨어 업데이트, 라우터 설정 백업, 방화벽의 최소 노출 원칙을 대신하지 않습니다.
 

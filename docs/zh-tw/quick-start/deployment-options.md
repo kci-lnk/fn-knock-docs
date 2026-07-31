@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇部署與存取方案"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
+translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
 ---
 
 # 選擇部署與存取方案
@@ -18,7 +18,7 @@ fn-knock 用於收斂入口並提供前置身分驗證，不能取代系統更�
 | --- | --- | --- | --- | --- |
 | fnOS 原生 FPK | fnOS 桌面的「敲門 knock」圖示（本機 CGI 轉送至後端 `7998`） | `7999` | fnOS 主機，且希望使用完整的主機功能 | `7998` 是管理後端，不是對外或瀏覽器管理入口 |
 | Docker Compose | `7991` | `7999` | NAS、Home Server 或一般 Docker 主機 | 不支援直連模式、主機防火牆管理、自動 HTTPS、SSH 安全性、智慧連線與 Web Terminal |
-| OpenWrt 軟體套件 | `服務 → 敲門 Knock`；預設連接埠為 `7991` | `7999` | 主路由器、軟路由或旁路由 | 不支援自動 HTTPS、SSH 安全性、Web Terminal 與應用程式內 FPK 更新；智慧連線仰賴既有 `dnsmasq` 設定 |
+| OpenWrt 軟體套件 | `服務 → 敲門 Knock`；預設連接埠為 `7991` | `7999` | 主路由器、軟路由或旁路由 | 不支援直連、Host 防火牆管理、智慧連線、自動 HTTPS、SSH 安全性、Web Terminal 與應用程式內 FPK 更新 |
 | [Linux（systemd / OpenRC）](/zh-tw/quick-start/linux-deployment) | `7991` | `7999` | 一般 Linux Server、VPS 或自管主機 | 需要 root 權限及正在執行的 systemd 或 OpenRC；主機防火牆由管理員自行維護 |
 | [Synology DSM 7 x86_64 / ARM SPK](/zh-tw/quick-start/synology-deployment) | DSM 桌面上的套件入口 | `7999` | 搭載 Intel / AMD / ARM 處理器的 DSM 7 NAS | 不支援直連、主機防火牆管理、智慧連線、Web Terminal 與 SSH 安全性；透過套件中心升級 |
 | [Windows x86_64](/zh-tw/quick-start/windows-deployment) | 管理程式開啟本機 `127.0.0.1:7991` | `7999`，預設監聽所有介面 | 需要 Windows Service 與本機系統匣管理程式 | 仍須設定防火牆與 NAT；不支援直連授權、內建 FRP / Cloudflared、智慧連線、Web Terminal 與 SSH 安全性 |
@@ -40,7 +40,7 @@ fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-ro
 
 建議先從 [fn-knock 官方網站](https://www.fnknock.cn/)進入對應平台的下載頁面。正式版本會同時提供以下驗證資訊：
 
-- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json)：記錄版本、專案原始碼 Commit、Go 閘道 Commit、平台、架構、檔案大小與 SHA-256。
+- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json)：記錄版本、Control API 版本、專案原始碼 Commit、Go 閘道 Commit、平台、架構、檔案大小與 SHA-256。
 - [`SHA256SUMS`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/SHA256SUMS)：用於驗證 GitHub Release 中的安裝套件。
 - Docker Multi-Arch Image 的 SBOM 與建置來源證明（Provenance）。
 
@@ -69,7 +69,7 @@ fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-ro
 4. 將結果與 Manifest 中該檔案的 `sha256`，或 `SHA256SUMS` 中的同名項目逐字元比對；若不一致，請停止安裝並重新下載。
 5. 需要稽核建置來源時，再確認安裝套件的 GitHub Build Provenance 來自官方儲存庫。Docker 還可同時核對 Manifest 中的 Multi-Arch Image Digest、SBOM 與 Provenance；固定版本部署可使用 Digest，避免 `latest` 日後指向不同內容。
 
-`release-manifest.json` 也會記錄控制平面與 Go 閘道的原始碼 Commit，可用於將安裝套件追溯至兩部分原始碼。單獨取得一段 SHA-256 文字並不能證明發布者身分；Manifest、Checksum 檔與建置來源證明都必須來自官方 Release。
+`release-manifest.json` 也會記錄 Control API 版本、控制平面與 Go 閘道的原始碼 Commit，可用來確認套件中的 Rust、Go 與 Windows 元件使用同一份通訊協定契約，並將安裝套件追溯至兩部分原始碼。單獨取得一段 SHA-256 文字並不能證明發布者身分；Manifest、Checksum 檔與建置來源證明都必須來自官方 Release。
 
 ## 選擇網路拓撲
 

@@ -3,14 +3,14 @@ lang: zh-TW
 title: "IPv6 公網直連與原始連接埠授權"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bf2092136a30db2fca3ceb479599e1895fbcce1d2338e549827a58ba20bfcec5
+translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
 ---
 
 # IPv6 公網直連與原始連接埠授權
 
 直連模式讓訪客先透過閘道登入，再依 IP 允許清單存取 fnOS 或其他原始連接埠。此模式適合確實需要原始連接埠的 IPv6 環境，並不是發布 Web 服務的首選方案。
 
-此模式需要 fn-knock 管理主機防火牆，因此只適用於 fnOS 原生 FPK，或具備主機管理能力的 OpenWrt。Docker、Synology DSM 7 SPK 與 Windows 均不支援直連模式。
+此模式需要 fn-knock 管理主機防火牆，因此只適用於 fnOS 標準 FPK。Knock Lite、Docker、OpenWrt、一般 Linux、Synology DSM 7 SPK 與 Windows 均不支援直連模式。
 
 ## 前置需求
 

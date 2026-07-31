@@ -3,7 +3,7 @@ lang: zh-TW
 title: "原始連接埠存取：直連授權"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f6e49496052b564f36d0462a6ca4f524aa5530599256e19349b234043cabff98
+translationSourceHash: ae2a72f555539a11ca3196288ab56a9c943148d4350e55e38b893e88e87879af
 ---
 
 # 原始連接埠存取：直連授權
@@ -15,7 +15,7 @@ translationSourceHash: f6e49496052b564f36d0462a6ca4f524aa5530599256e19349b234043
 - 存取方式：登入後取得 IP 授權
 - 後台位置：`系統設定 → 模式 → 直連模式（不建議）`
 
-直連模式仰賴主機防火牆，目前主要用於 fnOS FPK 與 OpenWrt。Docker、Synology DSM 7 SPK 與 Windows 部署無法由 fn-knock 管理主機防火牆，因此不應採用本方案。
+直連模式仰賴 fn-knock 管理主機防火牆，目前只由 fnOS 標準 FPK 提供。Knock Lite、Docker、OpenWrt、一般 Linux、Synology DSM 7 SPK 與 Windows 均不提供此能力，因此不應採用本方案。
 
 ## 適用範圍
 
@@ -59,7 +59,7 @@ fn-knock 只負責控管網路入口。SSH、遠端桌面及其他上游服務�
 - SSH、遠端桌面等受保護連接埠預設不會對未授權 IP 開放。
 - 區域網路或明確保留的管理來源仍可用於還原設定。
 
-fnOS FPK 與 OpenWrt 的防火牆實作不同。切換後請立即從外部網路進行一次未登入測試，確認業務連接埠確實遭到拒絕。
+切換後請立即從外部網路進行一次未登入測試，確認業務連接埠確實遭到拒絕。
 
 ## 2. 設定身分驗證入口
 
@@ -88,7 +88,7 @@ fnOS FPK 與 OpenWrt 的防火牆實作不同。切換後請立即從外部網�
 
 動態公網位址可透過 [DDNS](/zh-tw/guide/ddns) 更新 `auth.example.com`。請只發布確實可從公網連線的位址記錄。
 
-請為身分驗證網域名稱設定受信任的憑證。自動 HTTPS 僅適用於支援此功能的部署方式；Docker 與 OpenWrt 需要自行提供憑證，或使用前置 TLS 入口。
+請為身分驗證網域名稱設定受信任的憑證。fnOS 標準 FPK 可在符合實際入站條件時使用自動 HTTPS；憑證與連接埠條件請參考 [SSL 憑證](/zh-tw/guide/ssl)。
 
 ## 5. 從外部網路驗證
 
@@ -113,7 +113,8 @@ fnOS FPK 與 OpenWrt 的防火牆實作不同。切換後請立即從外部網�
 | 部署方式 | 直連授權 | 說明 |
 | --- | --- | --- |
 | fnOS FPK | 支援 | 可管理主機防火牆 |
-| OpenWrt 外掛套件 | 支援 | 規則套用於路由器防火牆 |
+| OpenWrt 外掛套件 | 不支援 | fn-knock 不管理 OpenWrt 防火牆，也不顯示直連模式 |
+| Linux 服務 | 不支援 | 防火牆由管理員自行管理，不接入 fn-knock 動態直連授權 |
 | Docker Compose | 不支援 | Container 無法取代主機防火牆管理 |
 | Synology DSM 7 SPK | 不支援 | 套件不會修改 DSM 主機防火牆 |
 | Windows x86_64 | 不支援 | 安裝程式建立的程式層級規則不等同於直連授權；管理後台不提供此模式 |
@@ -128,7 +129,7 @@ fnOS FPK 與 OpenWrt 的防火牆實作不同。切換後請立即從外部網�
 | IPv4 可用，但 IPv6 仍直接曝露 | IPv6 防火牆未同步限制，或 AAAA 指向其他入口 |
 | 授權很快失效 | 工作階段有效期限過短，或對外 IP 已變更 |
 | 登入成功但沒有自動 IP 授權 | 登入憑證限制了服務範圍；改用未限制範圍的憑證，或手動加入 IP / CIDR |
-| Docker 中找不到此模式 | 這是部署方式限制，應改用子網域路由 |
+| 目前部署中找不到此模式 | 這是部署方式限制；只有 fnOS 標準 FPK 提供，請改用子網域路由或自行管理 VPN／防火牆 |
 
 完整疑難排解請參閱 [FAQ](/zh-tw/faq)。
 

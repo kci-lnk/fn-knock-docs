@@ -3,7 +3,7 @@ lang: ja-JP
 title: "よくある質問"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
+translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -41,7 +41,7 @@ OpenWrt のデフォルト管理ポートは `7991` で、ゲートウェイは 
 
 - 新規インストール：データディレクトリの権限、ポートの競合、サービスログを確認します。
 - 初期の Redis 版からのアップグレード：古い Redis データボリュームを保持し、[Docker へのデプロイ](/ja/quick-start/docker-deployment)にある移行手順に従います。
-- OpenWrt：`/etc/fn-knock/gateway` と `/var/lib/fn-knock` が残っていることを確認します。
+- OpenWrt：`/etc/fn-knock/gateway` と `/etc/fn-knock/data` が残っていることを確認します。旧版から更新した場合は、UCI のデータディレクトリが `/var/lib/fn-knock` から移行済みかも確認します。
 
 新規インストールのために、空の Redis を追加で作成しないでください。古いデータの移行が完了し、管理画面が正常に動作することを確認してから、古い Redis サービスとデータボリュームを削除してください。
 
@@ -173,14 +173,14 @@ Cloudflared と fn-knock が別々のコンテナにある場合、`localhost` �
 
 ### 自宅の Wi-Fi に戻ってもインターネット側を経由する
 
-クライアントが、引き続きインターネット側の DNS 結果を使用しています。飛牛ネイティブ FPK または OpenWrt でスマート接続を使用する場合は、次を確認してください。
+クライアントが、引き続きインターネット側の DNS 結果を使用しています。標準 FNOS FPK でスマート接続を使用する場合は、次を確認してください。
 
 - `システム設定 → 機能 → スマート接続` が有効か。
 - ローカルホストの LAN IP が正しいか。
 - ルーターの DHCP DNS またはクライアントの DNS が、fn-knock を実行するデバイスを参照しているか。
 - クライアントの DNS キャッシュを更新したか。
 
-OpenWrt では、`dnsmasq` がインストールされ実行中であること、メイン設定に `/etc/dnsmasq.d/` が含まれていることも確認します。画面からの自動インストールは `apt-get` を呼び出すため、OpenWrt には適していません。スマート接続は、サブドメインモードで LAN の DNS を最適化する機能であり、インターネット側の DNS は変更しません。Docker ではこの機能を利用できません。[スマート接続](/ja/guide/smart-connect)も参照してください。
+スマート接続は標準 FNOS FPK のサブドメインモードで LAN の DNS を最適化する機能で、インターネット側の DNS は変更しません。OpenWrt、Docker、その他のデプロイでは利用できないため、必要な場合はルーターまたは別の DNS で設定してください。[スマート接続](/ja/guide/smart-connect)も参照してください。
 
 ## ログインまたはセッションの異常
 
@@ -282,7 +282,7 @@ HTTPS はログイン認証情報とセッション Cookie を保護し、パス
 
 OpenWrt は、対応するアーキテクチャの `.ipk` パッケージと `.apk` パッケージに対応しています。インストール後の入口は `サービス → 敲门 Knock` です。
 
-アップグレードするときは、新しいバージョンのパッケージをインストールします。アプリ内の FPK アップデートは OpenWrt には適用されません。通常のアップグレードでは、`/etc/config/fn-knock` と `/var/lib/fn-knock` が保持されます。コマンド全体は [OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)を参照してください。
+アップグレードするときは、新しいバージョンのパッケージをインストールします。アプリ内の FPK アップデートは OpenWrt には適用されません。通常のアップグレードでは、`/etc/config/fn-knock`、`/etc/fn-knock/gateway`、`/etc/fn-knock/data` が保持され、旧デフォルトの `/var/lib/fn-knock` は新しい永続データディレクトリへ移行されます。コマンド全体は [OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)を参照してください。
 
 ### Docker のアップグレード後にデータが空になった
 
@@ -308,10 +308,10 @@ Windows アプリをアンインストールしても、復元できるよう `%
 
 | 機能 | 飛牛 fnOS FPK | Docker | OpenWrt | Linux サービス | Synology DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| ホストのファイアウォールと直接接続による許可 | 対応 | 非対応 | 対応 | 非対応 | 非対応 | 非対応 |
+| ホストのファイアウォールと直接接続による許可 | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
 | 自動 HTTPS | 対応 | 非対応 | 非対応 | 対応。ポート `80` と着信経路が必要 | 非対応 | 対応。ファイアウォール、NAT、着信経路の設定は別途必要 |
 | ACME DNS-01 | 対応 | 対応 | 対応 | 対応 | 対応 | 対応。内蔵クライアントを使用し、Let's Encrypt に固定 |
-| スマート接続 | 対応 | 非対応 | 対応。既存の `dnsmasq` と設定の include が必要 | 非対応 | 非対応 | 非対応 |
+| スマート接続 | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
 | SSH セキュリティ | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
 | Web ターミナル | 対応 | 非対応 | 非対応 | 対応。`tmux` が必要 | 非対応 | 非対応 |
 | 内蔵 FRP／Cloudflared | 対応 | 対応 | 対応 | 対応 | 対応 | 非対応 |

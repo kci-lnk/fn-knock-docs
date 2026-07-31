@@ -3,7 +3,7 @@ lang: zh-TW
 title: "常見問題"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
+translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -41,7 +41,7 @@ OpenWrt 的預設 Management Port 為 `7991`，Gateway Port 仍是 `7999`。Wind
 
 - 新安裝：檢查 Data Directory 權限、連接埠衝突及 Service Log。
 - 從早期 Redis 版本升級：保留舊 Redis Data Volume，依 [Docker 部署](/zh-tw/quick-start/docker-deployment)中的遷移步驟處理。
-- OpenWrt：確認 `/etc/fn-knock/gateway` 與 `/var/lib/fn-knock` 仍然存在。
+- OpenWrt：確認 `/etc/fn-knock/gateway` 與 `/etc/fn-knock/data` 仍然存在；從舊版升級時再檢查 UCI 資料目錄是否已由 `/var/lib/fn-knock` 遷移。
 
 不要為新安裝另外建立空的 Redis。舊資料遷移完成且確認後台正常後，再移除舊 Redis Service 與 Data Volume。
 
@@ -173,14 +173,14 @@ Upstream 應用程式沒有正確處理 Path Prefix、Redirect、Cookie 或 WebS
 
 ### 回到家中 Wi-Fi 後仍然繞公網
 
-Client 仍在使用公網 DNS 結果。飛牛原生 FPK 或 OpenWrt 使用智慧連線時，請檢查：
+Client 仍在使用公網 DNS 結果。飛牛標準 FPK 使用智慧連線時，請檢查：
 
 - `系統設定 → 功能 → 智慧連線` 是否啟用。
 - 本機 LAN IP 是否正確。
 - Router DHCP DNS 或 Client DNS 是否指向 fn-knock 所在裝置。
 - Client DNS Cache 是否已重新整理。
 
-OpenWrt 還要確認系統已安裝並執行 `dnsmasq`，且主要設定已納入 `/etc/dnsmasq.d/`；頁面的自動安裝會呼叫 `apt-get`，不適用於 OpenWrt。智慧連線只用於子網域模式的 LAN DNS 最佳化，不會修改 Public DNS。Docker 不提供此能力。請參考[智慧連線](/zh-tw/guide/smart-connect)。
+智慧連線只用於飛牛標準 FPK 子網域模式的 LAN DNS 最佳化，不會修改 Public DNS。OpenWrt、Docker 與其他部署不提供此能力；需要分流時請在路由器或獨立 DNS 中自行設定。請參考[智慧連線](/zh-tw/guide/smart-connect)。
 
 ## 登入或工作階段異常
 
@@ -282,7 +282,7 @@ HTTPS 能保護登入憑據與工作階段 Cookie，也是 Passkey 正常使用�
 
 OpenWrt 支援符合架構的 `.ipk` 與 `.apk` Package。安裝後入口為 `服務 → 敲門 Knock`。
 
-升級時請安裝新版 Package；應用程式內的 FPK 更新不適用於 OpenWrt。正常升級會保留 `/etc/config/fn-knock` 及 `/var/lib/fn-knock`。完整指令請參考 [OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)。
+升級時請安裝新版 Package；應用程式內的 FPK 更新不適用於 OpenWrt。正常升級會保留 `/etc/config/fn-knock`、`/etc/fn-knock/gateway` 與 `/etc/fn-knock/data`；舊版預設 `/var/lib/fn-knock` 會在升級時遷移至新的持久化資料目錄。完整指令請參考 [OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)。
 
 ### Docker 升級後資料變成空白
 
@@ -308,10 +308,10 @@ OpenWrt 支援符合架構的 `.ipk` 與 `.apk` Package。安裝後入口為 `�
 
 | 能力 | 飛牛 fnOS FPK | Docker | OpenWrt | Linux 服務 | Synology DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Host 防火牆與直連授權 | 支援 | 不支援 | 支援 | 不支援 | 不支援 | 不支援 |
+| Host 防火牆與直連授權 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
 | 自動 HTTPS | 支援 | 不支援 | 不支援 | 支援；需要 `80` 連接埠與 Inbound Path | 不支援 | 支援；仍須打通防火牆、NAT 與 Inbound Path |
 | ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援；內建 Client，固定使用 Let's Encrypt |
-| 智慧連線 | 支援 | 不支援 | 支援；依賴現有 `dnsmasq` 及已納入的設定 | 不支援 | 不支援 | 不支援 |
+| 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
 | SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
 | Web 終端機 | 支援 | 不支援 | 不支援 | 支援；依賴 `tmux` | 不支援 | 不支援 |
 | 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |

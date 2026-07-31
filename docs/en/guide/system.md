@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e17d63d92
+translationSourceHash: 0805badb0b07141bd4df18d7a902b8c8bd16472ab2b8bc49b4f815aa6168f44e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,8 +16,8 @@ translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e1
 
 | Capability | Native fnOS FPK | Docker | OpenWrt | Linux service | Synology DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Direct mode and host firewall | Supported; the process needs host permissions | Not supported | Supported; the process needs root permissions | Not supported | Not supported | Not supported |
-| Smart Connect | Supported | Not supported | Supported; depends on an existing `dnsmasq` installation and an included `/etc/dnsmasq.d/` directory, so the UI's automatic `apt-get` installation does not apply | Not supported | Not supported | Not supported |
+| Direct mode and host firewall | Supported; the process needs host permissions | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
 | Web Terminal | Supported | Not supported | Not supported | Supported; requires `tmux` | Not supported | Not supported |
 | Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Not supported |
 | SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
@@ -28,7 +28,7 @@ translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e1
 | Update installation | Update in the web UI | Pull a new image | Install an IPK or APK matching the firmware | Update manually according to the installation method | Install the SPK in DSM Package Center | Windows manager |
 | Separate admin panel password | Uses the fnOS/CGI entry point | Supported | Supported | Supported | Uses the DSM desktop CGI entry point | Supported; local `127.0.0.1` admin entry only |
 
-The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, Web Terminal, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, Web Terminal, or SSH Security.
+The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. OpenWrt no longer provides Direct mode, host-firewall management, or Smart Connect. It can still run Host routing, Protocol mappings, and built-in tunnels, but OpenWrt's own firewall must allow the ports. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, Web Terminal, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, Web Terminal, or SSH Security.
 
 If the app on an fnOS device is named `Knock Lite`, it is a native non-root package rather than the full FPK shown in the table. It supports Host proxying, authentication, DDNS, certificates, WAF, built-in tunnels, and monitoring, but not Direct mode and the host firewall, network optimization, fnOS certificate-store sync, Web Terminal, or in-app updates. To gain full host integration, export a Lite backup and stop Lite before installing the standard FPK from the official website and importing the archive. Do not let both instances compete for the same ports.
 
@@ -68,7 +68,7 @@ Settings at the top of `System settings → Gateway` are synchronized directly t
 | `Enable gateway reverse proxy throttling` | Limits traffic per client IP using requests per second and burst tokens, then closes connections directly for the configured penalty period |
 | `Block crawler requests` | Blocks requests recognized as crawlers by the gateway; it does not replace WAF or stop requests that bypass the gateway |
 | `Unmatched routes` | `Show error page` returns a friendly page; `Reset connection` terminates requests that match no configured route |
-| `Show error information when the upstream fails` | Defaults to `Show less`, hiding the upstream IP, port, and low-level connection error; use `Show more` only temporarily for troubleshooting |
+| `Show error information when the upstream fails` | Defaults to `Show less`; choose `Show more`, or `Block connection` to abort failed requests without an error page |
 | `Portal settings` | Controls the app switcher shown after sign-in |
 | `Visibility` | Limits which sources can reach the gateway by region or CIDR |
 | `Proxy headers` | Controls whether the gateway sends `X-Forwarded-*` to specified Targets |
@@ -81,7 +81,7 @@ The initial reverse-proxy throttling configuration allows `100` requests per sec
 
 Unmatched routes default to `Show error page`, which returns a welcome, selection, or error page. With `Reset connection`, HTTP/1.x connections are reset and the current HTTP/2 stream is aborted. Default-domain fallback is temporarily disabled, but its saved configuration is retained and resumes when you switch back to the error page. Request logs label these requests as unmatched-route blocks.
 
-`Show error information when the upstream fails` defaults to `Show less`: visitors see only that the upstream is unavailable, without its internal IP, port, or connection failure. `Show more` returns the complete connection error and can expose network topology. Use it only for short troubleshooting in a controlled environment, then switch back to `Show less`.
+`Show error information when the upstream fails` defaults to `Show less`: visitors see only that the upstream is unavailable, without its internal IP, port, or connection failure. `Show more` returns the complete connection error and can expose network topology, so use it only briefly in a controlled environment. With `Block connection`, an upstream connection failure produces no error page: the gateway resets HTTP/1.x connections or aborts the current HTTP/2 stream. This suits an entry point that should not reveal a gateway page to probes, but clients will see an abrupt disconnect.
 
 ## Verification Order After Changing Settings
 

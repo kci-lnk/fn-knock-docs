@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サービス検出と一括登録"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e5ac0e7d
+translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,8 @@ translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e
 ## 検出結果
 
 スキャンウィンドウには、ホスト、ポート、進捗、検出済みサービスが継続して表示されます。システムは HTTP ステータス、レスポンスヘッダー、ページの特徴から一般的なアプリケーションを識別します。正確に識別できない場合は、ページタイトルまたは `HTTP + ポート` を使って汎用候補を作成します。
+
+候補名や識別ラベルが長すぎる場合、画面では省略表示し、ホバーすると全文を表示します。スキャン設定、推奨操作、候補ボタンを覆うことはありません。省略表示は保存値を変更しないため、保存前にツールチップまたは編集欄で完全な名前を確認してください。
 
 候補値はあくまで推奨値です。
 

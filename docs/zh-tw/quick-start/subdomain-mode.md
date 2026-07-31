@@ -3,7 +3,7 @@ lang: zh-TW
 title: "公網直連：子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec409df89d
+translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
 ---
 
 # 公網直連：子網域路由
@@ -32,7 +32,7 @@ translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec4
 | --- | --- | --- |
 | fnOS 原生 FPK | 完整支援 | 可使用自動 HTTPS、主機防火牆與智慧連線 |
 | Docker Compose | 支援子網域路由 | 不管理主機防火牆；不提供智慧連線與自動 HTTPS |
-| OpenWrt 外掛套件 | 支援子網域路由 | 可搭配主機防火牆；不提供自動 HTTPS；智慧連線仰賴既有的 `dnsmasq`，且主設定必須 Include `/etc/dnsmasq.d/` |
+| OpenWrt 外掛套件 | 支援子網域路由 | fn-knock 不管理 Host 防火牆，也不提供智慧連線或自動 HTTPS；連接埠放行與區域網路 DNS 分流由 OpenWrt 管理 |
 | Synology DSM 7 SPK | 支援子網域路由 | 不支援直連、主機防火牆管理與智慧連線；透過 DSM 防火牆及路由器／NAT 管理入站路徑 |
 | Windows x86_64 | 可作為公網閘道 | `7999` 預設監聽所有介面；需要自行確認 Windows Firewall Profile、路由器／NAT、IPv6 防火牆與 ISP 入站原則，不支援直連授權 |
 

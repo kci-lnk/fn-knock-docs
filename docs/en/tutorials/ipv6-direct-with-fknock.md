@@ -3,7 +3,7 @@ lang: en-US
 title: "Public IPv6 Access and Original-Port Authorization"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bf2092136a30db2fca3ceb479599e1895fbcce1d2338e549827a58ba20bfcec5
+translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -12,7 +12,7 @@ translationSourceHash: bf2092136a30db2fca3ceb479599e1895fbcce1d2338e549827a58ba2
 
 Direct mode lets visitors sign in through the gateway first, then use an IP allowlist to reach original ports exposed by fnOS or other services. It is intended for IPv6 environments that genuinely require original-port access, not as the preferred way to publish web applications.
 
-This mode requires fn-knock to manage the host firewall, so it is available only with the native fnOS FPK or an OpenWrt installation that has host-level capabilities. Docker, Synology DSM 7 SPK, and Windows deployments do not support Direct mode.
+This mode requires fn-knock to manage the host firewall, so it is available only with the standard fnOS FPK. Knock Lite, Docker, OpenWrt, generic Linux, Synology DSM 7 SPK, and Windows do not support Direct mode.
 
 ## Prerequisites
 

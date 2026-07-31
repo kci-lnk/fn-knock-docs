@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
+translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ From the upper-right corner of the Dashboard, you can choose `Default`, `Hermes 
 
 ## How the Update Page Varies by Deployment
 
-Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
+Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes, plus quick links to the official website, documentation, and GitHub project. Release notes safely render Markdown headings, lists, emphasis, and HTTPS links; they are not arbitrary HTML pages. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
 
 | Deployment | What the update page can do | How to upgrade |
 | --- | --- | --- |
@@ -102,7 +102,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 If `/tmp` contains multiple versions, replace the wildcard with the complete filename.
 
-Use `--allow-untrusted` for a local `.apk` only when the package came from a trusted release channel. The upgrade preserves `/etc/config/fn-knock`, `/etc/fn-knock/gateway`, and `/var/lib/fn-knock`; back them up beforehand anyway.
+Use `--allow-untrusted` for a local `.apk` only when the package came from a trusted release channel. The upgrade preserves `/etc/config/fn-knock`, `/etc/fn-knock/gateway`, and `/etc/fn-knock/data`; back them up beforehand anyway. If an older installation still uses the default `/var/lib/fn-knock`, the installer copies it to the new directory and updates UCI. A custom data directory is not forced to migrate. Do not delete the old directory until sign-in, configuration, and existing data have been verified.
 
 ## Update a Synology DSM 7 SPK
 

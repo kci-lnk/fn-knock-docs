@@ -2,7 +2,7 @@
 
 直连模式让访问者先通过网关登录，再按 IP 白名单访问飞牛或其他原始端口。它适合确实需要原始端口的 IPv6 环境，不是发布 Web 服务的首选路径。
 
-该模式需要 fn-knock 管理宿主机防火墙，因此仅适用于原生飞牛 FPK 或具备主机能力的 OpenWrt。Docker、群晖 DSM 7 SPK 和 Windows 都不支持直连模式。
+该模式需要 fn-knock 管理宿主机防火墙，因此仅适用于飞牛标准 FPK。`敲门 knock Lite`、Docker、OpenWrt、通用 Linux、群晖 DSM 7 SPK 和 Windows 都不支持直连模式。
 
 ## 前置条件
 

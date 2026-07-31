@@ -3,7 +3,7 @@ lang: ko-KR
 title: "대시보드 및 시스템 업데이트"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
+translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
 ---
 
 # 대시보드 및 시스템 업데이트
@@ -42,7 +42,7 @@ translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f4
 
 ## 배포 방식에 따른 업데이트 페이지 동작
 
-경로: `버전 및 업데이트`. 모든 배포 방식에서 현재 버전, 최신 버전, 확인 결과 및 릴리스 노트를 볼 수 있습니다. 관리 화면이 로드된 뒤에는 사이드바에도 현재 버전이 표시되고 주기적으로 업데이트를 확인합니다. 새 버전이 발견되면 페이지 상단에 알림이 나타나며 업데이트 페이지에서 릴리스 노트를 확인할 수 있습니다. 알림에서 웹 설치 작업을 제공하는 방식은 fnOS 네이티브 FPK뿐입니다. Synology DSM 7 SPK는 DSM 패키지 센터에서 설치하고 Windows 네이티브 버전은 별도의 `Knock Windows 관리 프로그램`에서 설치합니다. 두 방식 모두 웹 업데이트 페이지에서 설치하지 않습니다.
+경로: `버전 및 업데이트`. 모든 배포 방식에서 현재 버전, 최신 버전, 확인 결과 및 릴리스 노트와 함께 공식 웹사이트, 문서 및 GitHub 프로젝트 바로가기를 볼 수 있습니다. 릴리스 노트는 Markdown 제목, 목록, 강조 및 HTTPS 링크를 안전하게 렌더링하며 임의 HTML 페이지로 처리하지 않습니다. 관리 화면이 로드된 뒤에는 사이드바에도 현재 버전이 표시되고 주기적으로 업데이트를 확인합니다. 새 버전이 발견되면 페이지 상단에 알림이 나타나며 업데이트 페이지에서 릴리스 노트를 확인할 수 있습니다. 알림에서 웹 설치 작업을 제공하는 방식은 fnOS 네이티브 FPK뿐입니다. Synology DSM 7 SPK는 DSM 패키지 센터에서 설치하고 Windows 네이티브 버전은 별도의 `Knock Windows 관리 프로그램`에서 설치합니다. 두 방식 모두 웹 업데이트 페이지에서 설치하지 않습니다.
 
 | 배포 방식 | 업데이트 페이지에서 가능한 작업 | 실제 업그레이드 방법 |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 `/tmp`에 여러 버전이 남아 있다면 와일드카드 대신 전체 파일 이름을 사용합니다.
 
-로컬 `.apk`의 `--allow-untrusted` 옵션은 신뢰할 수 있는 릴리스 채널에서 받은 패키지에만 사용합니다. 업그레이드 후에도 `/etc/config/fn-knock`, `/etc/fn-knock/gateway`, `/var/lib/fn-knock`는 유지되지만 업데이트 전에 별도로 백업합니다.
+로컬 `.apk`의 `--allow-untrusted` 옵션은 신뢰할 수 있는 릴리스 채널에서 받은 패키지에만 사용합니다. 업그레이드 후에도 `/etc/config/fn-knock`, `/etc/fn-knock/gateway`, `/etc/fn-knock/data`는 유지됩니다. 이전 설치가 기본 `/var/lib/fn-knock`를 사용하면 새 디렉터리로 복사하고 UCI를 업데이트하지만 사용자 지정 데이터 디렉터리는 강제로 마이그레이션하지 않습니다. 로그인, 설정 및 기존 데이터를 확인하기 전에 이전 디렉터리를 삭제하지 않습니다.
 
 ## Synology DSM 7 SPK 업데이트
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "DDNS 管理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 908388f447dc5fd37bfad203d5937507661ce3b6ef567c1c11a28647d6bd6ce0
+translationSourceHash: 8f7d3627dee664a68b7793a1f3d1e73c459378d79d8a821d15bb9d96d1a97f59
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,19 @@ DDNS 只負責將 DNS Record 更新為目前的公網 IP。它不會開放連接
 
 儲存後，請先執行頁面上的測試或手動更新，再使用 `dig`、`nslookup` 或 DNS Console 確認 Record Value。解析正確只代表 DNS 已更新；仍需從外網驗證連接埠、憑證與閘道路由。
 
-目前的供應商清單包含阿里雲 DNS、Baidu Cloud DNS、Cloudflare、DNSPod、DuckDNS、Dynu、dynv6、騰訊雲 EdgeOne CNAME、騰訊雲 EdgeOne、阿里雲 ESA、GoDaddy、華為雲 DNS、No-IP、Porkbun 與騰訊雲 DNSPod。頁面會依供應商顯示所需欄位；請勿套用其他供應商的 Zone ID、Token 或根網域欄位。
+目前的供應商清單包含阿里雲 DNS、Baidu Cloud DNS、Cloudflare、DNSHE、DNSPod、DuckDNS、Dynu、dynv6、騰訊雲 EdgeOne CNAME、騰訊雲 EdgeOne、阿里雲 ESA、GoDaddy、華為雲 DNS、No-IP、Porkbun 與騰訊雲 DNSPod。頁面會依供應商顯示所需欄位；請勿套用其他供應商的 Zone ID、Token 或根網域欄位。
+
+### DNSHE
+
+選擇 `DNSHE` 時，請填寫 API 管理中產生的 `API Key` 與配套的 `API Secret`，並區分兩個網域欄位：
+
+| 欄位 | 說明 |
+| --- | --- |
+| `DNSHE 託管網域` | DNSHE 帳號中已註冊且狀態可用的完整託管網域，例如 `example.com` |
+| `網域` | 實際要更新的完整 Record Name，必須位於上述託管網域下，例如 `nas.example.com` |
+| `TTL` | 選填，預設 `600` 秒 |
+
+DNSHE 支援 A 與 AAAA，以及 Apex、一般子網域與 Wildcard Record。同步時，既有且位址變更的 Record 會更新，不存在時會建立，位址未變時不會重複寫入。若 Log 顯示找不到託管網域、狀態不可用或 Record 缺少內部 ID，請先在 DNSHE Console 核對網域狀態與 Record 歸屬。
 
 ## 主網域與更多網域
 

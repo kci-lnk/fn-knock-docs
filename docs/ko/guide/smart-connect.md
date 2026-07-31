@@ -3,12 +3,12 @@ lang: ko-KR
 title: "스마트 연결"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77f6913ff2ef9174a16f1c2fbbd475289f3be40e02b5f2da976814a21cd270a3
+translationSourceHash: 9cf7912a7fa75e589bb8838e64c052f7b9927e36d042da678921578c361ce24e
 ---
 
 # 스마트 연결
 
-`Smart Connect`는 fnOS 네이티브 FPK와 OpenWrt 런타임이 공인 IP 직접 연결 서브도메인 모드에서 제공하는 LAN 분할 DNS 기능입니다. 외부 네트워크에서는 계속 `nas.example.com`을 인터넷 진입점으로 확인하지만, LAN 기기는 로컬 `dnsmasq`에서 기기의 사설 IPv4를 받아 NAT 루프백과 불필요한 인터넷 경유를 피합니다.
+`Smart Connect`는 표준 fnOS FPK가 공인 IP 직접 연결 서브도메인 모드에서 제공하는 LAN 분할 DNS 기능입니다. 외부 네트워크에서는 계속 `nas.example.com`을 인터넷 진입점으로 확인하지만, LAN 기기는 로컬 `dnsmasq`에서 기기의 사설 IPv4를 받아 NAT 루프백과 불필요한 인터넷 경유를 피합니다.
 
 DNS 조회 결과만 바꾸며 Host 매핑을 만들거나 외부 DNS를 수정하지 않고 실행 모드도 전환하지 않습니다.
 
@@ -21,7 +21,7 @@ DNS 조회 결과만 바꾸며 Host 매핑을 만들거나 외부 DNS를 수정�
 3. fn-knock가 실행되는 기기에 안정적인 사설 IPv4가 있습니다.
 4. LAN 클라이언트가 이 기기를 DNS 서버로 사용합니다.
 5. `53`번 포트에서 Smart Connect에 사용할 `dnsmasq`가 수신 대기하며 충돌하는 다른 DNS 서비스가 없습니다.
-6. 현재 fnOS 네이티브 FPK 또는 OpenWrt를 사용하며 root 권한, 호스트 `dnsmasq` 및 서비스 관리 기능을 갖추고 있습니다.
+6. 현재 표준 fnOS FPK를 사용하며 호스트 `dnsmasq` 및 서비스 관리 기능을 갖추고 있습니다.
 
 서브도메인 진입점 설정은 [서브도메인 모드 시작하기](/ko/quick-start/subdomain-mode)와 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 참고합니다.
 
@@ -59,7 +59,7 @@ Smart Connect는 단순히 접속 경로만 줄이는 기능이 아닙니다. �
 경로: `시스템 설정 → 기능 → 스마트 커넥트`
 
 1. `스마트 커넥트`를 켭니다.
-2. 페이지에 리소스가 준비되지 않았다고 표시되면 먼저 `dnsmasq`를 설치하고 초기화합니다. OpenWrt에서는 `opkg` 또는 `apk` 패키지 관리자로 직접 설치합니다. 페이지의 `apt-get` 설치 버튼은 사용할 수 없습니다.
+2. 페이지에 리소스가 준비되지 않았다고 표시되면 먼저 `dnsmasq`를 설치하고 초기화합니다.
 3. LAN 클라이언트에서 실제로 접근할 수 있는 사설 IPv4를 선택합니다. 예: `192.168.31.20`
 4. `저장 및 동기화`를 클릭하고 동기화된 도메인 수와 최근 동기화 시각을 확인합니다.
 5. 라우터 DHCP에서 DNS 서버를 해당 사설 IPv4로 설정합니다. 먼저 테스트 기기 한 대에서 직접 설정해도 됩니다.
@@ -96,14 +96,13 @@ nas.example.com
 ## 플랫폼별 지원 범위
 
 - fnOS 네이티브 FPK에서는 Smart Connect를 사용할 수 있습니다. `dnsmasq`가 없으면 페이지에서 `apt-get`으로 설치를 시도할 수 있습니다.
-- OpenWrt 런타임은 Smart Connect를 지원하며 `/etc/dnsmasq.d/fn-knock-smart-connect.conf`에 규칙을 쓰고 `service dnsmasq restart`로 서비스를 다시 시작합니다. 시스템에 `dnsmasq`를 설치해 활성화하고 기본 설정에는 `/etc/dnsmasq.d/`를 포함합니다. 페이지의 자동 설치는 `apt-get`만 호출하므로 OpenWrt에는 사용할 수 없습니다.
+- OpenWrt는 Smart Connect를 지원하지 않습니다. LAN 분할 DNS가 필요하면 OpenWrt의 `dnsmasq`, DHCP 또는 다른 로컬 DNS에 직접 구성합니다.
 - Docker는 지원하지 않습니다. 컨테이너가 호스트를 대신해 `dnsmasq`와 `53`번 포트를 관리할 수 없으므로 관리자 페이지에서 이 기능을 숨기거나 거부합니다.
 - 일반 Linux 설치 패키지는 Smart Connect를 지원하지 않습니다. 필요하다면 라우터나 별도의 DNS에 분할 조회를 설정합니다.
 - Synology DSM 7 SPK는 Smart Connect를 지원하지 않으며 `dnsmasq` 또는 LAN DNS의 내장 관리 기능도 제공하지 않습니다.
 - Windows x86_64는 Smart Connect를 지원하지 않으며 `dnsmasq` 또는 LAN DNS의 내장 관리 기능도 제공하지 않습니다.
 - 호스트 관리 기능이 없는 환경에서는 분할 DNS를 직접 배포합니다.
 - 리버스 프록시 모드의 서브도메인 매핑은 Smart Connect를 지원하지 않습니다. 이 토폴로지의 인터넷 진입점은 터널 플랫폼에 있으므로 LAN 분할 DNS는 라우터나 별도의 DNS에서 직접 설정합니다.
-- OpenWrt는 웹 터미널과 웹 관리 패널 FPK 업데이트를 제공하지 않습니다. 이러한 제한은 DNS 분할 기능의 지원 여부와 별개의 기능입니다.
 
 ## 처리하지 않는 항목
 
@@ -117,7 +116,7 @@ nas.example.com
 1. 페이지를 사용할 수 없음: 현재 공인 IP 직접 연결 서브도메인 모드인지 확인하고 배포 환경에서 기능을 지원하는지 점검합니다.
 2. 동기화할 도메인이 없음: 인증 Host와 서비스 Host를 먼저 만듭니다.
 3. 선택할 수 있는 IP가 없음: 기본 네트워크 인터페이스에 `10/8`, `172.16/12` 또는 `192.168/16` 주소가 할당되었는지 확인합니다.
-4. 초기화 실패: `53`번 포트 사용 여부와 `dnsmasq` 서비스 상태를 확인합니다. OpenWrt에서는 `dnsmasq`가 설치되어 있고 기본 설정에 `/etc/dnsmasq.d/`가 포함되어 있는지도 확인합니다.
+4. 초기화 실패: `53`번 포트 사용 여부와 `dnsmasq` 서비스 상태를 확인합니다.
 5. 클라이언트가 계속 공인 주소로 확인함: DHCP 제공 설정, 수동 DNS, 암호화 DNS 및 캐시를 확인합니다.
 6. 도메인이 사설망으로 확인되지만 열리지 않음: 실제 게이트웨이 포트, 인증서 및 Host 매핑을 확인하고 공인 DDNS 문제는 더 이상 점검하지 않습니다.
 

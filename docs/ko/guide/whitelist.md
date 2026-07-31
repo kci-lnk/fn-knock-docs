@@ -3,7 +3,7 @@ lang: ko-KR
 title: "IP 허용 목록"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3beb3734aa8a267da40e1c49dcb4c79a5950b64a06c3c1d1c59a525d954a2f39
+translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
 ---
 
 # IP 허용 목록
@@ -61,9 +61,9 @@ CNAME은 시스템의 조회 결과에 따라 실제 허용 범위를 업데이�
 
 ## 직접 연결 모드에서의 동작
 
-fnOS 네이티브 FPK와 호스트 관리 기능을 갖춘 OpenWrt 배포에서는 유효한 허용 목록을 호스트 방화벽에 동기화할 수 있습니다. Docker는 호스트 방화벽을 관리하지 않으므로 허용 목록으로 원본 포트를 열 수 없습니다.
+유효한 허용 목록을 호스트 방화벽에 동기화하는 배포는 표준 fnOS FPK뿐입니다. Docker, OpenWrt, 일반 Linux, Synology DSM 7 SPK 및 Windows에서는 fn-knock 허용 목록으로 원본 포트를 열 수 없습니다.
 
-일반 Linux, Synology DSM 7 SPK 및 Windows x86_64도 fn-knock 호스트 방화벽 동기화를 제공하지 않습니다. 페이지의 레코드는 계속 게이트웨이 접근 권한 판단에 사용될 수 있지만 해당 플랫폼 자체의 방화벽을 대신할 수는 없습니다.
+페이지의 레코드는 계속 게이트웨이 접근 권한 판단에 사용되지만 각 플랫폼 자체의 방화벽을 대신할 수는 없습니다. 현재 런타임은 유효한 단일 IP, CIDR 및 지역 그룹을 하나의 정책으로 컴파일하고 활성 세션과 허용된 출발지를 게이트웨이에 동기화합니다. 추가, 만료, 삭제 또는 취소 후에도 다시 동기화합니다.
 
 직접 연결 모드에서 인터넷 출발지 IP가 바뀐 뒤에는 원본 포트 접근만으로 세션 이어받기가 실행되지 않습니다. 먼저 게이트웨이 진입점으로 돌아가 인증을 완료한 뒤 원본 서비스 포트에 다시 연결합니다.
 

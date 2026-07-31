@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on OpenWrt"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 277cb83222e1e08a1c6745b3936c716b103813a63d9127565fb6b5647479b338
+translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -113,10 +113,12 @@ Runtime configuration and data are stored in:
 ```text
 /etc/config/fn-knock
 /etc/fn-knock/gateway
-/var/lib/fn-knock
+/etc/fn-knock/data
 ```
 
-The gateway directory contains the SQLite database, while the runtime directory may contain secrets, tunnel resources, and update state. Back up all three locations before upgrading. They contain sensitive information and must not be uploaded to a public location.
+`/etc/config/fn-knock` stores UCI port and directory settings, `/etc/fn-knock/gateway` stores gateway runtime configuration, and `/etc/fn-knock/data` stores SQLite, authentication keys, and other persistent data. Back up all three locations before upgrading. They contain sensitive information and must not be uploaded to a public location.
+
+When upgrading from an older version while UCI still uses the default `/var/lib/fn-knock`, the installer stops the service, copies the old data to `/etc/fn-knock/data`, and updates `fn-knock.main.data_dir`. An instance with a custom data directory is not forced to migrate. After upgrading, verify the LuCI data directory, admin sign-in, and existing configuration before handling the legacy directory; do not delete it before validation.
 
 Also export a `.knock` application backup from the Maintenance page. Directory backups retain SQLite and platform runtime data, while `.knock` archives migrate portable settings. See [Backup, Restore, and Data Cleanup](/en/guide/backup-and-restore) for their contents, version constraints, and post-restore validation.
 
@@ -149,13 +151,11 @@ Then return to the admin panel from LuCI and follow the prompt to set a new pass
 | Feature | OpenWrt package behavior |
 | --- | --- |
 | In-app FPK updates | Not supported; install a matching package with `opkg` or `apk` |
-| Direct mode and host firewall management | Supported; the service must run as root, and you should retain LuCI or local-console access as a recovery path |
-| Smart Connect | Supported; requires an installed and running `dnsmasq` whose main configuration includes `/etc/dnsmasq.d/`; the UI's automatic `apt-get` installation does not apply to OpenWrt |
+| Direct mode and host firewall management | Not supported; use OpenWrt's own firewall, a VPN, or an upstream gateway to control original ports |
+| Smart Connect | Not supported; configure split DNS yourself in OpenWrt's `dnsmasq`, DHCP settings, or another local resolver |
 | SSH security | Not supported; use OpenWrt's own SSH logs, firewall, or security packages |
 | Web terminal | Not supported |
 | Automatic HTTPS | Not supported by the current OpenWrt package |
-
-Smart Connect writes `/etc/dnsmasq.d/fn-knock-smart-connect.conf`, then restarts the service with `service dnsmasq restart`. Before enabling it for the first time, confirm over SSH that `dnsmasq` is ready and retain LuCI or console access for recovery. If the UI asks you to install `dnsmasq`, install it yourself with the firmware's `opkg` or `apk` rather than relying on the UI install button.
 
 `fn-knock` does not replace OpenWrt firmware updates, router backups, or a minimal-exposure firewall policy.
 

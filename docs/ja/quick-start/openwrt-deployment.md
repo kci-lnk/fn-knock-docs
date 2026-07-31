@@ -3,7 +3,7 @@ lang: ja-JP
 title: "OpenWrt へデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 277cb83222e1e08a1c6745b3936c716b103813a63d9127565fb6b5647479b338
+translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -113,10 +113,12 @@ logread -e fn-knock
 ```text
 /etc/config/fn-knock
 /etc/fn-knock/gateway
-/var/lib/fn-knock
+/etc/fn-knock/data
 ```
 
-ゲートウェイディレクトリには SQLite データベースが保存され、実行データのディレクトリにはシークレット、トンネル関連リソース、更新状態などが保存される場合があります。アップグレード前に、この 3 か所をバックアップしてください。機密情報を含むため、外部から読める場所へアップロードしてはいけません。
+`/etc/config/fn-knock` には UCI のポートとディレクトリ設定、`/etc/fn-knock/gateway` にはゲートウェイの実行設定、`/etc/fn-knock/data` には SQLite、認証鍵、その他の永続データが保存されます。アップグレード前に、この 3 か所をバックアップしてください。機密情報を含むため、外部から読める場所へアップロードしてはいけません。
+
+旧バージョンからの更新時に UCI がデフォルトの `/var/lib/fn-knock` を使っている場合、インストーラーはサービスを停止し、旧データを `/etc/fn-knock/data` へコピーしてから `fn-knock.main.data_dir` を更新します。カスタムデータディレクトリは強制移行されません。LuCI のデータディレクトリ、管理ログイン、既存設定を確認するまで旧ディレクトリを削除しないでください。
 
 併せて、メンテナンス画面から `.knock` アプリバックアップをエクスポートします。ディレクトリのバックアップは SQLite とプラットフォーム固有の実行データを保持し、`.knock` は復元可能な設定の移行に使います。収録範囲、バージョン上の制約、復元後の確認項目は[バックアップ・復元・データ消去](/ja/guide/backup-and-restore)を参照してください。
 
@@ -149,13 +151,11 @@ fn-knock-reset-panel-password
 | 機能 | OpenWrt パッケージでの対応状況 |
 | --- | --- |
 | アプリ内 FPK 更新 | 非対応。`opkg` または `apk` で適合する新パッケージをインストールします |
-| 直接接続モード、ホストのファイアウォール管理 | 対応。サービスを root で実行する必要があります。先に LuCI またはローカルコンソールからの復旧経路を確保してください |
-| スマート接続 | 対応。`dnsmasq` がインストール済みかつ稼働中で、メイン設定から `/etc/dnsmasq.d/` を読み込む必要があります。画面上の `apt-get` による自動インストールは OpenWrt では使えません |
+| 直接接続モード、ホストのファイアウォール管理 | 非対応。OpenWrt 自身のファイアウォール、VPN、上位ゲートウェイで元のポートを管理します |
+| スマート接続 | 非対応。OpenWrt の `dnsmasq`、DHCP、または別のローカル DNS でスプリット DNS を設定します |
 | SSH セキュリティ | 非対応。OpenWrt 自体の SSH ログ、ファイアウォール、セキュリティ系パッケージを使用します |
 | Web ターミナル | 非対応 |
 | 自動 HTTPS | 現在の OpenWrt パッケージでは非対応 |
-
-スマート接続を有効にすると `/etc/dnsmasq.d/fn-knock-smart-connect.conf` が書き込まれ、`service dnsmasq restart` でサービスが再起動します。初めて有効にする前に、SSH から `dnsmasq` が正常に動作していることを確認し、LuCI またはコンソールから復旧できる経路を残してください。画面に `dnsmasq` のインストール案内が表示された場合は、画面のインストールボタンに頼らず、現在のファームウェアに合う `opkg` または `apk` で手動インストールします。
 
 `fn-knock` は、OpenWrt ファームウェアの更新、ルーター設定のバックアップ、ファイアウォールで公開範囲を最小限に抑える運用を置き換えるものではありません。
 

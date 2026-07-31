@@ -24,7 +24,19 @@ DDNS 只负责把域名解析更新到当前公网地址。它不会打开端口
 
 保存后先运行页面的测试或手动更新，再用 `dig`、`nslookup` 或 DNS 控制台确认记录值。解析正确只说明 DNS 已更新；仍需从外网验证端口、证书和网关路由。
 
-当前提供商目录包括阿里云 DNS、Baidu Cloud DNS、Cloudflare、DNSPod、DuckDNS、Dynu、dynv6、腾讯云 EdgeOne CNAME、腾讯云 EdgeOne、阿里云 ESA、GoDaddy、华为云 DNS、No-IP、Porkbun 和腾讯云 DNSPod。页面会按提供商显示所需字段；不要把另一家服务商的 Zone ID、Token 或根域字段套用过来。
+当前提供商目录包括阿里云 DNS、Baidu Cloud DNS、Cloudflare、DNSHE、DNSPod、DuckDNS、Dynu、dynv6、腾讯云 EdgeOne CNAME、腾讯云 EdgeOne、阿里云 ESA、GoDaddy、华为云 DNS、No-IP、Porkbun 和腾讯云 DNSPod。页面会按提供商显示所需字段；不要把另一家服务商的 Zone ID、Token 或根域字段套用过来。
+
+### DNSHE
+
+选择 `DNSHE` 时填写 API 管理中生成的 `API Key` 和配套的 `API Secret`，再区分两个域名字段：
+
+| 字段 | 说明 |
+| --- | --- |
+| `DNSHE 托管域名` | DNSHE 账号中已注册并处于可用状态的完整托管域，例如 `example.com` |
+| `域名` | 实际更新的完整记录名，必须位于上述托管域内，例如 `nas.example.com` |
+| `TTL` | 可选，默认 `600` 秒 |
+
+DNSHE 支持 A 与 AAAA，以及根域、普通子域和通配符记录。同步时，已有且地址发生变化的记录会更新，不存在的记录会创建；地址未变化时不会重复写入。若日志提示找不到托管域、托管域状态不可用或记录缺少内部 ID，先在 DNSHE 控制台核对托管域状态和记录归属，再重试更新。
 
 ## 主域与更多域
 

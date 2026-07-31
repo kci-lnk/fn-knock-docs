@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Runtime Mode"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 15c4f10cf088191f9677cf249dae5abca699ee4b010b70b53912dedb28cfd084
+translationSourceHash: 2b8bea7d45df0da88d83727dc6ffc8fa6c15b5fb018fbf5611712fde669ef536
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -100,7 +100,7 @@ When the gateway identifies a loopback, private, or link-local source, authentic
 - Both Subdomain mapping and Path mode under Reverse proxy mode can use FRP or Cloudflared. When leaving Reverse proxy mode, the system attempts to stop any running tunnels.
 - After leaving Subdomain mode with direct public ingress, TCP/UDP stream proxying is disabled and its listeners stop, but saved rules are preserved. Re-enter the mode and enable the feature to restore them.
 - Direct mode depends on the host firewall. It is unavailable on Docker, Synology DSM 7 SPK, Windows, and any deployment without host-management capability.
-- Docker does not write host firewall rules and does not support Smart Connect. OpenWrt supports Smart Connect but not SSH security, the web terminal, or in-app FPK updates. Smart Connect on OpenWrt requires an existing enabled `dnsmasq` whose configuration includes `/etc/dnsmasq.d/`; the UI cannot install its dependencies with `apt-get`.
+- Docker does not write host firewall rules and does not support Smart Connect. OpenWrt likewise provides no fn-knock host-firewall management, Direct mode, or Smart Connect, and it also lacks SSH security, the web terminal, and in-app FPK updates. OpenWrt itself must manage port access and split-horizon LAN DNS.
 - Windows does not support Direct mode authorization, in-app host firewall management, Smart Connect, built-in FRP / Cloudflared, the web terminal, or SSH security. The web update page also cannot install Windows updates.
 - The Synology DSM 7 SPK includes FRP and Cloudflared, but does not support Direct mode authorization, host firewall management, Smart Connect, the web terminal, SSH security, or updates from the web UI.
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서비스 검색 및 일괄 등록"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e5ac0e7d
+translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
 ---
 
 # 서비스 검색 및 일괄 등록
@@ -63,6 +63,8 @@ translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e
 ## 식별 결과
 
 스캔 창에는 호스트, 포트, 진행 상황 및 식별된 서비스가 계속 표시됩니다. 시스템은 HTTP 상태, 응답 헤더 및 페이지 특성을 바탕으로 일반적인 애플리케이션을 식별합니다. 정확히 식별할 수 없으면 페이지 제목 또는 `HTTP + 포트`로 일반 후보를 만듭니다.
+
+후보 이름이나 식별 라벨이 너무 길면 화면에서 줄여 표시하고 마우스를 올리면 전체 내용을 보여 줍니다. 스캔 설정, 추천 작업 또는 후보 버튼을 가리지 않습니다. 줄임 표시는 저장값을 바꾸지 않으므로 저장 전에 툴팁이나 편집 필드에서 전체 이름을 확인합니다.
 
 후보 값은 권장 사항일 뿐입니다.
 

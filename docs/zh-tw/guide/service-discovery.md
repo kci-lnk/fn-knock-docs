@@ -3,7 +3,7 @@ lang: zh-TW
 title: "服務探索與批次串接"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e5ac0e7d
+translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,8 @@ translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e
 ## 識別結果
 
 掃描視窗會持續顯示主機、連接埠、進度與已識別的服務。系統會依 HTTP Status、Response Header 與頁面特徵識別常見應用程式；無法精確識別時，會以頁面標題或 `HTTP + 連接埠` 產生通用候選。
+
+候選名稱或識別標籤過長時，頁面會截斷顯示，並在 Hover 時顯示完整內容，不會遮住掃描設定、建議操作或候選按鈕。截斷不代表儲存值被修改；儲存前仍應透過 Tooltip 或編輯欄位確認完整名稱。
 
 候選值只供參考：
 

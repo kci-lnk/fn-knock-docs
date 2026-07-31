@@ -3,7 +3,7 @@ lang: ko-KR
 title: "동적 DNS(DDNS)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 908388f447dc5fd37bfad203d5937507661ce3b6ef567c1c11a28647d6bd6ce0
+translationSourceHash: 8f7d3627dee664a68b7793a1f3d1e73c459378d79d8a821d15bb9d96d1a97f59
 ---
 
 # 동적 DNS(DDNS)
@@ -32,7 +32,19 @@ Cloudflare Tunnel을 사용하면 일반적으로 Tunnel의 Public Hostname에�
 
 저장한 뒤 페이지에서 테스트 또는 수동 업데이트를 먼저 실행하고 `dig`, `nslookup` 또는 DNS 관리 패널에서 레코드 값을 확인합니다. DNS가 올바르게 해석된다는 것은 레코드가 업데이트되었다는 뜻일 뿐입니다. 외부 네트워크에서 포트, 인증서 및 게이트웨이 라우트도 계속 검증합니다.
 
-현재 제공자 목록에는 Alibaba Cloud DNS, Baidu Cloud DNS, Cloudflare, DNSPod, DuckDNS, Dynu, dynv6, Tencent Cloud EdgeOne CNAME, Tencent Cloud EdgeOne, Alibaba Cloud ESA, GoDaddy, Huawei Cloud DNS, No-IP, Porkbun 및 Tencent Cloud DNSPod가 포함됩니다. 페이지에는 제공자에 따라 필요한 필드가 표시됩니다. 다른 제공자의 Zone ID, 토큰 또는 루트 도메인 필드를 그대로 적용하면 안 됩니다.
+현재 제공자 목록에는 Alibaba Cloud DNS, Baidu Cloud DNS, Cloudflare, DNSHE, DNSPod, DuckDNS, Dynu, dynv6, Tencent Cloud EdgeOne CNAME, Tencent Cloud EdgeOne, Alibaba Cloud ESA, GoDaddy, Huawei Cloud DNS, No-IP, Porkbun 및 Tencent Cloud DNSPod가 포함됩니다. 페이지에는 제공자에 따라 필요한 필드가 표시됩니다. 다른 제공자의 Zone ID, 토큰 또는 루트 도메인 필드를 그대로 적용하면 안 됩니다.
+
+### DNSHE
+
+`DNSHE`를 선택하면 API 관리에서 생성한 `API Key`와 연결된 `API Secret`을 입력하고 두 도메인 필드를 구분합니다.
+
+| 필드 | 설명 |
+| --- | --- |
+| `DNSHE 관리 도메인` | DNSHE 계정에 등록되어 사용 가능한 전체 관리 도메인. 예: `example.com` |
+| `도메인` | 위 관리 도메인 안에서 실제로 업데이트할 전체 레코드 이름. 예: `nas.example.com` |
+| `TTL` | 선택 사항이며 기본값은 `600`초 |
+
+DNSHE는 A/AAAA, Apex, 일반 서브도메인 및 와일드카드 레코드를 지원합니다. 동기화 시 주소가 바뀐 기존 레코드를 업데이트하고 없는 레코드는 생성하며 주소가 같으면 불필요한 쓰기를 하지 않습니다. 관리 도메인을 찾지 못했거나 상태가 비활성이거나 내부 ID가 없다는 로그가 나오면 DNSHE 관리 화면을 먼저 확인합니다.
 
 ## 기본 도메인과 추가 도메인
 

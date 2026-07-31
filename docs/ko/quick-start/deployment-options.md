@@ -3,7 +3,7 @@ lang: ko-KR
 title: "배포 및 접근 방식 선택"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
+translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
 ---
 
 # 배포 및 접근 방식 선택
@@ -18,7 +18,7 @@ fn-knock는 외부 엔드포인트를 한곳으로 모으고 서비스 앞단에
 | --- | --- | --- | --- | --- |
 | fnOS 네이티브 FPK | fnOS 바탕화면의 `Knock` 아이콘(로컬 CGI가 백엔드 `7998`로 전달) | `7999` | 호스트 기능을 온전히 사용하려는 fnOS 기기 | `7998`은 관리 백엔드이며 인터넷 공개 또는 브라우저용 관리 엔드포인트가 아님 |
 | Docker Compose | `7991` | `7999` | NAS, 홈랩 서버 또는 일반 Docker 호스트 | 직접 연결 모드, 호스트 방화벽 관리, 자동 HTTPS, SSH 보안, Smart Connect, 웹 터미널 미지원 |
-| OpenWrt 패키지 | `서비스 → Knock`; 기본 포트 `7991` | `7999` | 메인 라우터, x86 소프트 라우터 또는 보조 게이트웨이 | 자동 HTTPS, SSH 보안, 웹 터미널, 웹 관리 패널 FPK 업데이트 미지원. Smart Connect는 기존 `dnsmasq` 구성에 의존 |
+| OpenWrt 패키지 | `서비스 → Knock`; 기본 포트 `7991` | `7999` | 메인 라우터, x86 소프트 라우터 또는 보조 게이트웨이 | 직접 연결, 호스트 방화벽 관리, Smart Connect, 자동 HTTPS, SSH 보안, 웹 터미널, 웹 관리 패널 FPK 업데이트 미지원 |
 | [Linux(systemd / OpenRC)](/ko/quick-start/linux-deployment) | `7991` | `7999` | 일반 Linux 서버, VPS 또는 직접 관리하는 호스트 | root 권한과 실행 중인 systemd 또는 OpenRC가 필요하며, 호스트 방화벽은 관리자가 직접 관리 |
 | [Synology DSM 7 x86_64 / ARM SPK](/ko/quick-start/synology-deployment) | DSM 바탕화면의 패키지 엔드포인트 | `7999` | Intel/AMD/ARM CPU를 사용하는 DSM 7 NAS | 직접 연결, 호스트 방화벽 관리, Smart Connect, 웹 터미널, SSH 보안 미지원. 패키지 센터에서 업데이트 |
 | [Windows x86_64](/ko/quick-start/windows-deployment) | 관리 프로그램이 로컬 `127.0.0.1:7991`을 엶 | `7999`, 기본적으로 모든 인터페이스에서 수신 | Windows 서비스와 로컬 트레이 관리 프로그램이 필요한 환경 | 방화벽과 NAT를 별도로 구성해야 함. 직접 연결 접근 허용, 내장 FRP/Cloudflared, Smart Connect, 웹 터미널, SSH 보안 미지원 |
@@ -40,7 +40,7 @@ fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네�
 
 [fn-knock 공식 사이트](https://www.fnknock.cn/)에서 해당 플랫폼의 다운로드 페이지로 이동합니다. 공식 릴리스에는 다음 검증 정보가 함께 제공됩니다.
 
-- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json): 버전, 프로젝트 소스 커밋, Go 게이트웨이 커밋, 플랫폼, 아키텍처, 파일 크기, SHA-256을 기록합니다.
+- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json): 버전, Control API 버전, 프로젝트 소스 커밋, Go 게이트웨이 커밋, 플랫폼, 아키텍처, 파일 크기, SHA-256을 기록합니다.
 - [`SHA256SUMS`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/SHA256SUMS): GitHub 릴리스의 설치 패키지를 검증할 때 사용합니다.
 - Docker 멀티 아키텍처 이미지의 SBOM과 빌드 출처 정보(provenance).
 
@@ -69,7 +69,7 @@ fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네�
 4. 계산 결과를 매니페스트 항목의 `sha256` 또는 `SHA256SUMS`의 같은 파일명 항목과 한 글자씩 비교합니다. 일치하지 않으면 설치를 중단하고 다시 다운로드합니다.
 5. 빌드 출처까지 감사한다면 설치 패키지의 GitHub 빌드 증명(provenance)이 공식 저장소에서 생성되었는지 확인합니다. Docker는 매니페스트의 멀티 아키텍처 이미지 다이제스트, SBOM 및 빌드 증명도 함께 검증할 수 있습니다. 특정 버전을 고정 배포할 때는 다이제스트를 사용하여 이후 `latest` 변경의 영향을 차단합니다.
 
-`release-manifest.json`에는 관리 서비스 소스 커밋과 Go 게이트웨이 커밋도 기록되어 있어 설치 패키지를 두 코드베이스까지 추적할 수 있습니다. SHA-256 문자열 하나만 따로 확보해서는 배포자의 신원을 증명할 수 없습니다. 매니페스트, 체크섬 파일 및 빌드 출처 역시 공식 릴리스에서 받습니다.
+`release-manifest.json`에는 Control API 버전, 관리 서비스 소스 커밋 및 Go 게이트웨이 커밋도 기록됩니다. 패키지의 Rust, Go, Windows 구성 요소가 같은 프로토콜 계약을 사용하는지 확인하고 두 코드베이스까지 추적할 수 있습니다. SHA-256 문자열 하나만 따로 확보해서는 배포자의 신원을 증명할 수 없습니다. 매니페스트, 체크섬 파일 및 빌드 출처 역시 공식 릴리스에서 받습니다.
 
 ## 네트워크 토폴로지 선택
 

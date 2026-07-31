@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fn-knock를 통해 fnOS 클라이언트 사용"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7e0cad193848162b8b1fd6ab577209b6d2f2e2ed5ebfbfc8bcd08c8446e04831
+translationSourceHash: 23c60dd4f0d78a94fb1ac36ba078dc26b9894c43a465a0c27a0a6ba3a0b1813d
 ---
 
 # fn-knock를 통해 fnOS 클라이언트 사용
@@ -32,7 +32,7 @@ fnOS 서비스용 Host(예: `nas.example.com`)를 만들고 대상(타깃)을 fn
 
 ## 직접 연결 모드
 
-직접 연결 모드는 게이트웨이 엔드포인트에서 인증을 완료한 뒤 현재 공인 IP에 원본 포트 접근을 허용합니다. fnOS 네이티브 FPK와 호스트 방화벽을 지원하는 OpenWrt에서만 사용할 수 있습니다. Docker, 일반 Linux, Synology DSM 7 SPK, Windows는 이 동적 포트 접근 허용을 제공하지 않습니다.
+직접 연결 모드는 게이트웨이 엔드포인트에서 인증을 완료한 뒤 현재 공인 IP에 원본 포트 접근을 허용합니다. 표준 fnOS FPK에서만 사용할 수 있습니다. Knock Lite, Docker, OpenWrt, 일반 Linux, Synology DSM 7 SPK 및 Windows는 이 동적 포트 접근 허용을 제공하지 않습니다.
 
 1. `시스템 설정 → 모드`에서 `직접 연결 모드(권장하지 않음)`를 선택하고 로컬 복구 경로를 유지합니다.
 2. `시스템 설정 → 세션`에서 로그인 후 IP 접근 허용을 ‘세션에 맞춤’ 또는 필요한 시간으로 설정합니다.

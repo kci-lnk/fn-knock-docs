@@ -3,7 +3,7 @@ lang: ja-JP
 title: "IP 許可リスト"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3beb3734aa8a267da40e1c49dcb4c79a5950b64a06c3c1d1c59a525d954a2f39
+translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,9 +63,9 @@ CNAME はシステムの名前解決結果に応じて、実際に許可する�
 
 ## 直接接続モードでの効果
 
-ネイティブの飛牛 FPK と、ホスト制御機能を備えた OpenWrt デプロイでは、有効なホワイトリストをホストのファイアウォールへ同期できます。Docker はホストのファイアウォールを管理しないため、ホワイトリストを使用して元のポートを開放することはできません。
+有効なホワイトリストをホストのファイアウォールへ同期するのは、標準 FNOS FPK だけです。Docker、OpenWrt、汎用 Linux、Synology DSM 7 SPK、Windows では、fn-knock のホワイトリストで元のポートを開放できません。
 
-汎用 Linux、Synology DSM 7 SPK、Windows x86_64 でも、fn-knock によるホストのファイアウォール同期は利用できません。画面上の記録はゲートウェイの許可判定には使用できますが、これらのプラットフォーム自身のファイアウォールに代わるものではありません。
+画面上の記録はゲートウェイの許可判定には使用できますが、各プラットフォーム自身のファイアウォールに代わるものではありません。現在のランタイムは、有効な単一 IP、CIDR、地域グループを 1 つのポリシーへコンパイルし、アクティブなセッションと許可済み送信元をゲートウェイへ同期します。追加、期限切れ、削除、取り消しの後も再同期されます。
 
 直接接続モードでは、インターネット側の送信元 IP が変わっても、元のポートへのアクセスによってセッションが再接続されることはありません。最初にゲートウェイの入口へ戻って認証を完了し、その後で元のサービスポートへ再接続してください。
 

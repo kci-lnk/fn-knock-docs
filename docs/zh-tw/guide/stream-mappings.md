@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a9c5fc790c1c2c088f944701b6b811f001125c4f4046a448b5e684d2ffae18e4
+translationSourceHash: 55796732746b2a9d3669475e2028c41086a4fa479b1aede8d705e52f3469805a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,12 +16,12 @@ translationSourceHash: a9c5fc790c1c2c088f944701b6b811f001125c4f4046a448b5e684d2f
 
 ## 生效條件
 
-側邊欄要顯示 `通訊協定映射`，必須同時符合：
+`通訊協定映射` 只屬於公網直連的子網域路由。側邊欄入口會在下列情況顯示：
 
 1. `系統設定 → 模式` 為 `子網域模式`。
-2. `系統設定 → 功能 → 通訊協定映射` 已啟用。
+2. `系統設定 → 功能 → 通訊協定映射` 已啟用，或目前仍有已儲存規則需要管理。
 
-關閉功能開關會停止通訊協定映射 Listener 並隱藏選單，但會保留已儲存的規則；重新開啟後會依原設定恢復。切離子網域模式時，此功能也會自動停用並停止 Listener，規則同樣會保留。
+關閉功能開關會停止所有通訊協定映射 Listener，但不會刪除規則；只要仍有規則，管理入口就會保留並顯示停用提示，讓管理員修正或刪除設定。停用期間不能執行「同步閘道」，重新啟用後才會依剩餘規則恢復 Listener。切離子網域模式時，此功能也會自動停用並停止 Listener，規則同樣會保留。
 
 `內網穿透 → 子網域映射` 雖然同樣使用 Host 路由，但不提供通訊協定映射。若要讓 FRP 或 Cloudflare 承載其他通訊協定，必須在對應平台另外設定，不能共用 fn-knock 的 HTTP Host 入口。
 
@@ -29,7 +29,7 @@ translationSourceHash: a9c5fc790c1c2c088f944701b6b811f001125c4f4046a448b5e684d2f
 
 ```text
 TCP :2222 -> 192.168.1.20:22
-TCP :3306 -> 127.0.0.1:3306
+TCP :13306 -> 127.0.0.1:3306
 UDP :53   -> 127.0.0.1:53
 ```
 
@@ -46,6 +46,10 @@ UDP :53   -> 127.0.0.1:53
 | `要求驗證` | 連線前依來源 IP 查詢 fn-knock 授權狀態 |
 
 同一個連接埠可各有一條 TCP 與 UDP 規則，例如 `53/tcp` 與 `53/udp`；相同通訊協定、相同連接埠不可重複。
+
+對外連接埠不能轉送至本機相同連接埠。例如 `TCP :3306 -> 127.0.0.1:3306` 會形成本機轉送迴圈，因此儲存與啟用時都會遭拒。檢查範圍包括 `localhost`、Loopback、未指定 Address，以及 fn-knock 裝置目前的本機 Interface Address；請修改對外或 Target 連接埠。
+
+舊版本遺留的同連接埠本機迴圈規則，可能讓通訊協定映射自動停用。請保持停用，在此頁刪除或修正無效規則，再回到 `系統設定 → 功能` 重新啟用；反覆同步無效設定不會修復問題。
 
 Target 必須能從 fn-knock 所在環境連線。在 Docker 中，`127.0.0.1` 代表 Container 本身；Host 或區域網路 Target 必須使用 Container 可連線的 IP。
 
@@ -83,7 +87,8 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 
 平台限制如下：
 
-- 飛牛原生 FPK，以及具備 root Host 管理能力的 OpenWrt，可在啟用自動防火牆管理後同步通訊協定連接埠。
+- 飛牛原生 FPK 可在啟用自動防火牆管理後同步通訊協定連接埠。
+- fn-knock 不再管理 OpenWrt Host 防火牆。通訊協定映射仍可 Listen，但管理員必須在 OpenWrt 防火牆中手動放行對應連接埠。
 - Docker 不會發布新的 Host Port，也不會修改 Host 防火牆。必須在 Container 啟動設定中明確發布固定連接埠，並手動處理 Host 與路由器規則；執行中的 Compose 無法只靠後台新增連接埠就完成公網暴露。
 - 自行接管閘道 Runtime 時，連接埠放行仍由系統管理員負責；不要假設 fn-knock 會修改 Host 防火牆。
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "포트, 엔드포인트 및 URL 경로"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 62d4a248faf3d6200904bb8cd5c66697a59019152d19d17f704f6b37a8b23331
+translationSourceHash: eb6e7fb415215759b38b934916bd7291885156f04a7e7661e4783c3fde9c0850
 ---
 
 # 포트, 엔드포인트 및 URL 경로
@@ -63,7 +63,7 @@ TCP/UDP 프로토콜 매핑은 별도의 외부 포트에서 수신하며 `7999`
 
 - Docker는 Host/경로 기반 게이트웨이를 실행할 수 있지만 호스트 방화벽 규칙을 대신 작성하지 않으며 직접 연결 모드와 Smart Connect를 지원하지 않습니다.
 - fnOS 네이티브 FPK는 호스트 방화벽을 관리하고 직접 연결 모드와 Smart Connect를 제공합니다.
-- OpenWrt는 root 권한이 있으면 호스트 방화벽과 직접 연결 모드를 사용할 수 있고 Smart Connect도 지원합니다. Smart Connect의 전제 조건은 실행 중인 `dnsmasq`와 `/etc/dnsmasq.d/`를 포함한 기본 설정입니다. 페이지의 `apt-get` 설치 기능은 OpenWrt에서 사용할 수 없습니다. SSH 보안, 웹 터미널, 웹 관리 패널 FPK 업데이트는 제공하지 않습니다.
+- OpenWrt는 Host/경로 라우팅, 프로토콜 매핑 및 내장 터널을 실행할 수 있지만 fn-knock는 OpenWrt 방화벽을 관리하거나 직접 연결 모드와 Smart Connect를 제공하지 않습니다. 포트 허용과 LAN 분할 DNS는 OpenWrt에서 직접 구성합니다. SSH 보안, 웹 터미널, 웹 관리 패널 FPK 업데이트도 제공하지 않습니다.
 - Synology DSM 7 SPK의 `7999`는 DSM 방화벽 UI에 공개 게이트웨이 포트로 등록되지만 패키지가 호스트 방화벽을 직접 수정할 수는 없습니다. 직접 연결 모드, Smart Connect, 웹 터미널, SSH 보안을 지원하지 않습니다.
 - Windows의 `7999`는 기본적으로 모든 인터페이스에서 수신합니다. 설치 프로그램의 `FnKnock Gateway` 정적 프로그램 규칙은 '도메인/개인' 네트워크 프로필에만 적용됩니다. 직접 연결 모드, 내장 호스트 방화벽 관리, Smart Connect, 내장 터널, 웹 터미널, SSH 보안은 지원하지 않습니다. 인터넷에 공개하기 전에 라우터/NAT, IPv6, ISP 정책, 타사 보안 소프트웨어도 확인합니다.
 

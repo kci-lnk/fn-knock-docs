@@ -3,7 +3,7 @@ lang: ja-JP
 title: "グローバル IP からのサブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec409df89d
+translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,7 @@ translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec4
 | --- | --- | --- |
 | fnOS ネイティブ FPK | フル対応 | 自動 HTTPS、ホストのファイアウォール、スマート接続を利用できます |
 | Docker Compose | サブドメインルーティングに対応 | ホストのファイアウォールは管理しません。スマート接続と自動 HTTPS は利用できません |
-| OpenWrt パッケージ | サブドメインルーティングに対応 | ホストのファイアウォールと併用できます。自動 HTTPS は利用できません。スマート接続には既存の `dnsmasq` と、メイン設定から `/etc/dnsmasq.d/` を読み込む構成が必要です |
+| OpenWrt パッケージ | サブドメインルーティングに対応 | fn-knock はホストファイアウォールを管理せず、スマート接続と自動 HTTPS も提供しません。ポート許可と LAN のスプリット DNS は OpenWrt 側で管理します |
 | Synology DSM 7 SPK | サブドメインルーティングに対応 | 直接接続、ホストのファイアウォール管理、スマート接続には対応しません。DSM ファイアウォールとルーター / NAT で外部からの経路を管理します |
 | Windows x86_64 | 外部向けゲートウェイとして利用可能 | `7999` はデフォルトで全インターフェースを待ち受けます。Windows ファイアウォールのプロファイル、ルーター / NAT、IPv6 ファイアウォール、ISP の着信ポリシーを別途確認してください。直接接続の IP 許可には対応しません |
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "이벤트 센터 및 알림"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dc78b71224d6aea001fa1da5a522b5432c5af1604718c073190c444519d88479
+translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b04faac49
 ---
 
 # 이벤트 센터 및 알림
@@ -137,6 +137,8 @@ Webhook URL, 토큰, SMTP 비밀번호 및 수신자 식별자는 민감한 설�
 - fn-knock 업데이트: 주제별로 알림 한 번 전송
 
 로그인 성공, SSH 로그인 성공처럼 자주 발생하는 이벤트의 임계값을 1로 두면 알림이 매우 많이 생성될 수 있습니다. 실제 접속량에 맞춰 시간 범위, 임계값 및 쿨다운을 조정합니다.
+
+fn-knock 업데이트 이벤트와 해당 알림에는 현재 최신 버전의 릴리스 노트만 포함됩니다. 여러 이전 버전의 노트를 이어 붙이지 않습니다. 이전 버전은 `버전 및 업데이트` 페이지나 프로젝트 릴리스 기록에서 확인합니다.
 
 ## 전송 결과 확인
 

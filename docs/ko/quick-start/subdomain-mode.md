@@ -3,7 +3,7 @@ lang: ko-KR
 title: "공인 IP 직접 연결: 서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec409df89d
+translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
 ---
 
 # 공인 IP 직접 연결: 서브도메인 라우팅
@@ -32,7 +32,7 @@ translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec4
 | --- | --- | --- |
 | fnOS 네이티브 FPK | 완전 지원 | 자동 HTTPS, 호스트 방화벽, Smart Connect 사용 가능 |
 | Docker Compose | 서브도메인 라우팅 지원 | 호스트 방화벽을 관리하지 않으며 Smart Connect와 자동 HTTPS를 제공하지 않음 |
-| OpenWrt 패키지 | 서브도메인 라우팅 지원 | 호스트 방화벽과 함께 사용 가능. 자동 HTTPS는 제공하지 않음. Smart Connect는 기존 `dnsmasq`와 `/etc/dnsmasq.d/` 포함 설정에 의존 |
+| OpenWrt 패키지 | 서브도메인 라우팅 지원 | fn-knock가 호스트 방화벽을 관리하거나 Smart Connect와 자동 HTTPS를 제공하지 않음. 포트 허용과 LAN 분할 DNS는 OpenWrt에서 관리 |
 | Synology DSM 7 SPK | 서브도메인 라우팅 지원 | 직접 연결, 호스트 방화벽 관리, Smart Connect 미지원. DSM 방화벽과 라우터/NAT에서 인바운드 경로 관리 |
 | Windows x86_64 | 공인 IP 게이트웨이로 사용 가능 | `7999`가 기본적으로 모든 인터페이스에서 수신. Windows 방화벽 프로필, 라우터/NAT, IPv6 방화벽, ISP 인바운드 정책을 직접 확인해야 하며 직접 연결 접근 허용은 미지원 |
 

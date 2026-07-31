@@ -3,7 +3,7 @@ lang: en-US
 title: "Service Discovery and Bulk Onboarding"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c599fa8c78c7b722203f033458303a28c195a4f5c0fe0abc2aa78e75e5ac0e7d
+translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,8 @@ The level changes only duration and device load; it does not change CIDRs, the p
 ## Discovery Results
 
 The scan dialog continuously displays hosts, ports, progress, and identified services. The system recognizes common applications from HTTP status, response headers, and page characteristics. When it cannot identify an application precisely, it creates a generic candidate from the page title or `HTTP + port`.
+
+When a candidate name or identification label is too long, the page truncates it visually and shows the full content on hover, without covering scan settings, suggested actions, or candidate buttons. Truncation does not change the saved value; confirm the full name through the tooltip or editor before saving.
 
 Candidate values are only suggestions:
 

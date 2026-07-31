@@ -10,7 +10,7 @@ fn-knock 用于收敛入口和前置认证，不能替代系统更新、备份�
 | --- | --- | --- | --- | --- |
 | 飞牛应用 FPK | 飞牛桌面的“敲门 knock”图标（本机 CGI 转至后端 `7998`） | `7999` | fnOS 主机，希望使用完整的宿主机能力 | `7998` 是管理后端，不是对外或浏览器管理入口 |
 | Docker Compose | `7991` | `7999` | NAS、家庭服务器或普通 Docker 主机 | 不支持直连模式、宿主机防火墙管理、自动 HTTPS、SSH 安全、智能连接和 Web 终端 |
-| OpenWrt 软件包 | `服务 → 敲门 Knock`；默认端口为 `7991` | `7999` | 主路由、软路由或旁路由 | 不支持自动 HTTPS、SSH 安全、Web 终端和应用内 FPK 更新；智能连接依赖现有 `dnsmasq` 配置 |
+| OpenWrt 软件包 | `服务 → 敲门 Knock`；默认端口为 `7991` | `7999` | 主路由、软路由或旁路由 | 不支持直连、宿主机防火墙管理、智能连接、自动 HTTPS、SSH 安全、Web 终端和应用内 FPK 更新 |
 | [Linux（systemd / OpenRC）](/quick-start/linux-deployment) | `7991` | `7999` | 普通 Linux 服务器、VPS 或自管主机 | 需要 root 及正在运行的 systemd 或 OpenRC；主机防火墙由管理员自行管理 |
 | [群晖 DSM 7 x86_64 / ARM SPK](/quick-start/synology-deployment) | DSM 桌面中的套件入口 | `7999` | DSM 7 的 Intel / AMD / ARM NAS | 不支持直连、宿主机防火墙管理、智能连接、Web 终端和 SSH 安全；通过套件中心升级 |
 | [Windows x86_64](/quick-start/windows-deployment) | 管理程序打开本机 `127.0.0.1:7991` | `7999`，默认监听全部接口 | 需要 Windows 服务与本机托盘管理程序 | 仍须配置防火墙和 NAT；不支持直连授权、内置 FRP / Cloudflared、智能连接、Web 终端和 SSH 安全 |
@@ -32,7 +32,7 @@ Docker、OpenWrt、Linux 与 Windows 的管理入口需要单独设置面板密�
 
 优先从 [fn-knock 官网](https://www.fnknock.cn/) 进入对应平台的下载页。正式发布同时提供以下核验信息：
 
-- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json)：记录版本、项目源码提交、Go 网关提交、平台、架构、文件大小和 SHA-256。
+- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json)：记录版本、控制 API 版本、项目源码提交、Go 网关提交、平台、架构、文件大小和 SHA-256。
 - [`SHA256SUMS`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/SHA256SUMS)：用于校验 GitHub Release 中的安装包。
 - Docker 多架构镜像的 SBOM 与构建来源信息（provenance）。
 
@@ -61,7 +61,7 @@ Docker、OpenWrt、Linux 与 Windows 的管理入口需要单独设置面板密�
 4. 将结果与 manifest 中该文件的 `sha256` 或 `SHA256SUMS` 中的同名条目逐字符比较；不一致时停止安装并重新下载。
 5. 需要审计构建来源时，再确认安装包的 GitHub build provenance 来自官方仓库。Docker 可同时核对 manifest 中的多架构镜像 digest、SBOM 和 provenance；固定版本部署可用 digest 避免 `latest` 后续变化。
 
-`release-manifest.json` 还记录控制面源码提交和 Go 网关提交，可用于把安装包追溯到两部分源码。单独拿到一个 SHA-256 文本并不能证明发布者身份，清单、校验文件和构建来源也必须来自官方 Release。
+`release-manifest.json` 还记录控制 API 版本、控制面源码提交和 Go 网关提交，可用于确认安装包中的 Rust、Go 与 Windows 组件使用同一协议契约，并把安装包追溯到两部分源码。单独拿到一个 SHA-256 文本并不能证明发布者身份，清单、校验文件和构建来源也必须来自官方 Release。
 
 ## 选择网络拓扑
 

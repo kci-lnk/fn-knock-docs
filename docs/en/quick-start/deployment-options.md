@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Deployment and Access Pattern"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
+translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,7 +20,7 @@ fn-knock consolidates ingress and places authentication in front of your service
 | --- | --- | --- | --- | --- |
 | Native fnOS FPK | `Knock` on the fnOS desktop (local CGI proxies to backend `7998`) | `7999` | An fnOS host where full host integration is required | `7998` is the admin backend, not a public endpoint or a browser-facing admin URL |
 | Docker Compose | `7991` | `7999` | A NAS, home server, or general-purpose Docker host | No Direct mode, host firewall management, automatic HTTPS, SSH security, Smart Connect, or web terminal |
-| OpenWrt package | `Services → Knock`; default port `7991` | `7999` | A primary router, x86 router appliance, or downstream gateway | No automatic HTTPS, SSH security, web terminal, or in-app FPK updates; Smart Connect depends on the existing `dnsmasq` configuration |
+| OpenWrt package | `Services → Knock`; default port `7991` | `7999` | A primary router, x86 router appliance, or downstream gateway | No Direct mode, host-firewall management, Smart Connect, automatic HTTPS, SSH security, web terminal, or in-app FPK updates |
 | [Linux (systemd / OpenRC)](/en/quick-start/linux-deployment) | `7991` | `7999` | A standard Linux server, VPS, or self-managed host | Requires root and a running systemd or OpenRC init system; the administrator manages the host firewall |
 | [Synology DSM 7 x86_64 / ARM SPK](/en/quick-start/synology-deployment) | Package entry on the DSM desktop | `7999` | An Intel, AMD, or ARM NAS running DSM 7 | No Direct mode, host firewall management, Smart Connect, web terminal, or SSH security; updates are installed through Package Center |
 | [Windows x86_64](/en/quick-start/windows-deployment) | Manager opens local `127.0.0.1:7991` | `7999`, listening on all interfaces by default | A Windows service managed from a local system-tray app | Firewall and NAT still require manual setup; no Direct mode authorization, built-in FRP / Cloudflared, Smart Connect, web terminal, or SSH security |
@@ -42,7 +42,7 @@ Installation guides:
 
 Start from the [official fn-knock website](https://www.fnknock.cn/) and follow the download link for your platform. Each official release also provides the following verification data:
 
-- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json): version, application source commit, Go gateway commit, platform, architecture, file size, and SHA-256.
+- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json): version, control API version, application source commit, Go gateway commit, platform, architecture, file size, and SHA-256.
 - [`SHA256SUMS`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/SHA256SUMS): checksums for packages attached to the GitHub Release.
 - An SBOM and build provenance for the multi-architecture Docker image.
 
@@ -71,7 +71,7 @@ Use the following verification sequence:
 4. Compare the result character-for-character with the file's `sha256` value in the manifest or its entry in `SHA256SUMS`. If they differ, stop and download the package again.
 5. To audit the build origin, confirm that the package's GitHub build provenance points to the official repository. For Docker, also verify the multi-architecture image digest, SBOM, and provenance listed in the manifest. Pin production deployments by digest if you do not want a future change to `latest`.
 
-`release-manifest.json` records both the control-plane source commit and the Go gateway commit, allowing each package to be traced to both codebases. A SHA-256 string by itself does not prove who published a file; the manifest, checksum file, and build provenance must also come from the official Release.
+`release-manifest.json` also records the control API version, the control-plane source commit, and the Go gateway commit. This confirms that the Rust, Go, and Windows components in a package use the same protocol contract and allows the package to be traced to both codebases. A SHA-256 string by itself does not prove who published a file; the manifest, checksum file, and build provenance must also come from the official Release.
 
 ## Choose a network topology
 

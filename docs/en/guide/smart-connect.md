@@ -3,14 +3,14 @@ lang: en-US
 title: "Smart Connect"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77f6913ff2ef9174a16f1c2fbbd475289f3be40e02b5f2da976814a21cd270a3
+translationSourceHash: 9cf7912a7fa75e589bb8838e64c052f7b9927e36d042da678921578c361ce24e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Smart Connect
 
-`Smart Connect` provides split-horizon LAN DNS for the native fnOS FPK and OpenWrt runtimes when using Subdomain mode with direct public ingress. Public DNS still resolves `nas.example.com` to the public entry point, while LAN devices receive the device's private IPv4 address from its local `dnsmasq`, avoiding NAT loopback and an unnecessary trip through the public network.
+`Smart Connect` provides split-horizon LAN DNS for the standard fnOS FPK when using Subdomain mode with direct public ingress. Public DNS still resolves `nas.example.com` to the public entry point, while LAN devices receive the device's private IPv4 address from its local `dnsmasq`, avoiding NAT loopback and an unnecessary trip through the public network.
 
 It changes only DNS resolution. It does not create Host mappings, modify public DNS, or switch the runtime mode.
 
@@ -23,7 +23,7 @@ Enable Smart Connect only when all of the following are true:
 3. The fn-knock device has a stable private IPv4 address.
 4. LAN clients use this device as their DNS server.
 5. Port `53` is listened on by the `dnsmasq` instance that Smart Connect will use, with no conflicting DNS service.
-6. The runtime is the native fnOS FPK or OpenWrt and has root access, a host `dnsmasq`, and service-management capability.
+6. The runtime is the standard fnOS FPK and has a host `dnsmasq` plus service-management capability.
 
 See [Public IP Access with Subdomain Routing](/en/quick-start/subdomain-mode) and [Subdomain Routing](/en/guide/subdomain-proxy) for configuring the subdomain entry point.
 
@@ -61,7 +61,7 @@ Always test public authentication through a genuine external path such as a mobi
 Path: `System settings → Features → Smart Connect`
 
 1. Enable `Smart Connect`.
-2. If the page reports that the resource is not ready, install and initialize `dnsmasq` first. On OpenWrt, use the firmware's own `opkg` or `apk`; the page's `apt-get` installation action does not apply.
+2. If the page reports that the resource is not ready, install and initialize `dnsmasq` first.
 3. Select a private IPv4 address that LAN clients can actually reach, such as `192.168.31.20`.
 4. Select `Save and sync`, then confirm the synchronized domain count and latest sync time.
 5. Set the router's DHCP DNS server to that private IPv4 address, or configure one test device manually first.
@@ -98,14 +98,13 @@ If initialization fails, first check what is using `53/tcp` and `53/udp`, then c
 ## Platform Boundaries
 
 - The native fnOS FPK supports Smart Connect. If `dnsmasq` is missing, the page can attempt installation through `apt-get`.
-- The OpenWrt runtime exposes Smart Connect, writes `/etc/dnsmasq.d/fn-knock-smart-connect.conf`, and restarts the service with `service dnsmasq restart`. The system must already have `dnsmasq` installed and enabled, and its main configuration must include `/etc/dnsmasq.d/`. The page's automatic installation uses only `apt-get` and does not apply to OpenWrt.
+- OpenWrt does not support Smart Connect. Configure split-horizon records yourself in OpenWrt's `dnsmasq`, DHCP settings, or another local DNS service.
 - Docker is unsupported. A container cannot take control of the host's `dnsmasq` and port `53`, so the admin console hides or rejects the capability.
 - Generic Linux packages do not expose Smart Connect. Configure split-horizon DNS on the router or a separate DNS server instead.
 - The Synology DSM 7 SPK does not support Smart Connect or in-app management of `dnsmasq` and LAN DNS.
 - Windows x86_64 does not support Smart Connect or in-app management of `dnsmasq` and LAN DNS.
 - Environments without host-management capability must provide their own split-horizon DNS.
 - `Reverse proxy mode → Subdomain mapping` does not support Smart Connect. Its public entry point lives on the tunnel platform; configure LAN split DNS yourself on the router or a separate DNS server.
-- OpenWrt does not provide the Web terminal or in-app FPK updates. Those limitations are independent of split-DNS availability.
 
 ## What Smart Connect Does Not Do
 
@@ -119,7 +118,7 @@ If initialization fails, first check what is using `53/tcp` and `53/udp`, then c
 1. **The page is unavailable:** Confirm that the current mode is Subdomain mode with direct public ingress and that the deployment provides the capability.
 2. **There are no domains to synchronize:** Create the authentication Host and an application Host first.
 3. **There is no selectable IP:** Check that the primary interface has an address in `10/8`, `172.16/12`, or `192.168/16`.
-4. **Initialization fails:** Check port `53` usage and `dnsmasq` service state. On OpenWrt, also confirm that `dnsmasq` is installed and the main configuration includes `/etc/dnsmasq.d/`.
+4. **Initialization fails:** Check port `53` usage and `dnsmasq` service state.
 5. **Clients still resolve the public address:** Check DHCP advertisements, manual DNS settings, encrypted DNS, and caches.
 6. **The domain resolves privately but will not open:** Check the actual gateway port, certificate, and Host mapping instead of continuing to troubleshoot public DDNS.
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e17d63d92
+translationSourceHash: 0805badb0b07141bd4df18d7a902b8c8bd16472ab2b8bc49b4f815aa6168f44e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,8 +16,8 @@ translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e1
 
 | 能力 | 原生飛牛 FPK | Docker | OpenWrt | Linux 服務 | Synology DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 直連模式與 Host 防火牆 | 支援，Process 必須具備主機權限 | 不支援 | 支援，Process 必須具備 root 權限 | 不支援 | 不支援 | 不支援 |
-| 智慧連線 | 支援 | 不支援 | 支援；依賴現有的 `dnsmasq`，且 `/etc/dnsmasq.d/` 必須已納入設定；頁面內的 `apt-get` 自動安裝不適用 | 不支援 | 不支援 | 不支援 |
+| 直連模式與 Host 防火牆 | 支援，Process 必須具備主機權限 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
 | Web 終端機 | 支援 | 不支援 | 不支援 | 支援，依賴 `tmux` | 不支援 | 不支援 |
 | 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |
 | SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
@@ -28,7 +28,7 @@ translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e1
 | 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝符合 Firmware 的 IPK／APK | 依安裝方式手動更新 | 從 DSM 套件中心安裝 SPK | Windows 管理程式 |
 | 獨立管理面板密碼 | 使用 fnOS/CGI 入口 | 支援 | 支援 | 支援 | 使用 DSM 桌面 CGI 入口 | 支援；管理入口僅限本機 `127.0.0.1` |
 
-上表以後端回報的 Runtime 能力為準。部分功能入口會顯示為無法使用並附上原因，另一些則會直接隱藏。Windows 不提供直連、內建 FRP / Cloudflared、智慧連線、Web 終端機或 SSH 安全性；其閘道預設在所有 Interface 上監聽 `7999`，但外網是否能連入仍取決於防火牆規則、NAT 與網路政策。Synology DSM 7 SPK 同樣不提供直連、Host 防火牆、智慧連線、Web 終端機或 SSH 安全性。
+上表以後端回報的 Runtime 能力為準。部分功能入口會顯示為無法使用並附上原因，另一些則會直接隱藏。OpenWrt 不再提供直連、Host 防火牆管理或智慧連線；仍可執行 Host 路由、通訊協定映射及內建 Tunnel，但連接埠放行由 OpenWrt 防火牆負責。Windows 不提供直連、內建 FRP / Cloudflared、智慧連線、Web 終端機或 SSH 安全性；其閘道預設在所有 Interface 上監聽 `7999`，但外網是否能連入仍取決於防火牆規則、NAT 與網路政策。Synology DSM 7 SPK 同樣不提供直連、Host 防火牆、智慧連線、Web 終端機或 SSH 安全性。
 
 若 fnOS 裝置上的應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不等同於上表的完整 FPK：支援 Host 反代、驗證、DDNS、憑證、WAF、內建 Tunnel 與監控，但不提供直連與 Host 防火牆、網路最佳化、飛牛憑證庫同步、Web 終端機或應用程式內更新。需要完整 Host 整合能力時，請先匯出 Lite 備份並停止 Lite，再安裝官網標準 FPK 後匯入；請勿讓兩個執行個體同時占用連接埠。
 
@@ -68,7 +68,7 @@ translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e1
 | `啟用網關反代節流` | 依 Client IP 使用每秒 Request 數及 Burst Token 控制流量；超過限制後，會在設定時間內直接中斷連線 |
 | `攔截爬蟲請求` | 攔截閘道辨識到的 Crawler 存取；這無法取代 WAF，也不會阻擋繞過閘道的 Request |
 | `未匹配路由` | `顯示錯誤頁面` 會回傳友善頁面；`阻斷連線` 會直接終止未命中任何路由的 Request |
-| `上游異常時顯示錯誤資訊` | 預設 `顯示較少`，隱藏上游 IP、連接埠與底層連線錯誤；只有排查時才暫時使用 `顯示更多` |
+| `上游異常時顯示錯誤資訊` | 預設 `顯示較少`；可選 `顯示更多`，或用 `阻斷連線` 直接中止異常請求而不顯示錯誤頁 |
 | `傳送門設定` | 控制登入後的應用程式切換入口 |
 | `可見性` | 依地區或 CIDR 限制哪些來源能連到閘道 |
 | `協議頭` | 控制閘道是否向指定 Target 傳送 `X-Forwarded-*` |
@@ -81,7 +81,7 @@ translationSourceHash: 7895f0c4f4f01f6f66442329341c39186950045cbbbc7c6ff93aba1e1
 
 未匹配路由預設使用 `顯示錯誤頁面`，回傳歡迎、選擇或錯誤提示。選擇 `阻斷連線` 後，HTTP/1.x 會重設連線，HTTP/2 會中止目前 Stream；預設網域 Fallback 也會暫時停用，但已儲存的預設網域設定會在切回錯誤頁面時恢復使用。Request Log 會將這類請求標記為未匹配網域阻斷。
 
-`上游異常時顯示錯誤資訊` 預設選擇 `顯示較少`：訪客只會看到上游無法使用，不會取得內部 IP、連接埠或連線失敗原因。`顯示更多` 會回傳完整連線錯誤，可能洩漏網路拓撲，只應在受控環境短時間排查，完成後切回 `顯示較少`。
+`上游異常時顯示錯誤資訊` 預設選擇 `顯示較少`：訪客只會看到上游無法使用，不會取得內部 IP、連接埠或連線失敗原因。`顯示更多` 會回傳完整連線錯誤，可能洩漏網路拓撲，只應在受控環境短時間排查。選擇 `阻斷連線` 後，上游連線失敗時不會產生錯誤頁，而會直接重設 HTTP/1.x 連線或中止目前的 HTTP/2 Stream；Client 會看到連線突然中斷。
 
 ## 修改設定後的驗證順序
 

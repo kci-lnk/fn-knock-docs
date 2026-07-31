@@ -90,7 +90,7 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - `内网穿透` 的子域映射与路径模式都可使用 FRP / Cloudflared；切离内网穿透时，系统会尝试停止正在运行的隧道。
 - 离开公网直连子域模式后，协议映射功能会关闭并停止监听，但已保存的规则会保留；重新进入该模式并开启功能后可恢复。
 - 直连模式依赖宿主机防火墙。Docker、群晖 DSM 7 SPK、Windows 和不具备宿主机管理能力的部署无法选择它。
-- Docker 不会写宿主机防火墙，也不支持智能连接；OpenWrt 不提供 SSH 安全、Web 终端和应用内 FPK 更新，但支持智能连接。OpenWrt 的智能连接要求现有 `dnsmasq` 已启用并包含 `/etc/dnsmasq.d/`，页面不能通过 `apt-get` 为它自动安装依赖。
+- Docker 不会写宿主机防火墙，也不支持智能连接。OpenWrt 同样不提供 fn-knock 宿主机防火墙管理、直连模式或智能连接，也不提供 SSH 安全、Web 终端和应用内 FPK 更新；端口放行与局域网 DNS 分流由 OpenWrt 自身负责。
 - Windows 不支持直连授权、应用内宿主机防火墙管理、智能连接、内置 FRP / Cloudflared、Web 终端或 SSH 安全；网页更新页也不能安装 Windows 更新。
 - 群晖 DSM 7 SPK 支持内置 FRP / Cloudflared，但不支持直连授权、宿主机防火墙管理、智能连接、Web 终端、SSH 安全或网页内更新。
 

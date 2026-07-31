@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dc78b71224d6aea001fa1da5a522b5432c5af1604718c073190c444519d88479
+translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b04faac49
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -139,6 +139,8 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 - 應用程式更新：依主體物件傳送一次提示。
 
 登入成功、SSH 登入成功等高頻事件若臨界值設為 1，可能產生大量通知。請依實際存取量調整時間窗、臨界值與 Cooldown。
+
+應用程式更新事件及其通知只會附上目前最新版本的 Release Notes，不再連續串接多個舊版本的說明。需要回顧更早版本時，請前往 `版本與更新` 或專案 Release History；通知正文應視為「本次可更新版本」的摘要。
 
 ## 查看投遞結果
 

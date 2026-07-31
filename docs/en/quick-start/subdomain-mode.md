@@ -3,7 +3,7 @@ lang: en-US
 title: "Public IP Access with Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 35cd71ba2f529c96928831bee95b4c2bdc5613f79c2b7cc0d560dfec409df89d
+translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,7 @@ If you do not have public ingress, use [NAT Traversal with Subdomain Routing](/e
 | --- | --- | --- |
 | Native fnOS FPK | Full support | Supports automatic HTTPS, host firewall management, and Smart Connect |
 | Docker Compose | Supports subdomain routing | Does not manage the host firewall; no Smart Connect or automatic HTTPS |
-| OpenWrt package | Supports subdomain routing | Can work with the host firewall; no automatic HTTPS; Smart Connect depends on the existing `dnsmasq` setup including `/etc/dnsmasq.d/` |
+| OpenWrt package | Supports subdomain routing | fn-knock does not manage the host firewall or provide Smart Connect or automatic HTTPS; OpenWrt manages port access and split-horizon LAN DNS |
 | Synology DSM 7 SPK | Supports subdomain routing | No Direct mode, host firewall management, or Smart Connect; manage the inbound path through the DSM firewall and router/NAT |
 | Windows x86_64 | Can serve as a public gateway | `7999` listens on all interfaces by default; verify Windows Firewall profiles, router/NAT, IPv6 firewall rules, and ISP inbound policy yourself; no Direct mode authorization |
 

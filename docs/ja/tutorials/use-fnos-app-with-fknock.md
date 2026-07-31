@@ -3,7 +3,7 @@ lang: ja-JP
 title: "fn-knock 経由で fnOS アプリを使う"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7e0cad193848162b8b1fd6ab577209b6d2f2e2ed5ebfbfc8bcd08c8446e04831
+translationSourceHash: 23c60dd4f0d78a94fb1ac36ba078dc26b9894c43a465a0c27a0a6ba3a0b1813d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,7 @@ fnOS アプリに設定する接続先は、fn-knock の公開構成と一致さ
 
 ## 直接接続モード
 
-直接接続モードではゲートウェイ入口で認証を済ませた後、現在のグローバル IP に対して元のポートへのアクセスを許可します。この動的なポート認可を利用できるのは、fnOS ネイティブ FPK と、ホストのファイアウォール管理に対応する OpenWrt だけです。Docker、汎用 Linux、Synology DSM 7 SPK、Windows では利用できません。
+直接接続モードではゲートウェイ入口で認証を済ませた後、現在のグローバル IP に対して元のポートへのアクセスを許可します。この動的なポート認可を利用できるのは標準 fnOS FPK だけです。Knock Lite、Docker、OpenWrt、汎用 Linux、Synology DSM 7 SPK、Windows では利用できません。
 
 1. `システム設定 → モード` で `直接接続モード（非推奨）` を選び、ローカルからの復旧経路を残します。
 2. `システム設定 → セッション` で、ログイン後の IP 許可を「セッションに連動」または必要な有効期間に設定します。

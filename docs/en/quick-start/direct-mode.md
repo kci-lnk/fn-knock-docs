@@ -3,7 +3,7 @@ lang: en-US
 title: "Direct Access on Original Ports"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f6e49496052b564f36d0462a6ca4f524aa5530599256e19349b234043cabff98
+translationSourceHash: ae2a72f555539a11ca3196288ab56a9c943148d4350e55e38b893e88e87879af
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -17,7 +17,7 @@ Use this pattern when the device accepts inbound traffic from the public interne
 - Access control: post-login IP authorization
 - Admin location: `System settings → Mode → Direct mode (not recommended)`
 
-Direct mode depends on the host firewall and is intended primarily for the native fnOS FPK and OpenWrt. Docker, Synology DSM 7 SPK, and Windows deployments do not let fn-knock manage the host firewall and must not use this pattern.
+Direct mode depends on fn-knock managing the host firewall and is currently available only in the standard native fnOS FPK. Knock Lite, Docker, OpenWrt, generic Linux, Synology DSM 7 SPK, and Windows do not provide this capability and must not use this pattern.
 
 ## When to use this pattern
 
@@ -61,7 +61,7 @@ After enabling it, verify that:
 - Protected ports such as SSH and Remote Desktop are closed to unauthorized IPs by default.
 - The LAN or another explicitly retained management source can still recover the configuration.
 
-The native fnOS FPK and OpenWrt use different firewall implementations. Immediately test from an external network without signing in and confirm that the service port is actually blocked.
+Immediately test from an external network without signing in and confirm that the service port is actually blocked.
 
 ## 2. Configure the authentication endpoint
 
@@ -90,7 +90,7 @@ A sign-in credential with a restricted service scope never creates automatic IP 
 
 If your public address changes, use [DDNS](/en/guide/ddns) to update `auth.example.com`. Publish only address records that are actually reachable from the public internet.
 
-Configure a trusted certificate for the authentication domain. Automatic HTTPS is available only on supported deployments. Docker and OpenWrt require you to provide the certificate or terminate TLS at an upstream proxy.
+Configure a trusted certificate for the authentication domain. The standard fnOS FPK can use automatic HTTPS when the inbound requirements are met; see [TLS Certificates and HTTPS](/en/guide/ssl) for certificate and port requirements.
 
 ## 5. Verify from an external network
 
@@ -115,7 +115,8 @@ For tighter source restrictions, manually add a stable IP or CIDR. Do not add an
 | Deployment | Direct mode | Notes |
 | --- | --- | --- |
 | Native fnOS FPK | Supported | Can manage the host firewall |
-| OpenWrt package | Supported | Rules apply to the router firewall |
+| OpenWrt package | Not supported | fn-knock does not manage the OpenWrt firewall or show Direct mode |
+| Linux service | Not supported | The administrator manages the firewall; it is not connected to fn-knock's dynamic Direct authorization |
 | Docker Compose | Not supported | A container cannot manage the host firewall on its behalf |
 | Synology DSM 7 SPK | Not supported | The package does not modify the DSM host firewall |
 | Windows x86_64 | Not supported | Installer-created application rules are not equivalent to Direct mode authorization; the admin interface does not expose this mode |
@@ -130,7 +131,7 @@ For tighter source restrictions, manually add a stable IP or CIDR. Do not add an
 | IPv4 is protected, but IPv6 remains exposed | The IPv6 firewall was not restricted as well, or the AAAA record points to another endpoint |
 | Authorization expires too quickly | The session lifetime is too short, or the egress IP has changed |
 | Sign-in succeeds, but no automatic IP authorization appears | The credential has a restricted service scope; use an unrestricted credential or add the IP / CIDR manually |
-| Direct mode is missing in Docker | This is a deployment limitation; use subdomain routing instead |
+| Direct mode is missing on this deployment | This is a deployment limitation; only the standard fnOS FPK provides it, so use subdomain routing or manage a VPN / firewall yourself |
 
 See the [FAQ](/en/faq) for the complete troubleshooting index.
 

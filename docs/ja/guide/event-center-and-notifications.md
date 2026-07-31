@@ -3,7 +3,7 @@ lang: ja-JP
 title: "イベントセンターと通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dc78b71224d6aea001fa1da5a522b5432c5af1604718c073190c444519d88479
+translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b04faac49
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -139,6 +139,8 @@ Webhook URL、トークン、SMTP パスワード、受信者識別子などは�
 - アプリ更新：対象で集約し、通知を 1 回送信する。
 
 ログイン成功や SSH ログイン成功などの頻度が高いイベントは、トリガー数を 1 にすると大量の通知が発生する可能性があります。実際のアクセス量に合わせて、集計期間、トリガー数、クールダウンを調整してください。
+
+アプリ更新イベントとその通知には、現在の最新バージョンのリリースノートだけが含まれます。複数の過去バージョンのノートは連結されません。以前のバージョンは `バージョンとアップデート` またはプロジェクトの Release 履歴で確認してください。
 
 ## 配信結果の確認
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 999f15e5f9dd42954e5d329e208a5a78ad3c93ae58ed68907826ac128cc86dc6
+translationSourceHash: 2febfd2cbb94b2c7361b1244cc5d6fe872b9bcadcb4e730715254ab7b6fee159
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -54,7 +54,7 @@ The root domain and Host mappings cannot contain `*`. Enter `example.com` as the
 
 ### EdgeOne / ESA
 
-Direct-public `Subdomain mode` can enable Tencent Cloud EdgeOne or Alibaba Cloud ESA support. Once enabled, public URLs can omit `:7999`, and the gateway reads the real client IP from the platform-specific header:
+Direct-public `Subdomain mode` can enable Tencent Cloud EdgeOne or Alibaba Cloud ESA support. Once enabled, public URLs can omit `:7999`. The subdomain list, mapping URLs, and auth service also show only the public Host instead of a stale configured gateway port. This is visitor-side display only; the edge origin must still point to fn-knock's actual listening port. The gateway also reads the real client IP from the platform-specific header:
 
 | Platform | Client IP header |
 | --- | --- |
@@ -72,12 +72,13 @@ A mapping contains at least a Host and a Target:
 ```text
 nas.example.com   -> http://127.0.0.1:5666
 alist.example.com -> http://127.0.0.1:5244
+photos.example.com -> http://127.0.0.1:5666/photos/
 ```
 
 | Field | Behavior |
 | --- | --- |
 | `Host / subdomain` | Matches the request Host; after saving a root domain, you can enter only `nas` |
-| `Target` | HTTP / HTTPS upstream URL; it must be reachable from the fn-knock runtime |
+| `Target` | HTTP, HTTPS, WS, or WSS upstream URL; it may include a base path and must be reachable from the fn-knock runtime |
 | `Require sign-in` | Redirects unsigned-in users to the auth Host, then returns them to the original URL |
 | `Disable` / `Schedule enable or disable` | Takes the mapping offline manually or controls its daily open window using server-local time |
 | `Group` | Places an application Host in an existing group; the auth service cannot be grouped |
@@ -89,6 +90,8 @@ alist.example.com -> http://127.0.0.1:5244
 | `Enable WAF` | Enabled by default for application Hosts; when disabled, this Host skips the global WAF |
 
 Whenever possible, bind application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
+
+When a Target contains a path, the gateway preserves that base path and appends the visitor's request path. This can be used for services such as fnOS Photos or Music that are mounted below a subpath. After saving, test the home page, static assets, redirects, Cookies, and WebSockets. A base-path Target cannot make an application that only supports root deployment subpath-aware. Title and icon collection uses the complete Target and preserves an explicit port.
 
 The auth service is a special Host mapping. It must remain public and must not require sign-in or inject Basic Auth credentials, or the sign-in entry point will loop or block itself.
 
@@ -175,9 +178,9 @@ None of these features changes the fact that the Host is the primary routing key
 ## Platform Boundaries
 
 - Host routing works on fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK, and Windows. Actual public reachability still depends on each platform's published ports and network path.
-- Automatic host-firewall changes and Smart Connect require host-management capabilities. Docker does not provide them.
+- Automatic host-firewall changes and Smart Connect are provided only by the standard fnOS FPK runtime with the matching capabilities. Docker, OpenWrt, Linux, Synology, and Windows do not provide them.
 - Protocol mappings appear only in direct-public `Subdomain mode`. Even if extra ports are published for a Docker container, fn-knock does not manage the host firewall.
-- With root-level host access, OpenWrt can manage its firewall. Smart Connect depends on an existing `dnsmasq` installation and an included `/etc/dnsmasq.d/` directory; the UI's automatic `apt-get` installation does not apply. OpenWrt does not provide SSH Security, Web Terminal, or in-app FPK updates.
+- OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, or Smart Connect there, nor does it provide SSH Security, Web Terminal, or in-app FPK updates.
 - fn-knock does not automatically close an upstream service's existing public listener and cannot replace upstream updates, backups, or least-privilege configuration.
 
 ## Verification and Troubleshooting

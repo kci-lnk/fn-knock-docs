@@ -3,7 +3,7 @@ lang: en-US
 title: "Use the fnOS App through fn-knock"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7e0cad193848162b8b1fd6ab577209b6d2f2e2ed5ebfbfc8bcd08c8446e04831
+translationSourceHash: 23c60dd4f0d78a94fb1ac36ba078dc26b9894c43a465a0c27a0a6ba3a0b1813d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,7 @@ With the subdomain pattern, do not enter an original public port such as `5666` 
 
 ## Direct mode
 
-Direct mode authenticates through the gateway entry point, then allows the current public IP to reach the original port. It is available only with the native fnOS FPK and OpenWrt installations that support host firewall management. Docker, generic Linux, Synology DSM 7 SPK, and Windows deployments do not provide this dynamic port authorization.
+Direct mode authenticates through the gateway entry point, then allows the current public IP to reach the original port. It is available only with the standard fnOS FPK. Knock Lite, Docker, OpenWrt, generic Linux, Synology DSM 7 SPK, and Windows do not provide this dynamic port authorization.
 
 1. Under `System settings → Mode`, select `Direct mode (not recommended)` and retain a local recovery path.
 2. Under `System settings → Sessions`, set post-login IP authorization to `Follow session` or the required duration.

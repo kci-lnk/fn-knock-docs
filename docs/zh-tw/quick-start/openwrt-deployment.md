@@ -3,7 +3,7 @@ lang: zh-TW
 title: "OpenWrt 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 277cb83222e1e08a1c6745b3936c716b103813a63d9127565fb6b5647479b338
+translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
 ---
 
 # OpenWrt 部署
@@ -111,10 +111,12 @@ logread -e fn-knock
 ```text
 /etc/config/fn-knock
 /etc/fn-knock/gateway
-/var/lib/fn-knock
+/etc/fn-knock/data
 ```
 
-其中，閘道目錄會儲存 SQLite 資料庫；執行資料目錄可能儲存 Secret、Tunnel 資源與更新狀態。升級前請將這三處納入備份；其中含有敏感資訊，不應上傳至公開位置。
+`/etc/config/fn-knock` 保存 UCI 連接埠與目錄設定，`/etc/fn-knock/gateway` 保存閘道 Runtime 設定，`/etc/fn-knock/data` 保存 SQLite、驗證金鑰及其他持久化資料。升級前請將這三處納入備份；其中含有敏感資訊，不應上傳至公開位置。
+
+從舊版本升級且 UCI 仍使用預設 `/var/lib/fn-knock` 時，安裝 Script 會先停止服務、將舊資料複製至 `/etc/fn-knock/data`，再更新 `fn-knock.main.data_dir`。自訂資料目錄不會被強制遷移。升級後請先確認 LuCI 中的資料目錄、管理登入與原有設定正常，再處理舊目錄；驗證前不要手動刪除。
 
 同時請從維護頁面匯出 `.knock` 應用程式備份。目錄備份用於保留 SQLite 與平台執行資料，`.knock` 則用於移轉可還原的設定；內容範圍、版本限制與還原驗收方式請參閱[備份、還原與資料清理](/zh-tw/guide/backup-and-restore)。
 
@@ -147,13 +149,11 @@ fn-knock-reset-panel-password
 | 功能 | OpenWrt 軟體套件中的狀態 |
 | --- | --- |
 | 應用程式內 FPK 更新 | 不支援；使用 `opkg` 或 `apk` 安裝符合條件的新套件 |
-| 直連模式、主機防火牆管理 | 支援；服務需要以 root 執行，並應先保留 LuCI 或本機主控台作為救援路徑 |
-| 智慧連線 | 支援；仰賴已安裝並執行的 `dnsmasq`，且主設定需要 Include `/etc/dnsmasq.d/`；頁面的 `apt-get` 自動安裝不適用於 OpenWrt |
+| 直連模式、主機防火牆管理 | 不支援；使用 OpenWrt 自身防火牆、VPN 或上級閘道控制原始連接埠 |
+| 智慧連線 | 不支援；需要分流時在 OpenWrt 的 `dnsmasq`、DHCP 或其他本機 DNS 中自行設定 |
 | SSH 安全性 | 不支援；請使用 OpenWrt 本身的 SSH 記錄、防火牆或安全性外掛套件 |
 | Web Terminal | 不支援 |
 | 自動 HTTPS | 目前的 OpenWrt 軟體套件不支援 |
-
-智慧連線會寫入 `/etc/dnsmasq.d/fn-knock-smart-connect.conf`，再透過 `service dnsmasq restart` 重新啟動服務。首次啟用前，應從 SSH 確認 `dnsmasq` 已就緒，並保留 LuCI 或主控台救援入口；如果頁面提示安裝 `dnsmasq`，請使用目前韌體的 `opkg` 或 `apk` 自行安裝，不要依賴頁面上的安裝按鈕。
 
 `fn-knock` 無法取代 OpenWrt 韌體更新、路由器備份與防火牆最小曝露原則。
 

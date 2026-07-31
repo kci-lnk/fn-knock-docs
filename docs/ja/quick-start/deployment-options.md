@@ -3,7 +3,7 @@ lang: ja-JP
 title: "デプロイ方法とアクセス構成を選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c169ca1925b86d353ad6f7d8859311fee825fbd0b8be3f2595a1a5dac47805bb
+translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,7 +20,7 @@ fn-knock は公開口の集約と前段認証を担うものです。OS やア�
 | --- | --- | --- | --- | --- |
 | fnOS ネイティブ FPK | fnOS デスクトップの fn-knock アイコン（ローカル CGI からバックエンドの `7998` へ転送） | `7999` | fnOS ホストで、ホスト OS 連携をすべて利用したい場合 | `7998` は管理バックエンド用であり、外部公開用でもブラウザーから開く管理画面でもありません |
 | Docker Compose | `7991` | `7999` | NAS、ホームサーバー、一般的な Docker ホスト | ダイレクトモード、ホストのファイアウォール管理、自動 HTTPS、SSH セキュリティ、スマート接続、Web ターミナルは利用できません |
-| OpenWrt パッケージ | `サービス → fn-knock`。デフォルトポートは `7991` | `7999` | メインルーター、x86 ソフトウェアルーター、サブルーター | 自動 HTTPS、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新は利用できません。スマート接続は既存の `dnsmasq` 設定に依存します |
+| OpenWrt パッケージ | `サービス → fn-knock`。デフォルトポートは `7991` | `7999` | メインルーター、x86 ソフトウェアルーター、サブルーター | 直接接続、ホストファイアウォール管理、スマート接続、自動 HTTPS、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新は利用できません |
 | [Linux（systemd / OpenRC）](/ja/quick-start/linux-deployment) | `7991` | `7999` | 一般的な Linux サーバー、VPS、自前で管理するホスト | root 権限と、稼働中の systemd または OpenRC が必要です。ホストのファイアウォールは管理者が別途管理します |
 | [Synology DSM 7 x86_64 / ARM SPK](/ja/quick-start/synology-deployment) | DSM デスクトップのパッケージアイコン | `7999` | DSM 7 を搭載した Intel / AMD / ARM NAS | ダイレクトモード、ホストのファイアウォール管理、スマート接続、Web ターミナル、SSH セキュリティは利用できません。更新はパッケージセンターから行います |
 | [Windows x86_64](/ja/quick-start/windows-deployment) | 管理アプリからローカルの `127.0.0.1:7991` を開く | `7999`。デフォルトでは全インターフェースで待ち受け | Windows サービスとローカルのタスクトレイ管理アプリを使いたい場合 | ファイアウォールと NAT は別途設定が必要です。ダイレクトアクセス許可、内蔵 FRP / Cloudflared、スマート接続、Web ターミナル、SSH セキュリティは利用できません |
@@ -42,7 +42,7 @@ fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプ�
 
 まず [fn-knock 公式サイト](https://www.fnknock.cn/) から、対象プラットフォームのダウンロードページへ進んでください。正式リリースでは、次の検証情報も公開されます。
 
-- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json)：バージョン、プロジェクト本体と Go ゲートウェイのコミット、プラットフォーム、アーキテクチャ、ファイルサイズ、SHA-256 を記録しています。
+- [`release-manifest.json`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/release-manifest.json)：バージョン、Control API バージョン、プロジェクト本体と Go ゲートウェイのコミット、プラットフォーム、アーキテクチャ、ファイルサイズ、SHA-256 を記録しています。
 - [`SHA256SUMS`](https://github.com/kci-lnk/fn-knock-turborepo/releases/latest/download/SHA256SUMS)：GitHub Release にあるパッケージのチェックサムです。
 - Docker マルチアーキテクチャイメージの SBOM とビルド来歴（provenance）。
 
@@ -71,7 +71,7 @@ fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプ�
 4. 結果を、manifest の当該ファイルにある `sha256`、または `SHA256SUMS` の同名エントリーと一文字ずつ照合します。一致しない場合はインストールを中止し、改めてダウンロードしてください。
 5. ビルド元まで監査する場合は、パッケージの GitHub build provenance が公式リポジトリを指していることも確認します。Docker では、manifest にあるマルチアーキテクチャイメージの digest、SBOM、provenance も併せて確認できます。バージョンを固定して運用する場合は、digest を指定すると `latest` の更新による差し替わりを避けられます。
 
-`release-manifest.json` には、コントロールプレーンと Go ゲートウェイそれぞれのソースコミットも記録されており、パッケージを両方のソースまで追跡できます。SHA-256 の文字列だけを入手しても、配布者の身元は証明できません。マニフェスト、チェックサムファイル、ビルド来歴そのものが公式 Release から取得したものであることが重要です。
+`release-manifest.json` には Control API バージョンと、コントロールプレーンおよび Go ゲートウェイのソースコミットも記録されます。パッケージ内の Rust、Go、Windows コンポーネントが同じプロトコル契約を使うことを確認し、両方のソースまで追跡できます。SHA-256 の文字列だけを入手しても、配布者の身元は証明できません。マニフェスト、チェックサムファイル、ビルド来歴そのものが公式 Release から取得したものであることが重要です。
 
 ## ネットワーク構成を選ぶ
 

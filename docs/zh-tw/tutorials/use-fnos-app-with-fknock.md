@@ -3,7 +3,7 @@ lang: zh-TW
 title: "透過 fn-knock 使用 fnOS App"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7e0cad193848162b8b1fd6ab577209b6d2f2e2ed5ebfbfc8bcd08c8446e04831
+translationSourceHash: 23c60dd4f0d78a94fb1ac36ba078dc26b9894c43a465a0c27a0a6ba3a0b1813d
 ---
 
 # 透過 fn-knock 使用 fnOS App
@@ -32,7 +32,7 @@ fnOS App 最終連線的位址，必須符合 fn-knock 採用的發布方案。A
 
 ## 直連模式
 
-直連模式會透過閘道入口完成身分驗證，再允許目前的公網 IP 存取原始連接埠。此模式只適用於 fnOS 原生 FPK，以及支援主機防火牆的 OpenWrt；Docker、一般 Linux、Synology DSM 7 SPK 與 Windows 都不提供這種動態連接埠授權。
+直連模式會透過閘道入口完成身分驗證，再允許目前的公網 IP 存取原始連接埠。此模式只適用於 fnOS 標準 FPK；Knock Lite、Docker、OpenWrt、一般 Linux、Synology DSM 7 SPK 與 Windows 都不提供這種動態連接埠授權。
 
 1. 在 `系統設定 → 模式` 選擇 `直連模式（不建議）`，並保留本機救援入口。
 2. 在 `系統設定 → 工作階段` 中，將登入後 IP 授權設為跟隨工作階段或所需時段。

@@ -3,7 +3,7 @@ lang: en-US
 title: "Ports, Endpoints, and URL Paths"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 62d4a248faf3d6200904bb8cd5c66697a59019152d19d17f704f6b37a8b23331
+translationSourceHash: eb6e7fb415215759b38b934916bd7291885156f04a7e7661e4783c3fde9c0850
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,7 +65,7 @@ As a result:
 
 - Docker supports Host and path routing through the gateway, but it does not write host firewall rules and does not support Direct mode or Smart Connect.
 - The native fnOS FPK can manage the host firewall and provides Direct mode and Smart Connect.
-- With root privileges, OpenWrt supports host firewall integration, Direct mode, and Smart Connect. Smart Connect requires an installed `dnsmasq` and a main configuration that includes `/etc/dnsmasq.d/`; the UI's `apt-get` installer does not apply to OpenWrt. OpenWrt does not provide SSH security, a web terminal, or in-app FPK updates.
+- OpenWrt can run Host/path routing, Protocol mappings, and built-in tunnels, but fn-knock does not manage the OpenWrt firewall or provide Direct mode or Smart Connect. Configure port access and split-horizon LAN DNS in OpenWrt itself. It also does not provide SSH security, a web terminal, or in-app FPK updates.
 - The Synology DSM 7 SPK registers `7999` as a public gateway port in the DSM firewall UI, but the package cannot modify the host firewall itself. It does not support Direct mode, Smart Connect, the web terminal, or SSH security.
 - On Windows, `7999` listens on all interfaces by default. The installer's static `FnKnock Gateway` application rule applies only to the Domain and Private Windows Firewall profiles. Windows still does not support Direct mode, in-app host firewall management, Smart Connect, built-in tunnels, the web terminal, or SSH security. Before enabling public access, check the router or NAT, IPv6 firewall, ISP policy, and third-party security software.
 

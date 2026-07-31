@@ -3,7 +3,7 @@ lang: ko-KR
 title: "자주 묻는 질문"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
+translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
 ---
 
 # 자주 묻는 질문
@@ -39,7 +39,7 @@ OpenWrt의 기본 관리 포트는 `7991`이고 게이트웨이는 계속 `7999`
 
 - 새로 설치한 경우: 데이터 디렉터리 권한, 포트 충돌 및 서비스 로그를 확인합니다.
 - 이전 Redis 버전에서 업그레이드한 경우: 기존 Redis 데이터 볼륨을 유지하고 [Docker 배포](/ko/quick-start/docker-deployment)의 마이그레이션 절차를 따릅니다.
-- OpenWrt: `/etc/fn-knock/gateway`와 `/var/lib/fn-knock`가 여전히 존재하는지 확인합니다.
+- OpenWrt: `/etc/fn-knock/gateway`와 `/etc/fn-knock/data`가 여전히 존재하는지 확인합니다. 이전 버전에서 업그레이드했다면 UCI 데이터 디렉터리가 `/var/lib/fn-knock`에서 마이그레이션되었는지도 확인합니다.
 
 새로 설치할 때 빈 Redis를 따로 만들지 않습니다. 이전 데이터의 마이그레이션을 마치고 관리 패널이 정상인지 확인한 뒤 기존 Redis 서비스와 데이터 볼륨을 제거합니다.
 
@@ -171,14 +171,14 @@ Cloudflared와 fn-knock가 서로 다른 컨테이너에 있으면 `localhost`�
 
 ### 홈 Wi-Fi에서도 인터넷 경로를 계속 사용함
 
-클라이언트가 계속 공인 DNS 결과를 사용하고 있습니다. fnOS 네이티브 FPK나 OpenWrt에서 Smart Connect를 사용할 때는 다음 사항을 확인합니다.
+클라이언트가 계속 공인 DNS 결과를 사용하고 있습니다. 표준 fnOS FPK에서 Smart Connect를 사용할 때는 다음 사항을 확인합니다.
 
 - `시스템 설정 → 기능 → Smart Connect`가 활성화되어 있는지 확인합니다.
 - 기기의 LAN IP가 올바른지 확인합니다.
 - 라우터의 DHCP DNS 또는 클라이언트 DNS가 fn-knock 실행 기기를 가리키는지 확인합니다.
 - 클라이언트의 DNS 캐시를 새로 고쳤는지 확인합니다.
 
-OpenWrt에서는 시스템에 `dnsmasq`가 설치되어 실행 중인지와 기본 설정에 `/etc/dnsmasq.d/`가 포함되어 있는지도 확인합니다. 페이지의 자동 설치는 `apt-get`을 호출하므로 OpenWrt에서 사용할 수 없습니다. Smart Connect는 서브도메인 모드에서 LAN DNS를 최적화할 때만 사용하며 공인 DNS는 변경하지 않습니다. Docker에서는 이 기능을 제공하지 않습니다. [Smart Connect](/ko/guide/smart-connect)를 참고합니다.
+Smart Connect는 표준 fnOS FPK의 서브도메인 모드에서 LAN DNS를 최적화하며 공인 DNS는 변경하지 않습니다. OpenWrt, Docker 및 다른 배포에서는 이 기능을 제공하지 않으므로 필요한 경우 라우터나 별도 DNS에서 직접 구성합니다. [Smart Connect](/ko/guide/smart-connect)를 참고합니다.
 
 ## 로그인 또는 세션 문제
 
@@ -280,7 +280,7 @@ HTTPS는 로그인 자격 증명과 세션 쿠키를 보호하며 패스키를 �
 
 OpenWrt는 아키텍처와 일치하는 `.ipk` 및 `.apk` 패키지를 지원합니다. 설치 후 진입점은 `서비스 → Knock`입니다.
 
-업그레이드할 때는 새 버전의 소프트웨어 패키지를 설치합니다. 웹 관리 패널 FPK 업데이트는 OpenWrt에 적용되지 않습니다. 정상 업그레이드에서는 `/etc/config/fn-knock`와 `/var/lib/fn-knock`가 유지됩니다. 전체 명령은 [OpenWrt 배포](/ko/quick-start/openwrt-deployment)를 참고합니다.
+업그레이드할 때는 새 버전의 소프트웨어 패키지를 설치합니다. 웹 관리 패널 FPK 업데이트는 OpenWrt에 적용되지 않습니다. 정상 업그레이드에서는 `/etc/config/fn-knock`, `/etc/fn-knock/gateway`, `/etc/fn-knock/data`가 유지되며 이전 기본 `/var/lib/fn-knock`는 새 영구 데이터 디렉터리로 마이그레이션됩니다. 전체 명령은 [OpenWrt 배포](/ko/quick-start/openwrt-deployment)를 참고합니다.
 
 ### Docker 업그레이드 후 데이터가 비어 있음
 
@@ -306,10 +306,10 @@ Windows 프로그램을 제거한 뒤에도 복구를 위해 `%ProgramData%\FnKn
 
 | 기능 | fnOS FPK | Docker | OpenWrt | Linux 서비스 | Synology DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 호스트 방화벽 및 직접 연결 접근 허용 | 지원 | 미지원 | 지원 | 미지원 | 미지원 | 미지원 |
+| 호스트 방화벽 및 직접 연결 접근 허용 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
 | 자동 HTTPS | 지원 | 미지원 | 미지원 | 지원, `80`번 포트와 인바운드 경로 필요 | 미지원 | 지원, 방화벽, NAT 및 인바운드 경로를 별도로 연결해야 함 |
 | ACME DNS-01 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원, Let's Encrypt로 고정된 내장 클라이언트 사용 |
-| Smart Connect | 지원 | 미지원 | 지원, 기존 `dnsmasq`와 설정 포함에 의존 | 미지원 | 미지원 | 미지원 |
+| Smart Connect | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
 | SSH 보안 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
 | 웹 터미널 | 지원 | 미지원 | 미지원 | 지원, `tmux` 필요 | 미지원 | 미지원 |
 | 내장 FRP / Cloudflared | 지원 | 지원 | 지원 | 지원 | 지원 | 미지원 |

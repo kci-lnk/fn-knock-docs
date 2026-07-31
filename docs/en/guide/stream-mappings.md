@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a9c5fc790c1c2c088f944701b6b811f001125c4f4046a448b5e684d2ffae18e4
+translationSourceHash: 55796732746b2a9d3669475e2028c41086a4fa479b1aede8d705e52f3469805a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,12 +16,12 @@ This feature is available only as an addition to direct public `Subdomain mode`.
 
 ## Requirements
 
-`Protocol mappings` appears in the sidebar only when both conditions are met:
+`Protocol mappings` belongs only to direct-public Subdomain routing. It appears in the sidebar when:
 
 1. `System settings → Mode` is set to `Subdomain mode`.
-2. `System settings → Features → Protocol mapping` is enabled.
+2. `System settings → Features → Protocol mapping` is enabled, or saved protocol rules still need to be managed.
 
-Turning off the feature switch stops the Protocol mapping listeners and hides the menu, but preserves the saved rules. Enabling it again restores the previous configuration. Leaving Subdomain mode also disables the feature and stops its listeners while preserving the rules.
+Turning off the feature switch stops every Protocol mapping listener but does not delete rules. As long as rules remain, the management entry stays visible with a disabled notice so you can fix or delete them. `Sync gateway` is unavailable while the feature is disabled. Enabling it again restores listeners for the remaining rules. Leaving Subdomain mode also disables the feature and stops its listeners while preserving the rules.
 
 Although `Reverse proxy mode → Subdomain mapping` also uses Host-based routing, it does not provide Protocol mappings. To carry another protocol through FRP or Cloudflare, configure it separately on that platform; you cannot reuse fn-knock's HTTP Host entry point.
 
@@ -29,7 +29,7 @@ Although `Reverse proxy mode → Subdomain mapping` also uses Host-based routing
 
 ```text
 TCP :2222 -> 192.168.1.20:22
-TCP :3306 -> 127.0.0.1:3306
+TCP :13306 -> 127.0.0.1:3306
 UDP :53   -> 127.0.0.1:53
 ```
 
@@ -46,6 +46,10 @@ A domain only resolves to the entry-point address and does not participate in pr
 | `Require auth` | Checks fn-knock source-IP authorization before accepting the connection |
 
 The same port can have separate TCP and UDP rules, such as `53/tcp` and `53/udp`. A protocol-and-port pair cannot be duplicated.
+
+An external port cannot forward to the same port on the local device. For example, `TCP :3306 -> 127.0.0.1:3306` creates a local forwarding loop and is rejected during save and enable. Validation includes `localhost`, loopback and unspecified addresses, and current local interface addresses. Change either the external or target port.
+
+A same-port local-loop rule left by an older version can automatically disable Protocol mappings. Keep the feature disabled, delete or correct the invalid rule on this page, then enable it again under `System settings → Features`. Repeatedly synchronizing an invalid configuration will not repair it.
 
 The Target must be reachable from the fn-knock runtime environment. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a host or LAN target.
 
@@ -83,7 +87,8 @@ Create, edit, delete, and Comment updates are saved in sequence so consecutive a
 
 Platform boundaries:
 
-- The native fnOS FPK and an OpenWrt runtime with root-level host capability can synchronize protocol ports when automatic firewall management is enabled.
+- The native fnOS FPK can synchronize protocol ports when automatic firewall management is enabled.
+- fn-knock no longer manages the OpenWrt host firewall. Protocol mappings can still listen, but an administrator must allow the corresponding ports manually in the OpenWrt firewall.
 - Docker neither publishes a new host port nor modifies the host firewall. Explicitly publish fixed ports in the container startup configuration and manage host and router rules manually. Adding a port only in the admin console cannot expose it publicly from an already-running Compose deployment.
 - If you manage the gateway runtime yourself, opening ports remains the system administrator's responsibility. Do not assume that fn-knock modifies the host firewall.
 

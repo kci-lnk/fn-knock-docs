@@ -3,7 +3,7 @@ lang: ja-JP
 title: "グローバル IPv6 と元ポートへの直接アクセス"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bf2092136a30db2fca3ceb479599e1895fbcce1d2338e549827a58ba20bfcec5
+translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -12,7 +12,7 @@ translationSourceHash: bf2092136a30db2fca3ceb479599e1895fbcce1d2338e549827a58ba2
 
 直接接続モードでは、利用者が先にゲートウェイでログインし、IP 許可リストに基づいて fnOS やその他のサービス本来のポートへ接続します。元のポート番号での接続が本当に必要な IPv6 環境向けであり、Web サービスを公開する際の第一選択ではありません。
 
-このモードでは fn-knock がホストのファイアウォールを管理するため、fnOS ネイティブ FPK またはホスト管理機能を持つ OpenWrt でのみ利用できます。Docker、Synology DSM 7 SPK、Windows は直接接続モードに対応していません。
+このモードでは fn-knock がホストのファイアウォールを管理するため、標準 fnOS FPK でのみ利用できます。Knock Lite、Docker、OpenWrt、汎用 Linux、Synology DSM 7 SPK、Windows は直接接続モードに対応していません。
 
 ## 前提条件
 

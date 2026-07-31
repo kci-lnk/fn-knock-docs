@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dc78b71224d6aea001fa1da5a522b5432c5af1604718c073190c444519d88479
+translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b04faac49
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -139,6 +139,8 @@ A rule can contain multiple providers, but each provider can be added to that ru
 - App update: send one notification grouped by subject.
 
 High-frequency events such as login success and SSH login success can generate many notifications when the threshold is 1. Tune the window, trigger count, and cooldown for your actual traffic.
+
+An app-update event and the notification it triggers include release notes only for the current latest version. They no longer concatenate notes from several older versions. To review earlier releases, use `Version and updates` or the project release history; treat the notification body as a summary of the version currently being offered.
 
 ## Review Delivery Results
 

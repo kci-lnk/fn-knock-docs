@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇執行模式"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 15c4f10cf088191f9677cf249dae5abca699ee4b010b70b53912dedb28cfd084
+translationSourceHash: 2b8bea7d45df0da88d83727dc6ffc8fa6c15b5fb018fbf5611712fde669ef536
 ---
 
 # 選擇執行模式
@@ -98,7 +98,7 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - `內網穿透` 的子網域映射與路徑模式都可使用 FRP / Cloudflared；切離內網穿透時，系統會嘗試停止正在執行的 Tunnel。
 - 離開公網直連子網域模式後，通訊協定映射功能會關閉並停止 Listener，但已儲存的規則會保留；重新進入該模式並開啟功能後即可恢復。
 - 直連模式仰賴主機防火牆。Docker、Synology DSM 7 SPK、Windows，以及不具備主機管理能力的部署方式無法選擇此模式。
-- Docker 不會寫入主機防火牆，也不支援智慧連線；OpenWrt 不提供 SSH 安全性、Web Terminal 與應用程式內 FPK 更新，但支援智慧連線。OpenWrt 的智慧連線要求既有的 `dnsmasq` 已啟用並 Include `/etc/dnsmasq.d/`，頁面無法透過 `apt-get` 自動安裝相依套件。
+- Docker 不會寫入主機防火牆，也不支援智慧連線。OpenWrt 同樣不提供 fn-knock Host 防火牆管理、直連模式或智慧連線，也不提供 SSH 安全性、Web Terminal 與應用程式內 FPK 更新；連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理。
 - Windows 不支援直連授權、應用程式內主機防火牆管理、智慧連線、內建 FRP / Cloudflared、Web Terminal 或 SSH 安全性；網頁版更新頁面也無法安裝 Windows 更新。
 - Synology DSM 7 SPK 支援內建 FRP / Cloudflared，但不支援直連授權、主機防火牆管理、智慧連線、Web Terminal、SSH 安全性或網頁內更新。
 

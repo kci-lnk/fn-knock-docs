@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダッシュボードとシステム更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f41254438
+translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ translationSourceHash: d41da54c403ad4362c7280ea6945fd45d06e96aaae5b04f27e76c29f4
 
 ## デプロイ方式ごとに異なる更新方法
 
-画面の場所は `バージョンとアップデート` です。どのデプロイ方式でも現在のバージョン、最新バージョン、確認結果、リリースノートが表示されます。管理画面の読み込み後は、サイドバーにも現在のバージョンが表示され、更新が定期的に確認されます。新しいバージョンが見つかるとページ上部に通知が表示され、更新画面でリリースノートを確認できます。通知から Web 上でインストールできるのは fnOS ネイティブ FPK だけです。Synology DSM 7 SPK は DSM パッケージセンター、Windows ネイティブ版は独立した `fn-knock Windows 管理アプリ` からインストールし、Web の更新画面では実行しません。
+画面の場所は `バージョンとアップデート` です。どのデプロイ方式でも現在のバージョン、最新バージョン、確認結果、リリースノートに加え、公式サイト、ドキュメント、GitHub プロジェクトへのリンクが表示されます。リリースノートは Markdown の見出し、リスト、強調、HTTPS リンクを安全に表示し、任意の HTML ページとしては扱いません。管理画面の読み込み後は、サイドバーにも現在のバージョンが表示され、更新が定期的に確認されます。新しいバージョンが見つかるとページ上部に通知が表示され、更新画面でリリースノートを確認できます。通知から Web 上でインストールできるのは fnOS ネイティブ FPK だけです。Synology DSM 7 SPK は DSM パッケージセンター、Windows ネイティブ版は独立した `fn-knock Windows 管理アプリ` からインストールし、Web の更新画面では実行しません。
 
 | デプロイ方式 | 更新画面でできること | 実際の更新方法 |
 | --- | --- | --- |
@@ -102,7 +102,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 `/tmp` に複数のバージョンがある場合は、ワイルドカードではなく完全なファイル名を指定してください。
 
-ローカル `.apk` での `--allow-untrusted` は、信頼できるリリース元から取得したパッケージにだけ使用してください。アップグレード時には `/etc/config/fn-knock`、`/etc/fn-knock/gateway`、`/var/lib/fn-knock` が保持されますが、事前にバックアップしておく必要があります。
+ローカル `.apk` での `--allow-untrusted` は、信頼できるリリース元から取得したパッケージにだけ使用してください。アップグレード時には `/etc/config/fn-knock`、`/etc/fn-knock/gateway`、`/etc/fn-knock/data` が保持されます。旧版がデフォルトの `/var/lib/fn-knock` を使っている場合は新しいディレクトリへコピーして UCI を更新しますが、カスタムデータディレクトリは強制移行されません。ログイン、設定、既存データを確認するまで旧ディレクトリを削除しないでください。
 
 ## Synology DSM 7 SPK の更新
 

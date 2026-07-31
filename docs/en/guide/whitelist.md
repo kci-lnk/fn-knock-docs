@@ -3,7 +3,7 @@ lang: en-US
 title: "IP Allowlist"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3beb3734aa8a267da40e1c49dcb4c79a5950b64a06c3c1d1c59a525d954a2f39
+translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,9 +63,9 @@ Host mappings imported from older versions may still carry a `strict_whitelist` 
 
 ## Effect in Direct Mode
 
-Native fnOS FPK and OpenWrt deployments with host-management capability can synchronize valid allowlist entries to the host firewall. Docker does not manage the host firewall, so an allowlist entry cannot be relied upon to open an original service port.
+Only the standard fnOS FPK synchronizes valid allowlist entries to the host firewall. Docker, OpenWrt, generic Linux, Synology DSM 7 SPK, and Windows cannot rely on an fn-knock allowlist entry to open an original service port.
 
-General Linux, Synology DSM 7 SPK, and Windows x86_64 also do not provide fn-knock host-firewall synchronization. Entries on the page can still participate in gateway authorization but cannot replace each platform's own firewall.
+Entries on the page still participate in gateway authorization but cannot replace each platform's own firewall. The current runtime compiles valid exact IPs, CIDRs, and region groups into one policy and synchronizes active sessions and authorized sources to the gateway. Additions, expiration, deletion, and revocation trigger another synchronization so the admin page and gateway do not keep different stale lists.
 
 In Direct mode, access to an original port does not trigger session continuation after a public source IP changes. Return to the gateway entry point and authenticate first, then retry the original service port.
 

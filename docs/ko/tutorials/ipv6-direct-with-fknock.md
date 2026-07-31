@@ -3,14 +3,14 @@ lang: ko-KR
 title: "공인 IPv6 직접 연결 및 원본 포트 허용"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bf2092136a30db2fca3ceb479599e1895fbcce1d2338e549827a58ba20bfcec5
+translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
 ---
 
 # 공인 IPv6 직접 연결 및 원본 포트 허용
 
 직접 연결 모드에서는 사용자가 먼저 게이트웨이에서 로그인한 뒤 IP 허용 목록을 통해 fnOS나 다른 서비스의 원본 포트에 접속합니다. 원본 포트가 꼭 필요한 IPv6 환경을 위한 방식이며, 웹 서비스를 공개할 때 우선 선택할 경로는 아닙니다.
 
-이 모드에서는 fn-knock가 호스트 방화벽을 관리해야 하므로 fnOS 네이티브 FPK 또는 호스트 관리 기능을 갖춘 OpenWrt에서만 사용할 수 있습니다. Docker, Synology DSM 7 SPK, Windows는 직접 연결 모드를 지원하지 않습니다.
+이 모드에서는 fn-knock가 호스트 방화벽을 관리해야 하므로 표준 fnOS FPK에서만 사용할 수 있습니다. Knock Lite, Docker, OpenWrt, 일반 Linux, Synology DSM 7 SPK 및 Windows는 직접 연결 모드를 지원하지 않습니다.
 
 ## 사전 요구 사항
 

@@ -3,14 +3,14 @@ lang: zh-TW
 title: "智慧連線"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77f6913ff2ef9174a16f1c2fbbd475289f3be40e02b5f2da976814a21cd270a3
+translationSourceHash: 9cf7912a7fa75e589bb8838e64c052f7b9927e36d042da678921578c361ce24e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # 智慧連線
 
-`智慧連線` 是飛牛原生 FPK 與 OpenWrt Runtime 在公網直達子網域模式下提供的 Split-horizon DNS：外部網路仍會將 `nas.example.com` 解析至公網入口，區域網路裝置則從本機 `dnsmasq` 取得裝置的私有 IPv4，以避開 Hairpin NAT 與繞行公網。
+`智慧連線` 是飛牛標準 FPK 在公網直達子網域模式下提供的 Split-horizon DNS：外部網路仍會將 `nas.example.com` 解析至公網入口，區域網路裝置則從本機 `dnsmasq` 取得裝置的私有 IPv4，以避開 Hairpin NAT 與繞行公網。
 
 它只會改變 DNS 解析結果，不會建立 Host 映射、不會修改公網 DNS，也不會切換執行模式。
 
@@ -23,7 +23,7 @@ translationSourceHash: 77f6913ff2ef9174a16f1c2fbbd475289f3be40e02b5f2da976814a21
 3. fn-knock 所在裝置具備穩定的私有 IPv4。
 4. 區域網路用戶端會將此裝置作為 DNS Server。
 5. `53` 連接埠由預計交給智慧連線使用的 `dnsmasq` Listen，且沒有其他 DNS 服務與其衝突。
-6. 目前使用飛牛原生 FPK 或 OpenWrt，且具備 root、Host `dnsmasq` 與 Service Management 能力。
+6. 目前使用飛牛標準 FPK，且具備 Host `dnsmasq` 與 Service Management 能力。
 
 子網域入口設定請參閱[子網域模式快速上手](/zh-tw/quick-start/subdomain-mode)與[子網域映射](/zh-tw/guide/subdomain-proxy)。
 
@@ -61,7 +61,7 @@ alist.example.com -> 192.168.31.20
 路徑：`系統設定 → 功能 → 智慧連線`
 
 1. 開啟 `智慧連線`。
-2. 頁面提示資源尚未就緒時，先安裝並初始化 `dnsmasq`；OpenWrt 必須使用韌體本身的 `opkg` 或 `apk`，不能使用頁面上的 `apt-get` 安裝按鈕。
+2. 頁面提示資源尚未就緒時，先安裝並初始化 `dnsmasq`。
 3. 選擇區域網路用戶端實際可連線的私有 IPv4，例如 `192.168.31.20`。
 4. 按下 `儲存並同步`，確認同步網域數量與最近同步時間。
 5. 在路由器 DHCP 中，將 DNS Server 設為該私有 IPv4；也可以先在一台測試裝置上手動設定。
@@ -98,14 +98,13 @@ nas.example.com
 ## 平台限制
 
 - 飛牛原生 FPK 可使用智慧連線；若沒有 `dnsmasq`，頁面可嘗試透過 `apt-get` 安裝。
-- OpenWrt Runtime 會開放智慧連線功能，寫入 `/etc/dnsmasq.d/fn-knock-smart-connect.conf`，並透過 `service dnsmasq restart` 重新啟動服務。系統必須已安裝並啟用 `dnsmasq`，而且主要設定會 Include `/etc/dnsmasq.d/`；頁面中的自動安裝只會呼叫 `apt-get`，不適用於 OpenWrt。
+- OpenWrt 不支援智慧連線；需要區域網路 DNS 分流時，請自行在 OpenWrt 的 `dnsmasq`、DHCP 或其他本機 DNS 中設定網域解析。
 - Docker 不支援。Container 無法代替 Host 接管 `dnsmasq` 與 `53` 連接埠，後台會隱藏或拒絕此功能。
 - 通用 Linux 安裝套件不提供智慧連線；如有需求，應在路由器或獨立 DNS 中設定分流。
 - 群暉 DSM 7 SPK 不支援智慧連線，也不提供應用程式內的 `dnsmasq` 或區域網路 DNS 管理。
 - Windows x86_64 不支援智慧連線，也不提供應用程式內的 `dnsmasq` 或區域網路 DNS 管理。
 - 不具備 Host 管理能力的環境，應自行部署 Split DNS。
 - 內網穿透的子網域映射不支援智慧連線。此拓樸的公網入口位於 Tunnel 平台，區域網路 DNS 分流必須自行在路由器或獨立 DNS 中設定。
-- OpenWrt 不提供 Web Terminal 與應用程式內 FPK 更新；這些限制與 DNS 分流是否可用是不同能力。
 
 ## 它不會處理的內容
 
@@ -119,7 +118,7 @@ nas.example.com
 1. 頁面無法使用：確認目前採用公網直達子網域模式，並檢查部署平台能力。
 2. 沒有可同步的網域：先建立身分驗證 Host 與服務 Host。
 3. 沒有可選 IP：檢查主要網路介面是否取得 `10/8`、`172.16/12` 或 `192.168/16` IP。
-4. 初始化失敗：檢查 `53` 連接埠占用狀態與 `dnsmasq` 服務狀態；OpenWrt 還需確認已安裝 `dnsmasq`，且主要設定包含 `/etc/dnsmasq.d/`。
+4. 初始化失敗：檢查 `53` 連接埠占用狀態與 `dnsmasq` 服務狀態。
 5. 用戶端仍解析至公網：檢查 DHCP 下發、手動 DNS、Encrypted DNS 與 Cache。
 6. 網域已解析至私有網路但無法開啟：檢查實際閘道連接埠、憑證與 Host 映射，不要再排查公網 DDNS。
 

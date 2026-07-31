@@ -3,7 +3,7 @@ lang: en-US
 title: "Dynamic DNS (DDNS)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 908388f447dc5fd37bfad203d5937507661ce3b6ef567c1c11a28647d6bd6ce0
+translationSourceHash: 8f7d3627dee664a68b7793a1f3d1e73c459378d79d8a821d15bb9d96d1a97f59
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,19 @@ Under `DDNS Management`, select a provider and enter the credentials, domain, re
 
 After saving, run the page's test or a manual update, then verify the record value with `dig`, `nslookup`, or the DNS provider's console. Correct resolution only proves that DNS was updated. You must still test the port, certificate, and gateway routing from an external network.
 
-The current provider catalog includes Alibaba Cloud DNS, Baidu Cloud DNS, Cloudflare, DNSPod, DuckDNS, Dynu, dynv6, Tencent Cloud EdgeOne (CNAME access), Tencent Cloud EdgeOne, Alibaba Cloud ESA, GoDaddy, Huawei Cloud DNS, No-IP, Porkbun, and Tencent Cloud DNSPod. The page displays the required fields for the selected provider. Do not reuse another provider's Zone ID, Token, or root-domain field.
+The current provider catalog includes Alibaba Cloud DNS, Baidu Cloud DNS, Cloudflare, DNSHE, DNSPod, DuckDNS, Dynu, dynv6, Tencent Cloud EdgeOne (CNAME access), Tencent Cloud EdgeOne, Alibaba Cloud ESA, GoDaddy, Huawei Cloud DNS, No-IP, Porkbun, and Tencent Cloud DNSPod. The page displays the required fields for the selected provider. Do not reuse another provider's Zone ID, Token, or root-domain field.
+
+### DNSHE
+
+For `DNSHE`, enter the `API Key` generated under API Management and its paired `API Secret`, then distinguish the two domain fields:
+
+| Field | Description |
+| --- | --- |
+| `DNSHE managed domain` | The full, usable managed domain registered in the DNSHE account, such as `example.com` |
+| `Domain` | The full record name to update within that managed domain, such as `nas.example.com` |
+| `TTL` | Optional; defaults to `600` seconds |
+
+DNSHE supports A and AAAA records at the apex, ordinary subdomains, and wildcards. Synchronization updates an existing record when its address changes, creates a missing record, and skips unnecessary writes when the address is unchanged. If the log reports a missing or unavailable managed domain or a record without an internal ID, verify the domain status and record ownership in DNSHE before retrying.
 
 ## Primary and Additional Domains
 

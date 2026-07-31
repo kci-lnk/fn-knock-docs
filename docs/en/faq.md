@@ -3,7 +3,7 @@ lang: en-US
 title: "Frequently Asked Questions"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c23641cb53357ea22dfe56b29eb07ed5436975bc7c52ef8fae23c153114f2b68
+translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -41,7 +41,7 @@ The current release uses SQLite. A new installation does not need Redis.
 
 - New installation: Check data-directory permissions, port conflicts, and service logs.
 - Upgrade from an early Redis-based release: Keep the old Redis data volume and follow the migration steps in [Deploy with Docker Compose](/en/quick-start/docker-deployment).
-- OpenWrt: Confirm that `/etc/fn-knock/gateway` and `/var/lib/fn-knock` still exist.
+- OpenWrt: Confirm that `/etc/fn-knock/gateway` and `/etc/fn-knock/data` still exist. After an upgrade from an older version, also check whether the UCI data directory migrated from `/var/lib/fn-knock`.
 
 Do not create an extra empty Redis instance for a new installation. Remove the old Redis service and data volume only after migration is complete and the admin UI is confirmed to work.
 
@@ -173,14 +173,14 @@ See [Put Tencent Cloud EdgeOne in Front of fn-knock](/en/tutorials/tencent-edgeo
 
 ### Traffic Still Uses the Public Path After Returning to Home Wi-Fi
 
-The client is still using the public DNS result. When using Smart Connect on native fnOS FPK or OpenWrt, check:
+The client is still using the public DNS result. When using Smart Connect on the standard fnOS FPK, check:
 
 - Whether `System settings → Features → Smart Connect` is enabled.
 - Whether the device's local LAN IP is correct.
 - Whether the router's DHCP DNS setting or the client's DNS points to the device running fn-knock.
 - Whether the client's DNS cache has been refreshed.
 
-On OpenWrt, also confirm that `dnsmasq` is installed and running and that its main configuration includes `/etc/dnsmasq.d/`. The automatic installer in the UI invokes `apt-get` and does not apply to OpenWrt. Smart Connect optimizes LAN DNS only in Subdomain mode and does not modify public DNS. Docker does not provide this capability. See [Smart Connect](/en/guide/smart-connect).
+Smart Connect optimizes LAN DNS only for Subdomain mode on the standard fnOS FPK and does not modify public DNS. OpenWrt, Docker, and other deployments do not provide this capability; configure split DNS on the router or a separate DNS service instead. See [Smart Connect](/en/guide/smart-connect).
 
 ## Sign-in or Session Problems
 
@@ -282,7 +282,7 @@ HTTPS protects sign-in credentials and session Cookies and is also required for 
 
 OpenWrt supports `.ipk` and `.apk` packages for matching architectures. After installation, the entry point is `Services → Knock`.
 
-Install a newer package to upgrade. In-app FPK updates do not apply to OpenWrt. A normal upgrade preserves `/etc/config/fn-knock` and `/var/lib/fn-knock`. See [Deploy on OpenWrt](/en/quick-start/openwrt-deployment) for the complete commands.
+Install a newer package to upgrade. In-app FPK updates do not apply to OpenWrt. A normal upgrade preserves `/etc/config/fn-knock`, `/etc/fn-knock/gateway`, and `/etc/fn-knock/data`; the old default `/var/lib/fn-knock` is migrated to the new persistent data directory during upgrade. See [Deploy on OpenWrt](/en/quick-start/openwrt-deployment) for the complete commands.
 
 ### Data Is Empty After a Docker Upgrade
 
@@ -308,10 +308,10 @@ First confirm the current deployment capabilities:
 
 | Capability | fnOS FPK | Docker | OpenWrt | Linux service | Synology DSM 7 SPK | Windows x86_64 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Host firewall and Direct mode authorization | Supported | Not supported | Supported | Not supported | Not supported | Not supported |
+| Host firewall and Direct mode authorization | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
 | Automatic HTTPS | Supported | Not supported | Not supported | Supported; requires port `80` and an inbound path | Not supported | Supported; firewall, NAT, and inbound access are still required |
 | ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported; built-in client fixed to Let's Encrypt |
-| Smart Connect | Supported | Not supported | Supported; depends on existing `dnsmasq` and an included configuration directory | Not supported | Not supported | Not supported |
+| Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
 | SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
 | Web Terminal | Supported | Not supported | Not supported | Supported; requires `tmux` | Not supported | Not supported |
 | Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Not supported |

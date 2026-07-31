@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダイナミック DNS（DDNS）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 908388f447dc5fd37bfad203d5937507661ce3b6ef567c1c11a28647d6bd6ce0
+translationSourceHash: 8f7d3627dee664a68b7793a1f3d1e73c459378d79d8a821d15bb9d96d1a97f59
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,7 +34,19 @@ Cloudflare Tunnel を使う場合、通常は Tunnel の Public Hostname が DNS
 
 保存後、まず画面上のテストまたは手動更新を実行し、`dig`、`nslookup`、DNS の管理画面でレコード値を確認します。正しく名前解決できても、確認できるのは DNS が更新されたことだけです。ポート、証明書、ゲートウェイルートは引き続き外部ネットワークから検証してください。
 
-現在のプロバイダーカタログには、Alibaba Cloud DNS、Baidu Cloud DNS、Cloudflare、DNSPod、DuckDNS、Dynu、dynv6、Tencent Cloud EdgeOne CNAME、Tencent Cloud EdgeOne、Alibaba Cloud ESA、GoDaddy、Huawei Cloud DNS、No-IP、Porkbun、Tencent Cloud DNSPod が含まれます。必要な項目はプロバイダーごとに画面へ表示されます。別の事業者の Zone ID、Token、ルートドメイン項目を流用しないでください。
+現在のプロバイダーカタログには、Alibaba Cloud DNS、Baidu Cloud DNS、Cloudflare、DNSHE、DNSPod、DuckDNS、Dynu、dynv6、Tencent Cloud EdgeOne CNAME、Tencent Cloud EdgeOne、Alibaba Cloud ESA、GoDaddy、Huawei Cloud DNS、No-IP、Porkbun、Tencent Cloud DNSPod が含まれます。必要な項目はプロバイダーごとに画面へ表示されます。別の事業者の Zone ID、Token、ルートドメイン項目を流用しないでください。
+
+### DNSHE
+
+`DNSHE` では、API 管理で生成した `API Key` と対応する `API Secret` を入力し、2 つのドメイン項目を区別します。
+
+| 項目 | 説明 |
+| --- | --- |
+| `DNSHE 管理ドメイン` | DNSHE アカウントに登録され、利用可能な完全な管理ドメイン。例：`example.com` |
+| `ドメイン` | 上記の管理ドメイン配下で実際に更新する完全なレコード名。例：`nas.example.com` |
+| `TTL` | 任意。デフォルトは `600` 秒 |
+
+DNSHE は A / AAAA、Apex、通常のサブドメイン、ワイルドカードに対応します。同期では、アドレスが変わった既存レコードを更新し、存在しないレコードを作成し、値が同じ場合は不要な書き込みを行いません。管理ドメインが見つからない、状態が無効、内部 ID がないというログが出た場合は DNSHE 側を確認してください。
 
 ## メインドメインと追加ドメイン
 
