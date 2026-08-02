@@ -3,7 +3,7 @@ lang: en-US
 title: "Dynamic DNS (DDNS)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8f7d3627dee664a68b7793a1f3d1e73c459378d79d8a821d15bb9d96d1a97f59
+translationSourceHash: e86a3edaacbf546ce67762e99db72171dcac09583a855d24bdd2732d5eab4975
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -68,13 +68,17 @@ The two values must form a wildcard/base pair, and the base must match the provi
 
 ## Select an Address from an Interface
 
-When you select `Use interface directly`, you must explicitly choose an interface. The page shows only filtered candidate addresses. It excludes obviously private addresses, as well as addresses that are still tentative, failed duplicate-address detection, or deprecated; temporary/privacy IPv6 addresses are also excluded by default. If no candidates remain, choose another interface or switch to public detection, a static IP, or domain resolution.
+When you select `Use interface directly`, you must explicitly choose an interface. By default, the page uses only globally routable public candidates. It excludes RFC1918 private IPv4, IPv6 ULA, tentative addresses, addresses that failed duplicate-address detection, and deprecated addresses; temporary/privacy IPv6 addresses are also excluded by default. If no candidates remain, choose another interface or switch to public detection, a static IP, or domain resolution.
+
+Enable `Allow private addresses` when publishing an address for internal DNS, a VPN, or split-horizon DNS. This switch adds only RFC1918 IPv4 and IPv6 ULA addresses to the current target's interface candidates. It does not admit loopback, link-local, CGNAT, or other reserved addresses, and it does not change router, firewall, or public-DNS reachability.
 
 Address selection no longer depends on an address's position in the interface list. If you set a `Preferred address`, the system uses it first whenever it still satisfies the filter rules. Only when no preferred address is set or it is unavailable does the system keep the current usable address, then choose stably from the remaining candidates. This keeps an explicit choice ahead of the system recommendation while preventing record churn when no choice is set. Address positions saved by older versions are converted to stable selection rules on the page and take effect after saving. If an older configuration has no selection rule or its old position is no longer valid, the backend also applies the automatic stable-selection rule; unattended updates do not stop merely because a position is missing.
 
 During automatic sync, if the currently published address remains usable and a previously preferred IPv6 address has just reappeared, the system waits until it is detected in `3` consecutive runs before switching back. This prevents brief recoveries from making DNS flap. A manual immediate update does not use this stabilization delay; use it only after confirming that the path is stable.
 
 When you switch to a different interface, the page clears selection rules associated with the old interface, including its preferred address, CIDRs, and IPv6 interface ID. This prevents old rules from being applied to the new interface. Review the preview and configure any required rules again after switching.
+
+With private addresses enabled, an explicit `Preferred address` still wins, followed by the current usable address. If the system must choose again automatically, public candidates rank ahead of private candidates. Disabling the switch immediately excludes private addresses from the preview and subsequent updates. If the DNS record still contains a private address, update it manually or wait for the next sync to replace it.
 
 You can set a `Preferred address` in either automatic or custom mode. To narrow the selection by subnet or IPv6 interface ID, switch to `Custom matching rules`:
 
@@ -120,7 +124,7 @@ IPv6 is not an automatic replacement for IPv4. If you configure only IPv6, clien
 ## Troubleshooting
 
 1. Review authentication, lookup, and update results in the DDNS logs.
-2. Confirm that the interface selector previews a publicly routable address, not a Docker or private-network address.
+2. Confirm that the interface selector previews an address appropriate for the target DNS. A public record should not accidentally select a Docker or private-network address; a private record requires `Allow private addresses`.
 3. After an immediate update, confirm that `Last successful update` changes on the status card. If only `Last check` changes, nothing was written successfully during that run.
 4. Confirm that the DNS record name, Zone or root domain, and access Host match exactly.
 5. Verify the record value through an authoritative DNS server or the provider console instead of relying only on a local cache.

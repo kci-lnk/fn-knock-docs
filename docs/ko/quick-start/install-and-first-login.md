@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fnOS 네이티브 FPK 설치 및 초기 설정"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b6e745c3267459146e2902d348543e722b336b442a23575339165ce93c84e425
+translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
 ---
 
 # fnOS 네이티브 FPK 설치 및 초기 설정
@@ -65,7 +65,7 @@ Lite의 기본 포트는 `8998 / 8997 / 8996 / 8999`이며 설치 마법사는 `
 
 - [TOTP 인증기](/ko/guide/totp)
 - [로그인 모드와 사용자 이름·비밀번호 로그인](/ko/guide/password-login)
-- [외부 계정 로그인](/ko/guide/oidc)
+- [외부 계정 로그인(OIDC / OAuth / LDAP)](/ko/guide/oidc)
 - [QQ 간편 로그인 연결](/ko/guide/qq-quick-login)
 
 ### 3. 인증서와 엔드포인트 구성

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "DDNS 管理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8f7d3627dee664a68b7793a1f3d1e73c459378d79d8a821d15bb9d96d1a97f59
+translationSourceHash: e86a3edaacbf546ce67762e99db72171dcac09583a855d24bdd2732d5eab4975
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -68,13 +68,17 @@ DNSHE 支援 A 與 AAAA，以及 Apex、一般子網域與 Wildcard Record。同
 
 ## 從網路介面選擇 IP
 
-選擇 `從網卡直接取得` 時，必須明確指定一個網路介面。頁面只會顯示經過篩選的候選 IP，排除明顯的內網 IP、仍在進行位址偵測、衝突偵測失敗或已棄用的位址；Temporary／Privacy IPv6 預設也會排除。沒有候選項目時，請更換網路介面，或改用公網偵測、Static IP 或網域解析。
+選擇 `從網卡直接取得` 時，必須明確指定一個網路介面。頁面預設只使用可全域路由的公網候選，排除 RFC1918 私有 IPv4、IPv6 ULA、仍在進行位址偵測、衝突偵測失敗或已棄用的位址；Temporary／Privacy IPv6 預設也會排除。沒有候選項目時，請更換網路介面，或改用公網偵測、Static IP 或網域解析。
+
+需要替內部 DNS、VPN 或 Split-horizon DNS 發布私有位址時，可開啟 `允許內網位址`。此開關只會將 RFC1918 IPv4 與 IPv6 ULA 加入目前目標的網卡候選，不會納入 Loopback、Link-local、CGNAT 或其他保留位址，也不會修改路由器、防火牆或公網 DNS 的可達性。
 
 IP 選擇不再依賴網路介面回傳清單中的 Index。手動設定 `優先位址` 後，只要該位址仍符合篩選規則，系統就會優先使用；沒有手動優先位址或該位址已不可用時，才會沿用目前仍可用的位址，最後從其餘候選中穩定選擇。這可確保手動指定優先於系統建議，也能在未指定時避免候選順序改變造成 DNS Record 跳動。舊版本儲存的 IP Index 會在頁面中轉換為穩定選擇規則，儲存後生效；若舊設定沒有選擇規則，或原 Index 已失效，後台也會依自動穩定規則挑選候選，不會只因缺少 Index 就中斷無人值守更新。
 
 自動同步時，如果目前已發布的位址仍可用，而先前的優先 IPv6 剛重新出現，系統會等待它連續 `3` 輪都被偵測到後才切回，避免短暫恢復造成 DNS 往返跳動。手動立即更新不使用這段穩定等待；需要立即切回時，請先確認連線路徑已穩定。
 
 切換至另一個網路介面時，頁面會清除原介面的優先 IP、CIDR 與 IPv6 Interface Identifier 等選擇規則，避免舊規則誤套至新介面。切換後請重新檢查預覽結果，並視需求設定規則。
+
+開啟內網位址後，明確指定的 `優先位址` 仍然優先，其次保留目前可用位址；需要重新自動選擇時，公網候選會排在內網候選之前。關閉開關會立即從預覽與後續更新排除私有位址；若目前 DNS Record 仍是私有位址，請手動更新或等待下一輪同步改寫。
 
 `優先位址` 在自動與自訂模式中都能設定。需要依網段或 IPv6 Interface Identifier 進一步限縮時，請切換至 `自訂比對規則`：
 
@@ -120,7 +124,7 @@ IPv6 不會自動取代 IPv4。若只設定 IPv6，用戶端、路由器與 CDN 
 ## 疑難排解
 
 1. 查看 DDNS Log 中的身分驗證、查詢與更新結果。
-2. 確認網路介面選擇器預覽的 IP 可從外部路由，而不是 Docker 或內網 IP。
+2. 確認網路介面選擇器預覽的 IP 符合目標 DNS 的用途；公網 Record 不應誤選 Docker 或內網 IP，私有 Record 則需確認已開啟 `允許內網位址`。
 3. 立即更新後，確認狀態卡的「上次成功更新」有所變化；若只有「上次檢查」變動，代表本輪未成功寫入。
 4. 確認 DNS Record Name、Zone／根網域與存取使用的 Host 完全一致。
 5. 使用 Authoritative DNS 或供應商 Console 確認 Record Value，避免只查看本機 Cache。

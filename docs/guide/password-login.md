@@ -10,10 +10,10 @@
 
 - 登录页显示用户名和密码输入框；
 - Passkey、QQ 和其他外部账号登录入口不显示；
-- TOTP、Passkey 和 OIDC 创建的原有会话会被销毁，需要用账号密码重新登录；
+- TOTP、Passkey、OIDC 和 LDAP 创建的原有会话会被销毁，需要用账号密码重新登录；
 - 账号的服务范围仍然会在访问 Host 或受保护的协议映射时继续生效。
 
-需要回到 TOTP、Passkey、QQ 或其他 OIDC 时，再切回 `TOTP 登录模式`。切回前，每个账号必须关联仍存在的 TOTP；账号密码会话会在切换时失效。
+需要回到 TOTP、Passkey、QQ、其他 OIDC 或 LDAP / Active Directory 时，再切回 `TOTP 登录模式`。切回前，每个账号必须关联仍存在的 TOTP；账号密码会话会在切换时失效。
 
 ## 创建账号
 

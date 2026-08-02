@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0805badb0b07141bd4df18d7a902b8c8bd16472ab2b8bc49b4f815aa6168f44e
+translationSourceHash: b1cfbc7c38a8c1b046e8459d1356beab323b7233cd416ed90e584673a16b269e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,6 +56,21 @@ If the app on an fnOS device is named `Knock Lite`, it is a native non-root pack
 Under `System settings → Features → Sidebar menu order`, drag menu items to change the order of the left navigation for this instance. The order saves automatically when a drag ends. Select `Restore default order` to remove all custom ordering.
 
 The page lists only entries visible under the current runtime mode and feature switches. Temporarily hidden entries keep their place in the full order and return to the same relative position when the feature is enabled or the mode changes; they are not appended arbitrarily. This setting changes navigation order only and does not enable, disable, or grant access to any feature.
+
+## Additional Firewall Ports on the Standard fnOS FPK
+
+The standard fnOS FPK with host-firewall capability can preserve ports outside fn-knock's automatically managed set under `System settings → Mode → Actions → Additional allowed ports`. Docker, OpenWrt, Linux, Synology, Windows, and `fn-knock Lite` do not show this action; manage their ports in the host, router, or cloud firewall instead.
+
+The dialog separates ports opened automatically for the current mode—such as gateway, protocol-mapping, or Smart Connect ports—from user-added ports. The additional list accepts at most `128` unique integers from `1` through `65535`. Each port opens both TCP and UDP and cannot be split by protocol. Add only services that must be reachable from outside the firewall.
+
+Saving follows the runtime mode currently saved by the backend:
+
+- Direct or Subdomain mode immediately rebuilds `FN-KNOCK-FW` and merges automatic and additional ports.
+- Reverse-proxy mode does not create `FN-KNOCK-FW`; it retains the list and applies it after switching to Direct or Subdomain mode.
+- If `Automatically manage the system firewall` is disabled, switching to Subdomain mode requires a manual reset from `Actions`; Direct mode still manages the firewall.
+- An unsaved mode selection on the page does not affect this operation. The dialog's `Current saved mode` is authoritative.
+
+Saving rebuilds fn-knock's managed chain as a whole. It does not replace router port forwarding, cloud security groups, or authentication in the upstream service. Before removing a port, confirm that no remote administration path depends on it.
 
 ## Basic Gateway Settings
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "계정 및 비밀번호 로그인"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ecb1cd718
+translationSourceHash: 368f92ef1754cf324b51cbddd0e4d0bea8b0bc8263c2f4d3c65a5152e7064fdb
 ---
 
 # 계정 및 비밀번호 로그인
@@ -18,10 +18,10 @@ translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ec
 
 - 로그인 페이지에 사용자 이름과 비밀번호 입력란이 표시됩니다.
 - 패스키, QQ 및 기타 외부 계정 로그인 항목은 표시되지 않습니다.
-- 기존 TOTP, 패스키 및 OIDC 세션은 폐기되므로 계정 비밀번호로 다시 로그인합니다.
+- 기존 TOTP, 패스키, OIDC 및 LDAP 세션은 폐기되므로 계정 비밀번호로 다시 로그인합니다.
 - Host 또는 보호된 프로토콜 매핑에 접근할 때 계정의 서비스 범위가 계속 적용됩니다.
 
-TOTP, 패스키, QQ 또는 기타 OIDC를 다시 사용하려면 `TOTP 로그인 모드`로 전환합니다. 전환하기 전에 모든 계정이 현재 존재하는 TOTP와 연결되어 있는지 확인합니다. 전환할 때 계정 비밀번호 세션은 만료됩니다.
+TOTP, 패스키, QQ, 기타 OIDC 또는 LDAP / Active Directory를 다시 사용하려면 `TOTP 로그인 모드`로 전환합니다. 전환하기 전에 모든 계정이 현재 존재하는 TOTP와 연결되어 있는지 확인합니다. 전환할 때 계정 비밀번호 세션은 만료됩니다.
 
 ## 계정 만들기
 

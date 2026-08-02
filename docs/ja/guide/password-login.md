@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ユーザー名とパスワードによるログイン"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ecb1cd718
+translationSourceHash: 368f92ef1754cf324b51cbddd0e4d0bea8b0bc8263c2f4d3c65a5152e7064fdb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,10 +20,10 @@ translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ec
 
 - ログインページにユーザー名とパスワードの入力欄が表示されます。
 - パスキー、QQ、その他の外部アカウントによるログイン項目は表示されません。
-- TOTP、パスキー、OIDC で作成された既存のセッションは破棄されるため、ユーザー名とパスワードで再度ログインする必要があります。
+- TOTP、パスキー、OIDC、LDAP で作成された既存のセッションは破棄されるため、ユーザー名とパスワードで再度ログインする必要があります。
 - アカウントのサービススコープは、Host または保護対象のプロトコルマッピングへのアクセス時に引き続き適用されます。
 
-TOTP、パスキー、QQ、その他の OIDC を再び利用する場合は、`TOTP ログインモード` へ戻します。切り替える前に、各アカウントを既存の TOTP へ紐付ける必要があります。ユーザー名とパスワードで作成されたセッションは、切り替え時に無効になります。
+TOTP、パスキー、QQ、その他の OIDC、LDAP / Active Directory を再び利用する場合は、`TOTP ログインモード` へ戻します。切り替える前に、各アカウントを既存の TOTP へ紐付ける必要があります。ユーザー名とパスワードで作成されたセッションは、切り替え時に無効になります。
 
 ## アカウントの作成
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0805badb0b07141bd4df18d7a902b8c8bd16472ab2b8bc49b4f815aa6168f44e
+translationSourceHash: b1cfbc7c38a8c1b046e8459d1356beab323b7233cd416ed90e584673a16b269e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,6 +56,21 @@ translationSourceHash: 0805badb0b07141bd4df18d7a902b8c8bd16472ab2b8bc49b4f815aa6
 在 `系統設定 → 功能 → 側邊欄選單排序` 中拖曳選單項目，可調整目前 Instance 左側導覽的顯示順序。拖曳結束後會自動儲存；若要移除所有自訂順序，請按一下 `還原預設順序`。
 
 排序頁只會列出目前執行模式與功能開關下可見的入口。暫時隱藏的入口仍會保留在完整順序中的位置，之後重新啟用功能或切換模式時會回到原本的相對位置，不會被任意附加到最後。此設定只改變導覽順序，不會啟用、停用或授予任何功能權限。
+
+## 飛牛標準 FPK 的額外防火牆連接埠
+
+具備 Host 防火牆能力的飛牛標準 FPK，可在 `系統設定 → 模式 → 操作 → 額外放行的連接埠` 保留 fn-knock 自動管理範圍之外的連接埠。Docker、OpenWrt、Linux、Synology、Windows 與 `敲門 knock Lite` 不會顯示此操作；這些部署應改在 Host、路由器或 Cloud Firewall 管理連接埠。
+
+對話框會分開顯示目前模式自動放行的閘道、協定映射或智慧連線連接埠，以及使用者額外加入的連接埠。額外清單最多可填 `128` 個 `1–65535` 的不重複整數；每個連接埠都會同時放行 TCP 與 UDP，不能依協定拆分。只新增確實需要從防火牆外側存取的服務。
+
+儲存行為依後端目前已儲存的執行模式決定：
+
+- 直連或子網域模式會立即依目前模式重設 `FN-KNOCK-FW`，合併自動與額外連接埠。
+- 內網穿透模式不建立 `FN-KNOCK-FW`；清單會保留，之後切換至直連或子網域模式時再納入規則。
+- 關閉 `自動處理系統防火牆` 後，切至子網域模式需要從 `操作` 手動重設；直連模式仍會處理防火牆。
+- 頁面上尚未儲存的模式選擇不會參與本次操作；對話框顯示的「目前已儲存模式」才是實際依據。
+
+儲存會整體重設 fn-knock 的受管 Chain，不會取代路由器 Port Forwarding、Cloud Security Group 或 Upstream 服務自身的驗證。移除額外連接埠前，請先確認沒有遠端管理路徑依賴它。
 
 ## 閘道基本設定
 

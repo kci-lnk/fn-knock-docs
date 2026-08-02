@@ -9,7 +9,7 @@
 以下情况通常适合应用商店 Lite：
 
 - 主要使用 Host 或路径反向代理；
-- 需要 TOTP、账号密码、Passkey、OIDC 等认证能力；
+- 需要 TOTP、账号密码、Passkey、OIDC、LDAP 等认证能力；
 - 需要 DDNS、证书、ACME DNS-01、WAF、请求日志和监控；
 - 使用内置 FRP 或 Cloudflared，不需要 fn-knock 修改宿主机防火墙；
 - 希望套件保持非 Root 权限边界。
@@ -29,7 +29,7 @@
 | 能力 | 应用商店 Lite | 官网标准 FPK | 说明 |
 | --- | --- | --- | --- |
 | Host / 路径反向代理 | 支持 | 支持 | 两个版本都可以通过网关向内网 Web 服务转发请求 |
-| 认证与访问控制 | 支持 | 支持 | 包括 TOTP、账号密码、Passkey、OIDC、会话和服务范围 |
+| 认证与访问控制 | 支持 | 支持 | 包括 TOTP、账号密码、Passkey、OIDC、LDAP、会话和服务范围 |
 | DDNS | 支持 | 支持 | 可维护公网 IPv4 / IPv6 对应的 DNS 记录 |
 | SSL 证书与 ACME DNS-01 | 支持 | 支持 | Lite 可以申请、上传、管理和使用 HTTPS 证书 |
 | WAF、请求日志与监控 | 支持 | 支持 | 核心 HTTP 防护和可观测性不因 Lite 而移除 |

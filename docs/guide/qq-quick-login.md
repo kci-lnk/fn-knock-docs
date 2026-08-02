@@ -69,6 +69,6 @@ https://auth.example.com/api/auth/oidc/callback/<provider-id>
 | 提示 QQ 已绑定其他凭据 | 到原 TOTP 的“管理快捷登录”中删除旧绑定，再重新绑定 |
 | 登录成功仍不能进入服务 | 检查关联 TOTP 的服务范围和目标 Host 的访问策略 |
 
-- [外部账号登录总览](/guide/oidc)
+- [外部账号登录（OIDC / OAuth / LDAP）](/guide/oidc)
 - [TOTP 与密码器](/guide/totp)
 - [认证、会话与服务范围](/guide/auth)

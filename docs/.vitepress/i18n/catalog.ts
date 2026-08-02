@@ -425,11 +425,11 @@ export const PAGE_TITLES = {
     ko: 'IP 지리 정보',
   },
   'guide/oidc': {
-    root: '外部账号登录（OIDC / OAuth）',
-    'zh-tw': '外部帳號登入（OIDC / OAuth）',
-    en: 'External Identity Providers (OIDC / OAuth)',
-    ja: '外部アカウント認証（OIDC / OAuth）',
-    ko: '외부 계정 로그인(OIDC / OAuth)',
+    root: '外部账号登录（OIDC / OAuth / LDAP）',
+    'zh-tw': '外部帳號登入（OIDC / OAuth / LDAP）',
+    en: 'External Identity Providers (OIDC / OAuth / LDAP)',
+    ja: '外部アカウント認証（OIDC / OAuth / LDAP）',
+    ko: '외부 계정 로그인(OIDC / OAuth / LDAP)',
   },
   'guide/openapi': {
     root: 'OpenAPI：开放管理 API 与 AI Agent',

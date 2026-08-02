@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b04faac49
+translationSourceHash: 906891e1d58cd402eb5764cf40aaa1e3ba3383cee953cabce0ccf26196d70a78
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,15 +26,16 @@ Deleting events does not delete delivery records that have already been created.
 
 ## Events
 
-The Events page currently recognizes 21 system event types:
+The Events page currently recognizes 27 system event types:
 
 - Authentication: `Login success`, `Logout`, `Login failure`, and `Session IP drift`;
 - Security: `Scanner blocked`, `Gateway throttle blocked`, `Gateway visibility blocked`, and `WAF blocked`;
 - SSH: `SSH login success`, `SSH login failure`, and `SSH IP blocked`;
 - Network: `DDNS updated`, FRP connected/disconnected, and Cloudflared connected/disconnected;
-- System: `App update available`, CPU alert/recovered, and memory alert/recovered.
+- System: `App update available`, CPU alert/recovered, and memory alert/recovered;
+- Runtime: component started, stopped, restarted, health check failed, recovered, and exited abnormally.
 
-Event levels are `Info`, `Notice`, `Error`, and `Critical`. Source systems are `Admin console`, `Auth proxy`, and `System monitor`.
+Event levels are `Info`, `Notice`, `Error`, and `Critical`. Source systems are `Admin console`, `Auth proxy`, `System monitor`, and `Runtime monitor`.
 
 The page lets you:
 
@@ -47,6 +48,22 @@ The page lets you:
 `Clear events` deletes every event stored in the Event Center. The count shown in parentheses describes how many events match the current view; it does not mean that only filtered results will be cleared. This operation cannot be undone, but it does not clear notification rules or delivery records.
 
 Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, or tunnel logs.
+
+## Core Service Status and Diagnostics
+
+`Event center → Status` refreshes every 5 seconds and reports health for the management service, Go gateway process, gateway data plane, authentication bridge, storage, and configuration synchronization. Process cards also show details such as version, PID, start time, CPU, memory, or Go runtime metrics. Service cards show probe latency and consecutive-failure reasons. `Blocked by dependency` means the component can run but a required upstream component is not ready.
+
+The Status page provides three kinds of troubleshooting material:
+
+| Action | Contents and boundary |
+| --- | --- |
+| `Copy diagnostics` | Copies a JSON summary of the current version, platform, component health, and recent runtime events |
+| `View logs` | Shows the latest 200 redacted core runtime entries for the management service or Go gateway; request, WAF, and authentication records are excluded |
+| `Export diagnostics` | Downloads `diagnostics.json` with bounded management, gateway, and supervisor logs for incident reporting |
+
+Core diagnostic logs have a combined `6 MiB` cap. At the cap, files rotate or lower-priority entries are dropped. The page shows coverage time, disk usage, and the number of dropped INFO entries. Clearing one component's log removes only its current and previous core runtime log; runtime events, crash logs, and other component logs remain.
+
+Common secret fields are redacted, but a diagnostic archive can still expose versions, platform details, paths, component state, and incident timestamps. Review it before sharing. Export request details from Request Logs or WAF Logs separately; these are different log classes.
 
 ## CPU and Memory Monitoring
 

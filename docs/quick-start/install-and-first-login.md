@@ -57,7 +57,7 @@ Lite 的默认端口为 `8998 / 8997 / 8996 / 8999`，安装向导只允许使�
 
 - [TOTP 与密码器 App](/guide/totp)
 - [登录模式与账号密码登录](/guide/password-login)
-- [外部账号登录](/guide/oidc)
+- [外部账号登录（OIDC / OAuth / LDAP）](/guide/oidc)
 - [绑定 QQ 快捷登录](/guide/qq-quick-login)
 
 ### 3. 配置证书和入口

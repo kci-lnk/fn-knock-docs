@@ -3,7 +3,7 @@ lang: ja-JP
 title: "QQ クイックログインの連携"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddb6a6b898ca29f03a45f8ddbe781deb6c246d7b7b64c3cded757a88218be6c0
+translationSourceHash: 167424ec4854ec1e6971e78a291d7ae399d91d9d759bbc490b8f8b98881797e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -79,6 +79,6 @@ QQ の紐付けを削除すると、その QQ アカウントでは直ちにロ�
 | QQ が別の認証情報へ紐付け済みと表示される | 元の TOTP の「クイックログインを管理」で既存の紐付けを削除してから、もう一度紐付ける |
 | ログインに成功してもサービスへアクセスできない | 紐付け先 TOTP のサービススコープと、対象 Host のアクセスポリシー |
 
-- [外部アカウント認証の概要](/ja/guide/oidc)
+- [外部アカウント認証（OIDC / OAuth / LDAP）](/ja/guide/oidc)
 - [TOTP 認証アプリ](/ja/guide/totp)
 - [認証・セッション・サービススコープ](/ja/guide/auth)

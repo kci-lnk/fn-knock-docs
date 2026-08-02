@@ -3,7 +3,7 @@ lang: en-US
 title: "fnOS App Store Lite vs. the Standard FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce822006acbe6d
+translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ The main difference is not whether reverse proxying, authentication, or WAF is a
 The App Store Lite edition is usually a good fit when you:
 
 - mainly use Host or path-based reverse proxying;
-- need TOTP, username/password, Passkey, OIDC, or other authentication;
+- need TOTP, username/password, Passkey, OIDC, LDAP, or other authentication;
 - need DDNS, certificates, ACME DNS-01, WAF, request logs, and monitoring;
 - use the built-in FRP or Cloudflared tunnel without asking fn-knock to modify the host firewall;
 - prefer to keep the package inside a non-root permission boundary.
@@ -39,7 +39,7 @@ Choose the standard FPK from the official website when you explicitly need any o
 | Capability | App Store Lite | Standard FPK | Notes |
 | --- | --- | --- | --- |
 | Host / path reverse proxy | Supported | Supported | Both editions can forward gateway requests to internal web services |
-| Authentication and access control | Supported | Supported | Includes TOTP, username/password, Passkey, OIDC, sessions, and service scopes |
+| Authentication and access control | Supported | Supported | Includes TOTP, username/password, Passkey, OIDC, LDAP, sessions, and service scopes |
 | DDNS | Supported | Supported | Maintains DNS records for public IPv4 / IPv6 addresses |
 | TLS certificates and ACME DNS-01 | Supported | Supported | Lite can request, upload, manage, and use HTTPS certificates |
 | WAF, request logs, and monitoring | Supported | Supported | Lite retains the core HTTP protection and observability features |

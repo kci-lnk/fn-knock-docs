@@ -3,7 +3,7 @@ lang: en-US
 title: "Install and Set Up the Native fnOS FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b6e745c3267459146e2902d348543e722b336b442a23575339165ce93c84e425
+translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -67,7 +67,7 @@ To sign in with a username and password, Passkey, QQ, or another external identi
 
 - [TOTP Authenticator Apps](/en/guide/totp)
 - [Username and Password Sign-in](/en/guide/password-login)
-- [External Identity Providers (OIDC / OAuth)](/en/guide/oidc)
+- [External Identity Providers (OIDC / OAuth / LDAP)](/en/guide/oidc)
 - [Link QQ for Quick Sign-in](/en/guide/qq-quick-login)
 
 ### 3. Configure certificates and ingress

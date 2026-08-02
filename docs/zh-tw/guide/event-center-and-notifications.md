@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b04faac49
+translationSourceHash: 906891e1d58cd402eb5764cf40aaa1e3ba3383cee953cabce0ccf26196d70a78
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,15 +26,16 @@ translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b0
 
 ## 事件頁面
 
-事件頁面目前可識別下列 21 類系統事件：
+事件頁面目前可識別下列 27 類系統事件：
 
 - 身分驗證：登入成功、登出、登入失敗、工作階段 IP 漂移；
 - 安全性：掃描器攔截、閘道 Rate Limit 封鎖、閘道可見性攔截、WAF 阻擋；
 - SSH：登入成功、登入失敗、IP 封鎖；
 - 網路：DDNS 更新、FRP 連線／中斷、Cloudflared 連線／中斷；
-- 系統：應用程式更新提示、CPU 告警／恢復、記憶體告警／恢復。
+- 系統：應用程式更新提示、CPU 告警／恢復、記憶體告警／恢復；
+- Runtime：元件啟動、停止、重新啟動、健康檢查失敗、恢復與異常結束。
 
-事件層級分為資訊、注意、錯誤與嚴重；來源系統則分為管理後台、身分驗證 Proxy 與系統監控。
+事件層級分為資訊、注意、錯誤與嚴重；來源系統則分為管理後台、身分驗證 Proxy、系統監控與 Runtime 監控。
 
 頁面支援：
 
@@ -47,6 +48,22 @@ translationSourceHash: a68d6a39ea071bb928b7e0a9e7ec9b53215ab2f42aa21cfe7787897b0
 「清除事件」會刪除事件中心保存的所有事件；括號中的數量只代表目前 View 符合的筆數，並不表示只清除目前的篩選結果。此操作無法復原，但不會清除通知規則與投遞記錄。
 
 事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log 或 Tunnel Log 交叉比對。
+
+## 核心服務狀態與診斷
+
+`事件中心 → 狀態` 每 5 秒更新管理服務、Go 閘道程序、閘道 Data Plane、驗證橋接、儲存與設定同步的健康狀態。程序卡也會顯示版本、PID、啟動時間、CPU、記憶體或 Go Runtime 資訊；服務卡顯示探測延遲與連續失敗原因。`受上游阻擋` 代表目前元件本身可執行，但相依元件尚未就緒。
+
+狀態頁面提供三類疑難排解資料：
+
+| 操作 | 內容與範圍 |
+| --- | --- |
+| `複製診斷資訊` | 複製目前版本、平台、元件健康狀態與最近 Runtime 事件的 JSON 摘要 |
+| `查看 Log` | 查看管理服務或 Go 閘道最近 200 筆已遮蔽核心 Runtime Log；不包含 Request、WAF 或驗證記錄 |
+| `匯出診斷包` | 下載 `diagnostics.json` 與有大小上限的管理、閘道及 Supervisor Log，供故障回報使用 |
+
+核心診斷 Log 的總容量上限為 `6 MiB`；達到上限後會輪替檔案或捨棄低優先級資訊。狀態頁會顯示涵蓋時間、磁碟用量與已捨棄的 INFO 數量。清除單一元件 Log 只會移除該元件目前與上一代的核心 Runtime Log，不會刪除 Runtime 事件、Crash Log 或其他元件 Log。
+
+診斷 Log 會遮蔽常見密鑰欄位，但診斷包仍可能揭露版本、平台、路徑、元件狀態與故障時間。對外分享前請先檢查內容；Request 明細應另從 Request Log 或 WAF Log 匯出，三者並非同一類型的記錄。
 
 ## CPU 與記憶體監控
 

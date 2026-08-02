@@ -3,7 +3,7 @@ lang: zh-TW
 title: "IPv6 公網直連與原始連接埠授權"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
+translationSourceHash: e94a3094af107a34487e1adfa1b17fbf62a7a905aa6fda0941106dfc65098208
 ---
 
 # IPv6 公網直連與原始連接埠授權
@@ -40,7 +40,7 @@ translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f39235
 7. 從外部網路開啟閘道入口，例如 `https://auth.example.com:<閘道連接埠>`，並完成登入。
 8. 接著存取所需的原始服務連接埠；確認目前的公網 IPv6 已在 IP 授權清單中生效。
 
-限制服務範圍的 TOTP、密碼帳號、Passkey 或 OIDC 憑證不會建立自動 IP 授權，避免憑證透過來源位址擴大權限。若要讓直連模式自動開放原始連接埠，請使用未限制服務範圍的憑證，或手動加入所需的 IPv6 / CIDR。
+限制服務範圍的 TOTP、密碼帳號、Passkey、OIDC 或 LDAP 憑證不會建立自動 IP 授權，避免憑證透過來源位址擴大權限。若要讓直連模式自動開放原始連接埠，請使用未限制服務範圍的憑證，或手動加入所需的 IPv6 / CIDR。
 
 ## 防火牆驗證順序
 

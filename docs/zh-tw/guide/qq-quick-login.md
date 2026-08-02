@@ -3,7 +3,7 @@ lang: zh-TW
 title: "綁定 QQ 快速登入"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddb6a6b898ca29f03a45f8ddbe781deb6c246d7b7b64c3cded757a88218be6c0
+translationSourceHash: 167424ec4854ec1e6971e78a291d7ae399d91d9d759bbc490b8f8b98881797e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -79,6 +79,6 @@ https://auth.example.com/api/auth/oidc/callback/<provider-id>
 | 顯示 QQ 已綁定其他憑據 | 前往原 TOTP 的「管理快速登入」刪除舊綁定，再重新綁定 |
 | 登入成功後仍無法進入服務 | 檢查關聯 TOTP 的服務範圍與目標 Host 存取原則 |
 
-- [外部帳號登入總覽](/zh-tw/guide/oidc)
+- [外部帳號登入（OIDC / OAuth / LDAP）](/zh-tw/guide/oidc)
 - [TOTP 與驗證器](/zh-tw/guide/totp)
 - [身分驗證、工作階段與服務範圍](/zh-tw/guide/auth)

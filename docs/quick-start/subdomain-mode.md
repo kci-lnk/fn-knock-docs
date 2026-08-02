@@ -13,7 +13,7 @@
 
 - 一个可管理 DNS 的域名，例如 `example.com`。
 - 公网入口能够到达 fn-knock 网关。飞牛原生 FPK、Docker Compose、OpenWrt、Linux、群晖 DSM 7 SPK 和 Windows 默认使用 `7999`。以下将它统称为“实际网关端口”。
-- 至少一种可用的登录方式：TOTP、密码、Passkey 或已配置的 OIDC。
+- 至少一种可用的登录方式：TOTP、密码、Passkey、已配置的 OIDC 或 LDAP。
 - fn-knock 所在设备能够访问业务服务。
 
 没有公网入口时，改用[内网穿透：子域路由](./reverse-proxy-mode.md)。需要保护 SSH、远程桌面等原始 TCP/UDP 端口时，参见[原始端口访问：直连授权](./direct-mode.md)。

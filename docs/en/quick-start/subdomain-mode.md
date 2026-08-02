@@ -3,7 +3,7 @@ lang: en-US
 title: "Public IP Access with Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
+translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ You need:
 
 - A domain whose DNS you can manage, such as `example.com`.
 - A public endpoint that can reach the fn-knock gateway. The native fnOS FPK, Docker Compose, OpenWrt, Linux, Synology DSM 7 SPK, and Windows deployments default to `7999`. This guide refers to that value as the "actual gateway port."
-- At least one working sign-in method: TOTP, password, Passkey, or a configured OIDC provider.
+- At least one working sign-in method: TOTP, password, Passkey, or a configured OIDC or LDAP provider.
 - Network connectivity from the fn-knock device to each upstream application.
 
 If you do not have public ingress, use [NAT Traversal with Subdomain Routing](/en/quick-start/reverse-proxy-mode). To protect original TCP/UDP ports such as SSH or Remote Desktop, see [Direct Access on Original Ports](/en/quick-start/direct-mode).

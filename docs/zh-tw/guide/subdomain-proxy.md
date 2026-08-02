@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2febfd2cbb94b2c7361b1244cc5d6fe872b9bcadcb4e730715254ab7b6fee159
+translationSourceHash: 8ad9798669d6a8cb4b107ac5a17be8552fbb2598160b82246211aa5dbf4a5fc4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,6 +89,8 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 | `閘道可見性` | 繼承全域規則、使用目前 Host 規則覆寫，或只關閉目前 Host 的可見性限制 |
 | `啟用 WAF` | 服務 Host 預設啟用；關閉後，目前 Host 會略過全域 WAF |
 
+直接編輯已儲存映射的 Host／子網域會視為重新命名，並保留該映射的登入策略、可見性、進階驗證與 Basic Auth 憑據注入。不要用新增相同 Target 的別名來取代重新命名；別名是獨立映射，不會繼承原 Host 的受保護設定。
+
 服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
 
 Target 包含 Path 時，閘道會保留這段 Base Path，並在其後接上訪客 Request Path，可用於掛載在子路徑下的 fnOS 相簿、音樂等服務。儲存後必須實際驗證首頁、靜態資源、Redirect、Cookie 與 WebSocket；若上游只支援根路徑部署，單純填入 Base Path 無法取代應用程式端改寫。標題與圖示擷取會使用完整 Target，並保留明確連接埠。
@@ -166,6 +168,14 @@ Target 包含 Path 時，閘道會保留這段 Base Path，並在其後接上訪
 - `清空所有設定`：經過兩次確認後刪除驗證服務及所有 Host 映射，保留 Root Domain 等模式設定。
 
 單一 Host 的流量詳細資料可查看即時流量與有效 IP，並將異常來源加入[通用封鎖清單](/zh-tw/guide/general-blacklist)。
+
+### 深度監控
+
+一般 Request Log 無法解釋 HTTP 或 WebSocket 問題時，可從單一服務 Host 的 `更多 → 深度監控` 啟動限時擷取。監控只接受已設定的精確 Host，預設持續 `30` 分鐘，最長 `2` 小時；頁面會顯示即時摘要，並可下載包含 Request、Response、Upstream 與 WebSocket Payload 資訊的 ZIP。
+
+深度監控會將 Cookie、`Authorization`、Request Body、Response Body 與 WebSocket 原始 Frame 以未遮蔽形式寫入閘道磁碟。只在重現問題所需的短時間內啟用，完成後立即停止並清除；未手動刪除的資料會在工作階段停止 `24` 小時後自動移除。匯出的壓縮檔應視同憑據檔案，不要直接上傳至公開 Issue 或群組聊天。
+
+即時文字區只保留最近 `1000` 行摘要；若看到捨棄計數、Quota 用盡、寫入過載或儲存錯誤，請以下載包與工作階段停止原因為準。深度監控用於短期故障取證，不能取代常時啟用的[Request Log](/zh-tw/guide/request-logs)、[WAF](/zh-tw/guide/waf)或 Upstream 應用程式 Log。
 
 ## Host 路由的延伸能力
 

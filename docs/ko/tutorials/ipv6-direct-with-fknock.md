@@ -3,7 +3,7 @@ lang: ko-KR
 title: "공인 IPv6 직접 연결 및 원본 포트 허용"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
+translationSourceHash: e94a3094af107a34487e1adfa1b17fbf62a7a905aa6fda0941106dfc65098208
 ---
 
 # 공인 IPv6 직접 연결 및 원본 포트 허용
@@ -40,7 +40,7 @@ translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f39235
 7. 외부 네트워크에서 게이트웨이 엔드포인트(예: `https://auth.example.com:<게이트웨이 포트>`)를 열고 로그인합니다.
 8. 필요한 서비스의 원본 포트로 다시 접속하여 현재 공인 IPv6가 IP 접근 허용 목록에 적용되었는지 확인합니다.
 
-서비스 범위가 제한된 TOTP, 비밀번호 계정, 패스키 또는 OIDC 자격 증명은 자동 IP 접근 권한을 만들지 않습니다. 자격 증명이 출발지 주소를 통해 원래 범위보다 권한을 넓히지 못하게 하기 위한 동작입니다. 직접 연결 모드에서 원본 포트를 자동으로 열려면 서비스 범위가 제한되지 않은 자격 증명을 사용하거나 필요한 IPv6/CIDR을 수동으로 추가합니다.
+서비스 범위가 제한된 TOTP, 비밀번호 계정, 패스키, OIDC 또는 LDAP 자격 증명은 자동 IP 접근 권한을 만들지 않습니다. 자격 증명이 출발지 주소를 통해 원래 범위보다 권한을 넓히지 못하게 하기 위한 동작입니다. 직접 연결 모드에서 원본 포트를 자동으로 열려면 서비스 범위가 제한되지 않은 자격 증명을 사용하거나 필요한 IPv6/CIDR을 수동으로 추가합니다.
 
 ## 방화벽 검증 순서
 

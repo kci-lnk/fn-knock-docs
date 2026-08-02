@@ -3,7 +3,7 @@ lang: ja-JP
 title: "fnOS ネイティブ FPK のインストールと初期設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b6e745c3267459146e2902d348543e722b336b442a23575339165ce93c84e425
+translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -67,7 +67,7 @@ Lite のデフォルトポートは `8998 / 8997 / 8996 / 8999` で、セット�
 
 - [TOTP 認証アプリ](/ja/guide/totp)
 - [ログインモードとユーザー名・パスワード認証](/ja/guide/password-login)
-- [外部アカウント認証](/ja/guide/oidc)
+- [外部アカウント認証（OIDC / OAuth / LDAP）](/ja/guide/oidc)
 - [QQ クイックログインの連携](/ja/guide/qq-quick-login)
 
 ### 3. 証明書と入口を設定する

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 應用程式商店 Lite 與官網標準 FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce822006acbe6d
+translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce82200
 以下情況通常適合應用程式商店 Lite：
 
 - 主要使用 Host 或路徑反向 Proxy；
-- 需要 TOTP、帳號密碼、Passkey、OIDC 等驗證能力；
+- 需要 TOTP、帳號密碼、Passkey、OIDC、LDAP 等驗證能力；
 - 需要 DDNS、憑證、ACME DNS-01、WAF、Request Log 與監控；
 - 使用內建 FRP 或 Cloudflared，不需要 fn-knock 修改主機防火牆；
 - 希望套件維持非 Root 權限邊界。
@@ -39,7 +39,7 @@ translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce82200
 | 能力 | 應用程式商店 Lite | 官網標準 FPK | 說明 |
 | --- | --- | --- | --- |
 | Host / 路徑反向 Proxy | 支援 | 支援 | 兩個版本都能透過閘道將請求轉送至內網 Web 服務 |
-| 驗證與存取控制 | 支援 | 支援 | 包含 TOTP、帳號密碼、Passkey、OIDC、工作階段與服務範圍 |
+| 驗證與存取控制 | 支援 | 支援 | 包含 TOTP、帳號密碼、Passkey、OIDC、LDAP、工作階段與服務範圍 |
 | DDNS | 支援 | 支援 | 可維護公網 IPv4 / IPv6 對應的 DNS 記錄 |
 | SSL 憑證與 ACME DNS-01 | 支援 | 支援 | Lite 可以申請、上傳、管理和使用 HTTPS 憑證 |
 | WAF、Request Log 與監控 | 支援 | 支援 | Lite 仍保留核心 HTTP 防護與可觀測性 |

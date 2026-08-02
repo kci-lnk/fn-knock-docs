@@ -3,7 +3,7 @@ lang: ja-JP
 title: "グローバル IPv6 と元ポートへの直接アクセス"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
+translationSourceHash: e94a3094af107a34487e1adfa1b17fbf62a7a905aa6fda0941106dfc65098208
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -42,7 +42,7 @@ translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f39235
 7. 外部ネットワークから `https://auth.example.com:<ゲートウェイポート>` などのゲートウェイ入口を開き、ログインします。
 8. 続いて、必要なサービス本来のポートへ接続します。現在のグローバル IPv6 が IP 許可リストで有効になっていることを確認してください。
 
-サービススコープが制限された TOTP、パスワードアカウント、パスキー、OIDC 認証情報では、IP の自動許可は作成されません。認証情報が送信元アドレスを介して権限を広げないようにするためです。直接接続モードで元のポートを自動的に開放する場合は、サービススコープを制限していない認証情報を使うか、必要な IPv6 / CIDR を手動で追加してください。
+サービススコープが制限された TOTP、パスワードアカウント、パスキー、OIDC、LDAP 認証情報では、IP の自動許可は作成されません。認証情報が送信元アドレスを介して権限を広げないようにするためです。直接接続モードで元のポートを自動的に開放する場合は、サービススコープを制限していない認証情報を使うか、必要な IPv6 / CIDR を手動で追加してください。
 
 ## ファイアウォールの検証手順
 

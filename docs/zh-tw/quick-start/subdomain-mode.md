@@ -3,7 +3,7 @@ lang: zh-TW
 title: "公網直連：子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
+translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
 ---
 
 # 公網直連：子網域路由
@@ -21,7 +21,7 @@ translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef
 
 - 一個可管理 DNS 的網域名稱，例如 `example.com`。
 - 公網入口可以連線至 fn-knock 閘道。fnOS 原生 FPK、Docker Compose、OpenWrt、Linux、Synology DSM 7 SPK 與 Windows 預設使用 `7999`。下文統稱為「實際閘道連接埠」。
-- 至少一種可用的登入方式：TOTP、密碼、Passkey 或已設定的 OIDC。
+- 至少一種可用的登入方式：TOTP、密碼、Passkey、已設定的 OIDC 或 LDAP。
 - fn-knock 所在裝置能夠存取業務服務。
 
 沒有公網入口時，請改用[內網穿透：子網域路由](/zh-tw/quick-start/reverse-proxy-mode)。需要保護 SSH、遠端桌面等原始 TCP/UDP 連接埠時，請參閱[原始連接埠存取：直連授權](/zh-tw/quick-start/direct-mode)。

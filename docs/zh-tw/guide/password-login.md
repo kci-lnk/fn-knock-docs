@@ -3,7 +3,7 @@ lang: zh-TW
 title: "帳號密碼登入"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ecb1cd718
+translationSourceHash: 368f92ef1754cf324b51cbddd0e4d0bea8b0bc8263c2f4d3c65a5152e7064fdb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,10 +20,10 @@ translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ec
 
 - 登入頁面會顯示使用者名稱與密碼欄位；
 - Passkey、QQ 與其他外部帳號登入入口不再顯示；
-- 由 TOTP、Passkey 與 OIDC 建立的既有工作階段會被銷毀，必須使用帳號密碼重新登入；
+- 由 TOTP、Passkey、OIDC 與 LDAP 建立的既有工作階段會被銷毀，必須使用帳號密碼重新登入；
 - 存取 Host 或受保護的協定映射時，帳號的服務範圍仍會繼續生效。
 
-需要恢復使用 TOTP、Passkey、QQ 或其他 OIDC 時，再切回 `TOTP 登入模式`。切回前，每個帳號都必須關聯至仍然存在的 TOTP；帳號密碼工作階段會在切換時失效。
+需要恢復使用 TOTP、Passkey、QQ、其他 OIDC 或 LDAP／Active Directory 時，再切回 `TOTP 登入模式`。切回前，每個帳號都必須關聯至仍然存在的 TOTP；帳號密碼工作階段會在切換時失效。
 
 ## 建立帳號
 

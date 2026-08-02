@@ -3,7 +3,7 @@ lang: ja-JP
 title: "fnOS アプリストア Lite と標準 FPK の違い"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce822006acbe6d
+translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce82200
 次の用途には、通常はアプリストア版 Lite が適しています。
 
 - Host またはパスベースのリバースプロキシを主に利用する。
-- TOTP、ユーザー名とパスワード、Passkey、OIDC などの認証が必要。
+- TOTP、ユーザー名とパスワード、Passkey、OIDC、LDAP などの認証が必要。
 - DDNS、証明書、ACME DNS-01、WAF、リクエストログ、監視が必要。
 - 内蔵 FRP または Cloudflared を使い、fn-knock にホストのファイアウォールを変更させる必要がない。
 - パッケージを非 root の権限境界内で動かしたい。
@@ -39,7 +39,7 @@ translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce82200
 | 機能 | アプリストア Lite | 標準 FPK | 説明 |
 | --- | --- | --- | --- |
 | Host / パスのリバースプロキシ | 対応 | 対応 | どちらもゲートウェイから内部 Web サービスへリクエストを転送できます |
-| 認証とアクセス制御 | 対応 | 対応 | TOTP、ユーザー名とパスワード、Passkey、OIDC、セッション、サービススコープを含みます |
+| 認証とアクセス制御 | 対応 | 対応 | TOTP、ユーザー名とパスワード、Passkey、OIDC、LDAP、セッション、サービススコープを含みます |
 | DDNS | 対応 | 対応 | グローバル IPv4 / IPv6 に対応する DNS レコードを更新できます |
 | TLS 証明書と ACME DNS-01 | 対応 | 対応 | Lite でも HTTPS 証明書の取得、アップロード、管理、利用ができます |
 | WAF、リクエストログ、監視 | 対応 | 対応 | Lite でも中核的な HTTP 保護機能と可観測性を利用できます |

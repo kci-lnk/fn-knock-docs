@@ -3,7 +3,7 @@ lang: ko-KR
 title: "공인 IP 직접 연결: 서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
+translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
 ---
 
 # 공인 IP 직접 연결: 서브도메인 라우팅
@@ -21,7 +21,7 @@ translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef
 
 - DNS를 관리할 수 있는 도메인(예: `example.com`)
 - 인터넷 엔드포인트에서 fn-knock 게이트웨이에 도달할 수 있는 경로. fnOS 네이티브 FPK, Docker Compose, OpenWrt, Linux, Synology DSM 7 SPK, Windows는 기본적으로 `7999`를 사용합니다. 아래에서는 이를 모두 '실제 게이트웨이 포트'라고 부릅니다.
-- 사용할 수 있는 로그인 방식 하나 이상: TOTP, 비밀번호, 패스키 또는 구성된 OIDC
+- 사용할 수 있는 로그인 방식 하나 이상: TOTP, 비밀번호, 패스키 또는 구성된 OIDC / LDAP
 - fn-knock가 실행되는 기기에서 서비스에 접속할 수 있는 네트워크 경로
 
 인터넷에서 직접 들어오는 경로가 없다면 [NAT 통과: 서브도메인 라우팅](./reverse-proxy-mode.md)을 사용합니다. SSH, 원격 데스크톱 같은 원본 TCP/UDP 포트를 보호해야 한다면 [원본 포트 직접 접근](./direct-mode.md)을 참고합니다.

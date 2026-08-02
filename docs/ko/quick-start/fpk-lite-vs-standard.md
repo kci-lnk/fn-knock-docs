@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fnOS 앱 스토어 Lite와 표준 FPK 비교"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce822006acbe6d
+translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce82200
 다음과 같은 경우에는 일반적으로 앱 스토어 Lite가 적합합니다.
 
 - Host 또는 경로 기반 리버스 프록시를 주로 사용합니다.
-- TOTP, 사용자 이름과 비밀번호, Passkey, OIDC 등의 인증이 필요합니다.
+- TOTP, 사용자 이름과 비밀번호, Passkey, OIDC, LDAP 등의 인증이 필요합니다.
 - DDNS, 인증서, ACME DNS-01, WAF, 요청 로그 및 모니터링이 필요합니다.
 - 내장 FRP 또는 Cloudflared를 사용하며 fn-knock가 호스트 방화벽을 변경할 필요가 없습니다.
 - 패키지를 비 root 권한 경계 안에서 실행하려고 합니다.
@@ -39,7 +39,7 @@ translationSourceHash: c372dfbf4ec440e9b6dce702cab355d78b91d76ec92a8e1736ce82200
 | 기능 | 앱 스토어 Lite | 표준 FPK | 설명 |
 | --- | --- | --- | --- |
 | Host / 경로 리버스 프록시 | 지원 | 지원 | 두 버전 모두 게이트웨이 요청을 내부 Web 서비스로 전달할 수 있습니다 |
-| 인증 및 접근 제어 | 지원 | 지원 | TOTP, 사용자 이름과 비밀번호, Passkey, OIDC, 세션 및 서비스 범위를 포함합니다 |
+| 인증 및 접근 제어 | 지원 | 지원 | TOTP, 사용자 이름과 비밀번호, Passkey, OIDC, LDAP, 세션 및 서비스 범위를 포함합니다 |
 | DDNS | 지원 | 지원 | 공인 IPv4 / IPv6에 대응하는 DNS 레코드를 관리합니다 |
 | TLS 인증서 및 ACME DNS-01 | 지원 | 지원 | Lite에서도 HTTPS 인증서를 발급, 업로드, 관리 및 사용할 수 있습니다 |
 | WAF, 요청 로그 및 모니터링 | 지원 | 지원 | Lite에서도 핵심 HTTP 보호와 관측 기능을 유지합니다 |

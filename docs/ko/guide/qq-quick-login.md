@@ -3,7 +3,7 @@ lang: ko-KR
 title: "QQ 빠른 로그인 연동"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddb6a6b898ca29f03a45f8ddbe781deb6c246d7b7b64c3cded757a88218be6c0
+translationSourceHash: 167424ec4854ec1e6971e78a291d7ae399d91d9d759bbc490b8f8b98881797e8
 ---
 
 # QQ 빠른 로그인 연동
@@ -77,6 +77,6 @@ QQ 연결을 삭제하면 해당 QQ 계정으로 즉시 로그인할 수 없게 
 | QQ가 다른 자격 증명에 연결되었다고 표시됨 | 기존 TOTP의 “빠른 로그인 관리”에서 이전 연결을 삭제한 뒤 다시 연결 |
 | 로그인에 성공해도 서비스에 들어갈 수 없음 | 연결된 TOTP의 서비스 범위와 대상 Host의 접근 정책 확인 |
 
-- [외부 계정 로그인 개요](/ko/guide/oidc)
+- [외부 계정 로그인(OIDC / OAuth / LDAP)](/ko/guide/oidc)
 - [TOTP 인증기](/ko/guide/totp)
 - [인증, 세션 및 서비스 범위](/ko/guide/auth)

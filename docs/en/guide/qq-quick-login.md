@@ -3,7 +3,7 @@ lang: en-US
 title: "Link QQ for Quick Sign-in"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddb6a6b898ca29f03a45f8ddbe781deb6c246d7b7b64c3cded757a88218be6c0
+translationSourceHash: 167424ec4854ec1e6971e78a291d7ae399d91d9d759bbc490b8f8b98881797e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -79,6 +79,6 @@ Deleting a QQ binding immediately prevents that QQ account from signing in but d
 | QQ is already bound to another credential | Delete the old binding under `Manage quick login` for the original TOTP, then bind it again |
 | Sign-in succeeds, but the service is still denied | The linked TOTP's service scope and the target Host's access policy |
 
-- [External Identity Providers (OIDC / OAuth)](/en/guide/oidc)
+- [External Identity Providers (OIDC / OAuth / LDAP)](/en/guide/oidc)
 - [TOTP Authenticator Apps](/en/guide/totp)
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)

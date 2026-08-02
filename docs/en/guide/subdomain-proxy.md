@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2febfd2cbb94b2c7361b1244cc5d6fe872b9bcadcb4e730715254ab7b6fee159
+translationSourceHash: 8ad9798669d6a8cb4b107ac5a17be8552fbb2598160b82246211aa5dbf4a5fc4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,6 +89,8 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 | `Visibility` | Inherits the global rules, replaces them with rules for this Host, or disables visibility restrictions only for this Host |
 | `Enable WAF` | Enabled by default for application Hosts; when disabled, this Host skips the global WAF |
 
+Editing the Host / subdomain of a saved mapping is treated as a rename and preserves its sign-in policy, visibility, advanced authentication, and Basic Auth credential injection. Do not create another alias with the same Target as a substitute for renaming; an alias is an independent mapping and does not inherit the original Host's protected configuration.
+
 Whenever possible, bind application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
 
 When a Target contains a path, the gateway preserves that base path and appends the visitor's request path. This can be used for services such as fnOS Photos or Music that are mounted below a subpath. After saving, test the home page, static assets, redirects, Cookies, and WebSockets. A base-path Target cannot make an application that only supports root deployment subpath-aware. Title and icon collection uses the complete Target and preserves an explicit port.
@@ -166,6 +168,14 @@ List actions include:
 - `Clear all configuration`: After two confirmations, remove the auth service and all Host mappings while preserving the root domain and other mode settings.
 
 Traffic details for an individual Host show live traffic and active IPs, and let you add suspicious sources to the [Global Blocklist](/en/guide/general-blacklist).
+
+### Deep Monitor
+
+When normal request logs cannot explain an HTTP or WebSocket problem, start a time-limited capture from `More → Deep monitor` on the individual application Host. Monitoring accepts only an exact Host that is already configured. It runs for `30` minutes by default and at most `2` hours. The page shows live summaries and lets you download a ZIP containing request, response, upstream, and WebSocket payload information.
+
+Deep Monitor writes cookies, `Authorization`, request and response bodies, and raw WebSocket frames to gateway storage without redaction. Enable it only long enough to reproduce the problem, then stop and clear it immediately. Data that is not removed manually is deleted `24` hours after the session stops. Treat the exported archive like a credential file; do not upload it directly to a public issue or group chat.
+
+The live text area retains only the latest `1000` summary lines. If you see dropped events, quota exhaustion, write overload, or storage errors, use the download archive and session stop reason as the authoritative record. Deep Monitor is temporary incident capture; it does not replace always-on [Request Logs](/en/guide/request-logs), [WAF](/en/guide/waf), or upstream application logs.
 
 ## Additional Host-Routing Capabilities
 

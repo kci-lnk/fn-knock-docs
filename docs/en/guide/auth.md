@@ -3,7 +3,7 @@ lang: en-US
 title: "Authentication, Sessions, and Service Scopes"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f9be5fdf8b5b35d19bf5aa5fca2a14388120844148f0c1c043c619b547748f1a
+translationSourceHash: 791ef721a4a0bc8068038afb572be1434bf6f6222e38459e32d185db132aa9fe
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -32,7 +32,7 @@ The authentication page pauses automatic redirection and displays a warning when
 
 | Mode | Available methods | Best for |
 | --- | --- | --- |
-| `TOTP sign-in mode` | TOTP; linked Passkeys, QQ, and other external accounts | Personal use and quick sign-in with hardware or biometrics |
+| `TOTP sign-in mode` | TOTP; linked Passkeys, OIDC / OAuth, or LDAP / Active Directory accounts | Individuals or small teams that need quick sign-in or enterprise directory integration |
 | `Password sign-in mode` | Username and password | Multiple users who need separate accounts |
 
 Switch between the modes under `Auth`. Before switching, the system checks that the required passwords or TOTP credentials are ready. Users holding sessions created by a sign-in method that becomes disabled must sign in again.
@@ -41,17 +41,17 @@ Switching synchronizes account names, permissions, and linked TOTP credentials. 
 
 | Switch to | Sessions invalidated |
 | --- | --- |
-| Password sign-in mode | TOTP, Passkey, and OIDC sessions |
+| Password sign-in mode | TOTP, Passkey, OIDC, and LDAP sessions |
 | TOTP sign-in mode | Username/password sessions |
 
 ## How credentials relate to permissions
 
-- A TOTP credential is a named identity whose subdomain and protocol-mapping access can be restricted. Linked Passkeys, QQ, and other OIDC sign-ins inherit its scope.
+- A TOTP credential is a named identity whose subdomain and protocol-mapping access can be restricted. Linked Passkey, OIDC / OAuth, and LDAP / Active Directory sign-ins inherit its scope.
 - Accounts in Password sign-in mode can also have service scopes.
 - With `Custom scopes`, the permission dialog separately lists protected subdomains, the built-in select page, and authenticated TCP / UDP protocol mappings. If no scope item is selected, the credential cannot open any protected entry. The built-in select page at `/__select__` must also be selected separately.
 - For a Host with `Require sign-in` enabled, valid manual source authorization can grant access independently. IP authorization created automatically after sign-in normally lets the same source continue to connect, but it cannot override a service-scope denial already attached to a browser request. When no usable source authorization exists, the gateway continues by evaluating the session and credential scope.
 - Post-login automatic IP authorization is controlled under `System settings → Sessions`. It is an allow path for a source IP, not a credential-scope control. If a manual allowlist entry is too broad, that source may open a protected Host directly without signing in through a browser.
-- A sign-in credential with a restricted service scope does not create general automatic IP authorization that can open arbitrary Hosts or original ports. This prevents source-IP authorization from expanding the credential's scope. It includes a restricted TOTP and its linked Passkey / OIDC identities, as well as username/password accounts with restricted scopes. They are not suitable for automatic authorization in Direct mode.
+- A sign-in credential with a restricted service scope does not create general automatic IP authorization that can open arbitrary Hosts or original ports. This prevents source-IP authorization from expanding the credential's scope. It includes a restricted TOTP and its linked Passkey / OIDC / LDAP identities, as well as username/password accounts with restricted scopes. They are not suitable for automatic authorization in Direct mode.
 - A custom scope may select individual protocol mappings as an exception. When post-login IP authorization is not disabled, the system grants the current source IP access to the exact `TCP/UDP + external port` for the selected mappings, using the session settings for its lifetime. It neither opens unselected protocol mappings nor becomes a general IP allowlist entry.
 
 ## The admin panel password is not a gateway login
@@ -73,7 +73,7 @@ The import file must be JSON and is limited to 512 KB by the admin page. Import 
 
 ## Advanced authentication is not a sign-in method
 
-Subdomain advanced authentication issues a temporary grant limited to the current Host when a request matches a source, path, Header, Query, or HTTP-method rule. It does not create a system login session or post-login IP authorization, and it neither inherits nor changes the service scopes of TOTP, Passkey, OIDC, or username/password credentials.
+Subdomain advanced authentication issues a temporary grant limited to the current Host when a request matches a source, path, Header, Query, or HTTP-method rule. It does not create a system login session or post-login IP authorization, and it neither inherits nor changes the service scopes of TOTP, Passkey, OIDC, LDAP, or username/password credentials.
 
 This is an independent allow path. Even if the current browser session's service scope excludes the Host, a request that satisfies an advanced-authentication rule can receive temporary access to that Host. Do not use advanced authentication to add another restriction to an existing credential. To narrow credential access, change the credential's own service scope. See [Advanced Authentication for Subdomains](/en/guide/advanced-auth) for rule configuration.
 
@@ -82,13 +82,13 @@ This is an independent allow path. Even if the current browser session's service
 1. Configure one primary sign-in method and prepare at least one backup credential.
 2. Create separate credentials for users or devices that need isolation.
 3. Set the accessible subdomain scope for each credential.
-4. Then bind Passkeys for frequently used devices, plus QQ or other external accounts as needed.
+4. Then bind Passkeys for frequently used devices, or link OIDC / OAuth and LDAP / Active Directory accounts to the appropriate TOTP credential.
 5. Finally, adjust session lifetimes, `Remember me`, and the post-login IP authorization policy.
 
 - [Username and Password Sign-in](/en/guide/password-login)
 - [TOTP Authenticator Apps](/en/guide/totp)
 - [Passkeys](/en/guide/passkey)
 - [Link QQ for Quick Sign-in](/en/guide/qq-quick-login)
-- [External Identity Providers (OIDC / OAuth)](/en/guide/oidc)
+- [External Identity Providers (OIDC / OAuth / LDAP)](/en/guide/oidc)
 - [Advanced Authentication for Subdomains](/en/guide/advanced-auth)
 - [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management)

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TOTP 與驗證器 App"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0abfe75a5862233be3e6af3aeea4c4c59466cee80b2b67cb50157480a99cd0f7
+translationSourceHash: 20d6170c8fa0828578e82301a734592617bbc47361c9075ff630426d161eb366
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,7 +25,7 @@ TOTP 是隨時間輪替的一次性驗證碼。在 fn-knock 中，它既能作�
 
 TOTP 清單中的 `權限` 可以選擇所有範圍或自訂範圍。自訂清單會分組顯示要求登入的服務 Host、內建選擇頁，以及已啟用驗證的 TCP／UDP 協定映射；已刪除但仍留在權限內的入口會標示為失效。自訂範圍為空時，該憑據無法進入任何受保護的入口。
 
-這項限制會同時套用至關聯的 Passkey、QQ 及其他 OIDC 外部帳號。服務範圍受限的 TOTP 不會建立通用的登入後自動 IP 授權；若範圍中選取了特定協定映射且登入後 IP 授權未停用，系統只會依對應通訊協定與對外連接埠授權目前來源 IP。建議將個人、家人、自動化及管理用途拆成不同憑據，方便個別撤銷與稽核。
+這項限制會同時套用至關聯的 Passkey、QQ、其他 OIDC 外部帳號及 LDAP／Active Directory 帳號。服務範圍受限的 TOTP 不會建立通用的登入後自動 IP 授權；若範圍中選取了特定協定映射且登入後 IP 授權未停用，系統只會依對應通訊協定與對外連接埠授權目前來源 IP。建議將個人、家人、自動化及管理用途拆成不同憑據，方便個別撤銷與稽核。
 
 `管理快捷登入` 可用來檢視或刪除關聯的 Passkey、檢視外部帳號綁定，以及產生有效時間 30 分鐘的綁定邀請。Passkey 必須由訪客在完成 TOTP 登入後，從狀態頁建立，無法直接在管理表格中建立。
 
@@ -41,5 +41,5 @@ TOTP 匯出檔包含可產生驗證碼的 secret、名稱及權限。匯入時�
 
 - [Passkey](/zh-tw/guide/passkey)
 - [綁定 QQ 快捷登入](/zh-tw/guide/qq-quick-login)
-- [外部帳號登入](/zh-tw/guide/oidc)
+- [外部帳號登入（OIDC / OAuth / LDAP）](/zh-tw/guide/oidc)
 - [驗證、工作階段與服務範圍](/zh-tw/guide/auth)

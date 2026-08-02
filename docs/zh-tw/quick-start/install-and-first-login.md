@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 原生 FPK 安裝與初始設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b6e745c3267459146e2902d348543e722b336b442a23575339165ce93c84e425
+translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
 ---
 
 # fnOS 原生 FPK 安裝與初始設定
@@ -65,7 +65,7 @@ Lite 的預設連接埠為 `8998 / 8997 / 8996 / 8999`，安裝精靈只允許 `
 
 - [TOTP 與驗證器 App](/zh-tw/guide/totp)
 - [登入模式與帳號密碼登入](/zh-tw/guide/password-login)
-- [外部帳號登入](/zh-tw/guide/oidc)
+- [外部帳號登入（OIDC / OAuth / LDAP）](/zh-tw/guide/oidc)
 - [綁定 QQ 快速登入](/zh-tw/guide/qq-quick-login)
 
 ### 3. 設定憑證與入口

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "グローバル IP からのサブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef889bf20
+translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ translationSourceHash: dd0abe9f5bd285c3dca81d8f2b3b556d9c1b03cbd5f81fa3c9aa47cef
 
 - DNS を管理できるドメイン（例：`example.com`）。
 - インターネット側の入口から fn-knock ゲートウェイへ到達できること。fnOS ネイティブ FPK、Docker Compose、OpenWrt、Linux、Synology DSM 7 SPK、Windows のデフォルトは `7999` です。以下では、これをまとめて「実際のゲートウェイポート」と呼びます。
-- TOTP、パスワード、パスキー、設定済み OIDC のうち、少なくとも 1 つの有効なログイン方法。
+- TOTP、パスワード、パスキー、設定済み OIDC または LDAP のうち、少なくとも 1 つの有効なログイン方法。
 - fn-knock を実行する機器から、公開対象のサービスへ接続できること。
 
 インターネット側の入口がない場合は、[NAT 越え：サブドメインルーティング](/ja/quick-start/reverse-proxy-mode)を使用してください。SSH やリモートデスクトップなど、サービス本来の TCP/UDP ポートを保護する場合は、[元のポートへの直接アクセス](/ja/quick-start/direct-mode)を参照してください。

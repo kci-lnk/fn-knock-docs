@@ -3,7 +3,7 @@ lang: en-US
 title: "Public IPv6 Access and Original-Port Authorization"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1b966bf0e5e777f72ccf476e1ed5a739fb1539a6681444f7926f3923585eaae7
+translationSourceHash: e94a3094af107a34487e1adfa1b17fbf62a7a905aa6fda0941106dfc65098208
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -42,7 +42,7 @@ Record the following recovery information before switching modes:
 7. From an external network, open the gateway entry point, for example `https://auth.example.com:<gateway-port>`, and sign in.
 8. Connect to the required original service port. Confirm that the current public IPv6 address is active in the IP authorization list.
 
-A TOTP credential, username/password account, Passkey, or OIDC credential with a restricted service scope does not create automatic IP authorization. This prevents a limited credential from expanding its privileges through the source address. To open original ports automatically in Direct mode, use a credential without service-scope restrictions or manually add the required IPv6 address / CIDR.
+A TOTP credential, username/password account, Passkey, OIDC, or LDAP credential with a restricted service scope does not create automatic IP authorization. This prevents a limited credential from expanding its privileges through the source address. To open original ports automatically in Direct mode, use a credential without service-scope restrictions or manually add the required IPv6 address / CIDR.
 
 ## Firewall verification sequence
 

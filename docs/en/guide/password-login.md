@@ -3,7 +3,7 @@ lang: en-US
 title: "Username and Password Sign-in"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2adfae371d51682b6ff5de4af1bde4ca4767c9acc2b7dd83daa46a6ecb1cd718
+translationSourceHash: 368f92ef1754cf324b51cbddd0e4d0bea8b0bc8263c2f4d3c65a5152e7064fdb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,10 +20,10 @@ After switching:
 
 - The sign-in page displays username and password fields;
 - Passkey, QQ, and other external account sign-in entries are hidden;
-- Existing sessions created through TOTP, Passkey, or OIDC are destroyed, and users must sign in again with a username and password;
+- Existing sessions created through TOTP, Passkey, OIDC, or LDAP are destroyed, and users must sign in again with a username and password;
 - Each account's service scope continues to apply when it accesses a Host or protected protocol mapping.
 
-To use TOTP, Passkey, QQ, or another OIDC provider again, switch back to `TOTP sign-in mode`. Before switching back, every account must be linked to a TOTP credential that still exists. Username/password sessions become invalid when the mode changes.
+To use TOTP, Passkey, QQ, another OIDC provider, or LDAP / Active Directory again, switch back to `TOTP sign-in mode`. Before switching back, every account must be linked to a TOTP credential that still exists. Username/password sessions become invalid when the mode changes.
 
 ## Create an Account
 

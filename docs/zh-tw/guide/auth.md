@@ -3,7 +3,7 @@ lang: zh-TW
 title: "身分驗證、工作階段與服務範圍"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f9be5fdf8b5b35d19bf5aa5fca2a14388120844148f0c1c043c619b547748f1a
+translationSourceHash: 791ef721a4a0bc8068038afb572be1434bf6f6222e38459e32d185db132aa9fe
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -32,7 +32,7 @@ fn-knock 的身分驗證用來保護閘道後方的服務，不等同於 Docker 
 
 | 模式 | 可用方式 | 適用情境 |
 | --- | --- | --- |
-| `TOTP 登入模式` | TOTP；完成綁定後可使用 Passkey、QQ 與其他外部帳號 | 個人使用，或需要硬體／生物辨識快速登入 |
+| `TOTP 登入模式` | TOTP；完成綁定後可使用 Passkey、OIDC／OAuth 或 LDAP／Active Directory 帳號 | 個人或小型團隊，或需要快速登入與企業目錄整合 |
 | `帳號密碼登入模式` | 使用者名稱與密碼 | 多人共用，且需要獨立帳號 |
 
 兩種模式可在 `驗證設定` 中切換。切換前，系統會檢查必要的密碼或 TOTP 是否已就緒；切換後，由未啟用方式建立的工作階段必須重新登入。
@@ -41,17 +41,17 @@ fn-knock 的身分驗證用來保護閘道後方的服務，不等同於 Docker 
 
 | 切換目標 | 將失效的工作階段 |
 | --- | --- |
-| 帳號密碼模式 | TOTP、Passkey 與 OIDC 工作階段 |
+| 帳號密碼模式 | TOTP、Passkey、OIDC 與 LDAP 工作階段 |
 | TOTP 模式 | 帳號密碼工作階段 |
 
 ## 憑據與權限的關係
 
-- TOTP 是可自訂名稱的身分憑據，可限制它能存取的子網域與協定映射；與其關聯的 Passkey、QQ 與其他 OIDC 登入方式會繼承相同範圍。
+- TOTP 是可自訂名稱的身分憑據，可限制它能存取的子網域與協定映射；與其關聯的 Passkey、OIDC／OAuth 與 LDAP／Active Directory 登入方式會繼承相同範圍。
 - 帳號密碼模式下的帳號也能設定服務範圍。
 - 服務範圍設為 `自訂` 時，權限視窗會分別列出受保護的子網域、內建選擇頁，以及已啟用驗證的 TCP／UDP 協定映射。未選取任何範圍項目時，該憑據無法進入任何受保護入口；內建選擇頁 `/__select__` 也必須單獨選取。
 - 對於開啟 `要求登入` 的 Host，有效的手動來源授權可獨立放行；登入後自動建立的 IP 授權，通常能讓同一來源繼續存取。自動授權不會覆蓋瀏覽器目前攜帶的服務範圍拒絕；沒有可用的來源授權時，閘道才會繼續依工作階段與憑據範圍判斷。
 - 登入後的自動 IP 授權由 `系統設定 → 工作階段` 控制。它是以來源 IP 放行的路徑，不是憑據範圍控制；若手動允許清單設得過寬，該來源即使未透過瀏覽器登入，也可能直接進入受保護的 Host。
-- 服務範圍受限的登入憑據不會建立可放行任意 Host 或原始連接埠的通用自動 IP 授權，以免來源 IP 擴大憑據範圍。這包括受限的 TOTP、其關聯的 Passkey／OIDC，以及服務範圍受限的帳號密碼帳號；這些憑據不適合用於直連模式的自動放行。
+- 服務範圍受限的登入憑據不會建立可放行任意 Host 或原始連接埠的通用自動 IP 授權，以免來源 IP 擴大憑據範圍。這包括受限的 TOTP、其關聯的 Passkey／OIDC／LDAP，以及服務範圍受限的帳號密碼帳號；這些憑據不適合用於直連模式的自動放行。
 - 自訂範圍可以例外選取特定協定映射。登入後 IP 授權未停用時，系統會依精確的 `TCP/UDP + 對外連接埠` 與目前來源 IP 建立範圍內授權，有效時間沿用工作階段設定；它不會放行未選取的協定映射，也不會變成通用 IP 允許清單。
 
 ## 管理介面密碼不是閘道登入憑證
@@ -73,7 +73,7 @@ Docker、OpenWrt 等部署方式會先要求設定管理介面密碼。此密碼
 
 ## 進階驗證不是登入方式
 
-當請求命中來源、路徑、Header、Query 或 HTTP 方法規則時，子網域進階驗證會簽發僅限目前 Host 使用的臨時憑據。它不會建立系統登入工作階段、不會產生登入後 IP 授權，也不會繼承或修改 TOTP、Passkey、OIDC 與帳號密碼的服務範圍。
+當請求命中來源、路徑、Header、Query 或 HTTP 方法規則時，子網域進階驗證會簽發僅限目前 Host 使用的臨時憑據。它不會建立系統登入工作階段、不會產生登入後 IP 授權，也不會繼承或修改 TOTP、Passkey、OIDC、LDAP 與帳號密碼的服務範圍。
 
 這是一條獨立的放行路徑：即使目前瀏覽器工作階段的服務範圍不包含該 Host，只要請求符合進階驗證規則，仍可取得目前 Host 的臨時存取權。因此，不要用它替既有憑據「再加一道限制」；若要限縮憑據範圍，應直接修改該憑據本身的服務範圍。規則設定請參閱[子網域進階驗證](/zh-tw/guide/advanced-auth)。
 
@@ -82,13 +82,13 @@ Docker、OpenWrt 等部署方式會先要求設定管理介面密碼。此密碼
 1. 設定一種主要登入方式，並準備至少一組備援憑據。
 2. 為需要隔離的人員或裝置建立獨立憑據。
 3. 替每組憑據設定可存取的子網域範圍。
-4. 再替常用裝置綁定 Passkey、QQ 或其他外部帳號登入。
+4. 再替常用裝置綁定 Passkey，或將 OIDC／OAuth、LDAP／Active Directory 帳號綁定至對應的 TOTP。
 5. 最後調整工作階段有效時間、`記住我` 與登入後 IP 授權原則。
 
 - [登入模式與帳號密碼登入](/zh-tw/guide/password-login)
 - [TOTP 與驗證器](/zh-tw/guide/totp)
 - [Passkey](/zh-tw/guide/passkey)
 - [綁定 QQ 快速登入](/zh-tw/guide/qq-quick-login)
-- [外部帳號登入](/zh-tw/guide/oidc)
+- [外部帳號登入（OIDC / OAuth / LDAP）](/zh-tw/guide/oidc)
 - [子網域進階驗證](/zh-tw/guide/advanced-auth)
 - [工作階段、IP 授權與 IP 漂移](/zh-tw/guide/session-management)

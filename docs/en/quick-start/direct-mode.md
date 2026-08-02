@@ -3,7 +3,7 @@ lang: en-US
 title: "Direct Access on Original Ports"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ae2a72f555539a11ca3196288ab56a9c943148d4350e55e38b893e88e87879af
+translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f27002602
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -45,7 +45,7 @@ fn-knock controls only the network perimeter. Keep SSH, Remote Desktop, and ever
 Complete these steps before switching modes:
 
 - Record the admin endpoint, gateway endpoint, and every port that needs protection.
-- Confirm that at least one of TOTP, password login, Passkey, or OIDC can sign in successfully.
+- Confirm that at least one of TOTP, password login, Passkey, OIDC, or LDAP can sign in successfully.
 - Back up the current run mode, routes, and firewall configuration.
 - Keep LAN or device-console access available as a recovery path.
 
@@ -84,7 +84,7 @@ Open `System settings → Sessions` and choose how IP authorization works after 
 
 Direct mode protects network ports. If automatic IP authorization is disabled, signing in through the browser does not automatically open SSH or Remote Desktop.
 
-A sign-in credential with a restricted service scope never creates automatic IP authorization. This applies to a scoped TOTP, any Passkey or OIDC identity linked to it, and username/password accounts with a restricted service scope. This prevents a limited credential from gaining broader access through its source IP. For Direct mode, use a credential without service-scope restrictions or manually add the current public IP or CIDR, then retest the port from an external network.
+A sign-in credential with a restricted service scope never creates automatic IP authorization. This applies to a scoped TOTP, any Passkey, OIDC, or LDAP identity linked to it, and username/password accounts with a restricted service scope. This prevents a limited credential from gaining broader access through its source IP. For Direct mode, use a credential without service-scope restrictions or manually add the current public IP or CIDR, then retest the port from an external network.
 
 ## 4. Configure the domain, DDNS, and certificate
 

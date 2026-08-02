@@ -3,7 +3,7 @@ lang: en-US
 title: "TOTP Authenticator Apps"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0abfe75a5862233be3e6af3aeea4c4c59466cee80b2b67cb50157480a99cd0f7
+translationSourceHash: 20d6170c8fa0828578e82301a734592617bbc47361c9075ff630426d161eb366
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,7 +25,7 @@ Do not keep your only TOTP on a single phone. A lost device, operating-system re
 
 In the TOTP list, `Permission` can be set to `All scopes` or `Custom scopes`. The custom list groups application Hosts that require sign-in, the built-in select page, and authenticated TCP / UDP protocol mappings. Entries removed from the mappings but retained in the permission are marked `Unavailable`. When the custom scope is empty, the credential cannot access any protected entry point.
 
-This restriction also applies to linked Passkeys, QQ accounts, and other OIDC external accounts. A TOTP with a restricted service scope does not create general automatic post-login IP authorization. If the scope includes a specific protocol mapping and post-login IP authorization is enabled, the system authorizes the current source IP only for that protocol and external port. Separate credentials for personal, family, automation, and administrative use so that each can be revoked and audited independently.
+This restriction also applies to linked Passkeys, QQ accounts, other OIDC external accounts, and LDAP / Active Directory accounts. A TOTP with a restricted service scope does not create general automatic post-login IP authorization. If the scope includes a specific protocol mapping and post-login IP authorization is enabled, the system authorizes the current source IP only for that protocol and external port. Separate credentials for personal, family, automation, and administrative use so that each can be revoked and audited independently.
 
 `Manage quick login` lets you view or remove linked Passkeys, inspect external-account bindings, and generate a binding invite valid for 30 minutes. Passkeys themselves are created on the visitor status page after TOTP sign-in, not directly in the admin table.
 
@@ -41,5 +41,5 @@ Export files, QR codes, and manual secrets are all equivalent to sign-in credent
 
 - [Passkeys](/en/guide/passkey)
 - [Link QQ for Quick Sign-in](/en/guide/qq-quick-login)
-- [External Identity Providers (OIDC / OAuth)](/en/guide/oidc)
+- [External Identity Providers (OIDC / OAuth / LDAP)](/en/guide/oidc)
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)
