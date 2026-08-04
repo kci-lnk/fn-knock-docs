@@ -29,7 +29,7 @@
 
 ## 内容范围
 
-- 安装与首次登录：fnOS、Docker、OpenWrt、Linux、Synology DSM 和 Windows
+- 安装与首次登录：fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM 和 Windows
 - 公网子域访问、反向代理模式、直连授权与端口规划
 - 密码、TOTP、Passkey、OIDC、会话与访问策略
 - HTTPS 证书、DDNS、Cloudflared、FRP、WAF、白名单与请求日志

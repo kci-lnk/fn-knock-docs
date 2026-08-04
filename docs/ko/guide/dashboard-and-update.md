@@ -3,7 +3,7 @@ lang: ko-KR
 title: "대시보드 및 시스템 업데이트"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
+translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a4f99dd8
 ---
 
 # 대시보드 및 시스템 업데이트
@@ -50,6 +50,7 @@ translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea1383
 | Docker Compose | 버전 확인 및 릴리스 노트 보기 | 릴리스 이미지를 가져오고 컨테이너 다시 생성 |
 | OpenWrt | 버전 확인 및 릴리스 노트 보기 | 패키지 관리자와 아키텍처에 맞는 `.ipk` 또는 `.apk` 설치 |
 | Linux(systemd / OpenRC) | 버전 확인 및 릴리스 노트 보기 | `sudo knock update` 실행 |
+| macOS 13+(Intel / Apple Silicon) | 버전 확인 및 릴리스 노트 보기 | `sudo knock update` 실행 |
 | Synology DSM 7 SPK | 버전 확인 및 릴리스 노트 보기 | 아키텍처에 맞는 SPK를 내려받아 DSM 패키지 센터에서 수동 업데이트 |
 | Windows x86_64 | 버전 확인 및 릴리스 노트 보기 | `Knock Windows 관리 프로그램` 또는 트레이 메뉴에서 업데이트 확인 및 설치 |
 
@@ -83,6 +84,16 @@ sudo knock update
 ```
 
 이 명령은 로컬 버전과 온라인 버전을 비교하고 릴리스 패키지를 내려받아 검증한 뒤 버전 디렉터리에 배포합니다. 버전이 같아도 재설치를 확인하여 진행할 수 있습니다. 새 버전의 상태 확인에 실패하면 기존 프로그램, 서비스 스크립트 및 시작·중지 상태를 복원합니다. 보관된 이전 버전으로 돌아가려면 `sudo knock rollback`을 실행합니다. 업데이트 전에는 `/etc/fn-knock`와 `/var/lib/fn-knock`도 백업합니다.
+
+## macOS 업데이트
+
+터미널에서 실행합니다.
+
+```bash
+sudo knock update
+```
+
+현재 Mac 아키텍처용 패키지를 내려받아 검증하고 버전을 전환한 뒤 LaunchDaemon과 관리 서비스를 확인합니다. 새 버전이 준비되지 않으면 버전 링크, 관리 명령, 서비스 설정 및 이전 실행 상태를 복원합니다. 보관된 이전 버전으로 돌아가려면 `sudo knock rollback`을 사용합니다. 먼저 애플리케이션 백업을 내보내고 경로와 제거 동작은 [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
 
 ## OpenWrt 업데이트
 
@@ -129,5 +140,6 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 - [요청 로그](/ko/guide/request-logs)
 - [Docker 배포](/ko/quick-start/docker-deployment)
 - [OpenWrt 배포](/ko/quick-start/openwrt-deployment)
+- [macOS 배포(Intel / Apple Silicon)](/ko/quick-start/macos-deployment)
 - [Synology DSM 7 배포](/ko/quick-start/synology-deployment)
 - [Windows x86_64 배포](/ko/quick-start/windows-deployment)

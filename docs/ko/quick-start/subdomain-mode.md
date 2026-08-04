@@ -3,7 +3,7 @@ lang: ko-KR
 title: "공인 IP 직접 연결: 서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
+translationSourceHash: d63362dfbc49d6c507936f9557dec1c59c3d85024d497b4d75ebe25d21c9ca64
 ---
 
 # 공인 IP 직접 연결: 서브도메인 라우팅
@@ -20,7 +20,7 @@ translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad6662
 다음 항목이 필요합니다.
 
 - DNS를 관리할 수 있는 도메인(예: `example.com`)
-- 인터넷 엔드포인트에서 fn-knock 게이트웨이에 도달할 수 있는 경로. fnOS 네이티브 FPK, Docker Compose, OpenWrt, Linux, Synology DSM 7 SPK, Windows는 기본적으로 `7999`를 사용합니다. 아래에서는 이를 모두 '실제 게이트웨이 포트'라고 부릅니다.
+- 인터넷 엔드포인트에서 fn-knock 게이트웨이에 도달할 수 있는 경로. fnOS 네이티브 FPK, Docker Compose, OpenWrt, Linux, macOS, Synology DSM 7 SPK, Windows는 기본적으로 `7999`를 사용합니다. 아래에서는 이를 모두 '실제 게이트웨이 포트'라고 부릅니다.
 - 사용할 수 있는 로그인 방식 하나 이상: TOTP, 비밀번호, 패스키 또는 구성된 OIDC / LDAP
 - fn-knock가 실행되는 기기에서 서비스에 접속할 수 있는 네트워크 경로
 
@@ -33,6 +33,7 @@ translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad6662
 | fnOS 네이티브 FPK | 완전 지원 | 자동 HTTPS, 호스트 방화벽, Smart Connect 사용 가능 |
 | Docker Compose | 서브도메인 라우팅 지원 | 호스트 방화벽을 관리하지 않으며 Smart Connect와 자동 HTTPS를 제공하지 않음 |
 | OpenWrt 패키지 | 서브도메인 라우팅 지원 | fn-knock가 호스트 방화벽을 관리하거나 Smart Connect와 자동 HTTPS를 제공하지 않음. 포트 허용과 LAN 분할 DNS는 OpenWrt에서 관리 |
+| macOS 13+ | 서브도메인 라우팅 지원 | 관리 패널은 루프백 전용. `iptables` 또는 macOS 방화벽을 관리하지 않으므로 인터넷 인바운드 규칙은 관리자가 설정 |
 | Synology DSM 7 SPK | 서브도메인 라우팅 지원 | 직접 연결, 호스트 방화벽 관리, Smart Connect 미지원. DSM 방화벽과 라우터/NAT에서 인바운드 경로 관리 |
 | Windows x86_64 | 공인 IP 게이트웨이로 사용 가능 | `7999`가 기본적으로 모든 인터페이스에서 수신. Windows 방화벽 프로필, 라우터/NAT, IPv6 방화벽, ISP 인바운드 정책을 직접 확인해야 하며 직접 연결 접근 허용은 미지원 |
 

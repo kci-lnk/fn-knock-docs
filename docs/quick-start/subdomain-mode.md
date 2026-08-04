@@ -12,7 +12,7 @@
 需要准备：
 
 - 一个可管理 DNS 的域名，例如 `example.com`。
-- 公网入口能够到达 fn-knock 网关。飞牛原生 FPK、Docker Compose、OpenWrt、Linux、群晖 DSM 7 SPK 和 Windows 默认使用 `7999`。以下将它统称为“实际网关端口”。
+- 公网入口能够到达 fn-knock 网关。飞牛原生 FPK、Docker Compose、OpenWrt、Linux、macOS、群晖 DSM 7 SPK 和 Windows 默认使用 `7999`。以下将它统称为“实际网关端口”。
 - 至少一种可用的登录方式：TOTP、密码、Passkey、已配置的 OIDC 或 LDAP。
 - fn-knock 所在设备能够访问业务服务。
 
@@ -25,6 +25,7 @@
 | 飞牛 fnOS FPK | 完整支持 | 可使用自动 HTTPS、主机防火墙和智能连接 |
 | Docker Compose | 支持子域路由 | 不管理宿主机防火墙；不提供智能连接和自动 HTTPS |
 | OpenWrt 插件 | 支持子域路由 | fn-knock 不管理宿主机防火墙，也不提供智能连接或自动 HTTPS；端口放行和局域网 DNS 分流由 OpenWrt 管理 |
+| macOS 13+ | 支持子域路由 | 管理面板仅限本机；不调用 `iptables` 或管理 macOS 防火墙，公网入站规则由管理员配置 |
 | 群晖 DSM 7 SPK | 支持子域路由 | 不支持直连、宿主机防火墙管理和智能连接；通过 DSM 防火墙、路由器/NAT 管理入站路径 |
 | Windows x86_64 | 可作为公网网关 | `7999` 默认监听全部接口；需自行确认 Windows 防火墙配置文件、路由器/NAT、IPv6 防火墙和运营商入站策略，不支持直连授权 |
 

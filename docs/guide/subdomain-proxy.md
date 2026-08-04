@@ -177,8 +177,8 @@ Target 包含路径时，网关会保留这段基础路径并在其后拼接访�
 
 ## 平台边界
 
-- Host 路由可在飞牛 FPK、Docker、OpenWrt、Linux、群晖 DSM 7 SPK 和 Windows 中使用；实际公网可达性仍取决于各平台的端口发布与网络链路。
-- 自动写入宿主机防火墙和智能连接只由具备对应运行时能力的飞牛标准 FPK 提供；Docker、OpenWrt、Linux、群晖和 Windows 不提供这些能力。
+- Host 路由可在飞牛 FPK、Docker、OpenWrt、Linux、macOS、群晖 DSM 7 SPK 和 Windows 中使用；实际公网可达性仍取决于各平台的端口发布与网络链路。
+- 自动写入宿主机防火墙和智能连接只由具备对应运行时能力的飞牛标准 FPK 提供；Docker、OpenWrt、Linux、macOS、群晖和 Windows 不提供这些能力。
 - 协议映射只在公网直连子域模式显示。Docker 即使额外发布端口，也不会由 fn-knock 管理宿主机防火墙。
 - OpenWrt 中的端口放行和局域网 DNS 分流由 OpenWrt 自身管理；fn-knock 不提供直连、宿主机防火墙管理或智能连接，也不提供 SSH 安全、Web 终端或应用内 FPK 更新。
 - fn-knock 不会自动关闭上游服务原有的公网监听，也不能替代上游更新、备份和最小权限配置。

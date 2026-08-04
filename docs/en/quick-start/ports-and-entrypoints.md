@@ -3,14 +3,14 @@ lang: en-US
 title: "Ports, Endpoints, and URL Paths"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: eb6e7fb415215759b38b934916bd7291885156f04a7e7661e4783c3fde9c0850
+translationSourceHash: 2c2bb6d85e26ff46bef2299c61913894ee9279c23a43099da9cfa6bbf8822d0e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Ports, Endpoints, and URL Paths
 
-`fn-knock` exposes two user-facing endpoints: the admin endpoint for configuration and the gateway endpoint for application traffic. The native fnOS FPK opens the admin interface from its desktop icon. Docker, OpenWrt, and Linux use `7991` for the admin panel by default. The Synology DSM 7 SPK can be administered only through its package entry on the DSM desktop. On Windows, the `fn-knock Windows Manager` opens local `127.0.0.1:7991` in the system browser; it is not a LAN or public admin endpoint. The gateway normally uses `7999`.
+`fn-knock` exposes two user-facing endpoints: the admin endpoint for configuration and the gateway endpoint for application traffic. The native fnOS FPK opens the admin interface from its desktop icon. Docker, OpenWrt, and Linux use `7991` for the admin panel by default. The Synology DSM 7 SPK can be administered only through its package entry on the DSM desktop. On macOS and Windows, the admin page is fixed to local `127.0.0.1:7991`; it is not a LAN or public admin endpoint. The gateway normally uses `7999`.
 
 Ports `7998`, `7997`, and `7996` are internal component ports and must not be exposed directly to the internet.
 
@@ -18,7 +18,7 @@ Ports `7998`, `7997`, and `7996` are internal component ports and must not be ex
 
 | Port | Role | Default use |
 | --- | --- | --- |
-| `7991` | Admin panel | Default admin endpoint for Docker, OpenWrt, and Linux; loopback-only access on Windows |
+| `7991` | Admin panel | Default admin endpoint for Docker, OpenWrt, and Linux; loopback-only access on macOS and Windows |
 | `7998` | Admin backend | Target of the native fnOS FPK's desktop CGI proxy; also used internally by Docker |
 | `7997` | Authentication service | Handles sign-in, sign-out, Passkeys, and bot challenges |
 | `7996` | Gateway management port | Internal communication between the admin backend and Go gateway |
@@ -34,6 +34,7 @@ Ports can be changed during installation. When troubleshooting, use the deployed
 | Docker Compose | `7991` | `7999` | Only these two ports are published by default |
 | OpenWrt | `7991` | `7999` | Uses `17998` for the internal admin backend by default |
 | Linux (systemd / OpenRC) | `7991` | `7999` | Installation and `sudo knock config` can change the ports; `7998`, `7997`, and `7996` listen on localhost only |
+| macOS 13+ | Local `127.0.0.1:7991` | `7999` | Native Intel / Apple Silicon packages; internal ports are loopback-only and the macOS firewall is not modified |
 | Synology DSM 7 SPK | Package entry on the DSM desktop | `7999` | Does not expose `7991`; DSM CGI proxies to the internal admin service, while `7998`, `7997`, and `7996` listen on localhost only |
 | Windows x86_64 | Manager opens `127.0.0.1:7991` | `7999`, listening on `0.0.0.0` and `::` by default | Admin access is forced to the local machine; the installer adds static application rules only for the Domain and Private Windows Firewall profiles |
 
@@ -67,13 +68,14 @@ As a result:
 - The native fnOS FPK can manage the host firewall and provides Direct mode and Smart Connect.
 - OpenWrt can run Host/path routing, Protocol mappings, and built-in tunnels, but fn-knock does not manage the OpenWrt firewall or provide Direct mode or Smart Connect. Configure port access and split-horizon LAN DNS in OpenWrt itself. It also does not provide SSH security, a web terminal, or in-app FPK updates.
 - The Synology DSM 7 SPK registers `7999` as a public gateway port in the DSM firewall UI, but the package cannot modify the host firewall itself. It does not support Direct mode, Smart Connect, the web terminal, or SSH security.
+- The macOS admin panel is loopback-only, while `7999` can serve application traffic. It does not invoke `iptables`, manage the macOS firewall, or support Direct mode, Smart Connect, the web terminal, or SSH security. Manually allow protocol-mapping ports.
 - On Windows, `7999` listens on all interfaces by default. The installer's static `FnKnock Gateway` application rule applies only to the Domain and Private Windows Firewall profiles. Windows still does not support Direct mode, in-app host firewall management, Smart Connect, built-in tunnels, the web terminal, or SSH security. Before enabling public access, check the router or NAT, IPv6 firewall, ISP policy, and third-party security software.
 
 With Host or path routing, `fn-knock` protects only requests that actually pass through the gateway. If an upstream service still listens on an address reachable from the internet or LAN, users may bypass the gateway and connect to it directly. Direct mode is the exception: on a supported host firewall, it temporarily opens original ports only for a source IP authorized after sign-in. Do not add a separate broad public allow rule.
 
 ## Trace the request path when troubleshooting
 
-If the native fnOS FPK admin page does not open, first check the desktop icon, app process, and `7998` backend. For Docker or OpenWrt, check `7991`, the bind address, and published ports. If an application domain does not open, check the following in order:
+If the native fnOS FPK admin page does not open, first check the desktop icon, app process, and `7998` backend. For Docker or OpenWrt, check `7991`, the bind address, and published ports. On macOS, run `sudo knock status` and `sudo knock logs`, and connect from the local Mac through `127.0.0.1`. If an application domain does not open, check the following in order:
 
 1. Whether external traffic reaches the actual gateway port (`7999` by default).
 2. Whether the request `Host` or compatibility path matches a mapping.

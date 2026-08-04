@@ -3,14 +3,14 @@ lang: en-US
 title: "Install and Set Up the Native fnOS FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
+translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561bf5aa442
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Install and Set Up the Native fnOS FPK
 
-This page covers only the native `fn-knock` FPK for fnOS. For other platforms, see [Docker deployment](/en/quick-start/docker-deployment), [OpenWrt deployment](/en/quick-start/openwrt-deployment), [Linux deployment (systemd / OpenRC)](/en/quick-start/linux-deployment), [Synology DSM 7 deployment](/en/quick-start/synology-deployment), or [Windows x86_64 deployment](/en/quick-start/windows-deployment).
+This page covers only the native `fn-knock` FPK for fnOS. For other platforms, see [Docker deployment](/en/quick-start/docker-deployment), [OpenWrt deployment](/en/quick-start/openwrt-deployment), [Linux deployment (systemd / OpenRC)](/en/quick-start/linux-deployment), [macOS deployment (Intel / Apple Silicon)](/en/quick-start/macos-deployment), [Synology DSM 7 deployment](/en/quick-start/synology-deployment), or [Windows x86_64 deployment](/en/quick-start/windows-deployment).
 
 ## Before you install
 

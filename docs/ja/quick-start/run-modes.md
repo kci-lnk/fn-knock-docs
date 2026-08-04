@@ -3,7 +3,7 @@ lang: ja-JP
 title: "実行モードを選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2b8bea7d45df0da88d83727dc6ffc8fa6c15b5fb018fbf5611712fde669ef536
+translationSourceHash: 68e25b989a6064e569583a9ed66efda20b930bd16039d4fddd2d42836705a4cc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -15,6 +15,8 @@ translationSourceHash: 2b8bea7d45df0da88d83727dc6ffc8fa6c15b5fb018fbf5611712fde6
 Web サービスには Host ルーティングを基本とします。パスモードは、既存のパス形式の入口を維持する場合や、移行できないアプリのために残された互換モードです。新規構成には推奨しません。
 
 このページにあるアプリ内トンネルの手順は、管理画面から実際に FRP または Cloudflared を利用できるデプロイ方式だけが対象です。Windows の `7999` はデフォルトで全インターフェースを待ち受けるため、グローバル IP からの直接公開や自前で管理するトンネルのオリジンにできます。ただし、FRP、Cloudflared、直接接続の IP 許可、ホストファイアウォールの動的管理は内蔵していません。外部から到達できるかどうかは、Windows ファイアウォールのプロファイル、ルーター / NAT、IPv6、ISP のポリシーにも依存します。詳しくは [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)を参照してください。
+
+macOS は内蔵 FRP / Cloudflared を提供しますが、直接接続の許可、`iptables`、macOS ホストファイアウォール管理、スマート接続、Web ターミナル、SSH セキュリティには対応しません。更新には `sudo knock update` を使用します。[macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
 
 ## 1. ネットワーク構成を選ぶ
 
@@ -99,7 +101,7 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - パスモードからサブドメインルーティングへ切り替えると、パスマッピングは非表示になります。グローバル IP から直接公開するサブドメインモードへ切り替える際は、パスルールを削除するか画面で確認されます。
 - リバースプロキシモードのサブドメインマッピングとパスモードは、どちらも FRP / Cloudflared を利用できます。リバースプロキシモードから切り替えると、実行中のトンネルを停止しようとします。
 - グローバル IP から直接公開するサブドメインモードを終了すると、プロトコルマッピング機能が無効になりリスナーも停止しますが、保存済みのルールは保持されます。このモードへ戻って機能を有効にすると復元できます。
-- 直接接続モードはホストのファイアウォールに依存します。Docker、Synology DSM 7 SPK、Windows、ホストを管理できないデプロイ方式では選択できません。
+- 直接接続モードはホストのファイアウォールに依存します。Docker、macOS、Synology DSM 7 SPK、Windows、ホストを管理できないデプロイ方式では選択できません。
 - Docker はホストのファイアウォールを書き換えず、スマート接続にも対応しません。OpenWrt も fn-knock によるホストファイアウォール管理、直接接続モード、スマート接続に対応せず、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新も提供しません。ポート許可と LAN のスプリット DNS は OpenWrt 側で管理します。
 - Windows は、直接接続の IP 許可、アプリ内からのホストファイアウォール管理、スマート接続、内蔵 FRP / Cloudflared、Web ターミナル、SSH セキュリティに対応していません。Web の更新画面から Windows 版を更新することもできません。
 - Synology DSM 7 SPK は内蔵 FRP / Cloudflared に対応しますが、直接接続の IP 許可、ホストのファイアウォール管理、スマート接続、Web ターミナル、SSH セキュリティ、Web 画面からの更新には対応していません。

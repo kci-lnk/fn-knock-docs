@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Deployment and Access Pattern"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
+translationSourceHash: 26293c364e63399f0fc92b735b069246feb7d6d52a341fbf58d6de1e9f23bfe9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -22,10 +22,11 @@ fn-knock consolidates ingress and places authentication in front of your service
 | Docker Compose | `7991` | `7999` | A NAS, home server, or general-purpose Docker host | No Direct mode, host firewall management, automatic HTTPS, SSH security, Smart Connect, or web terminal |
 | OpenWrt package | `Services → Knock`; default port `7991` | `7999` | A primary router, x86 router appliance, or downstream gateway | No Direct mode, host-firewall management, Smart Connect, automatic HTTPS, SSH security, web terminal, or in-app FPK updates |
 | [Linux (systemd / OpenRC)](/en/quick-start/linux-deployment) | `7991` | `7999` | A standard Linux server, VPS, or self-managed host | Requires root and a running systemd or OpenRC init system; the administrator manages the host firewall |
+| [macOS 13+ (Intel / Apple Silicon)](/en/quick-start/macos-deployment) | Local `127.0.0.1:7991` | `7999` | An Intel or Apple Silicon Mac | Unsigned and not notarized; no Direct mode, `iptables`, host-firewall management, Smart Connect, SSH security, or web terminal |
 | [Synology DSM 7 x86_64 / ARM SPK](/en/quick-start/synology-deployment) | Package entry on the DSM desktop | `7999` | An Intel, AMD, or ARM NAS running DSM 7 | No Direct mode, host firewall management, Smart Connect, web terminal, or SSH security; updates are installed through Package Center |
 | [Windows x86_64](/en/quick-start/windows-deployment) | Manager opens local `127.0.0.1:7991` | `7999`, listening on all interfaces by default | A Windows service managed from a local system-tray app | Firewall and NAT still require manual setup; no Direct mode authorization, built-in FRP / Cloudflared, Smart Connect, web terminal, or SSH security |
 
-Docker, OpenWrt, Linux, and Windows deployments require a separate panel password for the admin endpoint. That password protects the admin panel and is unrelated to the TOTP, username and password, or Passkey used at the gateway.
+Docker, OpenWrt, Linux, macOS, and Windows deployments require a separate panel password for the admin endpoint. That password protects the admin panel and is unrelated to the TOTP, username and password, or Passkey used at the gateway.
 
 If the app on an fnOS device is named `Knock Lite`, it is a native non-root package, not a Docker deployment, and does not have the full host permissions of the standard FPK in the table. Lite supports Host proxying, authentication, DDNS, certificates, WAF, built-in FRP / Cloudflared, and monitoring. It does not support Direct mode and the host firewall, Smart Connect, system clock sync, automatic HTTPS, fnOS certificate-store sync, Web Terminal, FN Connect WAF ingress, or in-app updates. Here, “automatic HTTPS” means the standard-port public-ingress helper used when the ISP and inbound path allow TCP `80 / 443`; it does not mean Lite lacks certificates or HTTPS. See [fnOS App Store Lite vs. the Standard FPK](/en/quick-start/fpk-lite-vs-standard) for the complete boundary and migration procedure.
 
@@ -35,6 +36,7 @@ Installation guides:
 - Docker: [Deploy with Docker Compose](/en/quick-start/docker-deployment)
 - OpenWrt: [Deploy on OpenWrt](/en/quick-start/openwrt-deployment)
 - Linux: [Deploy on Linux (systemd / OpenRC)](/en/quick-start/linux-deployment)
+- macOS: [Deploy on macOS (Intel / Apple Silicon)](/en/quick-start/macos-deployment)
 - Synology: [Deploy on Synology DSM 7 (x86_64 / ARM)](/en/quick-start/synology-deployment)
 - Windows: [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment)
 
@@ -145,5 +147,6 @@ Sign-in credentials can also restrict which subdomains a user may access. Advanc
 | Users must access original ports such as `5666` or `22` after signing in through the browser | [Direct Access on Original Ports](/en/quick-start/direct-mode) |
 | fn-knock is not installed yet, or the admin and gateway endpoints are unclear | [Install and Set Up the Native fnOS FPK](/en/quick-start/install-and-first-login) |
 | You are deploying and maintaining fn-knock locally on Windows x86_64 | [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment) |
+| You are deploying and maintaining fn-knock on an Intel or Apple Silicon Mac | [Deploy on macOS (Intel / Apple Silicon)](/en/quick-start/macos-deployment) |
 
 For any deployment with an external gateway endpoint, perform final validation over a real external connection such as cellular data. The gateway may trust LAN and local sources, so a LAN test cannot validate internet-facing authentication. Although Windows listens on all interfaces on `7999` by default, you must still verify the active Windows Firewall profile, router or NAT configuration, IPv6 firewall, and ISP inbound policy.

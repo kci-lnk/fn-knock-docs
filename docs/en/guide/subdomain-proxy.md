@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8ad9798669d6a8cb4b107ac5a17be8552fbb2598160b82246211aa5dbf4a5fc4
+translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -187,8 +187,8 @@ None of these features changes the fact that the Host is the primary routing key
 
 ## Platform Boundaries
 
-- Host routing works on fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK, and Windows. Actual public reachability still depends on each platform's published ports and network path.
-- Automatic host-firewall changes and Smart Connect are provided only by the standard fnOS FPK runtime with the matching capabilities. Docker, OpenWrt, Linux, Synology, and Windows do not provide them.
+- Host routing works on fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows. Actual public reachability still depends on each platform's published ports and network path.
+- Automatic host-firewall changes and Smart Connect are provided only by the standard fnOS FPK runtime with the matching capabilities. Docker, OpenWrt, Linux, macOS, Synology, and Windows do not provide them.
 - Protocol mappings appear only in direct-public `Subdomain mode`. Even if extra ports are published for a Docker container, fn-knock does not manage the host firewall.
 - OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, or Smart Connect there, nor does it provide SSH Security, Web Terminal, or in-app FPK updates.
 - fn-knock does not automatically close an upstream service's existing public listener and cannot replace upstream updates, backups, or least-privilege configuration.

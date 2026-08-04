@@ -27,7 +27,7 @@ features:
     details: TOTP、パスキー、パスワード、外部 IdP に対応し、セッション、IP 許可リスト、WAF、リクエストログも利用できます。
     link: /ja/guide/auth
   - title: 機器とネットワーク構成に合わせて導入
-    details: fnOS、Docker、OpenWrt、Linux、Synology DSM、Windows に対応し、FRP や Cloudflare Tunnel とも組み合わせられます。
+    details: fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM、Windows に対応し、FRP や Cloudflare Tunnel とも組み合わせられます。
     link: /ja/quick-start/deployment-options
 ---
 
@@ -35,7 +35,7 @@ features:
 
 次の順序でまず 1 つのサービスを接続し、経路全体を確認してから他のサービスを追加します。
 
-1. fnOS、Docker、OpenWrt、Linux、Synology DSM、Windows から環境を選び、[インストール](/ja/quick-start/deployment-options)を完了します。
+1. fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM、Windows から環境を選び、[インストール](/ja/quick-start/deployment-options)を完了します。
 2. 自宅回線に合わせて、[公開 IP によるサブドメインルーティング](/ja/quick-start/subdomain-mode)または [FRP / Cloudflare Tunnel による NAT 越え](/ja/quick-start/reverse-proxy-mode)を選びます。
 3. 認証を設定します。復旧可能な [TOTP 認証アプリ](/ja/guide/totp)を 1 つ残し、必要に応じてパスキーや外部 IdP を追加します。
 4. テスト用サービスを 1 つ登録して [TLS 証明書](/ja/guide/ssl)を設定し、モバイル回線からログインとアクセスの全工程を確認します。

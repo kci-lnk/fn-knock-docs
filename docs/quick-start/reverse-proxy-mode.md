@@ -18,7 +18,7 @@
 - 至少一种可用的登录方式。
 - fn-knock 所在设备能够访问业务服务。
 
-飞牛 FPK、Docker、OpenWrt、Linux 和群晖 DSM 7 SPK 都可使用应用内隧道。Windows x86_64 不提供内置 FRP / Cloudflared；若在同一台 Windows 主机自行运行隧道客户端，建议回源本机 `127.0.0.1:7999`，其安装与运维不由 fn-knock 管理。Docker 中的 `127.0.0.1` 指容器自身；上游在宿主机或局域网其他设备时，应填写容器可访问的地址。
+飞牛 FPK、Docker、OpenWrt、Linux、macOS 和群晖 DSM 7 SPK 都可使用应用内隧道。Windows x86_64 不提供内置 FRP / Cloudflared；若在同一台 Windows 主机自行运行隧道客户端，建议回源本机 `127.0.0.1:7999`，其安装与运维不由 fn-knock 管理。Docker 中的 `127.0.0.1` 指容器自身；上游在宿主机或局域网其他设备时，应填写容器可访问的地址。
 
 ## 请求路径
 
@@ -26,7 +26,7 @@
 
 1. `auth.example.com` 或 `nas.example.com` 的公网入口。
 2. FRP 或 Cloudflared 隧道。
-3. fn-knock 的实际网关端口。飞牛原生 FPK、Docker Compose、OpenWrt、Linux、群晖 DSM 7 SPK 和 Windows 默认使用 `7999`。Windows 自管隧道优先回源同机回环地址。
+3. fn-knock 的实际网关端口。飞牛原生 FPK、Docker Compose、OpenWrt、Linux、macOS、群晖 DSM 7 SPK 和 Windows 默认使用 `7999`。Windows 自管隧道优先回源同机回环地址。
 4. 鉴权服务或对应的业务上游。
 
 隧道必须把原始 `Host` 传给 fn-knock。所有域名都指向同一个本地网关，由 fn-knock 完成后续路由。

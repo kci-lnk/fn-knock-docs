@@ -3,14 +3,14 @@ lang: ja-JP
 title: "fnOS ネイティブ FPK のインストールと初期設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
+translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561bf5aa442
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # fnOS ネイティブ FPK のインストールと初期設定
 
-このページでは、fnOS で動作するネイティブ版 `fn-knock` FPK だけを扱います。Docker Compose は [Docker へのデプロイ](/ja/quick-start/docker-deployment)、ルーター向けの OpenWrt パッケージは [OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)、一般的な Linux ホストは [Linux へのデプロイ（systemd / OpenRC）](/ja/quick-start/linux-deployment)、Synology DSM 7 は [Synology DSM 7 へのデプロイ](/ja/quick-start/synology-deployment)、Windows ホストは [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)を参照してください。
+このページでは、fnOS で動作するネイティブ版 `fn-knock` FPK だけを扱います。Docker Compose は [Docker へのデプロイ](/ja/quick-start/docker-deployment)、ルーター向けの OpenWrt パッケージは [OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)、一般的な Linux ホストは [Linux へのデプロイ（systemd / OpenRC）](/ja/quick-start/linux-deployment)、Mac は [macOS（Intel / Apple Silicon）へのデプロイ](/ja/quick-start/macos-deployment)、Synology DSM 7 は [Synology DSM 7 へのデプロイ](/ja/quick-start/synology-deployment)、Windows ホストは [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)を参照してください。
 
 ## インストール前の確認
 

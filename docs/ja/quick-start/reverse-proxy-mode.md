@@ -3,7 +3,7 @@ lang: ja-JP
 title: "NAT 越え：サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a67540d8598cd97e2f29fabe40e516d0b7ad5d101e02474b68ea286804ca52ba
+translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -28,7 +28,7 @@ NAT 越えでは、サブドメインマッピングを基本構成とします�
 - 少なくとも 1 つの有効なログイン方法。
 - fn-knock を実行する機器から、公開対象のサービスへ接続できるネットワーク経路。
 
-fnOS FPK、Docker、OpenWrt、Linux、Synology DSM 7 SPK では、アプリ内でトンネルを利用できます。Windows x86_64 には FRP / Cloudflared が内蔵されていません。同じ Windows ホストでトンネルクライアントを別途動かす場合は、ローカルの `127.0.0.1:7999` をオリジンにすることを推奨します。ただし、そのトンネルの導入と運用は fn-knock の管理対象外です。Docker コンテナ内の `127.0.0.1` はコンテナ自身を指します。上流サービスがホスト上または LAN 内の別機器にある場合は、コンテナから到達できるアドレスを指定してください。
+fnOS FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK では、アプリ内でトンネルを利用できます。Windows x86_64 には FRP / Cloudflared が内蔵されていません。同じ Windows ホストでトンネルクライアントを別途動かす場合は、ローカルの `127.0.0.1:7999` をオリジンにすることを推奨します。ただし、そのトンネルの導入と運用は fn-knock の管理対象外です。Docker コンテナ内の `127.0.0.1` はコンテナ自身を指します。上流サービスがホスト上または LAN 内の別機器にある場合は、コンテナから到達できるアドレスを指定してください。
 
 ## リクエストの経路
 
@@ -36,7 +36,7 @@ fnOS FPK、Docker、OpenWrt、Linux、Synology DSM 7 SPK では、アプリ内�
 
 1. `auth.example.com` または `nas.example.com` のインターネット側エンドポイント。
 2. FRP または Cloudflared トンネル。
-3. fn-knock の実際のゲートウェイポート。fnOS ネイティブ FPK、Docker Compose、OpenWrt、Linux、Synology DSM 7 SPK、Windows のデフォルトは `7999` です。Windows でトンネルを別途管理する場合は、同じホストのループバックアドレスをオリジンとして優先します。
+3. fn-knock の実際のゲートウェイポート。fnOS ネイティブ FPK、Docker Compose、OpenWrt、Linux、macOS、Synology DSM 7 SPK、Windows のデフォルトは `7999` です。Windows でトンネルを別途管理する場合は、同じホストのループバックアドレスをオリジンとして優先します。
 4. 認証サービス、または該当する上流サービス。
 
 トンネルは元の `Host` ヘッダーを fn-knock へ渡す必要があります。すべてのドメインを同じローカルゲートウェイへ向け、その後の振り分けを fn-knock が行います。

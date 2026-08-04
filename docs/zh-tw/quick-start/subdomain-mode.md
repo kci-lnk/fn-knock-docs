@@ -3,7 +3,7 @@ lang: zh-TW
 title: "公網直連：子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
+translationSourceHash: d63362dfbc49d6c507936f9557dec1c59c3d85024d497b4d75ebe25d21c9ca64
 ---
 
 # 公網直連：子網域路由
@@ -20,7 +20,7 @@ translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad6662
 需要準備：
 
 - 一個可管理 DNS 的網域名稱，例如 `example.com`。
-- 公網入口可以連線至 fn-knock 閘道。fnOS 原生 FPK、Docker Compose、OpenWrt、Linux、Synology DSM 7 SPK 與 Windows 預設使用 `7999`。下文統稱為「實際閘道連接埠」。
+- 公網入口可以連線至 fn-knock 閘道。fnOS 原生 FPK、Docker Compose、OpenWrt、Linux、macOS、Synology DSM 7 SPK 與 Windows 預設使用 `7999`。下文統稱為「實際閘道連接埠」。
 - 至少一種可用的登入方式：TOTP、密碼、Passkey、已設定的 OIDC 或 LDAP。
 - fn-knock 所在裝置能夠存取業務服務。
 
@@ -33,6 +33,7 @@ translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad6662
 | fnOS 原生 FPK | 完整支援 | 可使用自動 HTTPS、主機防火牆與智慧連線 |
 | Docker Compose | 支援子網域路由 | 不管理主機防火牆；不提供智慧連線與自動 HTTPS |
 | OpenWrt 外掛套件 | 支援子網域路由 | fn-knock 不管理 Host 防火牆，也不提供智慧連線或自動 HTTPS；連接埠放行與區域網路 DNS 分流由 OpenWrt 管理 |
+| macOS 13+ | 支援子網域路由 | 管理面板僅限本機；不呼叫 `iptables` 或管理 macOS 防火牆，公網入站規則由管理員設定 |
 | Synology DSM 7 SPK | 支援子網域路由 | 不支援直連、主機防火牆管理與智慧連線；透過 DSM 防火牆及路由器／NAT 管理入站路徑 |
 | Windows x86_64 | 可作為公網閘道 | `7999` 預設監聽所有介面；需要自行確認 Windows Firewall Profile、路由器／NAT、IPv6 防火牆與 ISP 入站原則，不支援直連授權 |
 

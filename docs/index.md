@@ -27,7 +27,7 @@ features:
     details: 支持 TOTP、Passkey、账号密码和外部账号，并提供会话、白名单、WAF 与请求日志。
     link: /guide/auth
   - title: 按你的设备和网络来部署
-    details: 支持 fnOS、Docker、OpenWrt、Linux、群晖与 Windows，也支持 FRP 和 Cloudflared。
+    details: 支持 fnOS、Docker、OpenWrt、Linux、macOS、群晖与 Windows，也支持 FRP 和 Cloudflared。
     link: /quick-start/deployment-options
 ---
 
@@ -35,7 +35,7 @@ features:
 
 不用先读完所有文档。按下面的顺序接通一个服务，确认可用后再继续添加：
 
-1. 选择 fnOS、Docker、OpenWrt、Linux、群晖或 Windows，完成[安装与部署](/quick-start/deployment-options)。
+1. 选择 fnOS、Docker、OpenWrt、Linux、macOS、群晖或 Windows，完成[安装与部署](/quick-start/deployment-options)。
 2. 根据家里的网络条件，选择[公网 IP 直连](/quick-start/subdomain-mode)或[FRP / Cloudflared 内网穿透](/quick-start/reverse-proxy-mode)。
 3. 配置登录。建议先保留一个可恢复的 [TOTP](/guide/totp)，再按需添加 Passkey 或其他登录方式。
 4. 接入一个测试服务，配置 [HTTPS 证书](/guide/ssl)，再用手机流量完整走一遍登录和访问流程。

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8ad9798669d6a8cb4b107ac5a17be8552fbb2598160b82246211aa5dbf4a5fc4
+translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -187,8 +187,8 @@ Target 包含 Path 時，閘道會保留這段 Base Path，並在其後接上訪
 
 ## 平台限制
 
-- Host 路由可在飛牛 FPK、Docker、OpenWrt、Linux、Synology DSM 7 SPK 及 Windows 上使用；實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
-- 自動寫入 Host 防火牆及智慧連線，只由具備對應 Runtime 能力的飛牛標準 FPK 提供；Docker、OpenWrt、Linux、Synology 與 Windows 均不提供。
+- Host 路由可在飛牛 FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK 及 Windows 上使用；實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
+- 自動寫入 Host 防火牆及智慧連線，只由具備對應 Runtime 能力的飛牛標準 FPK 提供；Docker、OpenWrt、Linux、macOS、Synology 與 Windows 均不提供。
 - 協定映射只會顯示在公網直連子網域模式中。即使 Docker 額外 Publish Port，也不會由 fn-knock 管理 Host 防火牆。
 - OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理或智慧連線，也不提供 SSH 安全性、Web 終端機或應用程式內 FPK 更新。
 - fn-knock 不會自動關閉 Upstream Service 原有的公網監聽，也無法取代 Upstream 更新、備份及最小權限設定。

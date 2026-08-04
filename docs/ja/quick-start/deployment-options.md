@@ -3,7 +3,7 @@ lang: ja-JP
 title: "デプロイ方法とアクセス構成を選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
+translationSourceHash: 26293c364e63399f0fc92b735b069246feb7d6d52a341fbf58d6de1e9f23bfe9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -22,10 +22,11 @@ fn-knock は公開口の集約と前段認証を担うものです。OS やア�
 | Docker Compose | `7991` | `7999` | NAS、ホームサーバー、一般的な Docker ホスト | ダイレクトモード、ホストのファイアウォール管理、自動 HTTPS、SSH セキュリティ、スマート接続、Web ターミナルは利用できません |
 | OpenWrt パッケージ | `サービス → fn-knock`。デフォルトポートは `7991` | `7999` | メインルーター、x86 ソフトウェアルーター、サブルーター | 直接接続、ホストファイアウォール管理、スマート接続、自動 HTTPS、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新は利用できません |
 | [Linux（systemd / OpenRC）](/ja/quick-start/linux-deployment) | `7991` | `7999` | 一般的な Linux サーバー、VPS、自前で管理するホスト | root 権限と、稼働中の systemd または OpenRC が必要です。ホストのファイアウォールは管理者が別途管理します |
+| [macOS 13+（Intel / Apple Silicon）](/ja/quick-start/macos-deployment) | ローカル `127.0.0.1:7991` | `7999` | Intel または Apple Silicon Mac | 未署名・未公証。ダイレクトモード、`iptables`、ホストファイアウォール管理、スマート接続、SSH セキュリティ、Web ターミナルは利用できません |
 | [Synology DSM 7 x86_64 / ARM SPK](/ja/quick-start/synology-deployment) | DSM デスクトップのパッケージアイコン | `7999` | DSM 7 を搭載した Intel / AMD / ARM NAS | ダイレクトモード、ホストのファイアウォール管理、スマート接続、Web ターミナル、SSH セキュリティは利用できません。更新はパッケージセンターから行います |
 | [Windows x86_64](/ja/quick-start/windows-deployment) | 管理アプリからローカルの `127.0.0.1:7991` を開く | `7999`。デフォルトでは全インターフェースで待ち受け | Windows サービスとローカルのタスクトレイ管理アプリを使いたい場合 | ファイアウォールと NAT は別途設定が必要です。ダイレクトアクセス許可、内蔵 FRP / Cloudflared、スマート接続、Web ターミナル、SSH セキュリティは利用できません |
 
-Docker、OpenWrt、Linux、Windows の管理画面には、専用のパネルパスワードを設定します。このパスワードは管理画面を保護するためのもので、ゲートウェイ入口で使う TOTP、ユーザー名とパスワード、パスキーとは別の認証情報です。
+Docker、OpenWrt、Linux、macOS、Windows の管理画面には、専用のパネルパスワードを設定します。このパスワードは管理画面を保護するためのもので、ゲートウェイ入口で使う TOTP、ユーザー名とパスワード、パスキーとは別の認証情報です。
 
 fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプロイではなくネイティブの非 root 簡易パッケージで、表にある標準 FPK の完全なホスト権限を持ちません。Lite は Host プロキシ、認証、DDNS、証明書、WAF、組み込み FRP / Cloudflared、監視に対応します。ダイレクトモードとホストのファイアウォール、スマート接続、システム時刻同期、自動 HTTPS、fnOS 証明書ストア同期、Web ターミナル、FN Connect WAF 接続、アプリ内更新には対応しません。ここでいう「自動 HTTPS」は、ISP と受信経路が TCP `80 / 443` を許可している場合の標準ポート直結支援機能です。Lite が証明書や HTTPS を利用できないという意味ではありません。完全な境界と移行方法は、[アプリストア Lite と標準 FPK の違い](/ja/quick-start/fpk-lite-vs-standard)を参照してください。
 
@@ -35,6 +36,7 @@ fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプ�
 - Docker：[Docker へのデプロイ](/ja/quick-start/docker-deployment)
 - OpenWrt：[OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)
 - Linux：[Linux へのデプロイ（systemd / OpenRC）](/ja/quick-start/linux-deployment)
+- macOS：[macOS（Intel / Apple Silicon）へのデプロイ](/ja/quick-start/macos-deployment)
 - Synology：[Synology DSM 7 へのデプロイ](/ja/quick-start/synology-deployment)
 - Windows：[Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)
 
@@ -145,5 +147,6 @@ Host ルーティングは、グローバル IP からの直接公開でも FRP 
 | Web ログイン後に `5666` や `22` などの元ポートへ接続する必要がある | [元のポートへのダイレクトアクセス](/ja/quick-start/direct-mode) |
 | まだインストールしていない、または管理画面とゲートウェイ入口の違いが分からない | [インストールと初回アクセス](/ja/quick-start/install-and-first-login) |
 | Windows x86_64 マシンへ導入して管理する | [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment) |
+| Intel または Apple Silicon Mac へ導入して管理する | [macOS（Intel / Apple Silicon）へのデプロイ](/ja/quick-start/macos-deployment) |
 
 外部向けゲートウェイ入口を持つ構成では、モバイル回線など実際の外部ネットワークから最終確認を行ってください。LAN 内やローカルホストからの通信はゲートウェイに信頼済みと判定されることがあるため、インターネット経由の認証テストの代わりにはなりません。Windows の `7999` はデフォルトで全インターフェースを待ち受けますが、Windows ファイアウォールのプロファイル、ルーターまたは NAT、IPv6 ファイアウォール、ISP の着信制限も併せて確認する必要があります。

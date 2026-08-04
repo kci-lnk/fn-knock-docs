@@ -3,7 +3,7 @@ lang: ko-KR
 title: "IP 허용 목록"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
+translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e5b5a53b
 ---
 
 # IP 허용 목록
@@ -61,7 +61,7 @@ CNAME은 시스템의 조회 결과에 따라 실제 허용 범위를 업데이�
 
 ## 직접 연결 모드에서의 동작
 
-유효한 허용 목록을 호스트 방화벽에 동기화하는 배포는 표준 fnOS FPK뿐입니다. Docker, OpenWrt, 일반 Linux, Synology DSM 7 SPK 및 Windows에서는 fn-knock 허용 목록으로 원본 포트를 열 수 없습니다.
+유효한 허용 목록을 호스트 방화벽에 동기화하는 배포는 표준 fnOS FPK뿐입니다. Docker, OpenWrt, 일반 Linux, macOS, Synology DSM 7 SPK 및 Windows에서는 fn-knock 허용 목록으로 원본 포트를 열 수 없습니다. macOS 런타임은 `iptables`를 호출하지 않습니다.
 
 페이지의 레코드는 계속 게이트웨이 접근 권한 판단에 사용되지만 각 플랫폼 자체의 방화벽을 대신할 수는 없습니다. 현재 런타임은 유효한 단일 IP, CIDR 및 지역 그룹을 하나의 정책으로 컴파일하고 활성 세션과 허용된 출발지를 게이트웨이에 동기화합니다. 추가, 만료, 삭제 또는 취소 후에도 다시 동기화합니다.
 

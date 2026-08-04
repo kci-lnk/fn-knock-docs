@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8ad9798669d6a8cb4b107ac5a17be8552fbb2598160b82246211aa5dbf4a5fc4
+translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
 ---
 
 # 서브도메인 라우팅
@@ -185,8 +185,8 @@ Host별 트래픽 세부 정보에서 실시간 트래픽과 활성 IP를 확인
 
 ## 플랫폼별 지원 범위
 
-- Host 라우트는 fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK 및 Windows에서 사용할 수 있습니다. 실제 인터넷 접근 가능 여부는 각 플랫폼의 포트 공개와 네트워크 경로에 달려 있습니다.
-- 호스트 방화벽 자동 규칙 추가와 Smart Connect는 해당 런타임 기능을 갖춘 표준 fnOS FPK에서만 제공합니다. Docker, OpenWrt, Linux, Synology 및 Windows에서는 제공하지 않습니다.
+- Host 라우트는 fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK 및 Windows에서 사용할 수 있습니다. 실제 인터넷 접근 가능 여부는 각 플랫폼의 포트 공개와 네트워크 경로에 달려 있습니다.
+- 호스트 방화벽 자동 규칙 추가와 Smart Connect는 해당 런타임 기능을 갖춘 표준 fnOS FPK에서만 제공합니다. Docker, OpenWrt, Linux, macOS, Synology 및 Windows에서는 제공하지 않습니다.
 - 프로토콜 매핑은 공인 IP 직접 연결 서브도메인 모드에서만 표시됩니다. Docker에서 추가 포트를 공개해도 fn-knock가 호스트 방화벽을 관리하지 않습니다.
 - OpenWrt의 포트 허용과 LAN 분할 DNS는 OpenWrt 자체에서 관리합니다. fn-knock는 직접 연결, 호스트 방화벽 관리, Smart Connect, SSH 보안, 웹 터미널 또는 웹 관리 패널 FPK 업데이트를 제공하지 않습니다.
 - fn-knock는 업스트림 서비스의 기존 공인 수신 포트를 자동으로 닫지 않으며 업스트림 업데이트, 백업 및 최소 권한 설정을 대신하지도 않습니다.

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇部署與存取方案"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cbdf9dab4daedf7665ff853bdc33cfc73f1e82bb2661a45c816a84555f814dd3
+translationSourceHash: 26293c364e63399f0fc92b735b069246feb7d6d52a341fbf58d6de1e9f23bfe9
 ---
 
 # 選擇部署與存取方案
@@ -20,10 +20,11 @@ fn-knock 用於收斂入口並提供前置身分驗證，不能取代系統更�
 | Docker Compose | `7991` | `7999` | NAS、Home Server 或一般 Docker 主機 | 不支援直連模式、主機防火牆管理、自動 HTTPS、SSH 安全性、智慧連線與 Web Terminal |
 | OpenWrt 軟體套件 | `服務 → 敲門 Knock`；預設連接埠為 `7991` | `7999` | 主路由器、軟路由或旁路由 | 不支援直連、Host 防火牆管理、智慧連線、自動 HTTPS、SSH 安全性、Web Terminal 與應用程式內 FPK 更新 |
 | [Linux（systemd / OpenRC）](/zh-tw/quick-start/linux-deployment) | `7991` | `7999` | 一般 Linux Server、VPS 或自管主機 | 需要 root 權限及正在執行的 systemd 或 OpenRC；主機防火牆由管理員自行維護 |
+| [macOS 13+（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment) | 本機 `127.0.0.1:7991` | `7999` | Intel 或 Apple Silicon Mac | 未簽章且未公證；不支援直連、`iptables`、主機防火牆管理、智慧連線、SSH 安全性與 Web Terminal |
 | [Synology DSM 7 x86_64 / ARM SPK](/zh-tw/quick-start/synology-deployment) | DSM 桌面上的套件入口 | `7999` | 搭載 Intel / AMD / ARM 處理器的 DSM 7 NAS | 不支援直連、主機防火牆管理、智慧連線、Web Terminal 與 SSH 安全性；透過套件中心升級 |
 | [Windows x86_64](/zh-tw/quick-start/windows-deployment) | 管理程式開啟本機 `127.0.0.1:7991` | `7999`，預設監聽所有介面 | 需要 Windows Service 與本機系統匣管理程式 | 仍須設定防火牆與 NAT；不支援直連授權、內建 FRP / Cloudflared、智慧連線、Web Terminal 與 SSH 安全性 |
 
-Docker、OpenWrt、Linux 與 Windows 的管理入口需要另行設定面板密碼。這組密碼只保護管理面板，與閘道入口使用的 TOTP、帳號密碼或 Passkey 並不是同一套憑證。
+Docker、OpenWrt、Linux、macOS 與 Windows 的管理入口需要另行設定面板密碼。這組密碼只保護管理面板，與閘道入口使用的 TOTP、帳號密碼或 Passkey 並不是同一套憑證。
 
 fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 部署，也不具備表中標準 FPK 的完整 Host 權限。Lite 支援 Host 反代、驗證、DDNS、憑證、WAF、內建 FRP / Cloudflared 與監控；不支援直連與 Host 防火牆、智慧連線、系統時間同步、自動 HTTPS、fnOS 憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。這裡的「自動 HTTPS」特指 ISP 與入站路徑允許 TCP `80 / 443` 時的標準連接埠直連輔助能力，不代表 Lite 無法使用憑證和 HTTPS。完整邊界與移轉方式請參閱[應用程式商店 Lite 與官網標準 FPK 的差異](/zh-tw/quick-start/fpk-lite-vs-standard)。
 
@@ -33,6 +34,7 @@ fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-ro
 - Docker：[Docker 部署](/zh-tw/quick-start/docker-deployment)
 - OpenWrt：[OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)
 - Linux：[Linux 部署（systemd / OpenRC）](/zh-tw/quick-start/linux-deployment)
+- macOS：[macOS 部署（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment)
 - Synology：[Synology DSM 7 部署](/zh-tw/quick-start/synology-deployment)
 - Windows：[Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)
 
@@ -143,5 +145,6 @@ Host 路由可同時用於公網直連及 FRP / Cloudflared。是否擁有公網
 | 必須在 Web 登入後存取 `5666`、`22` 等原始連接埠 | [原始連接埠：直連授權](/zh-tw/quick-start/direct-mode) |
 | 尚未安裝，或無法區分管理入口與閘道入口 | [安裝與初始設定](/zh-tw/quick-start/install-and-first-login) |
 | 在 Windows x86_64 本機部署與維護 | [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment) |
+| 在 Intel 或 Apple Silicon Mac 本機部署與維護 | [macOS 部署（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment) |
 
 只要部署方式提供外部閘道入口，就應使用行動網路等真正的外部鏈路完成最終驗證。區域網路與本機來源可能受到閘道信任，不能取代公網身分驗證測試。Windows 的 `7999` 雖預設監聽所有介面，仍需一併驗證 Windows Firewall Profile、路由器或 NAT、IPv6 防火牆，以及 ISP 的入站原則。

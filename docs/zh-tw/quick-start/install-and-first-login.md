@@ -3,12 +3,12 @@ lang: zh-TW
 title: "fnOS 原生 FPK 安裝與初始設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
+translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561bf5aa442
 ---
 
 # fnOS 原生 FPK 安裝與初始設定
 
-本頁只介紹 fnOS 上的原生 `fn-knock` FPK。若要使用 Docker Compose，請參閱 [Docker 部署](/zh-tw/quick-start/docker-deployment)；路由器上的 OpenWrt 軟體套件請參閱 [OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)；一般 Linux 主機請參閱 [Linux 部署（systemd / OpenRC）](/zh-tw/quick-start/linux-deployment)；Synology DSM 7 請參閱 [Synology DSM 7 部署](/zh-tw/quick-start/synology-deployment)；Windows 主機請參閱 [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)。
+本頁只介紹 fnOS 上的原生 `fn-knock` FPK。若要使用 Docker Compose，請參閱 [Docker 部署](/zh-tw/quick-start/docker-deployment)；路由器上的 OpenWrt 軟體套件請參閱 [OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)；一般 Linux 主機請參閱 [Linux 部署（systemd / OpenRC）](/zh-tw/quick-start/linux-deployment)；Mac 請參閱 [macOS 部署（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment)；Synology DSM 7 請參閱 [Synology DSM 7 部署](/zh-tw/quick-start/synology-deployment)；Windows 主機請參閱 [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)。
 
 ## 安裝前確認
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
+translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a4f99dd8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -52,6 +52,7 @@ translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea1383
 | Docker Compose | 檢查版本與查看說明 | Pull 發布 Image 並重新建立 Container |
 | OpenWrt | 檢查版本與查看說明 | 安裝符合韌體套件格式與架構的 `.ipk` 或 `.apk` |
 | Linux（systemd / OpenRC） | 檢查版本與查看說明 | 執行 `sudo knock update` |
+| macOS 13+（Intel / Apple Silicon） | 檢查版本與查看說明 | 執行 `sudo knock update` |
 | 群暉 DSM 7 SPK | 檢查版本與查看說明 | 下載符合架構的 SPK，並在 DSM 套件中心手動更新 |
 | Windows x86_64 | 檢查版本與查看說明 | 在 `Knock 敲門 · Windows 管理程式` 或系統匣選單中檢查並安裝更新 |
 
@@ -85,6 +86,16 @@ sudo knock update
 ```
 
 此指令會比對本機與線上版本、下載並驗證發布套件，再部署至版本目錄。即使版本相同，也可以確認重新安裝；若新版本未通過 Health Check，系統會還原原有程式、Service Script 與啟停狀態。需要切回保留的上一版時，請執行 `sudo knock rollback`。更新前仍應備份 `/etc/fn-knock` 與 `/var/lib/fn-knock`。
+
+## 更新 macOS
+
+請在終端機執行：
+
+```bash
+sudo knock update
+```
+
+此指令會下載並驗證目前 Mac 架構的套件，切換版本後檢查 LaunchDaemon 與管理服務。新版本未就緒時，會還原版本連結、管理指令、Service 設定與原有啟停狀態。使用 `sudo knock rollback` 可返回保留的上一版。請先匯出應用程式備份；路徑與解除安裝規則見 [macOS 部署](/zh-tw/quick-start/macos-deployment)。
 
 ## 更新 OpenWrt
 
@@ -131,5 +142,6 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 - [請求記錄](/zh-tw/guide/request-logs)
 - [Docker 部署](/zh-tw/quick-start/docker-deployment)
 - [OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)
+- [macOS 部署（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment)
 - [群暉 DSM 7 部署](/zh-tw/quick-start/synology-deployment)
 - [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)

@@ -27,7 +27,7 @@ features:
     details: 支援 TOTP、Passkey、帳號密碼與外部 IdP，並提供工作階段、IP 允許清單、WAF 與請求記錄。
     link: /zh-tw/guide/auth
   - title: 配合既有設備與網路拓撲
-    details: 支援 fnOS、Docker、OpenWrt、Linux、Synology DSM 與 Windows，也可搭配 FRP 或 Cloudflare Tunnel。
+    details: 支援 fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM 與 Windows，也可搭配 FRP 或 Cloudflare Tunnel。
     link: /zh-tw/quick-start/deployment-options
 ---
 
@@ -35,7 +35,7 @@ features:
 
 依照下列順序接通一項服務，確認完整鏈路可用後，再繼續加入其他服務：
 
-1. 選擇 fnOS、Docker、OpenWrt、Linux、Synology DSM 或 Windows，完成[安裝與部署](/zh-tw/quick-start/deployment-options)。
+1. 選擇 fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM 或 Windows，完成[安裝與部署](/zh-tw/quick-start/deployment-options)。
 2. 依照家用網路條件，選擇[公網 IP 直連](/zh-tw/quick-start/subdomain-mode)或 [FRP / Cloudflare Tunnel 內網穿透](/zh-tw/quick-start/reverse-proxy-mode)。
 3. 設定登入方式。建議保留一組可復原的 [TOTP](/zh-tw/guide/totp)，再視需求加入 Passkey 或外部 IdP。
 4. 串接一項測試服務並設定 [TLS 憑證](/zh-tw/guide/ssl)，再以行動網路走完一次登入與存取流程。

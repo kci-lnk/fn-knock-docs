@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8ad9798669d6a8cb4b107ac5a17be8552fbb2598160b82246211aa5dbf4a5fc4
+translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -187,8 +187,8 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 
 ## プラットフォームごとの制限
 
-- Host ルーティングは、FNOS FPK、Docker、OpenWrt、Linux、Synology DSM 7 SPK、Windows で使用できます。インターネットから実際に到達できるかどうかは、各プラットフォームのポート公開とネットワーク経路によって決まります。
-- ホストファイアウォールへの自動書き込みとスマート接続は、対応する標準 FNOS FPK だけが提供します。Docker、OpenWrt、Linux、Synology、Windows では利用できません。
+- Host ルーティングは、FNOS FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK、Windows で使用できます。インターネットから実際に到達できるかどうかは、各プラットフォームのポート公開とネットワーク経路によって決まります。
+- ホストファイアウォールへの自動書き込みとスマート接続は、対応する標準 FNOS FPK だけが提供します。Docker、OpenWrt、Linux、macOS、Synology、Windows では利用できません。
 - プロトコルマッピングは、インターネット直結のサブドメインモードでのみ表示されます。Docker で追加ポートを公開しても、fn-knock がホストのファイアウォールを管理することはありません。
 - OpenWrt のポート許可と LAN のスプリット DNS は OpenWrt 自身で管理します。fn-knock は直接接続、ホストファイアウォール管理、スマート接続、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新を提供しません。
 - fn-knock はアップストリームサービスの既存の公開リッスン状態を自動的に停止せず、アップストリームの更新、バックアップ、最小権限設定にも代わりません。

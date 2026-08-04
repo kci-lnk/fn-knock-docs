@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal with Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a67540d8598cd97e2f29fabe40e516d0b7ad5d101e02474b68ea286804ca52ba
+translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -28,7 +28,7 @@ You need:
 - At least one working sign-in method.
 - Network connectivity from the fn-knock device to each upstream application.
 
-The native fnOS FPK, Docker, OpenWrt, Linux, and Synology DSM 7 SPK deployments can all use in-app tunnels. Windows x86_64 does not include FRP or Cloudflared. If you run your own tunnel client on the same Windows host, use local `127.0.0.1:7999` as the origin; fn-knock does not manage that client's installation or lifecycle. Inside Docker, `127.0.0.1` refers to the current container. If the upstream runs on the host or another LAN device, enter an address reachable from the container.
+The native fnOS FPK, Docker, OpenWrt, Linux, macOS, and Synology DSM 7 SPK deployments can all use in-app tunnels. Windows x86_64 does not include FRP or Cloudflared. If you run your own tunnel client on the same Windows host, use local `127.0.0.1:7999` as the origin; fn-knock does not manage that client's installation or lifecycle. Inside Docker, `127.0.0.1` refers to the current container. If the upstream runs on the host or another LAN device, enter an address reachable from the container.
 
 ## Request path
 
@@ -36,7 +36,7 @@ An external request passes through:
 
 1. The public endpoint for `auth.example.com` or `nas.example.com`.
 2. The FRP or Cloudflared tunnel.
-3. The actual fn-knock gateway port. The native fnOS FPK, Docker Compose, OpenWrt, Linux, Synology DSM 7 SPK, and Windows default to `7999`. A self-managed Windows tunnel should normally use the same host's loopback address as its origin.
+3. The actual fn-knock gateway port. The native fnOS FPK, Docker Compose, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows default to `7999`. A self-managed Windows tunnel should normally use the same host's loopback address as its origin.
 4. The authentication service or matching upstream application.
 
 The tunnel must preserve the original `Host` when forwarding to fn-knock. Every domain points to the same local gateway, and fn-knock performs the remaining routing.

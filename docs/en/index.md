@@ -27,7 +27,7 @@ features:
     details: Use TOTP, passkeys, passwords, or an external IdP, with sessions, IP allowlists, WAF rules, and request logs.
     link: /en/guide/auth
   - title: Fits your hardware and network topology
-    details: Deploy on fnOS, Docker, OpenWrt, Linux, Synology DSM, or Windows, with optional FRP and Cloudflare Tunnel connectivity.
+    details: Deploy on fnOS, Docker, OpenWrt, Linux, macOS, Synology DSM, or Windows, with optional FRP and Cloudflare Tunnel connectivity.
     link: /en/quick-start/deployment-options
 ---
 
@@ -35,7 +35,7 @@ features:
 
 Bring one service online in this order. Verify the complete path before onboarding the rest of your stack:
 
-1. Choose fnOS, Docker, OpenWrt, Linux, Synology DSM, or Windows and complete the [installation](/en/quick-start/deployment-options).
+1. Choose fnOS, Docker, OpenWrt, Linux, macOS, Synology DSM, or Windows and complete the [installation](/en/quick-start/deployment-options).
 2. Match the access pattern to your home network: [route subdomains over a public IP](/en/quick-start/subdomain-mode), or use [FRP / Cloudflare Tunnel for NAT traversal](/en/quick-start/reverse-proxy-mode).
 3. Configure authentication. Keep a recoverable [TOTP authenticator](/en/guide/totp), then add a passkey or external identity provider if needed.
 4. Onboard one test service, configure a [TLS certificate](/en/guide/ssl), and verify the entire sign-in flow over a mobile connection.

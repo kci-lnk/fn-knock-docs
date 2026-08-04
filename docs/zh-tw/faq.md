@@ -3,7 +3,7 @@ lang: zh-TW
 title: "常見問題"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
+translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,16 +18,20 @@ translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245
 
 | 目的 | 入口 |
 | --- | --- |
-| 修改設定、檢視 Log、切換模式 | 飛牛桌面的 `敲門 knock`；Synology 請從 DSM 主選單開啟 `敲門 knock`；OpenWrt 使用 `服務 → 敲門 Knock`；Windows 使用 `fn-knock Windows 管理程式` 開啟本機管理頁 |
+| 修改設定、檢視 Log、切換模式 | 從 fnOS 或 DSM 開啟 `敲門 knock`；OpenWrt 使用服務選單；macOS 在本機開啟 `127.0.0.1:7991`；Windows 使用管理程式 |
 | 驗證公網、網域、Tunnel 或服務映射 | 實際 Gateway Port 或對應的外部網域；通常為 `7999` |
 
-OpenWrt 的預設 Management Port 為 `7991`，Gateway Port 仍是 `7999`。Windows 管理頁嚴格限制在 `127.0.0.1:7991`，無法從其他裝置開啟。其他部署方式的連接埠請參考[連接埠與入口](/zh-tw/quick-start/ports-and-entrypoints)。
+OpenWrt 的預設 Management Port 為 `7991`，Gateway Port 仍是 `7999`。macOS 與 Windows 管理頁嚴格限制在 `127.0.0.1:7991`，無法從其他裝置直接開啟。其他部署方式的連接埠請參考[連接埠與入口](/zh-tw/quick-start/ports-and-entrypoints)。
 
 ### 無法開啟 Windows 管理頁
 
 先開啟 `fn-knock Windows 管理程式`，確認 `FnKnock` Service 狀態已就緒，再點選「開啟管理後台」。首次安裝的預設位址為 `http://127.0.0.1:7991/`，只能從安裝該程式的 Windows 主機存取。
 
 若 Service 無法就緒，請優先檢查五個預設連接埠是否遭占用。透過管理程式修改連接埠並儲存，不要直接編輯 `%ProgramData%\FnKnock\config\runtime.json`。完整步驟請參考 [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)。
+
+### 無法開啟 macOS 管理頁
+
+請在安裝 fn-knock 的 Mac 本機開啟 `http://127.0.0.1:7991/`，並執行 `sudo knock status`。若服務未就緒，使用 `sudo knock logs` 檢查 LaunchDaemon 與五個執行連接埠；不要將 `7991` 公開。從其他電腦管理時使用 SSH Local Forward。完整步驟見 [macOS 部署](/zh-tw/quick-start/macos-deployment)。
 
 ### Synology 顯示無法讀取 DSM 工作階段
 
@@ -52,6 +56,7 @@ OpenWrt 的預設 Management Port 為 `7991`，Gateway Port 仍是 `7999`。Wind
 - Docker：請參考 [Docker 部署](/zh-tw/quick-start/docker-deployment)的管理密碼復原說明。
 - OpenWrt：請參考 [OpenWrt 部署](/zh-tw/quick-start/openwrt-deployment)。
 - 飛牛 fnOS FPK：優先從飛牛桌面重新進入 `敲門 knock`。
+- macOS：執行 `sudo knock reset-panel-password`。
 - Windows：優先在 `fn-knock Windows 管理程式` 中點選「清除管理密碼」。若無法開啟管理程式，請在應用程式安裝目錄中，以系統管理員 PowerShell 執行 `.\fn-knock-service.exe reset-panel-password`。
 
 ## 管理功能正常，但外網無法存取
@@ -100,7 +105,7 @@ OpenWrt 的預設 Management Port 為 `7991`，Gateway Port 仍是 `7999`。Wind
 
 表示仍存在繞過 fn-knock 的入口。請檢查 Router Port Forwarding、Host 防火牆、IPv6 防火牆及 Front Proxy，關閉直接指向服務的公網規則。
 
-直連授權應只公開驗證閘道，登入後才暫時放行目前的公網出口 IP。Docker 與 Windows 不支援由 fn-knock 管理 Host 防火牆。
+直連授權應只公開驗證閘道，登入後才暫時放行目前的公網出口 IP。Docker、macOS 與 Windows 不支援由 fn-knock 管理 Host 防火牆。
 
 ## 網域、子網域或 Tunnel 無法運作
 
@@ -302,19 +307,23 @@ OpenWrt 支援符合架構的 `.ipk` 與 `.apk` Package。安裝後入口為 `�
 
 解除安裝 Windows 程式後，`%ProgramData%\FnKnock` 會保留供日後還原，其中包含 SQLite、憑證及設定。確認不再需要復原後，才以系統管理員權限另外刪除該目錄。
 
+### macOS 如何更新、回復或解除安裝
+
+使用 `sudo knock update` 安裝目前架構的新版本，使用 `sudo knock rollback` 切回保留的上一版。`sudo knock uninstall` 會移除程式與 LaunchDaemon，但保留設定、資料與 Log；只有 `sudo knock uninstall --purge` 並輸入 `DELETE` 才會完整清除。詳見 [macOS 部署](/zh-tw/quick-start/macos-deployment)。
+
 ### 更新後的功能入口與舊文件不一致
 
 先確認目前部署方式具備的能力：
 
-| 能力 | 飛牛 fnOS FPK | Docker | OpenWrt | Linux 服務 | Synology DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Host 防火牆與直連授權 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| 自動 HTTPS | 支援 | 不支援 | 不支援 | 支援；需要 `80` 連接埠與 Inbound Path | 不支援 | 支援；仍須打通防火牆、NAT 與 Inbound Path |
-| ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援；內建 Client，固定使用 Let's Encrypt |
-| 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| Web 終端機 | 支援 | 不支援 | 不支援 | 支援；依賴 `tmux` | 不支援 | 不支援 |
-| 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |
-| 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝 IPK / APK | `sudo knock update` | DSM 套件中心 / SPK | 由 Windows 管理程式處理 |
+| 能力 | 飛牛 fnOS FPK | Docker | OpenWrt | Linux 服務 | macOS | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Host 防火牆與直連授權 | 支援 | 不支援 | 不支援 | 不支援 | 不支援；不呼叫 `iptables` | 不支援 | 不支援 |
+| 自動 HTTPS | 支援 | 不支援 | 不支援 | 支援；需要 `80` 連接埠與 Inbound Path | 支援；防火牆與入站路徑須手動設定 | 不支援 | 支援；仍須打通防火牆、NAT 與 Inbound Path |
+| ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援；內建 Client，固定使用 Let's Encrypt |
+| 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| Web 終端機 | 支援 | 不支援 | 不支援 | 支援；依賴 `tmux` | 不支援 | 不支援 | 不支援 |
+| 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |
+| 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝 IPK / APK | `sudo knock update` | `sudo knock update` | DSM 套件中心 / SPK | 由 Windows 管理程式處理 |
 
 部署限制與建議入口請參考[選擇部署與存取方案](/zh-tw/quick-start/deployment-options)。

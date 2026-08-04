@@ -3,12 +3,12 @@ lang: zh-TW
 title: "連接埠、入口與 URL 路徑"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: eb6e7fb415215759b38b934916bd7291885156f04a7e7661e4783c3fde9c0850
+translationSourceHash: 2c2bb6d85e26ff46bef2299c61913894ee9279c23a43099da9cfa6bbf8822d0e
 ---
 
 # 連接埠、入口與 URL 路徑
 
-`fn-knock` 有兩個面向使用者的入口：管理入口用於修改設定，閘道入口則承接業務流量。fnOS 原生 FPK 從桌面圖示進入管理頁面；Docker、OpenWrt 與 Linux 的管理面板預設使用 `7991`。Synology DSM 7 SPK 只能從 DSM 桌面的套件入口進入；Windows 則由 `fn-knock Windows 管理程式` 透過系統瀏覽器開啟本機 `127.0.0.1:7991`，不能將其當成區域網路或公網管理入口。閘道通常使用 `7999`。
+`fn-knock` 有兩個面向使用者的入口：管理入口用於修改設定，閘道入口則承接業務流量。fnOS 原生 FPK 從桌面圖示進入管理頁面；Docker、OpenWrt 與 Linux 的管理面板預設使用 `7991`。Synology DSM 7 SPK 只能從 DSM 桌面的套件入口進入；macOS 與 Windows 的管理頁固定為本機 `127.0.0.1:7991`，不能將其當成區域網路或公網管理入口。閘道通常使用 `7999`。
 
 `7998`、`7997` 與 `7996` 是元件之間使用的內部連接埠，不應直接暴露至公網。
 
@@ -16,7 +16,7 @@ translationSourceHash: eb6e7fb415215759b38b934916bd7291885156f04a7e7661e4783c3fd
 
 | 連接埠 | 角色 | 預設用途 |
 | --- | --- | --- |
-| `7991` | 管理面板 | Docker、OpenWrt 與 Linux 的預設管理入口；Windows 僅限本機 Loopback 存取 |
+| `7991` | 管理面板 | Docker、OpenWrt 與 Linux 的預設管理入口；macOS 與 Windows 僅限本機 Loopback 存取 |
 | `7998` | 管理後端 | fnOS 原生 FPK 的桌面 CGI 會 Proxy 至此；Docker 也在內部使用此連接埠 |
 | `7997` | 身分驗證服務 | 處理登入、登出、Passkey 與人機驗證 |
 | `7996` | 閘道管理連接埠 | 管理後端與 Go 閘道之間的內部通訊 |
@@ -32,6 +32,7 @@ translationSourceHash: eb6e7fb415215759b38b934916bd7291885156f04a7e7661e4783c3fd
 | Docker Compose | `7991` | `7999` | 預設只發布這兩個連接埠 |
 | OpenWrt | `7991` | `7999` | 內部管理後端預設改用 `17998` |
 | Linux（systemd / OpenRC） | `7991` | `7999` | 安裝時及 `sudo knock config` 均可修改連接埠；`7998`、`7997`、`7996` 僅監聽本機 |
+| macOS 13+ | 本機 `127.0.0.1:7991` | `7999` | Intel / Apple Silicon 原生套件；內部連接埠僅限本機，不修改 macOS 防火牆 |
 | Synology DSM 7 SPK | DSM 桌面套件入口 | `7999` | 不開放 `7991`；DSM CGI 會 Proxy 內部管理服務，`7998`、`7997`、`7996` 僅監聽本機 |
 | Windows x86_64 | 管理程式開啟 `127.0.0.1:7991` | `7999`，預設監聽 `0.0.0.0` 與 `::` | 管理後台強制限本機存取；安裝程式只會為「網域／私人」Network Profile 加入靜態程式規則 |
 
@@ -65,13 +66,14 @@ TCP / UDP 通訊協定映射會額外監聽各自的對外連接埠，不經過 
 - fnOS 原生 FPK 可管理主機防火牆，並提供直連模式與智慧連線。
 - OpenWrt 可執行 Host／路徑閘道、通訊協定映射及內建 Tunnel，但 fn-knock 不管理 OpenWrt 防火牆，也不提供直連模式或智慧連線；連接埠放行與區域網路 DNS 分流應在 OpenWrt 中自行設定。它同樣不提供 SSH 安全性、Web Terminal 或應用程式內 FPK 更新。
 - Synology DSM 7 SPK 會將 `7999` 以公開閘道連接埠註冊至 DSM 防火牆介面，但套件無法自行修改主機防火牆；不支援直連模式、智慧連線、Web Terminal 或 SSH 安全性。
+- macOS 管理面板強制使用本機回環，`7999` 可作為服務入口；它不呼叫 `iptables`、不管理 macOS 防火牆，也不支援直連、智慧連線、Web Terminal 或 SSH 安全性。協定映射連接埠需手動放行。
 - Windows 的 `7999` 預設監聽所有介面；安裝程式建立的 `FnKnock Gateway` 靜態程式規則只套用於「網域／私人」Network Profile。此版本仍不支援直連模式、應用程式內主機防火牆管理、智慧連線、內建 Tunnel、Web Terminal 或 SSH 安全性。開放公網存取前，務必檢查路由器／NAT、IPv6、ISP 與第三方安全軟體。
 
 對 Host 或路徑路由而言，`fn-knock` 只能保護確實通過閘道的請求。若上游服務仍監聽公網或區域網路可達的位址，使用者依然可能繞過閘道直接連線。直連授權是例外：它仰賴受支援的主機防火牆，只有登入後的來源 IP 取得授權時，才暫時放行原始連接埠；請勿另外加入過度寬鬆的公網放行規則。
 
 ## 依鏈路疑難排解
 
-fnOS 原生 FPK 的管理頁面無法開啟時，請先檢查桌面圖示、應用程式 Process 與 `7998` 後端；Docker 或 OpenWrt 則檢查 `7991`、Bind Address 與 Port Publishing。業務網域名稱無法開啟時，請依以下順序檢查：
+fnOS 原生 FPK 的管理頁面無法開啟時，請先檢查桌面圖示、應用程式 Process 與 `7998` 後端；Docker 或 OpenWrt 則檢查 `7991`、Bind Address 與 Port Publishing；macOS 請執行 `sudo knock status` 與 `sudo knock logs`，並從本機透過 `127.0.0.1` 存取。業務網域名稱無法開啟時，請依以下順序檢查：
 
 1. 外部流量是否抵達實際的閘道連接埠（通常為 `7999`）。
 2. 請求的 `Host` 或相容路徑是否命中映射。

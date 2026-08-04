@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
+translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a4f99dd8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -52,6 +52,7 @@ Path: `Version and updates`. Every deployment shows the current version, latest 
 | Docker Compose | Check the version and view release notes | Pull the release image and recreate the container |
 | OpenWrt | Check the version and view release notes | Install an `.ipk` or `.apk` matching the firmware format and architecture |
 | Linux (systemd / OpenRC) | Check the version and view release notes | Run `sudo knock update` |
+| macOS 13+ (Intel / Apple Silicon) | Check the version and view release notes | Run `sudo knock update` |
 | Synology DSM 7 SPK | Check the version and view release notes | Download the SPK for the correct architecture and update it manually in Package Center |
 | Windows x86_64 | Check the version and view release notes | Check for and install updates from `fn-knock Windows Manager` or its tray menu |
 
@@ -85,6 +86,16 @@ sudo knock update
 ```
 
 The command compares the local and online versions, downloads and verifies the release package, and deploys it into the version directory. You can also confirm a reinstall when the versions match. If the new version fails its health check, the command restores the previous program, service scripts, and start/stop state. To return to the retained previous version, run `sudo knock rollback`. You should still back up `/etc/fn-knock` and `/var/lib/fn-knock` before updating.
+
+## Update macOS
+
+Run in Terminal:
+
+```bash
+sudo knock update
+```
+
+The command downloads and verifies the package for the current Mac architecture, switches versions, and checks the LaunchDaemon and admin service. If the new version is not ready, it restores the version links, management command, service configuration, and previous running state. Use `sudo knock rollback` to return to the retained previous version. Export an application backup first; see [Deploy on macOS](/en/quick-start/macos-deployment) for paths and uninstall behavior.
 
 ## Update OpenWrt
 
@@ -131,5 +142,6 @@ Continue reading:
 - [Request Logs](/en/guide/request-logs)
 - [Deploy with Docker Compose](/en/quick-start/docker-deployment)
 - [Deploy on OpenWrt](/en/quick-start/openwrt-deployment)
+- [Deploy on macOS (Intel / Apple Silicon)](/en/quick-start/macos-deployment)
 - [Deploy on Synology DSM 7 (x86_64 / ARM)](/en/quick-start/synology-deployment)
 - [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment)

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "NAT 越えとトンネル"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa08100fb
+translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -14,7 +14,7 @@ translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa
 
 `システム設定 → モード` で `リバースプロキシモード` を選択します。新しいデプロイでは `サブドメインマッピング` を選び、既存の単一ドメインによるパス形式のエントリーポイントがある場合にだけ、非推奨と表示された `パスモード` を選択してください。
 
-Synology DSM 7 SPK では、FRP と Cloudflared のリソースおよびプロセスをアプリ内で管理できます。Windows x86_64 にはこれらのリソースが含まれないため、このページの `システム設定 → FRP` と `システム設定 → Cloudflared` の手順は Windows には適用されません。同じ Windows ホストでトンネルクライアントを独自に実行し、`127.0.0.1:7999` をオリジンにすることはできますが、そのプロセスのインストール、認証情報、ライフサイクルは管理者が管理してください。
+macOS と Synology DSM 7 SPK では、FRP と Cloudflared のリソースおよびプロセスをアプリ内で管理できます。Windows x86_64 にはこれらのリソースが含まれないため、このページの `システム設定 → FRP` と `システム設定 → Cloudflared` の手順は Windows には適用されません。同じ Windows ホストでトンネルクライアントを独自に実行し、`127.0.0.1:7999` をオリジンにすることはできますが、そのプロセスのインストール、認証情報、ライフサイクルは管理者が管理してください。
 
 ## 2 種類のトンネル
 
@@ -96,6 +96,7 @@ fn-knock サービス自体の再起動後は、常時実行として保存さ�
 - トンネルは外向きの接続なので、fn-knock がホストのファイアウォールへルールを書き込む必要はなく、Docker でも使用できます。
 - 実行環境には、アーキテクチャに合う FRP / Cloudflared 実行ファイルが必要です。`システム設定 → FRP` または `システム設定 → Cloudflared` の準備状態を基準にしてください。
 - Synology DSM 7 SPK はこれらの組み込みリソースをサポートします。管理用エントリーポイントは引き続き DSM デスクトップの CGI からだけ利用でき、サービス用トラフィックは `7999` ゲートウェイへ入ります。
+- macOS の Intel / Apple Silicon ネイティブパッケージも組み込みリソースをサポートします。ダウンロードは現在の Darwin アーキテクチャに一致し、管理画面はローカルの `127.0.0.1:7991` だけを待ち受けます。
 - Windows では組み込みリソースも準備状態も提供されません。独自に導入したトンネルプロセスは、fn-knock の起動、停止、ログ管理の対象外です。
 - Docker 内の `127.0.0.1` は現在のコンテナを指します。fn-knock ゲートウェイとトンネルプロセスが同じコンテナ内にある場合は使用できますが、別のトンネルコンテナを独自に構築する場合は、サービス名またはコンテナネットワークのアドレスを使用してください。
 - リバースプロキシモードでは、スマート接続とプロトコルマッピングを利用できません。追加の TCP / UDP サービスは、FRP または Cloudflare 側で個別に設計する必要があります。

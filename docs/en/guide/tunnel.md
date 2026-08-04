@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal and Tunnels"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa08100fb
+translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -14,7 +14,7 @@ When a device has no reachable public entry point, FRP or Cloudflared can establ
 
 Under `System settings → Mode`, select `Reverse proxy mode`. Choose `Subdomain mapping` for a new deployment; choose the `Path mode` marked as not recommended only when preserving an existing single-domain path entry point.
 
-Synology DSM 7 SPK provides in-app FRP and Cloudflared resources and process management. Windows x86_64 does not include these resources, so the `System settings → FRP` and `System settings → Cloudflared` steps on this page do not apply to Windows. If you run a tunnel client yourself on the same Windows host, it can use `127.0.0.1:7999` as its origin, but the administrator is responsible for that process's installation, credentials, and lifecycle.
+macOS and Synology DSM 7 SPK provide in-app FRP and Cloudflared resources and process management. Windows x86_64 does not include these resources, so the `System settings → FRP` and `System settings → Cloudflared` steps on this page do not apply to Windows. If you run a tunnel client yourself on the same Windows host, it can use `127.0.0.1:7999` as its origin, but the administrator is responsible for that process's installation, credentials, and lifecycle.
 
 ## Two Tunnel Options
 
@@ -96,6 +96,7 @@ After the fn-knock service itself restarts, it resumes tunnels saved as desired-
 - Tunnels use outbound connections and do not depend on fn-knock changing the host firewall, so Docker can use them as well.
 - The runtime must have FRP / Cloudflared executables for the matching architecture. Check their readiness under `System settings → FRP` or `System settings → Cloudflared`.
 - Synology DSM 7 SPK supports these built-in resources. Its admin entry remains available only through the DSM desktop CGI, while application traffic continues to enter gateway port `7999`.
+- Native Intel and Apple Silicon macOS packages support these built-in resources. Downloads match the current Darwin architecture, while the admin panel remains local at `127.0.0.1:7991`.
 - Windows does not provide the built-in resources or their readiness status. A separately deployed tunnel process is not controlled by fn-knock's start, stop, or log management.
 - Inside Docker, `127.0.0.1` means the current container. Use it when the fn-knock gateway and tunnel process are in the same container. For a separate tunnel container, use a service name or container-network address instead.
 - Reverse proxy mode does not provide Smart Connect or protocol mappings. Design additional TCP / UDP services separately on the FRP or Cloudflare platform.

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇執行模式"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2b8bea7d45df0da88d83727dc6ffc8fa6c15b5fb018fbf5611712fde669ef536
+translationSourceHash: 68e25b989a6064e569583a9ed66efda20b930bd16039d4fddd2d42836705a4cc
 ---
 
 # 選擇執行模式
@@ -13,6 +13,8 @@ translationSourceHash: 2b8bea7d45df0da88d83727dc6ffc8fa6c15b5fb018fbf5611712fde6
 Web 服務以 Host 路由為主要方案。路徑模式保留給既有的路徑入口或無法遷移的應用程式，不建議用於新部署。
 
 本頁的應用程式內 Tunnel 步驟，只適用於管理後台確實提供 FRP 或 Cloudflared 的部署方式。Windows 的 `7999` 預設監聽所有介面，可作為公網直連或自管 Tunnel 的回源端點，但不內建 FRP、Cloudflared、直連授權或動態主機防火牆管理；是否能從外部連線，仍取決於 Windows Firewall Profile、路由器／NAT、IPv6 與 ISP 原則。詳情請參閱 [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)。
+
+macOS 提供內建 FRP / Cloudflared，但不提供直連授權、`iptables`、macOS 主機防火牆管理、智慧連線、Web Terminal 或 SSH 安全性；更新使用 `sudo knock update`。詳見 [macOS 部署](/zh-tw/quick-start/macos-deployment)。
 
 ## 1. 選擇網路拓撲
 
@@ -97,7 +99,7 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - 從路徑模式切換至任一子網域路由後，路徑映射會隱藏；進入公網直連子網域模式時，介面會詢問是否清除路徑規則。
 - `內網穿透` 的子網域映射與路徑模式都可使用 FRP / Cloudflared；切離內網穿透時，系統會嘗試停止正在執行的 Tunnel。
 - 離開公網直連子網域模式後，通訊協定映射功能會關閉並停止 Listener，但已儲存的規則會保留；重新進入該模式並開啟功能後即可恢復。
-- 直連模式仰賴主機防火牆。Docker、Synology DSM 7 SPK、Windows，以及不具備主機管理能力的部署方式無法選擇此模式。
+- 直連模式仰賴主機防火牆。Docker、macOS、Synology DSM 7 SPK、Windows，以及不具備主機管理能力的部署方式無法選擇此模式。
 - Docker 不會寫入主機防火牆，也不支援智慧連線。OpenWrt 同樣不提供 fn-knock Host 防火牆管理、直連模式或智慧連線，也不提供 SSH 安全性、Web Terminal 與應用程式內 FPK 更新；連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理。
 - Windows 不支援直連授權、應用程式內主機防火牆管理、智慧連線、內建 FRP / Cloudflared、Web Terminal 或 SSH 安全性；網頁版更新頁面也無法安裝 Windows 更新。
 - Synology DSM 7 SPK 支援內建 FRP / Cloudflared，但不支援直連授權、主機防火牆管理、智慧連線、Web Terminal、SSH 安全性或網頁內更新。

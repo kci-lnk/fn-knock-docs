@@ -3,7 +3,7 @@ lang: zh-TW
 title: "IP 允許清單"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
+translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e5b5a53b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,7 +63,7 @@ CNAME 會依系統解析結果更新實際放行範圍；只應使用由自己�
 
 ## 在直連模式中的效果
 
-只有飛牛標準 FPK 會將有效允許清單同步至 Host 防火牆。Docker、OpenWrt、一般 Linux、Synology DSM 7 SPK 與 Windows 均不能依賴 fn-knock 允許清單開放原始服務連接埠。
+只有飛牛標準 FPK 會將有效允許清單同步至 Host 防火牆。Docker、OpenWrt、一般 Linux、macOS、Synology DSM 7 SPK 與 Windows 均不能依賴 fn-knock 允許清單開放原始服務連接埠；macOS 執行環境不會呼叫 `iptables`。
 
 頁面中的記錄仍會參與閘道授權，但不能取代各平台自身的防火牆。目前版本會把有效的精確 IP、CIDR 與地區群組編譯為統一原則，並將有效工作階段與授權來源同步到閘道 Runtime；新增、到期、刪除或撤銷後會再次同步，避免管理頁與閘道保留不同的舊清單。
 

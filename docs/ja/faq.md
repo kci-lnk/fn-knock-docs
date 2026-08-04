@@ -3,7 +3,7 @@ lang: ja-JP
 title: "よくある質問"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
+translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,16 +18,20 @@ translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245
 
 | 目的 | 入口 |
 | --- | --- |
-| 設定の変更、ログの確認、モードの切り替え | 飛牛デスクトップの `敲门 knock`。Synology では DSM のメインメニューから `敲门 knock` を開きます。OpenWrt では `サービス → 敲门 Knock`、Windows では `fn-knock Windows 管理アプリ` を使用してローカル管理画面を開きます |
+| 設定の変更、ログの確認、モードの切り替え | fnOS または DSM から `敲门 knock` を開きます。OpenWrt はサービスメニュー、macOS はローカルの `127.0.0.1:7991`、Windows は管理アプリを使用します |
 | インターネット公開、ドメイン、トンネル、サービスマッピングの確認 | 実際のゲートウェイポート、または対応する外部ドメイン。デフォルトは通常 `7999` です |
 
-OpenWrt のデフォルト管理ポートは `7991` で、ゲートウェイは `7999` のままです。Windows の管理画面は `127.0.0.1:7991` に厳しく制限されており、別の端末から開くことはできません。他のデプロイで使用するポートは、[ポートと入口](/ja/quick-start/ports-and-entrypoints)を参照してください。
+OpenWrt のデフォルト管理ポートは `7991` で、ゲートウェイは `7999` のままです。macOS と Windows の管理画面は `127.0.0.1:7991` に厳しく制限され、別の端末から直接開くことはできません。他のデプロイで使用するポートは、[ポートと入口](/ja/quick-start/ports-and-entrypoints)を参照してください。
 
 ### Windows の管理画面を開けない
 
 最初に `fn-knock Windows 管理アプリ` を開き、`FnKnock` サービスの状態が「準備完了」であることを確認してから、「管理画面を開く」をクリックします。初回インストール時のデフォルトアドレスは `http://127.0.0.1:7991/` で、管理アプリをインストールした Windows ホストからしかアクセスできません。
 
 サービスが準備完了にならない場合は、まずデフォルトの 5 ポートが使用中でないかを確認してください。`%ProgramData%\FnKnock\config\runtime.json` を直接編集せず、管理アプリからポートを変更して保存します。手順全体は [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)を参照してください。
+
+### macOS の管理画面を開けない
+
+fn-knock をインストールした Mac で `http://127.0.0.1:7991/` を開き、`sudo knock status` を実行します。準備完了にならない場合は `sudo knock logs` で LaunchDaemon と 5 ポートを確認し、`7991` は公開しないでください。別の端末からは SSH ローカル転送を使用します。詳細は [macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
 
 ### Synology で DSM セッションを読み取れないと表示される
 
@@ -52,6 +56,7 @@ OpenWrt のデフォルト管理ポートは `7991` で、ゲートウェイは 
 - Docker：[Docker へのデプロイ](/ja/quick-start/docker-deployment)にある管理パスワードの復旧手順を参照してください。
 - OpenWrt：[OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)を参照してください。
 - 飛牛 fnOS FPK：まず飛牛デスクトップから `敲门 knock` を開き直してください。
+- macOS：`sudo knock reset-panel-password` を実行します。
 - Windows：まず `fn-knock Windows 管理アプリ` で「管理パスワードを消去」をクリックします。管理アプリを開けない場合は、アプリケーションのインストールディレクトリで管理者 PowerShell を開き、`.\fn-knock-service.exe reset-panel-password` を実行します。
 
 ## 管理画面は正常だが、外部ネットワークからアクセスできない
@@ -100,7 +105,7 @@ OpenWrt のデフォルト管理ポートは `7991` で、ゲートウェイは 
 
 fn-knock を迂回する入口が存在します。ルーターのポートフォワーディング、ホストのファイアウォール、IPv6 ファイアウォール、前段のプロキシを確認し、サービスを直接参照する公開ルールを閉じてください。
 
-直接接続による許可では、認証ゲートウェイだけを公開し、ログイン後に現在の送信元 IP を一時的に許可します。Docker と Windows では、fn-knock によるホストのファイアウォール管理は利用できません。
+直接接続による許可では、認証ゲートウェイだけを公開し、ログイン後に現在の送信元 IP を一時的に許可します。Docker、macOS、Windows では、fn-knock によるホストのファイアウォール管理は利用できません。
 
 ## ドメイン、サブドメイン、トンネルが動作しない
 
@@ -302,19 +307,23 @@ OpenWrt は、対応するアーキテクチャの `.ipk` パッケージと `.a
 
 Windows アプリをアンインストールしても、復元できるよう `%ProgramData%\FnKnock` は保持されます。ここには SQLite、証明書、設定が含まれます。復元が不要であることを確認してから、管理者権限でこのディレクトリを別途削除してください。
 
+### macOS の更新、ロールバック、アンインストール
+
+現在のアーキテクチャを更新するには `sudo knock update`、保持された前バージョンへ戻すには `sudo knock rollback` を使います。`sudo knock uninstall` は設定、データ、ログを保持し、`sudo knock uninstall --purge` で `DELETE` を入力した場合だけ完全に削除します。詳細は [macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
+
 ### アップデート後、機能の入口が古いドキュメントと一致しない
 
 まず、現在のデプロイで利用できる機能を確認してください。
 
-| 機能 | 飛牛 fnOS FPK | Docker | OpenWrt | Linux サービス | Synology DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| ホストのファイアウォールと直接接続による許可 | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
-| 自動 HTTPS | 対応 | 非対応 | 非対応 | 対応。ポート `80` と着信経路が必要 | 非対応 | 対応。ファイアウォール、NAT、着信経路の設定は別途必要 |
-| ACME DNS-01 | 対応 | 対応 | 対応 | 対応 | 対応 | 対応。内蔵クライアントを使用し、Let's Encrypt に固定 |
-| スマート接続 | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
-| SSH セキュリティ | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
-| Web ターミナル | 対応 | 非対応 | 非対応 | 対応。`tmux` が必要 | 非対応 | 非対応 |
-| 内蔵 FRP／Cloudflared | 対応 | 対応 | 対応 | 対応 | 対応 | 非対応 |
-| アップデートのインストール | Web 画面から更新 | 新しいイメージを取得 | IPK／APK をインストール | `sudo knock update` | DSM パッケージセンター／SPK | Windows 管理アプリで実行 |
+| 機能 | 飛牛 fnOS FPK | Docker | OpenWrt | Linux サービス | macOS | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| ホストのファイアウォールと直接接続による許可 | 対応 | 非対応 | 非対応 | 非対応 | 非対応。`iptables` は呼び出さない | 非対応 | 非対応 |
+| 自動 HTTPS | 対応 | 非対応 | 非対応 | 対応。ポート `80` と着信経路が必要 | 対応。ファイアウォールと着信経路は手動設定 | 非対応 | 対応。ファイアウォール、NAT、着信経路の設定は別途必要 |
+| ACME DNS-01 | 対応 | 対応 | 対応 | 対応 | 対応 | 対応 | 対応。内蔵クライアントを使用し、Let's Encrypt に固定 |
+| スマート接続 | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
+| SSH セキュリティ | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
+| Web ターミナル | 対応 | 非対応 | 非対応 | 対応。`tmux` が必要 | 非対応 | 非対応 | 非対応 |
+| 内蔵 FRP／Cloudflared | 対応 | 対応 | 対応 | 対応 | 対応 | 対応 | 非対応 |
+| アップデートのインストール | Web 画面から更新 | 新しいイメージを取得 | IPK／APK をインストール | `sudo knock update` | `sudo knock update` | DSM パッケージセンター／SPK | Windows 管理アプリで実行 |
 
 デプロイごとの制約と推奨する入口については、[デプロイ方法とアクセス構成を選ぶ](/ja/quick-start/deployment-options)を参照してください。

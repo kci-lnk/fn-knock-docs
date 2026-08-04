@@ -34,7 +34,7 @@
 
 ## 更新页按部署形态工作
 
-路径：`版本与更新`。所有部署都会显示当前版本、最新版本、检查结果和发布说明，并提供官方网站、使用文档与 GitHub 项目的快捷链接。发布说明会安全渲染 Markdown 标题、列表、强调和 HTTPS 链接；它不是任意 HTML 页面。管理后台加载后也会在侧边栏显示当前版本，并定期检查更新。发现新版本时，页面顶部会出现提示，可进入更新页查看发布说明；只有飞牛原生 FPK 会在提示中提供网页内安装操作。群晖 DSM 7 SPK 通过 DSM 套件中心安装，Windows 原生版由独立的 `fn-knock Windows 管理程序`处理安装，二者都不在网页更新页执行。
+路径：`版本与更新`。所有部署都会显示当前版本、最新版本、检查结果和发布说明，并提供官方网站、使用文档与 GitHub 项目的快捷链接。发布说明会安全渲染 Markdown 标题、列表、强调和 HTTPS 链接；它不是任意 HTML 页面。管理后台加载后也会在侧边栏显示当前版本，并定期检查更新。发现新版本时，页面顶部会出现提示，可进入更新页查看发布说明；只有飞牛原生 FPK 会在提示中提供网页内安装操作。macOS 使用 `sudo knock update`，群晖 DSM 7 SPK 通过 DSM 套件中心安装，Windows 原生版由独立的 `fn-knock Windows 管理程序`处理安装，这些平台都不在网页更新页执行安装。
 
 | 部署形态 | 更新页能做什么 | 实际升级方式 |
 | --- | --- | --- |
@@ -42,6 +42,7 @@
 | Docker Compose | 检查版本和查看说明 | 拉取发布镜像并重建容器 |
 | OpenWrt | 检查版本和查看说明 | 安装匹配固件格式与架构的 `.ipk` 或 `.apk` |
 | Linux（systemd / OpenRC） | 检查版本和查看说明 | 执行 `sudo knock update` |
+| macOS 13+（Intel / Apple Silicon） | 检查版本和查看说明 | 执行 `sudo knock update` |
 | 群晖 DSM 7 SPK | 检查版本和查看说明 | 下载匹配架构的 SPK，在 DSM 套件中心手动更新 |
 | Windows x86_64 | 检查版本和查看说明 | 在 `fn-knock Windows 管理程序`或托盘菜单中检查并安装更新 |
 
@@ -94,6 +95,16 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 本地 `.apk` 的 `--allow-untrusted` 只能用于从可信发布渠道获得的包。升级会保留 `/etc/config/fn-knock`、`/etc/fn-knock/gateway` 和 `/etc/fn-knock/data`；保留前仍应备份它们。旧版本仍使用默认 `/var/lib/fn-knock` 时，安装脚本会把数据复制到新目录并更新 UCI 配置；自定义数据目录不会被强制迁移。确认登录、配置和原有数据正常前，不要手工删除旧目录。
 
+## macOS 更新
+
+在终端执行：
+
+```bash
+sudo knock update
+```
+
+命令会下载并校验当前 Mac 架构的发布包，切换版本后检查 LaunchDaemon 与管理服务。新版本未就绪时会恢复版本链接、管理命令、服务配置和原来的启停状态。需要回到保留的上一版本时执行 `sudo knock rollback`。更新前仍应导出应用备份；完整路径和卸载规则见 [macOS 部署](/quick-start/macos-deployment)。
+
 ## 群晖 DSM 7 SPK 更新
 
 在 `版本与更新` 查看版本和发布说明后，下载与群晖机型架构匹配的 SPK，并通过 DSM 的套件中心完成手动更新。网页不会代替 DSM 安装或重启套件。
@@ -121,5 +132,6 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 - [请求日志](/guide/request-logs)
 - [Docker 部署](/quick-start/docker-deployment)
 - [OpenWrt 部署](/quick-start/openwrt-deployment)
+- [macOS 部署（Intel / Apple Silicon）](/quick-start/macos-deployment)
 - [群晖 DSM 7 部署](/quick-start/synology-deployment)
 - [Windows x86_64 部署](/quick-start/windows-deployment)

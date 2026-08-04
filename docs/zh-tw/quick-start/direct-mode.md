@@ -3,7 +3,7 @@ lang: zh-TW
 title: "原始連接埠存取：直連授權"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f27002602
+translationSourceHash: 8d77a124098ec6071aff56f8f5f4aa30db445ac7bdc465f8ef1e19008e156e72
 ---
 
 # 原始連接埠存取：直連授權
@@ -15,7 +15,7 @@ translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f2
 - 存取方式：登入後取得 IP 授權
 - 後台位置：`系統設定 → 模式 → 直連模式（不建議）`
 
-直連模式仰賴 fn-knock 管理主機防火牆，目前只由 fnOS 標準 FPK 提供。Knock Lite、Docker、OpenWrt、一般 Linux、Synology DSM 7 SPK 與 Windows 均不提供此能力，因此不應採用本方案。
+直連模式仰賴 fn-knock 管理主機防火牆，目前只由 fnOS 標準 FPK 提供。Knock Lite、Docker、OpenWrt、一般 Linux、macOS、Synology DSM 7 SPK 與 Windows 均不提供此能力，因此不應採用本方案。
 
 ## 適用範圍
 
@@ -116,6 +116,7 @@ fn-knock 只負責控管網路入口。SSH、遠端桌面及其他上游服務�
 | OpenWrt 外掛套件 | 不支援 | fn-knock 不管理 OpenWrt 防火牆，也不顯示直連模式 |
 | Linux 服務 | 不支援 | 防火牆由管理員自行管理，不接入 fn-knock 動態直連授權 |
 | Docker Compose | 不支援 | Container 無法取代主機防火牆管理 |
+| macOS | 不支援 | 不呼叫 `iptables`，也不修改 macOS 主機防火牆 |
 | Synology DSM 7 SPK | 不支援 | 套件不會修改 DSM 主機防火牆 |
 | Windows x86_64 | 不支援 | 安裝程式建立的程式層級規則不等同於直連授權；管理後台不提供此模式 |
 

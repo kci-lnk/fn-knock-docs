@@ -3,7 +3,7 @@ lang: ko-KR
 title: "자주 묻는 질문"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
+translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
 ---
 
 # 자주 묻는 질문
@@ -16,16 +16,20 @@ translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245
 
 | 목적 | 진입점 |
 | --- | --- |
-| 설정 변경, 로그 확인 또는 모드 전환 | fnOS 바탕화면의 `Knock`, Synology DSM 메인 메뉴의 `Knock`, OpenWrt의 `서비스 → Knock` 또는 Windows의 `Knock Windows 관리 프로그램`에서 로컬 관리 페이지 열기 |
+| 설정 변경, 로그 확인 또는 모드 전환 | fnOS 또는 DSM에서 `Knock` 열기, OpenWrt 서비스 메뉴 사용, macOS에서 로컬 `127.0.0.1:7991` 열기, Windows 관리 프로그램 사용 |
 | 인터넷, 도메인, 터널 또는 서비스 매핑 확인 | 실제 게이트웨이 포트나 해당 외부 도메인. 기본 게이트웨이 포트는 일반적으로 `7999` |
 
-OpenWrt의 기본 관리 포트는 `7991`이고 게이트웨이는 계속 `7999`입니다. Windows 관리 페이지는 `127.0.0.1:7991`로 엄격하게 제한되어 다른 기기에서 열 수 없습니다. 다른 배포의 포트는 [포트 및 진입점](/ko/quick-start/ports-and-entrypoints)을 참고합니다.
+OpenWrt의 기본 관리 포트는 `7991`이고 게이트웨이는 계속 `7999`입니다. macOS와 Windows 관리 페이지는 `127.0.0.1:7991`로 엄격하게 제한되어 다른 기기에서 직접 열 수 없습니다. 다른 배포의 포트는 [포트 및 진입점](/ko/quick-start/ports-and-entrypoints)을 참고합니다.
 
 ### Windows 관리 페이지가 열리지 않음
 
 먼저 `Knock Windows 관리 프로그램`을 열고 `FnKnock` 서비스 상태가 `준비됨`인지 확인한 뒤 “관리 패널 열기”를 클릭합니다. 새로 설치했을 때의 기본 주소는 `http://127.0.0.1:7991/`이며 프로그램을 설치한 Windows 호스트에서만 접속할 수 있습니다.
 
 서비스가 준비 상태가 되지 않으면 먼저 기본 포트 다섯 개가 사용 중인지 확인합니다. `%ProgramData%\FnKnock\config\runtime.json`을 직접 편집하지 말고 관리 프로그램에서 포트를 변경해 저장합니다. 전체 절차는 [Windows x86_64 배포](/ko/quick-start/windows-deployment)를 참고합니다.
+
+### macOS 관리 페이지가 열리지 않음
+
+fn-knock가 설치된 Mac에서 `http://127.0.0.1:7991/`을 열고 `sudo knock status`를 실행합니다. 준비되지 않으면 `sudo knock logs`로 LaunchDaemon과 다섯 포트를 확인하고 `7991`을 공개하지 않습니다. 다른 컴퓨터에서는 SSH 로컬 포워딩을 사용합니다. 자세한 내용은 [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
 
 ### Synology에서 DSM 세션을 읽을 수 없다고 표시됨
 
@@ -50,6 +54,7 @@ OpenWrt의 기본 관리 포트는 `7991`이고 게이트웨이는 계속 `7999`
 - Docker: [Docker 배포](/ko/quick-start/docker-deployment)의 관리 비밀번호 복구 설명을 참고합니다.
 - OpenWrt: [OpenWrt 배포](/ko/quick-start/openwrt-deployment)를 참고합니다.
 - fnOS FPK: 먼저 fnOS 바탕화면에서 `Knock`에 다시 들어갑니다.
+- macOS: `sudo knock reset-panel-password`를 실행합니다.
 - Windows: 먼저 `Knock Windows 관리 프로그램`에서 “관리 비밀번호 초기화”를 클릭합니다. 관리 프로그램을 열 수 없다면 애플리케이션 설치 디렉터리에서 관리자 PowerShell로 `.\fn-knock-service.exe reset-panel-password`를 실행합니다.
 
 ## 관리는 정상이지만 외부 네트워크에서 접근할 수 없음
@@ -98,7 +103,7 @@ fnOS의 `HTTPS 연결 강제`가 요청이 fn-knock에 도달하기 전에 리�
 
 fn-knock를 우회하는 진입점이 있습니다. 라우터 포트 포워딩, 호스트 방화벽, IPv6 방화벽 및 앞단 프록시를 확인하고 서비스로 직접 연결되는 인터넷 공개 규칙을 닫습니다.
 
-직접 연결 접근 허용에서는 인증 게이트웨이만 공개하고 로그인 후 현재 인터넷 출구 IP를 임시로 허용합니다. Docker와 Windows에서는 fn-knock가 호스트 방화벽을 관리할 수 없습니다.
+직접 연결 접근 허용에서는 인증 게이트웨이만 공개하고 로그인 후 현재 인터넷 출구 IP를 임시로 허용합니다. Docker, macOS 및 Windows에서는 fn-knock가 호스트 방화벽을 관리할 수 없습니다.
 
 ## 도메인, 서브도메인 또는 터널이 작동하지 않음
 
@@ -300,19 +305,23 @@ OpenWrt는 아키텍처와 일치하는 `.ipk` 및 `.apk` 패키지를 지원합
 
 Windows 프로그램을 제거한 뒤에도 복구를 위해 `%ProgramData%\FnKnock`가 유지되며 SQLite, 인증서 및 설정이 포함되어 있습니다. 더 이상 복구할 필요가 없다는 것을 확인한 뒤에만 관리자 권한으로 해당 디렉터리를 별도로 삭제합니다.
 
+### macOS 업데이트, 롤백 또는 제거 방법
+
+현재 아키텍처를 업데이트하려면 `sudo knock update`, 보관된 이전 버전으로 돌아가려면 `sudo knock rollback`을 사용합니다. `sudo knock uninstall`은 설정, 데이터 및 로그를 유지하며 `sudo knock uninstall --purge` 실행 후 `DELETE`를 입력해야 모든 항목을 삭제합니다. [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
+
 ### 업데이트 후 기능 진입점이 이전 문서와 다름
 
 먼저 현재 배포 환경의 기능을 확인합니다.
 
-| 기능 | fnOS FPK | Docker | OpenWrt | Linux 서비스 | Synology DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 호스트 방화벽 및 직접 연결 접근 허용 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
-| 자동 HTTPS | 지원 | 미지원 | 미지원 | 지원, `80`번 포트와 인바운드 경로 필요 | 미지원 | 지원, 방화벽, NAT 및 인바운드 경로를 별도로 연결해야 함 |
-| ACME DNS-01 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원, Let's Encrypt로 고정된 내장 클라이언트 사용 |
-| Smart Connect | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
-| SSH 보안 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
-| 웹 터미널 | 지원 | 미지원 | 미지원 | 지원, `tmux` 필요 | 미지원 | 미지원 |
-| 내장 FRP / Cloudflared | 지원 | 지원 | 지원 | 지원 | 지원 | 미지원 |
-| 업데이트 설치 | 웹 페이지에서 업데이트 | 새 이미지 가져오기 | IPK / APK 설치 | `sudo knock update` | DSM 패키지 센터 / SPK | Windows 관리 프로그램에서 처리 |
+| 기능 | fnOS FPK | Docker | OpenWrt | Linux 서비스 | macOS | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 호스트 방화벽 및 직접 연결 접근 허용 | 지원 | 미지원 | 미지원 | 미지원 | 미지원, `iptables` 호출 안 함 | 미지원 | 미지원 |
+| 자동 HTTPS | 지원 | 미지원 | 미지원 | 지원, `80`번 포트와 인바운드 경로 필요 | 지원, 방화벽 및 인바운드 경로는 직접 설정 | 미지원 | 지원, 방화벽, NAT 및 인바운드 경로를 별도로 연결해야 함 |
+| ACME DNS-01 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원, Let's Encrypt로 고정된 내장 클라이언트 사용 |
+| Smart Connect | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
+| SSH 보안 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
+| 웹 터미널 | 지원 | 미지원 | 미지원 | 지원, `tmux` 필요 | 미지원 | 미지원 | 미지원 |
+| 내장 FRP / Cloudflared | 지원 | 지원 | 지원 | 지원 | 지원 | 지원 | 미지원 |
+| 업데이트 설치 | 웹 페이지에서 업데이트 | 새 이미지 가져오기 | IPK / APK 설치 | `sudo knock update` | `sudo knock update` | DSM 패키지 센터 / SPK | Windows 관리 프로그램에서 처리 |
 
 배포 환경별 범위와 권장 진입점은 [배포 및 접근 방식 선택](/ko/quick-start/deployment-options)을 참고합니다.

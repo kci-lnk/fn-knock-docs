@@ -3,7 +3,7 @@ lang: en-US
 title: "IP Allowlist"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
+translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e5b5a53b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,7 +63,7 @@ Host mappings imported from older versions may still carry a `strict_whitelist` 
 
 ## Effect in Direct Mode
 
-Only the standard fnOS FPK synchronizes valid allowlist entries to the host firewall. Docker, OpenWrt, generic Linux, Synology DSM 7 SPK, and Windows cannot rely on an fn-knock allowlist entry to open an original service port.
+Only the standard fnOS FPK synchronizes valid allowlist entries to the host firewall. Docker, OpenWrt, generic Linux, macOS, Synology DSM 7 SPK, and Windows cannot rely on an fn-knock allowlist entry to open an original service port; the macOS runtime never invokes `iptables`.
 
 Entries on the page still participate in gateway authorization but cannot replace each platform's own firewall. The current runtime compiles valid exact IPs, CIDRs, and region groups into one policy and synchronizes active sessions and authorized sources to the gateway. Additions, expiration, deletion, and revocation trigger another synchronization so the admin page and gateway do not keep different stale lists.
 

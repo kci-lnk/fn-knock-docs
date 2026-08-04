@@ -3,7 +3,7 @@ lang: ko-KR
 title: "원본 포트 직접 접근"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f27002602
+translationSourceHash: 8d77a124098ec6071aff56f8f5f4aa30db445ac7bdc465f8ef1e19008e156e72
 ---
 
 # 원본 포트 직접 접근
@@ -15,7 +15,7 @@ translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f2
 - 접근 방식: 로그인 후 IP 접근 허용
 - 관리 패널 위치: `시스템 설정 → 모드 → 직접 연결 모드(권장하지 않음)`
 
-직접 연결 모드는 fn-knock의 호스트 방화벽 관리에 의존하며 현재는 표준 fnOS FPK에서만 제공합니다. Knock Lite, Docker, OpenWrt, 일반 Linux, Synology DSM 7 SPK 및 Windows에서는 사용할 수 없습니다.
+직접 연결 모드는 fn-knock의 호스트 방화벽 관리에 의존하며 현재는 표준 fnOS FPK에서만 제공합니다. Knock Lite, Docker, OpenWrt, 일반 Linux, macOS, Synology DSM 7 SPK 및 Windows에서는 사용할 수 없습니다.
 
 ## 적용 범위
 
@@ -116,6 +116,7 @@ SSH 테스트에서는 이미 만들어진 연결을 재사용하지 말고 새 
 | OpenWrt 패키지 | 미지원 | fn-knock가 OpenWrt 방화벽을 관리하거나 직접 연결 모드를 표시하지 않음 |
 | Linux 서비스 | 미지원 | 방화벽은 관리자가 직접 관리하며 fn-knock 동적 직접 연결 접근 허용과 연동하지 않음 |
 | Docker Compose | 미지원 | 컨테이너가 호스트 방화벽 관리를 대신할 수 없음 |
+| macOS | 미지원 | `iptables`를 호출하거나 macOS 호스트 방화벽을 변경하지 않음 |
 | Synology DSM 7 SPK | 미지원 | 패키지가 DSM 호스트 방화벽을 변경하지 않음 |
 | Windows x86_64 | 미지원 | 설치 프로그램의 프로그램 단위 규칙은 직접 연결 접근 허용과 다르며, 관리 패널에서도 이 모드를 제공하지 않음 |
 

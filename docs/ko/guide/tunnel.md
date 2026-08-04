@@ -3,7 +3,7 @@ lang: ko-KR
 title: "NAT 통과 및 터널"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa08100fb
+translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
 ---
 
 # NAT 통과 및 터널
@@ -12,7 +12,7 @@ translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa
 
 `시스템 설정 → 모드`에서 `리버스 프록시 모드`를 선택합니다. 새로 배포할 때는 `서브도메인 매핑`을 선택하고 기존 단일 도메인 경로 진입점이 있을 때만 권장하지 않음으로 표시된 `경로 모드`를 선택합니다.
 
-Synology DSM 7 SPK는 FRP와 Cloudflared의 내장 리소스 및 프로세스 관리를 제공합니다. Windows x86_64에는 이러한 리소스가 없으므로 이 문서의 `시스템 설정 → FRP`와 `시스템 설정 → Cloudflared` 단계가 적용되지 않습니다. 같은 Windows 호스트에서 터널 클라이언트를 직접 실행한다면 `127.0.0.1:7999`를 오리진으로 지정할 수 있지만 해당 프로세스의 설치, 자격 증명 및 수명 주기는 관리자가 직접 담당합니다.
+macOS와 Synology DSM 7 SPK는 FRP와 Cloudflared의 내장 리소스 및 프로세스 관리를 제공합니다. Windows x86_64에는 이러한 리소스가 없으므로 이 문서의 `시스템 설정 → FRP`와 `시스템 설정 → Cloudflared` 단계가 적용되지 않습니다. 같은 Windows 호스트에서 터널 클라이언트를 직접 실행한다면 `127.0.0.1:7999`를 오리진으로 지정할 수 있지만 해당 프로세스의 설치, 자격 증명 및 수명 주기는 관리자가 직접 담당합니다.
 
 ## 두 가지 터널
 
@@ -94,6 +94,7 @@ fn-knock 서비스 자체가 다시 시작되면 계속 실행 상태로 저장�
 - 터널은 아웃바운드 연결이므로 fn-knock가 호스트 방화벽에 규칙을 쓰는 기능에 의존하지 않으며 Docker에서도 사용할 수 있습니다.
 - 실행 환경의 아키텍처와 일치하는 FRP / Cloudflared 실행 리소스를 사용합니다. `시스템 설정 → FRP` 또는 `시스템 설정 → Cloudflared`에 표시되는 준비 상태를 기준으로 합니다.
 - Synology DSM 7 SPK는 이러한 내장 리소스를 지원합니다. 관리 진입점은 DSM 데스크톱 CGI에서만 제공되며 서비스 트래픽은 계속 `7999` 게이트웨이로 들어갑니다.
+- macOS Intel 및 Apple Silicon 네이티브 패키지도 내장 리소스를 지원합니다. 다운로드는 현재 Darwin 아키텍처에 맞고 관리 패널은 로컬 `127.0.0.1:7991`에서만 수신합니다.
 - Windows는 이러한 내장 리소스나 준비 상태를 제공하지 않습니다. 직접 배포한 터널 프로세스는 fn-knock의 시작·중지 및 로그 관리 대상이 아닙니다.
 - Docker에서 `127.0.0.1`은 현재 컨테이너를 가리킵니다. fn-knock 게이트웨이와 터널 프로세스가 같은 컨테이너에 있으면 사용할 수 있지만 별도의 터널 컨테이너를 직접 만든 경우에는 서비스 이름이나 컨테이너 네트워크 주소를 사용합니다.
 - 리버스 프록시 모드에서는 Smart Connect와 프로토콜 매핑을 제공하지 않습니다. 추가 TCP / UDP 서비스는 FRP나 Cloudflare 플랫폼에 별도로 설계합니다.

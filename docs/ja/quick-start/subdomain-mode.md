@@ -3,7 +3,7 @@ lang: ja-JP
 title: "グローバル IP からのサブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
+translationSourceHash: d63362dfbc49d6c507936f9557dec1c59c3d85024d497b4d75ebe25d21c9ca64
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -22,7 +22,7 @@ translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad6662
 次のものを用意します。
 
 - DNS を管理できるドメイン（例：`example.com`）。
-- インターネット側の入口から fn-knock ゲートウェイへ到達できること。fnOS ネイティブ FPK、Docker Compose、OpenWrt、Linux、Synology DSM 7 SPK、Windows のデフォルトは `7999` です。以下では、これをまとめて「実際のゲートウェイポート」と呼びます。
+- インターネット側の入口から fn-knock ゲートウェイへ到達できること。fnOS ネイティブ FPK、Docker Compose、OpenWrt、Linux、macOS、Synology DSM 7 SPK、Windows のデフォルトは `7999` です。以下では、これをまとめて「実際のゲートウェイポート」と呼びます。
 - TOTP、パスワード、パスキー、設定済み OIDC または LDAP のうち、少なくとも 1 つの有効なログイン方法。
 - fn-knock を実行する機器から、公開対象のサービスへ接続できること。
 
@@ -35,6 +35,7 @@ translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad6662
 | fnOS ネイティブ FPK | フル対応 | 自動 HTTPS、ホストのファイアウォール、スマート接続を利用できます |
 | Docker Compose | サブドメインルーティングに対応 | ホストのファイアウォールは管理しません。スマート接続と自動 HTTPS は利用できません |
 | OpenWrt パッケージ | サブドメインルーティングに対応 | fn-knock はホストファイアウォールを管理せず、スマート接続と自動 HTTPS も提供しません。ポート許可と LAN のスプリット DNS は OpenWrt 側で管理します |
+| macOS 13+ | サブドメインルーティングに対応 | 管理画面はループバック専用です。`iptables` や macOS ファイアウォールを管理しないため、公開経路は管理者が設定します |
 | Synology DSM 7 SPK | サブドメインルーティングに対応 | 直接接続、ホストのファイアウォール管理、スマート接続には対応しません。DSM ファイアウォールとルーター / NAT で外部からの経路を管理します |
 | Windows x86_64 | 外部向けゲートウェイとして利用可能 | `7999` はデフォルトで全インターフェースを待ち受けます。Windows ファイアウォールのプロファイル、ルーター / NAT、IPv6 ファイアウォール、ISP の着信ポリシーを別途確認してください。直接接続の IP 許可には対応しません |
 

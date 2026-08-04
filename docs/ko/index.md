@@ -27,7 +27,7 @@ features:
     details: TOTP, 패스키, 비밀번호, 외부 IdP를 지원하며 세션, IP 허용 목록, WAF 및 요청 로그를 제공합니다.
     link: /ko/guide/auth
   - title: 장비와 네트워크 구성에 맞춘 배포
-    details: fnOS, Docker, OpenWrt, Linux, Synology DSM, Windows에 배포하고 FRP 또는 Cloudflare Tunnel을 함께 사용할 수 있습니다.
+    details: fnOS, Docker, OpenWrt, Linux, macOS, Synology DSM, Windows에 배포하고 FRP 또는 Cloudflare Tunnel을 함께 사용할 수 있습니다.
     link: /ko/quick-start/deployment-options
 ---
 
@@ -35,7 +35,7 @@ features:
 
 아래 순서로 서비스 하나를 먼저 연결하고 전체 경로를 검증한 뒤 나머지 서비스를 등록합니다.
 
-1. fnOS, Docker, OpenWrt, Linux, Synology DSM, Windows 중 환경을 선택하고 [설치 및 배포](/ko/quick-start/deployment-options)를 완료합니다.
+1. fnOS, Docker, OpenWrt, Linux, macOS, Synology DSM, Windows 중 환경을 선택하고 [설치 및 배포](/ko/quick-start/deployment-options)를 완료합니다.
 2. 홈 네트워크 조건에 따라 [공인 IP 서브도메인 라우팅](/ko/quick-start/subdomain-mode) 또는 [FRP / Cloudflare Tunnel을 이용한 NAT 통과](/ko/quick-start/reverse-proxy-mode)를 선택합니다.
 3. 인증을 설정합니다. [TOTP 인증기](/ko/guide/totp) 하나를 복구 수단으로 유지한 뒤 필요에 따라 패스키나 외부 IdP를 추가합니다.
 4. 테스트 서비스를 하나 등록하고 [TLS 인증서](/ko/guide/ssl)를 설정한 다음 모바일 네트워크에서 로그인부터 서비스 접근까지 전체 흐름을 확인합니다.

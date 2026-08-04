@@ -1,6 +1,6 @@
 # 飞牛原生 FPK 安装与首次配置
 
-本页介绍飞牛 fnOS 上的原生 `fn-knock` 应用 FPK。Docker Compose 请看 [Docker 部署](/quick-start/docker-deployment)，路由器上的 OpenWrt 软件包请看 [OpenWrt 部署](/quick-start/openwrt-deployment)，普通 Linux 主机请看 [Linux 部署（systemd / OpenRC）](/quick-start/linux-deployment)，群晖 DSM 7 请看 [群晖 DSM 7 部署](/quick-start/synology-deployment)，Windows 主机请看 [Windows x86_64 部署](/quick-start/windows-deployment)。
+本页介绍飞牛 fnOS 上的原生 `fn-knock` 应用 FPK。Docker Compose 请看 [Docker 部署](/quick-start/docker-deployment)，路由器上的 OpenWrt 软件包请看 [OpenWrt 部署](/quick-start/openwrt-deployment)，普通 Linux 主机请看 [Linux 部署（systemd / OpenRC）](/quick-start/linux-deployment)，Mac 请看 [macOS 部署（Intel / Apple Silicon）](/quick-start/macos-deployment)，群晖 DSM 7 请看 [群晖 DSM 7 部署](/quick-start/synology-deployment)，Windows 主机请看 [Windows x86_64 部署](/quick-start/windows-deployment)。
 
 ## 安装前确认
 

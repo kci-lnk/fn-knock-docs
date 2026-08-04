@@ -3,12 +3,12 @@ lang: ko-KR
 title: "fnOS 네이티브 FPK 설치 및 초기 설정"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ef12c45c8ddb6c61a05ba1ff703609dabf155e024d2c3249e785aa5f333c1726
+translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561bf5aa442
 ---
 
 # fnOS 네이티브 FPK 설치 및 초기 설정
 
-이 문서는 fnOS에서 실행되는 네이티브 `fn-knock` FPK만 다룹니다. Docker Compose는 [Docker 배포](/ko/quick-start/docker-deployment), 라우터용 OpenWrt 패키지는 [OpenWrt 배포](/ko/quick-start/openwrt-deployment), 일반 Linux 호스트는 [Linux 배포(systemd / OpenRC)](/ko/quick-start/linux-deployment), Synology DSM 7은 [Synology DSM 7 배포](/ko/quick-start/synology-deployment), Windows 호스트는 [Windows x86_64 배포](/ko/quick-start/windows-deployment)를 참고합니다.
+이 문서는 fnOS에서 실행되는 네이티브 `fn-knock` FPK만 다룹니다. Docker Compose는 [Docker 배포](/ko/quick-start/docker-deployment), 라우터용 OpenWrt 패키지는 [OpenWrt 배포](/ko/quick-start/openwrt-deployment), 일반 Linux 호스트는 [Linux 배포(systemd / OpenRC)](/ko/quick-start/linux-deployment), Mac은 [macOS 배포(Intel / Apple Silicon)](/ko/quick-start/macos-deployment), Synology DSM 7은 [Synology DSM 7 배포](/ko/quick-start/synology-deployment), Windows 호스트는 [Windows x86_64 배포](/ko/quick-start/windows-deployment)를 참고합니다.
 
 ## 설치 전 확인 사항
 

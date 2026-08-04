@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダッシュボードとシステム更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea13836198691
+translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a4f99dd8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -52,6 +52,7 @@ translationSourceHash: 00cf0c677aa96c2b3049a3ecbe8d80152a92e6e01fde6b4383eea1383
 | Docker Compose | バージョン確認とリリースノートの表示 | リリースイメージを pull し、コンテナを再作成 |
 | OpenWrt | バージョン確認とリリースノートの表示 | ファームウェアのパッケージ形式とアーキテクチャに合う `.ipk` または `.apk` をインストール |
 | Linux（systemd / OpenRC） | バージョン確認とリリースノートの表示 | `sudo knock update` を実行 |
+| macOS 13+（Intel / Apple Silicon） | バージョン確認とリリースノートの表示 | `sudo knock update` を実行 |
 | Synology DSM 7 SPK | バージョン確認とリリースノートの表示 | アーキテクチャに合う SPK をダウンロードし、DSM パッケージセンターから手動更新 |
 | Windows x86_64 | バージョン確認とリリースノートの表示 | `fn-knock Windows 管理アプリ` またはシステムトレイのメニューから確認してインストール |
 
@@ -85,6 +86,16 @@ sudo knock update
 ```
 
 このコマンドはローカルと公開済みのバージョンを比較し、リリースパッケージをダウンロードして検証した後、バージョンディレクトリへデプロイします。同じバージョンでも確認後に再インストールできます。新しいバージョンのヘルスチェックに失敗すると、元のプログラム、サービススクリプト、起動状態が復元されます。保持されている以前のバージョンへ戻す場合は `sudo knock rollback` を実行します。更新前には `/etc/fn-knock` と `/var/lib/fn-knock` もバックアップしてください。
+
+## macOS の更新
+
+ターミナルで実行します。
+
+```bash
+sudo knock update
+```
+
+現在の Mac アーキテクチャ向けパッケージをダウンロードして検証し、バージョン切り替え後に LaunchDaemon と管理サービスを確認します。新バージョンが準備完了にならない場合は、バージョンリンク、管理コマンド、サービス設定、以前の起動状態を復元します。保持された前バージョンへ戻すには `sudo knock rollback` を使用します。先にアプリバックアップをエクスポートし、パスとアンインストール方法は [macOS へのデプロイ](/ja/quick-start/macos-deployment)を確認してください。
 
 ## OpenWrt の更新
 
@@ -131,5 +142,6 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 - [リクエストログ](/ja/guide/request-logs)
 - [Docker へのデプロイ](/ja/quick-start/docker-deployment)
 - [OpenWrt へのデプロイ](/ja/quick-start/openwrt-deployment)
+- [macOS（Intel / Apple Silicon）へのデプロイ](/ja/quick-start/macos-deployment)
 - [Synology DSM 7 へのデプロイ](/ja/quick-start/synology-deployment)
 - [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)

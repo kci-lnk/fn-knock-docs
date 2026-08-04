@@ -3,7 +3,7 @@ lang: en-US
 title: "Direct Access on Original Ports"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f27002602
+translationSourceHash: 8d77a124098ec6071aff56f8f5f4aa30db445ac7bdc465f8ef1e19008e156e72
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -17,7 +17,7 @@ Use this pattern when the device accepts inbound traffic from the public interne
 - Access control: post-login IP authorization
 - Admin location: `System settings → Mode → Direct mode (not recommended)`
 
-Direct mode depends on fn-knock managing the host firewall and is currently available only in the standard native fnOS FPK. Knock Lite, Docker, OpenWrt, generic Linux, Synology DSM 7 SPK, and Windows do not provide this capability and must not use this pattern.
+Direct mode depends on fn-knock managing the host firewall and is currently available only in the standard native fnOS FPK. Knock Lite, Docker, OpenWrt, generic Linux, macOS, Synology DSM 7 SPK, and Windows do not provide this capability and must not use this pattern.
 
 ## When to use this pattern
 
@@ -118,6 +118,7 @@ For tighter source restrictions, manually add a stable IP or CIDR. Do not add an
 | OpenWrt package | Not supported | fn-knock does not manage the OpenWrt firewall or show Direct mode |
 | Linux service | Not supported | The administrator manages the firewall; it is not connected to fn-knock's dynamic Direct authorization |
 | Docker Compose | Not supported | A container cannot manage the host firewall on its behalf |
+| macOS | Not supported | Never invokes `iptables` or modifies the macOS host firewall |
 | Synology DSM 7 SPK | Not supported | The package does not modify the DSM host firewall |
 | Windows x86_64 | Not supported | Installer-created application rules are not equivalent to Direct mode authorization; the admin interface does not expose this mode |
 

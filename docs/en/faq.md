@@ -3,7 +3,7 @@ lang: en-US
 title: "Frequently Asked Questions"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5ab790e4ba2a99c99d639700f988be8cb0163698499248c6adc079245254398a
+translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,16 +18,20 @@ Find the symptom that matches your problem. First confirm the deployment method,
 
 | Goal | Entry point |
 | --- | --- |
-| Change configuration, view logs, or switch modes | Open `Knock` from the fnOS desktop; open `Knock` from the DSM main menu on Synology; use `Services → Knock` on OpenWrt; use `Knock Windows Manager` to open the local admin page on Windows |
+| Change configuration, view logs, or switch modes | Open `Knock` from fnOS or DSM; use `Services → Knock` on OpenWrt; open local `127.0.0.1:7991` on macOS; use Windows Manager on Windows |
 | Test public access, a domain, tunnel, or application mapping | Use the actual gateway port or corresponding external domain; the default gateway port is `7999` |
 
-OpenWrt uses admin port `7991` by default, while its gateway remains on `7999`. The Windows admin page is strictly limited to `127.0.0.1:7991` and cannot be opened from another machine. See [Ports and Entry Points](/en/quick-start/ports-and-entrypoints) for other deployments.
+OpenWrt uses admin port `7991` by default, while its gateway remains on `7999`. The macOS and Windows admin pages are strictly limited to `127.0.0.1:7991` and cannot be opened directly from another machine. See [Ports and Entry Points](/en/quick-start/ports-and-entrypoints) for other deployments.
 
 ### Windows Admin Page Does Not Open
 
 First open `Knock Windows Manager`, confirm that the `FnKnock` service status is ready, then click `Open admin panel`. A new installation opens `http://127.0.0.1:7991/` by default; the page is available only on the Windows host where fn-knock is installed.
 
 If the service cannot become ready, first check whether any of the five default ports is already in use. Change and save ports through the manager instead of editing `%ProgramData%\FnKnock\config\runtime.json` directly. See [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment) for the complete procedure.
+
+### macOS Admin Page Does Not Open
+
+On the Mac where fn-knock is installed, open `http://127.0.0.1:7991/` and run `sudo knock status`. If the service is not ready, use `sudo knock logs` to inspect the LaunchDaemon and five runtime ports. Do not expose `7991` publicly. Use an SSH local forward when administering from another computer. See [Deploy on macOS](/en/quick-start/macos-deployment) for the complete procedure.
 
 ### Synology Reports That It Cannot Read the DSM Session
 
@@ -52,6 +56,7 @@ The admin password is not the same as a visitor authentication credential. Use t
 - Docker: See the admin-password recovery instructions in [Deploy with Docker Compose](/en/quick-start/docker-deployment).
 - OpenWrt: See [Deploy on OpenWrt](/en/quick-start/openwrt-deployment).
 - Native fnOS FPK: Reopen `Knock` from the fnOS desktop first.
+- macOS: Run `sudo knock reset-panel-password`.
 - Windows: Use `Clear admin password` in `Knock Windows Manager` first. If the manager cannot be opened, run `.\fn-knock-service.exe reset-panel-password` from an Administrator PowerShell window in the application installation directory.
 
 ## Admin Works, but Public Access Fails
@@ -100,7 +105,7 @@ Automatic HTTPS does not request a certificate for you. Although Windows listens
 
 An entry point is bypassing fn-knock. Check router port forwarding, the host firewall, the IPv6 firewall, and frontend proxies, then remove any public rule that points directly to the application service.
 
-Direct authorization should expose only the authentication gateway, then temporarily allow the current egress IP after sign-in. Docker and Windows do not let fn-knock manage the host firewall.
+Direct authorization should expose only the authentication gateway, then temporarily allow the current egress IP after sign-in. Docker, macOS, and Windows do not let fn-knock manage the host firewall.
 
 ## Domain, Subdomain, or Tunnel Does Not Work
 
@@ -302,19 +307,23 @@ Install Windows updates through `Knock Windows Manager` or `Check for updates` i
 
 After uninstalling the Windows application, `%ProgramData%\FnKnock` is retained for recovery and contains SQLite, certificates, and configuration. Delete that directory separately with administrator privileges only after confirming that recovery is no longer needed.
 
+### How Do I Update, Roll Back, or Uninstall macOS?
+
+Use `sudo knock update` for the current architecture and `sudo knock rollback` for the retained previous version. `sudo knock uninstall` removes the program and LaunchDaemon but keeps configuration, data, and logs. Only `sudo knock uninstall --purge`, followed by typing `DELETE`, removes everything. See [Deploy on macOS](/en/quick-start/macos-deployment).
+
 ### Feature Entries Differ from Older Documentation After an Update
 
 First confirm the current deployment capabilities:
 
-| Capability | fnOS FPK | Docker | OpenWrt | Linux service | Synology DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Host firewall and Direct mode authorization | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Automatic HTTPS | Supported | Not supported | Not supported | Supported; requires port `80` and an inbound path | Not supported | Supported; firewall, NAT, and inbound access are still required |
-| ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported; built-in client fixed to Let's Encrypt |
-| Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Web Terminal | Supported | Not supported | Not supported | Supported; requires `tmux` | Not supported | Not supported |
-| Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Not supported |
-| Update installation | Update in the web UI | Pull a new image | Install an IPK / APK | `sudo knock update` | DSM Package Center / SPK | Handled by Windows Manager |
+| Capability | fnOS FPK | Docker | OpenWrt | Linux service | macOS | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Host firewall and Direct mode authorization | Supported | Not supported | Not supported | Not supported | Not supported; never invokes `iptables` | Not supported | Not supported |
+| Automatic HTTPS | Supported | Not supported | Not supported | Supported; requires port `80` and an inbound path | Supported; firewall and inbound path remain manual | Not supported | Supported; firewall, NAT, and inbound access are still required |
+| ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported | Supported; built-in client fixed to Let's Encrypt |
+| Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Web Terminal | Supported | Not supported | Not supported | Supported; requires `tmux` | Not supported | Not supported | Not supported |
+| Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Supported | Not supported |
+| Update installation | Update in the web UI | Pull a new image | Install an IPK / APK | `sudo knock update` | `sudo knock update` | DSM Package Center / SPK | Handled by Windows Manager |
 
 See [Choose a Deployment and Access Pattern](/en/quick-start/deployment-options) for deployment boundaries and recommended entry points.

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "元のポートへ直接アクセスする"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f27002602
+translationSourceHash: 8d77a124098ec6071aff56f8f5f4aa30db445ac7bdc465f8ef1e19008e156e72
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -17,7 +17,7 @@ translationSourceHash: afbed8854f4fca7248a65baf0ef42922e5f1c84d390f05d98f9d7b6f2
 - アクセス方法：ログイン後に IP 許可を取得
 - 管理画面の場所：`システム設定 → モード → 直接接続モード（非推奨）`
 
-直接接続モードは fn-knock によるホストファイアウォール管理に依存し、現在は標準 fnOS FPK だけで利用できます。Knock Lite、Docker、OpenWrt、汎用 Linux、Synology DSM 7 SPK、Windows では利用できません。
+直接接続モードは fn-knock によるホストファイアウォール管理に依存し、現在は標準 fnOS FPK だけで利用できます。Knock Lite、Docker、OpenWrt、汎用 Linux、macOS、Synology DSM 7 SPK、Windows では利用できません。
 
 ## 利用できる条件
 
@@ -118,6 +118,7 @@ SSH のテストでは確立済みの接続を使い回さず、新しい接続�
 | OpenWrt パッケージ | 非対応 | fn-knock は OpenWrt のファイアウォールを管理せず、直接接続モードも表示しません |
 | Linux サービス | 非対応 | ファイアウォールは管理者が管理し、fn-knock の動的な直接接続許可とは連携しません |
 | Docker Compose | 非対応 | Docker コンテナからホストのファイアウォールを管理することはできません |
+| macOS | 非対応 | `iptables` を呼び出さず、macOS のホストファイアウォールも変更しません |
 | Synology DSM 7 SPK | 非対応 | パッケージは DSM ホストのファイアウォールを変更しません |
 | Windows x86_64 | 非対応 | インストーラーが作るアプリ単位のルールは直接接続用の IP 許可とは異なり、管理画面にもこのモードはありません |
 

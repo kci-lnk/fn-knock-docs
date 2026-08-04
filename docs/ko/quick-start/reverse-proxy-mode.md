@@ -3,7 +3,7 @@ lang: ko-KR
 title: "NAT 통과: 서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a67540d8598cd97e2f29fabe40e516d0b7ad5d101e02474b68ea286804ca52ba
+translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
 ---
 
 # NAT 통과: 서브도메인 라우팅
@@ -26,7 +26,7 @@ translationSourceHash: a67540d8598cd97e2f29fabe40e516d0b7ad5d101e02474b68ea28680
 - 사용할 수 있는 로그인 방식 하나 이상
 - fn-knock가 실행되는 기기에서 서비스에 접속할 수 있는 네트워크 경로
 
-fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK는 모두 내장 터널을 사용할 수 있습니다. Windows x86_64는 내장 FRP/Cloudflared를 제공하지 않습니다. 같은 Windows 호스트에서 터널 클라이언트를 별도로 실행한다면 로컬 `127.0.0.1:7999`를 오리진으로 사용하는 것을 권장하지만, 설치와 운영은 fn-knock가 관리하지 않습니다. Docker에서 `127.0.0.1`은 컨테이너 자체를 뜻합니다. 업스트림이 호스트나 LAN의 다른 기기에 있다면 컨테이너에서 접속할 수 있는 주소를 입력합니다.
+fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK는 모두 내장 터널을 사용할 수 있습니다. Windows x86_64는 내장 FRP/Cloudflared를 제공하지 않습니다. 같은 Windows 호스트에서 터널 클라이언트를 별도로 실행한다면 로컬 `127.0.0.1:7999`를 오리진으로 사용하는 것을 권장하지만, 설치와 운영은 fn-knock가 관리하지 않습니다. Docker에서 `127.0.0.1`은 컨테이너 자체를 뜻합니다. 업스트림이 호스트나 LAN의 다른 기기에 있다면 컨테이너에서 접속할 수 있는 주소를 입력합니다.
 
 ## 요청 경로
 
@@ -34,7 +34,7 @@ fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK는 모두 내장 터널을 
 
 1. `auth.example.com` 또는 `nas.example.com`의 인터넷 엔드포인트
 2. FRP 또는 Cloudflared 터널
-3. fn-knock의 실제 게이트웨이 포트. fnOS 네이티브 FPK, Docker Compose, OpenWrt, Linux, Synology DSM 7 SPK, Windows는 기본적으로 `7999`를 사용합니다. Windows에서 직접 관리하는 터널은 같은 호스트의 루프백 주소를 오리진으로 사용하는 것이 좋습니다.
+3. fn-knock의 실제 게이트웨이 포트. fnOS 네이티브 FPK, Docker Compose, OpenWrt, Linux, macOS, Synology DSM 7 SPK, Windows는 기본적으로 `7999`를 사용합니다. Windows에서 직접 관리하는 터널은 같은 호스트의 루프백 주소를 오리진으로 사용하는 것이 좋습니다.
 4. 인증 서비스 또는 해당 서비스의 업스트림
 
 터널은 원래 `Host` 헤더를 fn-knock에 전달합니다. 모든 도메인은 동일한 로컬 게이트웨이를 가리키고 fn-knock가 이후 라우팅을 처리합니다.

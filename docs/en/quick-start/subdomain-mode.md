@@ -3,7 +3,7 @@ lang: en-US
 title: "Public IP Access with Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ee381409d7c818c1bf075081c61d5689282a6879ef6a67ead80ad66624be1e36
+translationSourceHash: d63362dfbc49d6c507936f9557dec1c59c3d85024d497b4d75ebe25d21c9ca64
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -22,7 +22,7 @@ Use this pattern when the device has a public IPv4 address, usable IPv6 connecti
 You need:
 
 - A domain whose DNS you can manage, such as `example.com`.
-- A public endpoint that can reach the fn-knock gateway. The native fnOS FPK, Docker Compose, OpenWrt, Linux, Synology DSM 7 SPK, and Windows deployments default to `7999`. This guide refers to that value as the "actual gateway port."
+- A public endpoint that can reach the fn-knock gateway. The native fnOS FPK, Docker Compose, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows deployments default to `7999`. This guide refers to that value as the "actual gateway port."
 - At least one working sign-in method: TOTP, password, Passkey, or a configured OIDC or LDAP provider.
 - Network connectivity from the fn-knock device to each upstream application.
 
@@ -35,6 +35,7 @@ If you do not have public ingress, use [NAT Traversal with Subdomain Routing](/e
 | Native fnOS FPK | Full support | Supports automatic HTTPS, host firewall management, and Smart Connect |
 | Docker Compose | Supports subdomain routing | Does not manage the host firewall; no Smart Connect or automatic HTTPS |
 | OpenWrt package | Supports subdomain routing | fn-knock does not manage the host firewall or provide Smart Connect or automatic HTTPS; OpenWrt manages port access and split-horizon LAN DNS |
+| macOS 13+ | Supports subdomain routing | Admin is loopback-only; fn-knock never invokes `iptables` or manages the macOS firewall, so the administrator configures public ingress |
 | Synology DSM 7 SPK | Supports subdomain routing | No Direct mode, host firewall management, or Smart Connect; manage the inbound path through the DSM firewall and router/NAT |
 | Windows x86_64 | Can serve as a public gateway | `7999` listens on all interfaces by default; verify Windows Firewall profiles, router/NAT, IPv6 firewall rules, and ISP inbound policy yourself; no Direct mode authorization |
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "IP 許可リスト"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1bca2b98234c4e3eb82135e1062f3a8f86fb0c0284dfd336ef3923600917ad46
+translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e5b5a53b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,7 +63,7 @@ CNAME はシステムの名前解決結果に応じて、実際に許可する�
 
 ## 直接接続モードでの効果
 
-有効なホワイトリストをホストのファイアウォールへ同期するのは、標準 FNOS FPK だけです。Docker、OpenWrt、汎用 Linux、Synology DSM 7 SPK、Windows では、fn-knock のホワイトリストで元のポートを開放できません。
+有効なホワイトリストをホストのファイアウォールへ同期するのは、標準 FNOS FPK だけです。Docker、OpenWrt、汎用 Linux、macOS、Synology DSM 7 SPK、Windows では、fn-knock のホワイトリストで元のポートを開放できません。macOS ランタイムは `iptables` を呼び出しません。
 
 画面上の記録はゲートウェイの許可判定には使用できますが、各プラットフォーム自身のファイアウォールに代わるものではありません。現在のランタイムは、有効な単一 IP、CIDR、地域グループを 1 つのポリシーへコンパイルし、アクティブなセッションと許可済み送信元をゲートウェイへ同期します。追加、期限切れ、削除、取り消しの後も再同期されます。
 

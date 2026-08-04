@@ -8,16 +8,20 @@
 
 | 目的 | 入口 |
 | --- | --- |
-| 修改配置、查看日志、切换模式 | 飞牛桌面的 `敲门 knock`；群晖从 DSM 主菜单打开 `敲门 knock`；OpenWrt 使用 `服务 → 敲门 Knock`；Windows 使用 `fn-knock Windows 管理程序`打开本机管理页 |
+| 修改配置、查看日志、切换模式 | 飞牛桌面的 `敲门 knock`；群晖从 DSM 主菜单打开 `敲门 knock`；OpenWrt 使用 `服务 → 敲门 Knock`；macOS 在本机打开 `127.0.0.1:7991`；Windows 使用管理程序打开本机管理页 |
 | 验证公网、域名、隧道或业务映射 | 实际网关端口或对应外部域名；默认通常为 `7999` |
 
-OpenWrt 默认管理端口是 `7991`，网关仍是 `7999`。Windows 管理页严格限定为 `127.0.0.1:7991`，不能从另一台机器打开。其他部署的端口见[端口与入口](./quick-start/ports-and-entrypoints.md)。
+OpenWrt 默认管理端口是 `7991`，网关仍是 `7999`。macOS 与 Windows 管理页严格限定为 `127.0.0.1:7991`，不能从另一台机器直接打开。其他部署的端口见[端口与入口](./quick-start/ports-and-entrypoints.md)。
 
 ### Windows 管理页打不开
 
 先打开 `fn-knock Windows 管理程序`，确认 `FnKnock` 服务状态为就绪，再点击“打开管理后台”。初装默认地址是 `http://127.0.0.1:7991/`；只能在安装该程序的 Windows 主机上访问。
 
 若服务无法就绪，优先检查五个默认端口是否被占用。通过管理程序修改端口并保存，避免直接编辑 `%ProgramData%\FnKnock\config\runtime.json`。完整步骤见 [Windows x86_64 部署](./quick-start/windows-deployment.md)。
+
+### macOS 管理页打不开
+
+在安装 fn-knock 的 Mac 本机打开 `http://127.0.0.1:7991/`，并执行 `sudo knock status`。若服务未就绪，使用 `sudo knock logs` 检查 LaunchDaemon 和五个运行端口；不要把 `7991` 改为公网监听。需要从另一台电脑管理时，使用 SSH 本地转发。完整步骤见 [macOS 部署](./quick-start/macos-deployment.md)。
 
 ### 群晖提示无法读取 DSM 会话
 
@@ -42,6 +46,7 @@ OpenWrt 默认管理端口是 `7991`，网关仍是 `7999`。Windows 管理页�
 - Docker：见 [Docker 部署](./quick-start/docker-deployment.md) 的管理密码恢复说明。
 - OpenWrt：见 [OpenWrt 部署](./quick-start/openwrt-deployment.md)。
 - 飞牛 fnOS FPK：优先从飞牛桌面重新进入 `敲门 knock`。
+- macOS：执行 `sudo knock reset-panel-password`。
 - Windows：优先在 `fn-knock Windows 管理程序`中点击“清除管理密码”。管理程序无法打开时，在应用安装目录中以管理员 PowerShell 运行 `.\fn-knock-service.exe reset-panel-password`。
 
 ## 管理正常，但外网访问失败
@@ -90,7 +95,7 @@ OpenWrt 默认管理端口是 `7991`，网关仍是 `7999`。Windows 管理页�
 
 存在绕过 fn-knock 的入口。检查路由器端口转发、宿主机防火墙、IPv6 防火墙和前置代理，关闭直接指向业务服务的公网规则。
 
-直连授权应只公开认证网关，登录后再临时放行当前出口 IP。Docker 和 Windows 不支持由 fn-knock 管理宿主机防火墙。
+直连授权应只公开认证网关，登录后再临时放行当前出口 IP。Docker、macOS 和 Windows 不支持由 fn-knock 管理宿主机防火墙。
 
 ## 域名、子域或隧道不工作
 
@@ -292,19 +297,23 @@ OpenWrt 支持匹配架构的 `.ipk` 和 `.apk` 包。安装后入口为 `服务
 
 卸载 Windows 程序后，`%ProgramData%\FnKnock` 会保留以便恢复，其中含 SQLite、证书与配置。确认不再需要恢复后，才以管理员权限单独删除该目录。
 
+### macOS 如何更新、回滚或卸载
+
+使用 `sudo knock update` 安装当前架构的新版本，使用 `sudo knock rollback` 切回保留的上一版本。`sudo knock uninstall` 会移除程序和 LaunchDaemon，但保留配置、数据与日志；只有 `sudo knock uninstall --purge` 并交互输入 `DELETE` 才会彻底清除。完整说明见 [macOS 部署](./quick-start/macos-deployment.md)。
+
 ### 更新后功能入口与旧文档不一致
 
 先确认当前部署能力：
 
-| 能力 | 飞牛 fnOS FPK | Docker | OpenWrt | Linux 服务 | 群晖 DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 主机防火墙与直连授权 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
-| 自动 HTTPS | 支持 | 不支持 | 不支持 | 支持；需 `80` 端口与入站链路 | 不支持 | 支持；仍需打通防火墙、NAT 与入站链路 |
-| ACME DNS-01 | 支持 | 支持 | 支持 | 支持 | 支持 | 支持；内置客户端，固定 Let's Encrypt |
-| 智能连接 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
-| SSH 安全 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
-| Web 终端 | 支持 | 不支持 | 不支持 | 支持；依赖 `tmux` | 不支持 | 不支持 |
-| 内置 FRP / Cloudflared | 支持 | 支持 | 支持 | 支持 | 支持 | 不支持 |
-| 更新安装 | 网页内更新 | 拉取新镜像 | 安装 IPK / APK | `sudo knock update` | DSM 套件中心 / SPK | Windows 管理程序处理 |
+| 能力 | 飞牛 fnOS FPK | Docker | OpenWrt | Linux 服务 | macOS | 群晖 DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 主机防火墙与直连授权 | 支持 | 不支持 | 不支持 | 不支持 | 不支持；不调用 `iptables` | 不支持 | 不支持 |
+| 自动 HTTPS | 支持 | 不支持 | 不支持 | 支持；需 `80` 端口与入站链路 | 支持；需手动打通防火墙与入站链路 | 不支持 | 支持；仍需打通防火墙、NAT 与入站链路 |
+| ACME DNS-01 | 支持 | 支持 | 支持 | 支持 | 支持 | 支持 | 支持；内置客户端，固定 Let's Encrypt |
+| 智能连接 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
+| SSH 安全 | 支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 | 不支持 |
+| Web 终端 | 支持 | 不支持 | 不支持 | 支持；依赖 `tmux` | 不支持 | 不支持 | 不支持 |
+| 内置 FRP / Cloudflared | 支持 | 支持 | 支持 | 支持 | 支持 | 支持 | 不支持 |
+| 更新安装 | 网页内更新 | 拉取新镜像 | 安装 IPK / APK | `sudo knock update` | `sudo knock update` | DSM 套件中心 / SPK | Windows 管理程序处理 |
 
 部署边界和推荐入口见[选择部署与访问方案](./quick-start/deployment-options.md)。

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透：子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a67540d8598cd97e2f29fabe40e516d0b7ad5d101e02474b68ea286804ca52ba
+translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
 ---
 
 # 內網穿透：子網域路由
@@ -26,7 +26,7 @@ translationSourceHash: a67540d8598cd97e2f29fabe40e516d0b7ad5d101e02474b68ea28680
 - 至少一種可用的登入方式。
 - fn-knock 所在裝置能夠存取業務服務。
 
-fnOS FPK、Docker、OpenWrt、Linux 與 Synology DSM 7 SPK 都可使用應用程式內建 Tunnel。Windows x86_64 不提供內建 FRP / Cloudflared；若要在同一台 Windows 主機上自行執行 Tunnel Client，建議將 Origin 指向本機 `127.0.0.1:7999`，其安裝與維護不由 fn-knock 管理。Docker 中的 `127.0.0.1` 是 Container 本身；若上游位於主機或區域網路中的其他裝置，請填入 Container 可存取的位址。
+fnOS FPK、Docker、OpenWrt、Linux、macOS 與 Synology DSM 7 SPK 都可使用應用程式內建 Tunnel。Windows x86_64 不提供內建 FRP / Cloudflared；若要在同一台 Windows 主機上自行執行 Tunnel Client，建議將 Origin 指向本機 `127.0.0.1:7999`，其安裝與維護不由 fn-knock 管理。Docker 中的 `127.0.0.1` 是 Container 本身；若上游位於主機或區域網路中的其他裝置，請填入 Container 可存取的位址。
 
 ## 請求路徑
 
@@ -34,7 +34,7 @@ fnOS FPK、Docker、OpenWrt、Linux 與 Synology DSM 7 SPK 都可使用應用程
 
 1. `auth.example.com` 或 `nas.example.com` 的公網入口。
 2. FRP 或 Cloudflared Tunnel。
-3. fn-knock 實際使用的閘道連接埠。fnOS 原生 FPK、Docker Compose、OpenWrt、Linux、Synology DSM 7 SPK 與 Windows 預設使用 `7999`。Windows 自管 Tunnel 建議優先回源至同一台主機的 Loopback 位址。
+3. fn-knock 實際使用的閘道連接埠。fnOS 原生 FPK、Docker Compose、OpenWrt、Linux、macOS、Synology DSM 7 SPK 與 Windows 預設使用 `7999`。Windows 自管 Tunnel 建議優先回源至同一台主機的 Loopback 位址。
 4. 身分驗證服務或對應的業務上游。
 
 Tunnel 必須將原始 `Host` 傳給 fn-knock。所有網域名稱都指向同一個本機閘道，後續再由 fn-knock 完成路由。

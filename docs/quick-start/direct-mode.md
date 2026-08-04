@@ -7,7 +7,7 @@
 - 访问方式：登录后获得 IP 授权
 - 后台位置：`系统设置 → 模式 → 直连模式（不推荐）`
 
-直连模式依赖 fn-knock 管理宿主机防火墙，当前只由飞牛 fnOS 标准 FPK 提供。Docker、OpenWrt、通用 Linux、群晖 DSM 7 SPK、Windows 和 `敲门 knock Lite` 均不提供该能力，不应使用本方案。
+直连模式依赖 fn-knock 管理宿主机防火墙，当前只由飞牛 fnOS 标准 FPK 提供。Docker、OpenWrt、通用 Linux、macOS、群晖 DSM 7 SPK、Windows 和 `敲门 knock Lite` 均不提供该能力，不应使用本方案。
 
 ## 适用边界
 
@@ -108,6 +108,7 @@ fn-knock 只控制网络入口。SSH、远程桌面和其他上游服务仍需�
 | OpenWrt 插件 | 不支持 | fn-knock 不管理 OpenWrt 防火墙，也不显示直连模式 |
 | Linux 服务 | 不支持 | 防火墙由管理员自行管理，不接入 fn-knock 的动态直连授权 |
 | Docker Compose | 不支持 | 容器不能代替宿主机防火墙管理 |
+| macOS | 不支持 | 不调用 `iptables`，也不修改 macOS 主机防火墙 |
 | 群晖 DSM 7 SPK | 不支持 | 套件不修改 DSM 宿主机防火墙 |
 | Windows x86_64 | 不支持 | 安装器的程序级规则不等同于直连授权；管理后台不提供该模式 |
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透與隧道"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa08100fb
+translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -14,7 +14,7 @@ translationSourceHash: 681d475674cd8daecf74ccdbfdd957b3c425a3c8beb119dce802944fa
 
 進入 `系統設定 → 模式`，選擇 `內網穿透`。新部署請選 `子網域映射`；只有既有服務仍使用單一網域 Path 入口時，才選擇已標示為不再建議使用的 `路徑模式`。
 
-Synology DSM 7 SPK 提供 FRP 與 Cloudflared 的應用程式內建資源及 Process 管理。Windows x86_64 不包含這些資源，因此本頁的 `系統設定 → FRP`、`系統設定 → Cloudflared` 步驟不適用於 Windows。若自行在同一台 Windows 主機上執行 Tunnel Client，可將 Origin 指向 `127.0.0.1:7999`，但該 Process 的安裝、憑據及生命週期須由管理員自行維護。
+macOS 與 Synology DSM 7 SPK 提供 FRP 與 Cloudflared 的應用程式內建資源及 Process 管理。Windows x86_64 不包含這些資源，因此本頁的 `系統設定 → FRP`、`系統設定 → Cloudflared` 步驟不適用於 Windows。若自行在同一台 Windows 主機上執行 Tunnel Client，可將 Origin 指向 `127.0.0.1:7999`，但該 Process 的安裝、憑據及生命週期須由管理員自行維護。
 
 ## 兩種 Tunnel 方案
 
@@ -96,6 +96,7 @@ fn-knock 服務本身重新啟動後，會恢復已儲存為持續執行的 Tunn
 - Tunnel 是 Outbound Connection，不需要 fn-knock 寫入 Host 防火牆；Docker 也能使用。
 - Runtime 環境必須具備符合架構的 FRP / Cloudflared 執行檔。請以 `系統設定 → FRP` 或 `系統設定 → Cloudflared` 顯示的就緒狀態為準。
 - Synology DSM 7 SPK 支援這些內建資源；管理入口仍只會出現在 DSM 桌面 CGI 中，服務流量則繼續進入 `7999` 閘道。
+- macOS Intel 與 Apple Silicon 原生套件都支援這些內建資源；下載會符合目前 Darwin 架構，管理面板仍只監聽本機 `127.0.0.1:7991`。
 - Windows 不提供這些內建資源或就緒狀態；自行部署的 Tunnel Process 不受 fn-knock 啟停與 Log 管理。
 - Docker 內的 `127.0.0.1` 代表目前的 Container。fn-knock 閘道與 Tunnel Process 位於同一 Container 時可以使用；若自行建立獨立的 Tunnel Container，則須改用 Service Name 或 Container Network 位址。
 - 內網穿透模式不提供智慧連線及協定映射。額外的 TCP / UDP 服務必須另外在 FRP 或 Cloudflare 平台規劃。
