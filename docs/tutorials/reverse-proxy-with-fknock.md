@@ -15,8 +15,8 @@
 
 1. 在 `系统设置 → 模式` 选择 `内网穿透`，并选择 `子域映射`。
 2. 在 `子域映射` 设置根域、认证 Host 和第一个业务 Host。业务 Host 的 Target 填写 fn-knock 所在环境能访问的内网服务地址，默认开启“要求登录”；认证 Host 必须公开。
-3. 在 `内网穿透` 安装并配置 FRP 或 Cloudflared，使外部流量转发到 fn-knock 的实际网关端口。
-4. 在隧道提供商侧为认证 Host 和业务 Host 配置 DNS / Public Hostname，并保持 Host、WebSocket 和真实客户端 IP 传递正确。
+3. 使用 FRP 时，配置客户端把流量转发到实际网关端口；使用 Cloudflared 时，连接推荐的账号 API Token，选择专用 Tunnel 并应用预检计划。
+4. FRP 的 DNS 与入口由服务端配置；托管 Cloudflared 会自动维护通配 DNS 与 Ingress，无需逐个添加 Public Hostname。两种方式都要保持 Host、WebSocket 和真实客户端 IP 传递正确。
 5. 配置对外 HTTPS。由 Tunnel 或前置反代终止 TLS 时，明确回源协议与证书校验方式；不要把内部 `localhost` 地址当成浏览器访问地址。
 6. 从移动网络打开认证 Host，完成登录后再访问业务 Host。
 
@@ -25,13 +25,13 @@
 | 项目 | FRP | Cloudflared |
 | --- | --- | --- |
 | 公网入口 | 自有 `frps` 或服务商节点 | Cloudflare 边缘与 Tunnel |
-| DNS | 通常指向 FRP 服务端 | Public Hostname 通常创建或关联 DNS |
+| DNS | 通常指向 FRP 服务端 | 托管模式自动维护通配代理 CNAME |
 | 真实来源 IP | HTTP 头或正确配置的 PROXY Protocol | Cloudflare 请求头；需按入口正确配置 |
-| fn-knock 中的管理 | 可管理多个 frpc 实例、配置与日志 | 管理资源、Tunnel token、进程与日志 |
+| fn-knock 中的管理 | 可管理多个 frpc 实例、配置与日志 | 通过 API Token 管理 Tunnel、DNS、Ingress、Token、进程、日志与优选 |
 
 若 FRP 只做 TCP 转发，fn-knock 看到的连接来源可能是隧道节点或本地转接地址；应按 FRP 链路配置 PROXY Protocol 或可信真实 IP 头，并在请求日志验证结果。不要因为页面能打开就假定白名单、地区和扫描规则使用了正确的客户端地址。
 
-Cloudflared 的 Public Hostname 应回源到网关入口，例如 `http://127.0.0.1:7999`，而不是直接回源业务服务；否则会绕过 fn-knock 的 Host 路由和认证。
+推荐在 Cloudflared 页面连接 Cloudflare API Token，并通过预检、应用自动创建通配 DNS、Ingress 和专用本地入口。托管模式下访客使用 `https://服务域名`，不附加 `:7999`，也不需要在 Cloudflare 后台逐条新增 Public Hostname。只有手动或外部自管 Cloudflared 才需要自行把 Public Hostname 回源到实际网关端口；不要直接回源业务服务，否则会绕过 fn-knock 的 Host 路由和认证。
 
 ## Target 地址
 

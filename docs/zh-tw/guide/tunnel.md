@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透與隧道"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
+translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,9 +21,9 @@ macOS 與 Synology DSM 7 SPK 提供 FRP 與 Cloudflared 的應用程式內建資
 | 方案 | 外部資源 | 適用情境 |
 | --- | --- | --- |
 | FRP | 一台執行 frps 的公網 Server 及 Remote Port | 想自行掌控公網位址、連接埠與傳輸設定 |
-| Cloudflared | Cloudflare Tunnel 與 Public Hostname | 已使用 Cloudflare，希望透過網域接入，且不想自行維護 frps |
+| Cloudflared | Cloudflare Account、Zone 與 API Token | 已使用 Cloudflare，希望自動維護 Tunnel、Wildcard DNS 與 Ingress |
 
-兩者的本機 Target 都是實際的閘道入口，常見值為 `127.0.0.1:7999`；若曾自訂連接埠，請以後台顯示內容及部署設定為準。
+FRP 與手動 Cloudflared 的本機 Target 通常是實際閘道入口 `127.0.0.1:7999`；託管 Cloudflared 使用由 fn-knock 自動設定的專用本機入口，不需要手動填寫 Port。
 
 ## 選擇路由方式
 
@@ -35,7 +35,7 @@ macOS 與 Synology DSM 7 SPK 提供 FRP 與 Cloudflared 的應用程式內建資
 nas.example.com -> FRP / Cloudflared -> fn-knock -> Host nas.example.com -> 飛牛
 ```
 
-Tunnel 必須保留原始 Host，並將驗證 Host 與服務 Host 都送到同一個閘道。Cloudflared 可以使用 `*.example.com` Public Hostname；若使用 FRP TCP Forwarding，則由 DNS 與 Remote Port 一起指向 frps。
+Tunnel 必須保留原始 Host，並將驗證 Host 與服務 Host 都送到同一個閘道。託管 Cloudflared 會自動維護 `*.example.com` Ingress 與代理 CNAME；FRP TCP Forwarding 則由 DNS 與 Remote Port 一起指向 frps。
 
 ### 路徑模式
 
@@ -69,9 +69,9 @@ PROXY Protocol v2 用來將公網 Client 位址一路傳遞到閘道。如果 fr
 
 ## Cloudflared
 
-先到 `系統設定 → Cloudflared` 下載資源，再到 `內網穿透 → Cloudflared` 儲存 Tunnel Token。公網網域及 Origin Service 必須在 Cloudflare Dashboard 中設定，不是在 fn-knock 裡建立。
+先到 `系統設定 → Cloudflared` 下載資源，再到 `內網穿透 → Cloudflared` 填入建議的 Cloudflare Account API Token。選擇專用 Tunnel，執行預檢並套用；fn-knock 會建立或接入 Tunnel、維護 Wildcard DNS 與 Ingress、取得 Tunnel Token 並啟動 Process。進階區域仍保留手動 Tunnel Token 模式。
 
-Host 路由的建議設定與 TLS 取捨，請參考 [Cloudflared Tunnel 設定](/zh-tw/guide/cloudflared-tunnel)。
+託管流程、Token 權限、標準 HTTPS Port、優選 Beta 與故障回退，請參考 [Cloudflared Tunnel 設定](/zh-tw/guide/cloudflared-tunnel)。
 
 ## 存取政策與真實 Client IP
 
@@ -80,7 +80,7 @@ Tunnel 不會取代 fn-knock 登入、允許清單或憑據範圍。Host 編輯�
 驗證判斷以閘道最終辨識到的 Client IP 為準。Private、Loopback 及 Link-local 來源會標示為 `local_exempt`，並略過一般登入與嚴格允許清單，因此來源位址的傳遞也是 Tunnel 安全邊界的一環：
 
 - FRP 應優先保留預設的 PROXY Protocol v2。
-- Cloudflared 請使用專用的內網穿透子網域路徑，不要套用 EdgeOne / ESA 開關。
+- 託管 Cloudflared 只在 Loopback 專用入口信任 `CF-Connecting-IP`，不要套用 EdgeOne / ESA 開關，也不要信任訪客自行提供的 `X-Forwarded-For`。
 - 啟動後請從行動網路存取，並在 Request Log 中確認 Client IP 是訪客的公網位址，而不是 `127.0.0.1`、Container 位址或 Tunnel Node 位址。
 
 ## Process 守護與失敗診斷
@@ -95,7 +95,7 @@ fn-knock 服務本身重新啟動後，會恢復已儲存為持續執行的 Tunn
 
 - Tunnel 是 Outbound Connection，不需要 fn-knock 寫入 Host 防火牆；Docker 也能使用。
 - Runtime 環境必須具備符合架構的 FRP / Cloudflared 執行檔。請以 `系統設定 → FRP` 或 `系統設定 → Cloudflared` 顯示的就緒狀態為準。
-- Synology DSM 7 SPK 支援這些內建資源；管理入口仍只會出現在 DSM 桌面 CGI 中，服務流量則繼續進入 `7999` 閘道。
+- Synology DSM 7 SPK 支援這些內建資源；管理入口仍只會出現在 DSM 桌面 CGI 中。託管 Cloudflared 的本機入口由 fn-knock 自動設定，FRP 與自管 Tunnel 才使用實際閘道 Port。
 - macOS Intel 與 Apple Silicon 原生套件都支援這些內建資源；下載會符合目前 Darwin 架構，管理面板仍只監聽本機 `127.0.0.1:7991`。
 - Windows 不提供這些內建資源或就緒狀態；自行部署的 Tunnel Process 不受 fn-knock 啟停與 Log 管理。
 - Docker 內的 `127.0.0.1` 代表目前的 Container。fn-knock 閘道與 Tunnel Process 位於同一 Container 時可以使用；若自行建立獨立的 Tunnel Container，則須改用 Service Name 或 Container Network 位址。
@@ -105,7 +105,7 @@ fn-knock 服務本身重新啟動後，會恢復已儲存為持續執行的 Tunn
 ## 啟動與驗證
 
 1. 儲存路由方式、驗證 Host 及至少一條服務映射。
-2. 儲存 FRP 或 Cloudflared 設定並啟動。
+2. 儲存並啟動 FRP；或為 Cloudflared 連接 API Token、預檢並套用託管設定。
 3. 確認執行狀態顯示為已連線；若顯示 `等待重新啟動`，請查看連續失敗次數、下次重試時間與最近診斷，再檢查 Token、TLS、網路或連接埠錯誤。
 4. 從外部網路存取驗證 Host 與服務 Host。
 5. 在 Request Log 中核對 Host、Client IP、授權類型及 Upstream Target。

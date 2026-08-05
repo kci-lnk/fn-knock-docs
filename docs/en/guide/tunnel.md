@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal and Tunnels"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
+translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,9 +21,9 @@ macOS and Synology DSM 7 SPK provide in-app FRP and Cloudflared resources and pr
 | Option | External resource | Best fit |
 | --- | --- | --- |
 | FRP | A public server running frps and a remote port | You want full control over the public address, port, and transport configuration |
-| Cloudflared | A Cloudflare Tunnel and Public Hostname | You already use Cloudflare, want domain-based access, and do not want to maintain frps |
+| Cloudflared | A Cloudflare Account, Zone, and API Token | You use Cloudflare and want Tunnel, wildcard DNS, and Ingress managed automatically |
 
-For both options, the local target is the actual gateway entry point, commonly `127.0.0.1:7999`. Follow the value shown in the admin UI and deployment configuration.
+FRP and manual Cloudflared normally target the actual gateway entry point, commonly `127.0.0.1:7999`. Managed Cloudflared uses a dedicated local entry that fn-knock configures automatically; no origin port needs to be entered.
 
 ## Choose a Routing Method
 
@@ -35,7 +35,7 @@ The recommended request path is:
 nas.example.com -> FRP / Cloudflared -> fn-knock -> Host nas.example.com -> fnOS
 ```
 
-The tunnel must preserve the original Host and send both the auth Host and application Hosts to the same gateway. Cloudflared can use a `*.example.com` Public Hostname. With FRP TCP forwarding, DNS and the remote port together direct traffic to frps.
+The tunnel must preserve the original Host and send both the auth Host and application Hosts to the same gateway. Managed Cloudflared automatically maintains the `*.example.com` Ingress and proxied CNAME. With FRP TCP forwarding, DNS and the remote port together direct traffic to frps.
 
 ### Path Mode
 
@@ -69,9 +69,9 @@ Back up the original text before switching editing methods on an existing custom
 
 ## Cloudflared
 
-First download the resource under `System settings → Cloudflared`, then save the Tunnel Token under `Tunnels → Cloudflared`. Configure the public domain and origin Service in Cloudflare Dashboard, not in fn-knock.
+First download the resource under `System settings → Cloudflared`, then enter the recommended Cloudflare Account API Token under `Tunnels → Cloudflared`. Choose the dedicated Tunnel, preview, and apply. fn-knock creates or attaches to the Tunnel, maintains wildcard DNS and Ingress, retrieves the Tunnel Token, and starts the process. Manual Tunnel Token mode remains available under the advanced section.
 
-See [Cloudflare Tunnel with cloudflared](/en/guide/cloudflared-tunnel) for the recommended Host-routing configuration and TLS tradeoffs.
+See [Cloudflare Tunnel with cloudflared](/en/guide/cloudflared-tunnel) for managed setup, Token permissions, standard HTTPS URLs, Optimization Beta, and fallback behavior.
 
 ## Access Policies and Real Client IPs
 
@@ -80,7 +80,7 @@ A tunnel does not replace fn-knock sign-in, allowlists, or credential scopes. In
 Authentication decisions use the client IP ultimately recognized by the gateway. Private, loopback, and link-local sources are marked `local_exempt` and bypass normal sign-in and strict-allowlist checks, making source-address forwarding part of the tunnel's security boundary:
 
 - Keep the default PROXY Protocol v2 configuration for FRP whenever possible.
-- Use Cloudflared's dedicated reverse-proxy subdomain path; do not apply the EdgeOne / ESA switch to it.
+- Managed Cloudflared trusts `CF-Connecting-IP` only on its dedicated loopback entry. Do not apply the EdgeOne / ESA switch or trust visitor-supplied `X-Forwarded-For`.
 - After startup, connect over a mobile network and verify in request logs that the client IP is the visitor's public address, not `127.0.0.1`, a container address, or the tunnel node's address.
 
 ## Process Supervision and Failure Diagnostics
@@ -95,7 +95,7 @@ After the fn-knock service itself restarts, it resumes tunnels saved as desired-
 
 - Tunnels use outbound connections and do not depend on fn-knock changing the host firewall, so Docker can use them as well.
 - The runtime must have FRP / Cloudflared executables for the matching architecture. Check their readiness under `System settings → FRP` or `System settings → Cloudflared`.
-- Synology DSM 7 SPK supports these built-in resources. Its admin entry remains available only through the DSM desktop CGI, while application traffic continues to enter gateway port `7999`.
+- Synology DSM 7 SPK supports these built-in resources. Its admin entry remains available only through the DSM desktop CGI. fn-knock configures the managed Cloudflared entry automatically; FRP and self-managed tunnels use the actual gateway port.
 - Native Intel and Apple Silicon macOS packages support these built-in resources. Downloads match the current Darwin architecture, while the admin panel remains local at `127.0.0.1:7991`.
 - Windows does not provide the built-in resources or their readiness status. A separately deployed tunnel process is not controlled by fn-knock's start, stop, or log management.
 - Inside Docker, `127.0.0.1` means the current container. Use it when the fn-knock gateway and tunnel process are in the same container. For a separate tunnel container, use a service name or container-network address instead.
@@ -105,7 +105,7 @@ After the fn-knock service itself restarts, it resumes tunnels saved as desired-
 ## Startup and Verification
 
 1. Save the routing method, auth Host, and at least one application mapping.
-2. Save the FRP or Cloudflared configuration and start the tunnel.
+2. Save and start FRP, or connect the Cloudflare API Token, preview, and apply the managed Cloudflared configuration.
 3. Confirm that the runtime status is `Connected`. If it shows `Waiting to restart`, inspect the consecutive failure count, next retry time, and latest diagnosis, then check for Token, TLS, network, or port errors.
 4. Access the auth Host and application Host from an external network.
 5. Verify the Host, client IP, authorization type, and upstream Target in request logs.

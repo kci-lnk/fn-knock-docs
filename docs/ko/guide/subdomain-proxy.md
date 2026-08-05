@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
+translationSourceHash: cdbb83deedca2c8f0c853d696a22417372c1a12eb8c00a21c5346b9126f16abc
 ---
 
 # 서브도메인 라우팅
@@ -43,10 +43,12 @@ translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd
 | --- | --- | --- |
 | `도메인` | 서비스 Host를 생성할 상위 도메인. 예: `example.com` | 먼저 저장한 뒤 인증 서비스와 서비스 매핑 추가 |
 | `현재 인증 서비스` | 로그인하지 않았을 때 사용하는 통합 로그인 진입점 | `auth.example.com`을 사용하며 하나만 설정 가능 |
-| `인증 서비스의 외부 HTTPS 포트` | 로그인 리디렉션 URL을 만들 때 사용하는 방문자 측 HTTPS 포트 | 방문자에게 실제로 표시되는 포트 입력 |
-| `Edge 실제 IP 감지` | 공인 IP 직접 연결 서브도메인 모드에서 EdgeOne / ESA의 방문자 주소 읽기 | 해당 플랫폼에서 오리진에 연결할 때만 활성화 |
+| `인증 서비스의 외부 HTTPS 포트` | 로그인 리디렉션 URL을 만들 때 사용하는 방문자 측 HTTPS 포트 | 직접 연결 또는 FRP에서는 실제 포트를 입력. 관리 Cloudflare Tunnel에서는 숨기고 표준 HTTPS 사용 |
+| `Edge 실제 IP 감지` | 공인 IP 직접 연결 서브도메인 모드에서 EdgeOne / ESA의 방문자 주소 읽기 | 해당 플랫폼에서만 표시하며 관리 Cloudflare Tunnel에서는 숨김 |
 
 인증 서비스의 외부 HTTPS 포트는 외부 URL에만 영향을 주며 프로그램의 수신 포트를 바꾸지 않습니다. 라우터, 컨테이너 또는 엣지 플랫폼의 포트를 대신 열거나 NAT 포워딩을 만들지도 않습니다.
+
+관리 Cloudflare Tunnel에서는 서브도메인 목록, 인증 주소, 로그인 리디렉션 및 `redirect_uri`가 `https://host.example.com`을 사용하며 이전 설정의 `:7999`를 붙이지 않습니다. Cloudflare 외부 포트와 fn-knock 로컬 Tunnel 진입점은 관리 흐름에서 처리합니다.
 
 루트 도메인과 Host 매핑에는 `*`를 포함할 수 없습니다. 루트 도메인에는 `example.com`, 서비스 매핑에는 `nas` 또는 `nas.example.com`을 입력합니다. DNS에 `*.example.com` 와일드카드 레코드를 설정하는 것은 별도 계층의 설정이므로 fn-knock의 루트 도메인이나 Host에 와일드카드를 입력하지 않습니다.
 
@@ -195,7 +197,7 @@ Host별 트래픽 세부 정보에서 실시간 트래픽과 활성 IP를 확인
 
 요청 경로를 따라 다음 순서로 확인합니다.
 
-1. DNS 또는 터널 공개 호스트 이름이 현재 Host를 올바른 게이트웨이 포트로 보내는지 확인합니다.
+1. DNS 또는 Tunnel이 현재 Host를 올바른 게이트웨이로 보내는지 확인합니다. 관리 Cloudflared는 동기화 상태, 와일드카드 DNS 및 Ingress를 먼저 확인합니다.
 2. 요청 로그의 Host와 클라이언트 IP가 올바른지 확인합니다.
 3. 인증 서비스가 존재하고 로그인 필요나 Basic Auth가 활성화되지 않았는지 확인합니다.
 4. 서비스 매핑이 활성화되어 있고 현재 시각이 공개 시간 안에 있는지 확인합니다.

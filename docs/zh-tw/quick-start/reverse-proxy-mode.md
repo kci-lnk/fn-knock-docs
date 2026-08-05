@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透：子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
+translationSourceHash: 989de42249c3a4f69bda7bfd0bae96d4cf7447b2fc62bde261cc6ae102db2f90
 ---
 
 # 內網穿透：子網域路由
@@ -53,7 +53,7 @@ Tunnel 必須將原始 `Host` 傳給 fn-knock。所有網域名稱都指向同�
 
 ## 2. 設定根網域與身分驗證服務
 
-前往 `子網域映射`，展開 `子網域模式設定`，在 `網域名稱` 中填入 `example.com` 並儲存。`身分驗證服務使用的連接埠` 應填入訪客實際存取的公網連接埠。接著按一下 `新增身分驗證服務`，加入 `auth.example.com`。
+前往 `子網域映射`，展開 `子網域模式設定`，在 `網域名稱` 中填入 `example.com` 並儲存。接著按一下 `新增身分驗證服務`，加入 `auth.example.com`。使用託管 Cloudflare Tunnel 時，訪客透過標準 HTTPS `443` 存取，介面不會要求填寫公網 Port，產生的驗證位址也不會附加 `:7999`。
 
 身分驗證服務需要符合以下條件：
 
@@ -96,16 +96,14 @@ Tunnel 必須將原始 `Host` 傳給 fn-knock。所有網域名稱都指向同�
 
 ### 使用 Cloudflared
 
-在 Cloudflare Zero Trust 中，為每個入口設定 Public Hostname：
+1. 在 `系統設定 → Cloudflared` 準備好執行檔資源。
+2. 進入 `內網穿透 → Cloudflared`，連接建議的 Cloudflare Account API Token，並授予 Tunnel、Zone Read 與 DNS Edit 權限。
+3. 選擇建議的專用 Tunnel，按下 `預檢` 查看即將建立的 Tunnel、`*.example.com` Ingress 與代理 CNAME。
+4. 處理衝突後套用計畫。fn-knock 會取得 Tunnel Token 並啟動 Cloudflared。
 
-| 公網網域名稱 | 本機服務 |
-| --- | --- |
-| `auth.example.com` | `http://127.0.0.1:<實際閘道連接埠>` |
-| `nas.example.com` | `http://127.0.0.1:<實際閘道連接埠>` |
+套用後，`auth.example.com`、`nas.example.com` 等已知 Host 都會透過 Wildcard Tunnel 進入閘道，不必在 Cloudflare Zero Trust 中逐筆設定 Public Hostname。訪客使用 `https://nas.example.com`，不要附加 `:7999`。
 
-若 fn-knock 管理的 Cloudflared 與閘道位於同一個執行環境，請使用 `127.0.0.1` 與實際的閘道連接埠。只有在 Cloudflared 以獨立 Container 執行，且與 fn-knock 位於同一個 Docker Network 時，才使用 fn-knock 的 Container Service Name 與連接埠；位於不同 Network 時，請改用 Cloudflared 可連線的位址。
-
-公網 TLS 可由 Cloudflare 終止。若本機回源使用 HTTPS，憑證必須涵蓋回源位址且受到 Cloudflared 信任；否則請在受控的內部網路中使用 HTTP 回源。
+進階使用者可使用手動 Tunnel Token；只有手動或外部自管 Cloudflared 才需自行設定 Public Hostname 與實際 Origin Port。完整說明請參閱 [Cloudflared Tunnel 設定](/zh-tw/guide/cloudflared-tunnel)。
 
 ### 使用 FRP
 
@@ -144,10 +142,10 @@ FRP Server 需要將外部 HTTP 或 HTTPS 流量轉送至 fn-knock 實際使用�
 
 | 現象 | 優先檢查 |
 | --- | --- |
-| Tunnel 已連線，但網域名稱連線逾時 | Public Hostname、FRP 入口、DNS 與 Tunnel 目標連接埠 |
+| Tunnel 已連線，但網域名稱連線逾時 | Cloudflare 核對衝突、Wildcard DNS、Ingress、FRP 入口與本機 Host 映射 |
 | 所有子網域都進入同一項服務 | Tunnel 或前置 Proxy 未保留 Host |
 | 回傳 502 | Tunnel 無法存取閘道，或閘道無法存取業務上游 |
-| 登入後不斷重新導向 | 公開 Protocol、身分驗證網域名稱、根網域、Cookie Scope，以及前置 Proxy 的 `Host` / `X-Forwarded-*` 不一致；請從原本的業務 Host 重新發起存取 |
+| 登入後不斷重新導向或出現 `:7999` | 確認使用託管 Cloudflared 子網域映射、公開位址為標準 HTTPS，並從原本的業務 Host 重新發起存取 |
 | Cloudflared 回報 TLS 錯誤 | 回源 Protocol 或憑證信任設定錯誤 |
 | 路徑模式中的資源回傳 404 | 上游不支援 Path Prefix，應優先遷移至子網域映射 |
 

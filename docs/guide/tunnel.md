@@ -11,9 +11,9 @@ macOS 与群晖 DSM 7 SPK 提供 FRP 与 Cloudflared 的应用内资源和进程
 | 方案 | 外部资源 | 适用情况 |
 | --- | --- | --- |
 | FRP | 一台运行 frps 的公网服务器和远端端口 | 需要自行控制公网地址、端口和传输配置 |
-| Cloudflared | Cloudflare Tunnel 与 Public Hostname | 已使用 Cloudflare，希望以域名接入且不维护 frps |
+| Cloudflared | Cloudflare Account、Zone 与 API Token | 已使用 Cloudflare，希望自动维护 Tunnel、通配 DNS 和 Ingress |
 
-两者的本地目标都是实际网关入口，常见为 `127.0.0.1:7999`；如果修改过端口，应以后台显示和部署配置为准。
+FRP 和手动 Cloudflared 的本地目标通常是实际网关入口 `127.0.0.1:7999`；托管 Cloudflared 使用独立的本地入口，由 fn-knock 自动配置，不需要手工填写端口。
 
 ## 路由选择
 
@@ -25,7 +25,7 @@ macOS 与群晖 DSM 7 SPK 提供 FRP 与 Cloudflared 的应用内资源和进程
 nas.example.com -> FRP / Cloudflared -> fn-knock -> Host nas.example.com -> 飞牛
 ```
 
-隧道必须保留原始 Host，并把鉴权 Host 与业务 Host 都送到同一网关。Cloudflared 可使用 `*.example.com` Public Hostname；FRP TCP 转发则由 DNS 和远端端口共同指向 frps。
+隧道必须保留原始 Host，并把鉴权 Host 与业务 Host 都送到同一网关。托管 Cloudflared 会自动维护 `*.example.com` 的 Ingress 和代理 CNAME；FRP TCP 转发则由 DNS 和远端端口共同指向 frps。
 
 ### 路径模式
 
@@ -59,9 +59,9 @@ PROXY Protocol v2 用于把公网客户端地址继续传给网关。frps、转�
 
 ## Cloudflared
 
-先在 `系统设置 → Cloudflared` 下载资源，再到 `内网穿透 → Cloudflared` 保存 Tunnel Token。公网域名和源站 Service 在 Cloudflare Dashboard 配置，不在 fn-knock 中创建。
+先在 `系统设置 → Cloudflared` 下载资源，再到 `内网穿透 → Cloudflared` 填写推荐的 Cloudflare 账号 API Token。推荐选择专用 Tunnel，执行预检并应用；fn-knock 会自动创建或接入 Tunnel、维护通配 DNS 与 Ingress、取得 Tunnel Token 并启动进程。也可在高级区域保留手动 Tunnel Token 模式。
 
-Host 路由的推荐配置与 TLS 取舍见 [Cloudflared 隧道配置](/guide/cloudflared-tunnel)。
+托管流程、Token 权限、标准 HTTPS 端口、优选 Beta 和故障回退见 [Cloudflared 隧道配置](/guide/cloudflared-tunnel)。
 
 ## 访问策略与真实客户端 IP
 
@@ -70,7 +70,7 @@ Host 路由的推荐配置与 TLS 取舍见 [Cloudflared 隧道配置](/guide/cl
 认证判断以网关最终识别的客户端 IP 为准。私网、回环和链路本地来源会被标记为 `local_exempt` 并跳过常规登录与严格白名单，因此来源传递是隧道安全边界的一部分：
 
 - FRP 优先保留默认 PROXY Protocol v2。
-- Cloudflared 使用专用的内网穿透子域链路，不要套用 EdgeOne / ESA 开关。
+- 托管 Cloudflared 只在回环专用入口信任 `CF-Connecting-IP`，不要套用 EdgeOne / ESA 开关，也不要信任访客自行提供的 `X-Forwarded-For`。
 - 启动后从移动网络访问，并在请求日志确认客户端 IP 是访客公网地址，而不是 `127.0.0.1`、容器地址或隧道节点地址。
 
 ## 进程守护与失败诊断
@@ -85,7 +85,7 @@ fn-knock 服务自身重启后，会恢复已保存为持续运行的隧道，�
 
 - 隧道是出站连接，不依赖 fn-knock 写入宿主机防火墙；Docker 也可使用。
 - 运行环境必须有匹配架构的 FRP / Cloudflared 可执行资源。以 `系统设置 → FRP` 或 `系统设置 → Cloudflared` 的就绪状态为准。
-- 群晖 DSM 7 SPK 支持这些内置资源；其管理入口仍只在 DSM 桌面 CGI 中提供，业务流量继续进入 `7999` 网关。
+- 群晖 DSM 7 SPK 支持这些内置资源；其管理入口仍只在 DSM 桌面 CGI 中提供。托管 Cloudflared 的本地入口由 fn-knock 自动配置，FRP 和自管 Tunnel 才需使用实际网关端口。
 - macOS Intel 与 Apple Silicon 原生包均支持这些内置资源；资源下载会匹配当前 Darwin 架构，管理面板仍只监听本机 `127.0.0.1:7991`。
 - Windows 不提供这些内置资源或就绪状态；自行部署的隧道进程不受 fn-knock 启停和日志管理。
 - Docker 内的 `127.0.0.1` 指当前容器。fn-knock 网关与隧道进程在同一容器时可使用它；自建独立隧道容器需要改用服务名或容器网络地址。
@@ -95,7 +95,7 @@ fn-knock 服务自身重启后，会恢复已保存为持续运行的隧道，�
 ## 启动与验证
 
 1. 保存路由方式、鉴权 Host 和至少一条业务映射。
-2. 保存 FRP 或 Cloudflared 配置并启动。
+2. 保存并启动 FRP；或为 Cloudflared 连接 API Token、预检并应用托管配置。
 3. 确认运行状态为已连接；若显示 `等待重启`，查看连续失败次数、下次重试时间和最近诊断，再检查 Token、TLS、网络或端口错误。
 4. 从外部网络访问鉴权 Host 和业务 Host。
 5. 在请求日志核对 Host、客户端 IP、授权类型和上游 Target。

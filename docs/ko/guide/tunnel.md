@@ -3,7 +3,7 @@ lang: ko-KR
 title: "NAT 통과 및 터널"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
+translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
 ---
 
 # NAT 통과 및 터널
@@ -19,9 +19,9 @@ macOS와 Synology DSM 7 SPK는 FRP와 Cloudflared의 내장 리소스 및 프로
 | 방식 | 외부 의존 요소 | 적합한 상황 |
 | --- | --- | --- |
 | FRP | frps를 실행하는 공인 서버와 원격 포트 | 공인 주소, 포트 및 전송 설정을 직접 제어해야 함 |
-| cloudflared | Cloudflare Tunnel과 공개 호스트 이름(Public Hostname) | Cloudflare를 이미 사용하고 있으며 frps를 관리하지 않고 도메인으로 연결하려는 경우 |
+| cloudflared | Cloudflare Account, Zone 및 API Token | Cloudflare Tunnel, 와일드카드 DNS 및 Ingress를 자동 관리하려는 경우 |
 
-두 방식 모두 실제 게이트웨이 진입점을 로컬 대상으로 사용하며 일반적으로 `127.0.0.1:7999`입니다. 게이트웨이 포트를 변경했다면 관리 패널과 배포 설정에 표시된 값을 사용합니다.
+FRP와 수동 Cloudflared는 일반적으로 실제 게이트웨이 `127.0.0.1:7999`를 대상으로 합니다. 관리 Cloudflared는 fn-knock가 전용 로컬 진입점을 자동 구성하므로 오리진 포트를 직접 입력하지 않습니다.
 
 ## 라우팅 방식 선택
 
@@ -67,9 +67,9 @@ PROXY Protocol v2는 인터넷 클라이언트 주소를 게이트웨이까지 �
 
 ## Cloudflared
 
-먼저 `시스템 설정 → Cloudflared`에서 리소스를 다운로드한 뒤 `리버스 프록시 모드 → Cloudflared`에서 터널 토큰을 저장합니다. 인터넷 공개 도메인과 오리진 `Service`는 fn-knock가 아니라 Cloudflare 대시보드에서 설정합니다.
+먼저 `시스템 설정 → Cloudflared`에서 리소스를 다운로드한 뒤 `터널 → Cloudflared`에서 권장 Cloudflare Account API Token을 입력합니다. 전용 Tunnel을 선택하고 미리 보기 후 적용하면 fn-knock가 Tunnel 생성 또는 연결, 와일드카드 DNS와 Ingress, Tunnel Token 가져오기 및 프로세스 시작을 처리합니다. 고급 영역에는 수동 Tunnel Token 모드도 남아 있습니다.
 
-Host 라우트의 권장 설정과 TLS 선택 기준은 [Cloudflared 터널 설정](/ko/guide/cloudflared-tunnel)을 참고합니다.
+관리 설정, Token 권한, 표준 HTTPS 주소, 최적화 Beta 및 대체 동작은 [Cloudflared 터널 설정](/ko/guide/cloudflared-tunnel)을 참고합니다.
 
 ## 접근 정책 및 실제 클라이언트 IP
 
@@ -78,7 +78,7 @@ Host 라우트의 권장 설정과 TLS 선택 기준은 [Cloudflared 터널 설�
 인증은 게이트웨이가 최종적으로 식별한 클라이언트 IP를 기준으로 판단합니다. 사설망, 루프백 및 링크 로컬 출발지는 `local_exempt`로 표시되어 일반 로그인과 엄격한 허용 목록 검사를 건너뜁니다. 따라서 출발지 전달은 터널 보안 경계의 일부입니다.
 
 - FRP에서는 기본 PROXY Protocol v2를 우선 유지합니다.
-- Cloudflared에는 전용 리버스 프록시 모드 서브도메인 경로를 사용하고 EdgeOne / ESA 스위치를 적용하지 않습니다.
+- 관리 Cloudflared는 전용 루프백 진입점에서만 `CF-Connecting-IP`를 신뢰합니다. EdgeOne/ESA 옵션을 적용하거나 방문자가 보낸 `X-Forwarded-For`를 신뢰하지 않습니다.
 - 시작한 뒤 모바일 네트워크에서 접속하고 요청 로그의 클라이언트 IP가 `127.0.0.1`, 컨테이너 주소 또는 터널 노드 주소가 아니라 방문자의 공인 주소인지 확인합니다.
 
 ## 프로세스 감시 및 실패 진단
@@ -93,7 +93,7 @@ fn-knock 서비스 자체가 다시 시작되면 계속 실행 상태로 저장�
 
 - 터널은 아웃바운드 연결이므로 fn-knock가 호스트 방화벽에 규칙을 쓰는 기능에 의존하지 않으며 Docker에서도 사용할 수 있습니다.
 - 실행 환경의 아키텍처와 일치하는 FRP / Cloudflared 실행 리소스를 사용합니다. `시스템 설정 → FRP` 또는 `시스템 설정 → Cloudflared`에 표시되는 준비 상태를 기준으로 합니다.
-- Synology DSM 7 SPK는 이러한 내장 리소스를 지원합니다. 관리 진입점은 DSM 데스크톱 CGI에서만 제공되며 서비스 트래픽은 계속 `7999` 게이트웨이로 들어갑니다.
+- Synology DSM 7 SPK는 이러한 내장 리소스를 지원합니다. 관리 진입점은 DSM 데스크톱 CGI에서만 제공됩니다. 관리 Cloudflared 진입점은 fn-knock가 자동 구성하며 FRP와 직접 관리 Tunnel은 실제 게이트웨이 포트를 사용합니다.
 - macOS Intel 및 Apple Silicon 네이티브 패키지도 내장 리소스를 지원합니다. 다운로드는 현재 Darwin 아키텍처에 맞고 관리 패널은 로컬 `127.0.0.1:7991`에서만 수신합니다.
 - Windows는 이러한 내장 리소스나 준비 상태를 제공하지 않습니다. 직접 배포한 터널 프로세스는 fn-knock의 시작·중지 및 로그 관리 대상이 아닙니다.
 - Docker에서 `127.0.0.1`은 현재 컨테이너를 가리킵니다. fn-knock 게이트웨이와 터널 프로세스가 같은 컨테이너에 있으면 사용할 수 있지만 별도의 터널 컨테이너를 직접 만든 경우에는 서비스 이름이나 컨테이너 네트워크 주소를 사용합니다.
@@ -103,7 +103,7 @@ fn-knock 서비스 자체가 다시 시작되면 계속 실행 상태로 저장�
 ## 시작 및 확인
 
 1. 라우팅 방식, 인증 Host 및 하나 이상의 서비스 매핑을 저장합니다.
-2. FRP 또는 Cloudflared 설정을 저장하고 시작합니다.
+2. FRP를 저장하고 시작하거나 Cloudflared API Token을 연결한 뒤 미리 보기 계획을 적용합니다.
 3. 실행 상태가 `연결됨`인지 확인합니다. `재시작 대기`라면 연속 실패 횟수, 다음 재시도 시각 및 최근 진단을 확인한 뒤 토큰, TLS, 네트워크 또는 포트 오류를 점검합니다.
 4. 외부 네트워크에서 인증 Host와 서비스 Host에 접근합니다.
 5. 요청 로그에서 Host, 클라이언트 IP, 권한 유형 및 업스트림 대상(타깃)을 대조합니다.

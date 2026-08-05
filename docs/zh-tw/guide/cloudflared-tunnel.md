@@ -3,106 +3,173 @@ lang: zh-TW
 title: "Cloudflare Tunnel（cloudflared）設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: eec0d64b8afa9b973302d46c06e9eba28248e07035de9d98c29f37c41e520c0e
+translationSourceHash: bff0db45d864b571554efb273368b024d0a2ba556678b1503ed9a5a32cc1ac9f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Cloudflare Tunnel（cloudflared）設定
 
-Cloudflared 會從內部網路主動連上 Cloudflare Tunnel，並將 Public Hostname 的請求送往 fn-knock 閘道。fn-knock 只負責管理 Cloudflared 執行檔資源、Tunnel Token、傳輸通訊協定與處理程序；網域及 Origin Service 仍需在 Cloudflare Dashboard 中設定。
+Cloudflared 會從內部網路主動連上 Cloudflare Tunnel，將公網 Request 送至 fn-knock 閘道。建議使用 fn-knock 託管模式：填入 Cloudflare API Token 後，程式會找出 Zone 與 Account、建立或接入 Tunnel、維護 Wildcard DNS 與 Ingress，並取得 Tunnel Token 來啟動 Cloudflared。一般設定不再需要進入 Cloudflare Dashboard 逐一新增 Public Hostname。
 
-新部署請使用 `內網穿透 → 子網域映射`，讓 Cloudflare 保留 Host，再由 fn-knock 依 Host 分流。路徑模式只用於相容既有的單網域路徑入口。
+新部署請使用 `內網穿透 → 子網域映射`。Cloudflare 會保留原始 Host，再由 fn-knock 將 `auth.example.com`、`nas.example.com` 等 Request 分派至本機服務。路徑模式只用於相容既有的單一網域路徑入口。
 
-群暉 DSM 7 SPK 內建 Cloudflared 資源、Token 與處理程序管理功能。Windows x86_64 不提供這些功能；本頁的系統設定步驟不適用於 Windows。若自行在同一台 Windows 主機執行 Cloudflared，可將其 Service 指向 `http://127.0.0.1:7999`，並自行維護處理程序、Log 與更新。
+## 開始前
 
-## 1. 準備資源與 Tunnel
+1. 在 `系統設定 → Cloudflared` 下載資源，確認狀態為已就緒。
+2. 在 `系統設定 → 模式` 選擇 `內網穿透 → 子網域映射`。
+3. 在 `子網域映射` 中儲存根網域、驗證服務與至少一筆服務映射。
+4. 建立一個限制於目標 Account 與 Zone 的 Cloudflare Account API Token。
 
-1. 在 `系統設定 → Cloudflared` 下載資源，確認狀態顯示為已就緒。
-2. 開啟 [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/)，前往 `Networks → Tunnels`。
-3. 建立 Cloudflared Tunnel，並在安裝頁面複製 `--token` 後方的長字串。
-4. 回到 `內網穿透 → Cloudflared`，貼上 Token。也可以貼上完整安裝指令，頁面會嘗試擷取其中的 Token。
-5. 傳輸通訊協定建議優先使用 `自動`：先嘗試 QUIC，失敗時再降級至 HTTP/2。只有明確確認 UDP `7844` 遭封鎖時，才固定使用 HTTP/2。
-6. 儲存並啟動，確認狀態與 Log 顯示 Tunnel 已連線。
+### 建議：建立 Account API Token
 
-Token 是 Tunnel 的連線憑據，應比照密碼妥善保存，不要放進截圖或公開 Log。
+Account API Token 屬於 Cloudflare Account，而不是個別使用者。建立者離開 Account 時不會因此自動失效，更適合 fn-knock 這類長期執行的服務。建立此 Token 需要該 Account 的 Super Administrator 權限；沒有此權限時再使用個人 API Token。
 
-## 2. 設定 Host 路由
+1. 登入 [Cloudflare Dashboard](https://dash.cloudflare.com/)。
+2. 前往 `Manage Account → Account API Tokens`，選擇持有 Zone 的 Account。
+3. 點選 `Create Token`，建立自訂 Token，名稱可填 `fn-knock Cloudflare Tunnel`。
+4. 加入下方列出的 Account 與 Zone 權限。
+5. 在 `Account Resources` 中只選目前 Account；在 `Zone Resources` 中只選 fn-knock 根網域所在的 Zone。
+6. 可依維運政策設定到期時間。只有裝置具備固定公網出口 IP 時才設定 Client IP 限制，否則網路變更可能讓 Token 突然失效。
+7. 點選 `Continue to summary`，確認沒有多餘權限與資源，再點選 `Create Token`。
+8. Secret 只顯示一次。立即複製到 fn-knock 的 `API 連線` 欄位並連接，不要存入文件、截圖或聊天記錄。
 
-先在 fn-knock 儲存根網域、身分驗證服務與服務 Host，例如：
+目前 Dashboard 路徑請參考 Cloudflare 的 [Account API Token 官方文件](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/)。若使用個人 API Token，請從 `My Profile → API Tokens` 建立；它會跟隨個人帳號生命週期，較適合臨時測試而非長期部署。
 
-```text
-auth.example.com  -> 身分驗證服務
-nas.example.com   -> http://127.0.0.1:5666
-alist.example.com -> http://127.0.0.1:5244
-```
+基本託管需要：
 
-接著在 Tunnel 的 Public Hostname 中設定：
+- `Account / Cloudflare Tunnel / Edit`
+- `Zone / Zone / Read`
+- `Zone / DNS / Edit`
 
-```text
-Public Hostname  *.example.com
-Service          http://127.0.0.1:7999
-```
+啟用「優選 Beta」時還需要：
 
-若實際閘道並非 `7999`，請使用後台顯示的連接埠。Wildcard Public Hostname 會將各服務 Host 送進同一個閘道，實際轉送至哪個服務仍由本機 Host 映射決定。
+- `Zone / SSL and Certificates / Edit`
 
-Cloudflared Tunnel 已保護 Cloudflare 至內部網路之間的傳輸時，本機 Origin 連線優先使用 HTTP，設定最單純。只有需要 HTTPS Origin 連線時，才依下一節處理憑證。
+Token 必須能讀取根網域所在的有效 Zone。根網域可以是 Zone 本身，也可以是其下級網域；例如填入 `tu.example.com` 時，程式會繼續尋找上層 `example.com` Zone。API Token 與 Account API Token 都可以使用。不要把 Global API Key 或 Token 放入截圖、Issue 或公開 Log；Token 外洩後應立即輪換。
 
-## 3. HTTPS Origin 連線
+## 託管模式設定
 
-閘道已啟用 HTTPS 時，Service 可設定為：
+進入 `內網穿透 → Cloudflared`。頁面每個區域都可摺疊；執行狀態與 Log 位於最前方並預設展開。
 
-```text
-https://localhost:7999
-```
+### 1. 連接 Cloudflare
 
-Cloudflared 會驗證 Origin 憑證。使用自簽憑證，或憑證中未包含 `localhost` 時，Log 可能會出現：
+展開 `API 連線`，貼上 API Token 並連接。連接成功後會顯示識別到的 Zone；後續讀取 API 不會傳回 Token 明文。
 
-```text
-certificate is valid for nas.example.com, not localhost
-```
+若連線失敗，請檢查 Zone 狀態與 Token 資源範圍。只能讀取 Zone、但沒有 DNS 編輯權限的 Token，可能連接成功，卻在預檢或套用時失敗。
 
-這代表 Tunnel 已連到 Origin，但驗證使用的 Hostname 與憑證不相符。請選擇其中一種處理方式：
+### 2. 選擇 Tunnel
 
-- 將 Origin Server Name 設為憑證所涵蓋的網域。
-- 明確接受風險後，停用該 Origin 的 TLS 驗證。
-- 改回 `http://127.0.0.1:7999`，由 Cloudflare 負責外部 HTTPS。
+展開 `Tunnel 與網域同步`：
 
-請勿將「停用驗證」當成憑證已修復；它只是停止檢查。憑證管理請參閱 [SSL 憑證](/zh-tw/guide/ssl)。
+- `專用 Tunnel`：建議使用。fn-knock 會建立帶有 Instance 識別碼的 Tunnel，並只管理自己的設定。
+- `既有 Tunnel`：重複使用 Cloudflare 中由遠端管理的 Cloudflared Tunnel。fn-knock 會保留其他 Ingress 及其順序，並將自己的 Wildcard 規則放在終止規則之前。
 
-## 路徑模式相容設定
+按下 `預檢` 後，頁面會列出即將建立、更新或保留的 Tunnel、Ingress、DNS 與優選資源。預檢計畫有效期為 10 分鐘；套用前若遠端設定已變更，必須重新預檢。遇到同名但不屬於 fn-knock 的資源時，頁面會回報衝突，只有逐項確認接管後才會修改。
 
-若已有 `https://home.example.com/alist` 之類的 URL，可在 `內網穿透 → 路徑模式` 中保留單一 Public Hostname：
+基本託管會自動維護：
 
 ```text
-Public Hostname  home.example.com
-Service          http://127.0.0.1:7999
+*.example.com  -> <tunnel-id>.cfargotunnel.com（代理 CNAME）
+*.example.com  -> fn-knock 專用的本機 Tunnel 入口（Ingress）
+最後一條       -> HTTP 404
 ```
 
-Cloudflare 只負責將請求送至閘道，路徑分流仍由 fn-knock 處理。請勿同時在 Cloudflare 與 fn-knock 維護兩套彼此覆蓋的路徑 Rewrite 規則。
+套用成功後，fn-knock 會透過 Cloudflare 官方 API 取得 Tunnel Token，並使用權限為 `0600` 的 Token 檔案啟動 Cloudflared。Token 不會出現在 Process 參數中。
 
-## 用戶端 IP 與 `local_exempt`
+### 3. 驗證公網存取
 
-登入與允許清單會以閘道識別到的用戶端 IP 為準。私有網路、Loopback 與 Link-local 來源會被標記為 `local_exempt`，略過一般登入流程及既有嚴格允許清單規則的檢查。
+託管 Cloudflare Tunnel 對訪客提供標準 HTTPS 位址：
 
-Cloudflared 連至本機時，本身是從 Loopback 位址進入，因此必須讓內網穿透的子網域連線路徑正確使用 Cloudflare 傳入的訪客資訊。完成設定後，請從行動網路存取，並在 fn-knock 請求記錄中確認顯示的是訪客公網 IP，而不是 `127.0.0.1` 或 Container IP。EdgeOne / ESA 的用戶端 IP 開關不適用於 Cloudflared。
+```text
+https://auth.example.com/
+https://nas.example.com/
+```
 
-## 平台限制
+不要在位址後加上 `:7999`。即使舊設定仍保留公網 HTTPS Port，Cloudflare Tunnel 模式下的子網域清單、驗證位址與登入重新導向也會省略該 Port。Cloudflare 負責外部 `443`，fn-knock 自動管理本機 Tunnel 入口。
 
-- Cloudflared 是 Outbound Process，不要求 fn-knock 管理 Host 防火牆；Docker 環境也能使用。
-- 執行平台必須具備符合架構的 Cloudflared 資源。資源頁尚未就緒時，即使儲存 Token 也無法啟動。
-- 在 Docker 中，`127.0.0.1` 只代表目前 Container；若 Cloudflared 在獨立 Container 中執行，Service 應改用 fn-knock 的 Container Service Name 與連接埠。
-- 群暉 DSM 7 SPK 支援應用程式內建 Cloudflared；管理頁面需從 DSM 桌面的套件入口開啟，閘道 Origin 連線使用實際連接埠 `7999`。
-- Windows 不提供應用程式內建的 Cloudflared 資源頁；獨立執行的 Client 不受 fn-knock 管理。
-- fn-knock 不會建立 Cloudflare DNS、Tunnel、Public Hostname、Cache Rule 或 Origin Request 設定。
+儲存新的服務 Host 後，Wildcard Tunnel 可立即接收 Request，不必再到 Cloudflare Dashboard 新增 Public Hostname。啟用優選時，精確網域資源會在背景繼續核對；完成前仍由 Wildcard Tunnel 正常提供服務。
+
+## 優選 Beta
+
+優選會測試目前裝置到 Cloudflare Anycast IPv4 的實際品質，再透過 Cloudflare for SaaS Custom Hostname 對已設定的精確服務網域疊加優選入口。標準 Wildcard Tunnel 始終保留作為回退。
+
+### 啟用順序
+
+1. 在 `Tunnel 與網域同步` 開啟 `優選 Beta`。
+2. 執行 `預檢`，檢查方案能力、權限、資源變更與衝突。
+3. 套用預檢計畫。看到「請先在 Cloudflare 核對計畫中啟用優選」時，表示尚未完成此步驟。
+4. 展開 `優選 Beta` 並執行測速。
+5. 套用建議 IP，或選擇另一個已通過驗證的候選。
+
+程式會先用隔離子網域探測目前 Zone 是否支援 Custom Hostname、憑證簽發和 SNI 直連。能力不支援時只停用優選，不影響基本 Tunnel。
+
+### 候選來源
+
+候選可來自：
+
+- Cloudflare 官方 IPv4 網段的確定性抽樣。
+- 內建公共網域：瑞典政府 `www.gov.se`、美國國會圖書館 `www.loc.gov`、ICANN `www.icann.org` 與 Visa `www.visa.com`。
+- 使用者新增的公共候選網域，最多 16 個。
+
+這些公共網域只用於找出可能的 Cloudflare IPv4。fn-knock 不會把服務 CNAME 指向它們，也不會以它們的 Host 或 SNI 傳送業務流量。解析結果會過濾無效位址、私有位址和常見 Fake IP；本機 DNS 使用 Fake IP 模式時，可透過其他真實解析來源補充候選。
+
+IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國。Cloudflare IPv4 是 Anycast，同一個 IP 會從多個邊緣機房公告。結果中的 `Cloudflare 機房` 來自實際探測回應的 `CF-Ray` 後綴，例如 `SIN`、`HKG`，比 IP 歸屬地更能代表此次連線的落點。
+
+### 測速與切換
+
+單次測速最多使用 128 個候選，並行不超過 32。每個候選進行 3 次 TLS／延遲探測，延遲較好的 8 個候選再進行兩次 1 MiB 下載，總下載量不超過 20 MiB。分數越低越好：
+
+```text
+延遲中位數 + 2 × 抖動 + 1500 × 遺失率 + 800 / max(下載 Mbps, 1)
+```
+
+候選還必須針對實際服務 Host 通過 TLS、SNI 與 Cloudflare 錯誤頁檢查，不能只依 ping 或 IP 歸屬地套用。自動策略每 7 天重新測速，每 15 分鐘檢查目前 IP；新候選至少改善 15%，並在相隔 10 分鐘的兩輪確認中保持領先後才會切換。
+
+目前 IP 連續失敗時，程式會優先切換至已驗證候選；沒有可用候選時，會移除 fn-knock 管理的精確 CNAME，讓網域重新匹配 Wildcard Tunnel。也可隨時點選 `回退標準 Tunnel`。
+
+### 方案與安全邊界
+
+優選依賴 Cloudflare for SaaS Custom Hostname。可用數量以目前 Zone 的實際方案與配額為準；超出配額的服務網域會使用標準 Tunnel。Custom Hostname 與憑證未同時啟用前，程式不會發布精確 CNAME。
+
+不要手動將代理狀態的服務 A Record 直接指向 Cloudflare 邊緣 IP，這可能觸發 Cloudflare Error 1000。fn-knock 使用 Custom Hostname、專用 Origin 網域與 DNS-only 優選入口，能力探測失敗時則保留 Wildcard Tunnel。
+
+## Client IP 與登入重新導向
+
+託管模式使用只監聽 Loopback 的專用 Tunnel 入口。閘道只在這條受控路徑信任 Cloudflare 的 `CF-Connecting-IP`，不會把訪客自行傳送的 `X-Forwarded-For` 當成可信來源。EdgeOne / ESA 的真實 IP 開關不適用於 Cloudflared，在目前模式不可用時介面會隱藏。
+
+從行動網路開啟一個要求登入的服務 Host，並在 Request Log 確認：
+
+- 登入重新導向為 `https://auth.example.com/...`，沒有 `:7999`。
+- `redirect_uri` 仍是原服務 Host，也沒有 `:7999`。
+- Client IP 是訪客公網位址，而不是 `127.0.0.1`、Container 位址或自訂 `X-Forwarded-For`。
+
+## 手動 Tunnel Token 模式
+
+進階使用者仍可展開 `手動 Tunnel Token`，貼上從 Cloudflare 取得的 Tunnel Token 並選擇傳輸 Protocol。`自動`會先嘗試 QUIC，失敗時回退 HTTP/2；只有 UDP `7844` 明確遭封鎖時才固定 HTTP/2。
+
+手動模式不會自動建立 Tunnel、DNS 或 Ingress，需要自行在 Cloudflare 設定 Public Hostname 與 Origin Service。自管 Process 或 Windows 版本也屬於此類；可以回源實際閘道 Port，但其安裝、Token、Log 與生命週期不由託管流程負責。
+
+## 中斷連線與清理
+
+刪除 API Token 只會停止後續遠端管理，不會刪除 Cloudflare 資源。需要移除時，使用 `移除託管資源` 產生清理預檢並確認：
+
+- 既有 Tunnel 永遠不會自動刪除。
+- fn-knock 建立的專用 Tunnel 也只會在明確確認後刪除。
+- 清理優選資源會先讓精確服務網域回到 Wildcard Tunnel。
 
 ## 疑難排解
 
-1. **處理程序未啟動**：檢查資源狀態、Token 與傳輸通訊協定 Log。
-2. **Tunnel 顯示 Online，但網域無法連線**：檢查 Public Hostname、DNS 與 Service 的實際連接埠。
-3. **回傳 TLS 錯誤**：核對 Origin 通訊協定、憑證信任與 Origin Server Name。
-4. **身分驗證 Host 可開啟，但服務 Host 回傳 404**：確認已使用 Wildcard Public Hostname，且請求 Host 已存在於本機映射中。
-5. **所有存取看起來都來自同一來源**：檢查請求記錄中的用戶端 IP，再排查 Cloudflare 至閘道之間的來源資訊傳遞。
-6. **頁面可開啟，但資源載入失敗**：確認 WebSocket 未遭停用；路徑模式還要檢查移除 Prefix 與 HTML Rewrite 設定。
+| 症狀 | 優先檢查 |
+| --- | --- |
+| 找不到 Zone 或 Zone 未啟用 | 根網域是否屬於 Token 可存取的有效 Zone；Token 是否限制到錯誤 Account／Zone |
+| 提示需要 DNS Edit | Token 是否對目標 Zone 具備 `Zone / DNS / Edit` |
+| DNS tag 配額為 0 | 更新至支援只使用 comment 標記的版本後重新預檢；不要手動建立重複 Record |
+| 預檢後套用回傳 409 | 遠端狀態或本機根網域已變更，重新執行預檢 |
+| Tunnel 已上線但網域無法使用 | 核對衝突、Wildcard DNS、Ingress、Cloudflared Log 與本機 Host 映射 |
+| 重新導向仍包含 `:7999` | 確認使用 `內網穿透 → 子網域映射`、預設 Tunnel 為 Cloudflared，並更新至支援標準 Port 重新導向的版本 |
+| 無法啟用優選 | SSL 權限、Cloudflare for SaaS 可用性、Custom Hostname 配額與能力探測結果 |
+| IP 歸屬地顯示美國 | 查看測速中的 Cloudflare 機房代碼；Anycast 註冊地不是連線落點 |
+| 所有存取都像本機來源 | 查看 Request Log 的 Client IP，並使用託管專用入口而非錯誤的手動 Origin |
 
-整體執行狀態請參閱[內網穿透](/zh-tw/guide/tunnel)，完整範例請參閱[反向 Proxy 存取教學](/zh-tw/tutorials/reverse-proxy-with-fknock)。
+整體執行狀態請參閱[內網穿透](/zh-tw/guide/tunnel)，Host 設定請參閱[子網域映射](/zh-tw/guide/subdomain-proxy)。

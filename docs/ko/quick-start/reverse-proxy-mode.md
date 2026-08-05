@@ -3,7 +3,7 @@ lang: ko-KR
 title: "NAT 통과: 서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
+translationSourceHash: 989de42249c3a4f69bda7bfd0bae96d4cf7447b2fc62bde261cc6ae102db2f90
 ---
 
 # NAT 통과: 서브도메인 라우팅
@@ -53,7 +53,7 @@ fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK는 모두 내장 터
 
 ## 2. 루트 도메인과 인증 서비스 설정
 
-`서브도메인 매핑`에서 `서브도메인 모드 설정`을 펼친 뒤 `도메인`에 `example.com`을 입력하고 저장합니다. `인증 서비스의 외부 HTTPS 포트`에는 사용자가 실제로 접속하는 인터넷 포트를 입력합니다. 그런 다음 `인증 서비스 추가`를 눌러 `auth.example.com`을 추가합니다.
+`서브도메인 매핑`에서 `서브도메인 모드 설정`을 펼친 뒤 `도메인`에 `example.com`을 입력하고 저장합니다. 그런 다음 `인증 서비스 추가`를 눌러 `auth.example.com`을 추가합니다. 관리 Cloudflare Tunnel은 표준 HTTPS `443`을 사용하므로 공개 포트 입력이 숨겨지고 인증 주소에 `:7999`를 붙이지 않습니다.
 
 인증 서비스는 다음 조건을 충족합니다.
 
@@ -96,16 +96,14 @@ fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK는 모두 내장 터
 
 ### Cloudflared 사용
 
-Cloudflare Zero Trust에서 엔드포인트마다 Public Hostname을 구성합니다.
+1. `시스템 설정 → Cloudflared`에서 실행 리소스를 준비합니다.
+2. `터널 → Cloudflared`에서 Tunnel, Zone Read 및 DNS Edit 권한이 있는 권장 Cloudflare Account API Token을 연결합니다.
+3. 권장 전용 Tunnel을 선택하고 `미리 보기`에서 Tunnel, `*.example.com` Ingress 및 프록시 CNAME을 확인합니다.
+4. 충돌을 해결한 뒤 계획을 적용합니다. fn-knock가 Tunnel Token을 가져오고 Cloudflared를 시작합니다.
 
-| 공개 도메인 | 로컬 서비스 |
-| --- | --- |
-| `auth.example.com` | `http://127.0.0.1:<실제 게이트웨이 포트>` |
-| `nas.example.com` | `http://127.0.0.1:<실제 게이트웨이 포트>` |
+적용 후 `auth.example.com`, `nas.example.com` 등의 Host는 와일드카드 Tunnel을 통해 게이트웨이에 들어갑니다. Cloudflare Zero Trust에서 Host마다 Public Hostname을 만들 필요가 없습니다. 사용자는 `:7999` 없이 `https://nas.example.com`으로 접속합니다.
 
-fn-knock가 관리하는 Cloudflared와 게이트웨이가 같은 런타임 환경에 있다면 `127.0.0.1`과 실제 게이트웨이 포트를 사용합니다. Cloudflared를 별도 컨테이너로 실행하고 fn-knock와 같은 Docker 네트워크에 연결했을 때만 fn-knock의 컨테이너 서비스 이름과 포트를 사용합니다. 서로 다른 네트워크에 있다면 Cloudflared에서 도달할 수 있는 주소를 사용합니다.
-
-인터넷 TLS는 Cloudflare에서 종료할 수 있습니다. 로컬 오리진에 HTTPS를 사용한다면 오리진 주소가 포함되고 Cloudflared에서 신뢰할 수 있는 인증서를 사용합니다. 그렇지 않다면 통제된 내부 네트워크에서 HTTP로 오리진에 연결합니다.
+고급 사용자는 수동 Tunnel Token을 사용할 수 있습니다. Public Hostname과 실제 오리진 포트를 직접 구성하는 것은 수동 또는 외부 관리 Cloudflared뿐입니다. 자세한 내용은 [Cloudflared 터널 설정](/ko/guide/cloudflared-tunnel)을 참고합니다.
 
 ### FRP 사용
 
@@ -144,10 +142,10 @@ FRP에서 HTTPS를 직접 제공한다면 FRP 서버 또는 fn-knock 게이트�
 
 | 증상 | 우선 확인할 항목 |
 | --- | --- |
-| 터널은 온라인이지만 도메인이 타임아웃됨 | Public Hostname, FRP 엔드포인트, DNS, 터널 대상 포트 |
+| 터널은 온라인이지만 도메인이 타임아웃됨 | Cloudflare 동기화 충돌, 와일드카드 DNS, Ingress, FRP 엔드포인트 및 로컬 Host 매핑 |
 | 모든 서브도메인이 같은 서비스로 연결됨 | 터널 또는 앞단 프록시가 Host를 보존하는지 확인 |
 | 502 응답 | 터널에서 게이트웨이에 접속할 수 없거나 게이트웨이에서 서비스 업스트림에 접속할 수 없음 |
-| 로그인 후 리디렉션 반복 | 공개 프로토콜, 인증 도메인, 루트 도메인, 쿠키 범위, 앞단 프록시의 `Host`/`X-Forwarded-*`가 일치하는지 확인한 뒤 원래 서비스 Host에서 다시 접속 |
+| 로그인 리디렉션 반복 또는 `:7999` 포함 | 관리 Cloudflared 서브도메인 매핑과 표준 HTTPS를 확인한 뒤 원래 서비스 Host에서 다시 접속 |
 | Cloudflared TLS 오류 | 오리진 프로토콜 또는 인증서 신뢰 설정 오류 |
 | 경로 모드에서 리소스 404 | 업스트림이 경로 접두사를 지원하지 않으므로 서브도메인 매핑으로 마이그레이션 권장 |
 

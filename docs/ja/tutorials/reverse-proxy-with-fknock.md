@@ -3,7 +3,7 @@ lang: ja-JP
 title: "グローバル IP なしでトンネル経由のサブドメインを公開"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae185a21240
+translationSourceHash: 92b38595cf586a2f6634b8882301ad43e413c48f4ea5649cbf49f823352e74c0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,8 +25,8 @@ translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae18
 
 1. `システム設定 → モード` で `リバースプロキシモード` を選び、サブモードに `サブドメインマッピング` を指定します。
 2. `サブドメインマッピング` でルートドメイン、認証用 Host、最初のサービス用 Host を設定します。サービス用 Host の Target には、fn-knock の実行環境から到達できる LAN 内サービスのアドレスを入力し、デフォルトで「ログインを必須にする」を有効にします。認証用 Host は公開しておく必要があります。
-3. `トンネル` で FRP または Cloudflared をインストールして設定し、外部トラフィックを fn-knock の実際のゲートウェイポートへ転送します。
-4. トンネル事業者側で認証用 Host とサービス用 Host の DNS / Public Hostname を設定し、Host、WebSocket、実クライアント IP が正しく引き継がれるようにします。
+3. FRP ではクライアントを実ゲートウェイポートへ転送するよう設定します。Cloudflared では推奨の Account API Token を接続し、専用 Tunnel を選んでプレビューを適用します。
+4. FRP の DNS と入口はサーバー側で設定します。管理 Cloudflared はワイルドカード DNS と Ingress を自動管理するため、Host ごとの Public Hostname は不要です。どちらも Host、WebSocket、実クライアント IP を正しく維持してください。
 5. 外部向け HTTPS を設定します。Tunnel または前段のリバースプロキシで TLS を終端する場合は、オリジン接続のプロトコルと証明書の検証方法を明確にしてください。内部の `localhost` アドレスをブラウザーのアクセス先にしないでください。
 6. モバイル回線から認証用 Host を開いてログインし、その後サービス用 Host へアクセスします。
 
@@ -35,13 +35,13 @@ translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae18
 | 項目 | FRP | Cloudflared |
 | --- | --- | --- |
 | 公開入口 | 自前の `frps` または事業者のノード | Cloudflare エッジと Tunnel |
-| DNS | 通常は FRP サーバーを参照 | 通常は Public Hostname の作成時に DNS を作成または関連付け |
+| DNS | 通常は FRP サーバーを参照 | 管理モードがワイルドカードのプロキシ CNAME を自動管理 |
 | 実際の送信元 IP | HTTP ヘッダー、または正しく設定した PROXY Protocol | Cloudflare のリクエストヘッダー。入口に合わせた設定が必要 |
-| fn-knock での管理 | 複数の frpc インスタンス、設定、ログを管理 | リソース、Tunnel token、プロセス、ログを管理 |
+| fn-knock での管理 | 複数の frpc インスタンス、設定、ログを管理 | API Token で Tunnel、DNS、Ingress、Token、プロセス、ログ、最適化を管理 |
 
 FRP が TCP 転送だけを行う場合、fn-knock から見える接続元がトンネルノードやローカルの中継アドレスになることがあります。FRP の経路に合わせて PROXY Protocol または信頼できる実 IP ヘッダーを設定し、リクエストログで結果を確認してください。ページが開けるというだけで、許可リスト、地域判定、スキャンルールに正しいクライアントアドレスが使われているとは限りません。
 
-Cloudflared の Public Hostname のオリジンには、`http://127.0.0.1:7999` のようなゲートウェイ入口を指定します。サービスへ直接接続すると、fn-knock の Host ルーティングと認証を迂回してしまいます。
+Cloudflared では Cloudflare API Token を接続し、プレビューを適用してワイルドカード DNS、Ingress、専用ローカル入口を自動作成する方法を推奨します。管理モードの公開 URL は `:7999` を付けない `https://サービスHost` で、Dashboard に Host ごとの Public Hostname は不要です。手動または外部管理 Cloudflared だけが Public Hostname を実ゲートウェイポートへ向けます。サービスへ直接接続すると fn-knock の Host ルーティングと認証を迂回します。
 
 ## Target アドレス
 

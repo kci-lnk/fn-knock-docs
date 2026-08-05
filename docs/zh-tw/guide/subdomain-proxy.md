@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
+translationSourceHash: cdbb83deedca2c8f0c853d696a22417372c1a12eb8c00a21c5346b9126f16abc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -45,10 +45,12 @@ translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd
 | --- | --- | --- |
 | `網域` | 產生服務 Host 的父網域，例如 `example.com` | 先儲存，再新增身分驗證服務與服務映射 |
 | `目前身分驗證服務` | 尚未登入時的統一登入入口 | 使用 `auth.example.com`；只能有一筆 |
-| `身分驗證服務公網 HTTPS 連接埠` | 產生登入 Redirect URL 時使用的訪客端 HTTPS 連接埠 | 填寫訪客實際看到的連接埠 |
-| `Edge Network 真實 IP 識別` | 在公網直連子網域模式中讀取 EdgeOne／ESA 的訪客 IP | 只有透過對應平台連回 Origin 時才啟用 |
+| `身分驗證服務公網 HTTPS 連接埠` | 產生登入 Redirect URL 時使用的訪客端 HTTPS 連接埠 | 公網直連或 FRP 依實際 Port 填寫；託管 Cloudflare Tunnel 隱藏此項並使用標準 HTTPS |
+| `Edge Network 真實 IP 識別` | 在公網直連子網域模式中讀取 EdgeOne／ESA 的訪客 IP | 只有對應平台回源時才顯示；託管 Cloudflare Tunnel 會隱藏此項 |
 
 身分驗證服務公網 HTTPS 連接埠只會影響外部 URL，不會修改程式 Listen Port，也不會替路由器、Container 或 Edge 平台開放連接埠或建立 NAT Forwarding。
+
+使用託管 Cloudflare Tunnel 時，子網域清單、驗證位址、登入 Redirect 與 `redirect_uri` 都使用 `https://host.example.com`，不會附加舊設定中殘留的 `:7999`。Cloudflare 外部 Port 與 fn-knock 本機 Tunnel 入口由託管流程處理。
 
 根網域與 Host 映射都不能包含 `*`。根網域應填寫 `example.com`，服務映射填寫 `nas` 或 `nas.example.com`；DNS 是否另外設定 `*.example.com` Wildcard Record 是不同層級的設定，請勿將 Wildcard 寫入 fn-knock 的根網域或 Host。
 
@@ -197,7 +199,7 @@ Target 包含 Path 時，閘道會保留這段 Base Path，並在其後接上訪
 
 請依請求流程檢查：
 
-1. DNS 或 Tunnel Public Hostname 是否將目前 Host 送至正確的閘道連接埠。
+1. DNS 或 Tunnel 是否將目前 Host 送到正確閘道；託管 Cloudflared 請先檢查核對狀態、Wildcard DNS 與 Ingress。
 2. 請求記錄中的 Host 與用戶端 IP 是否正確。
 3. 身分驗證服務是否存在，且未啟用要求登入或 Basic Auth。
 4. 服務映射是否啟用，目前時間是否位於開放時段內。

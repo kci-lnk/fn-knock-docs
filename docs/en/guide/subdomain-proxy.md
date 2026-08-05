@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
+translationSourceHash: cdbb83deedca2c8f0c853d696a22417372c1a12eb8c00a21c5346b9126f16abc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -45,10 +45,12 @@ For the complete direct-public-access workflow, see [Public IP Access with Subdo
 | --- | --- | --- |
 | `Domain` | Parent domain used to generate application Hosts, such as `example.com` | Save it before adding the auth service and application mappings |
 | `Current auth service` | Shared sign-in entry point for users who are not signed in | Use `auth.example.com`; only one is allowed |
-| `Public HTTPS port for the auth service` | Visitor-facing HTTPS port used to generate sign-in redirect URLs | Enter the port visitors actually see |
-| `Edge real IP detection` | Reads visitor addresses from EdgeOne / ESA in direct-public `Subdomain mode` | Enable it only when the matching platform proxies to the origin |
+| `Public HTTPS port for the auth service` | Visitor-facing HTTPS port used to generate sign-in redirect URLs | Enter the actual port for direct access or FRP; managed Cloudflare Tunnel hides this field and uses standard HTTPS |
+| `Edge real IP detection` | Reads visitor addresses from EdgeOne / ESA in direct-public `Subdomain mode` | Shown only for the matching platform; hidden for managed Cloudflare Tunnel |
 
 The public HTTPS port for the auth service affects external URLs only. It does not change the application's listening port, open a port, or create NAT forwarding on a router, container, or edge platform.
+
+With managed Cloudflare Tunnel, mapping lists, authentication URLs, sign-in redirects, and `redirect_uri` use `https://host.example.com` without a stale `:7999`. The managed flow handles Cloudflare's external port and fn-knock's local Tunnel entry.
 
 The root domain and Host mappings cannot contain `*`. Enter `example.com` as the root domain and `nas` or `nas.example.com` as an application mapping. A DNS wildcard such as `*.example.com` is configured at a different layer and must not be entered as an fn-knock root domain or Host.
 
@@ -197,7 +199,7 @@ None of these features changes the fact that the Host is the primary routing key
 
 Check the request path in order:
 
-1. Verify that DNS or the Tunnel Public Hostname sends the current Host to the correct gateway port.
+1. Verify that DNS or the Tunnel sends the current Host to the correct gateway. For managed Cloudflared, check reconcile status, wildcard DNS, and Ingress first.
 2. Verify the Host and client IP in request logs.
 3. Verify that the auth service exists and does not require sign-in or use Basic Auth.
 4. Verify that the application mapping is enabled and the current time is within its open window.

@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal with Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
+translationSourceHash: 989de42249c3a4f69bda7bfd0bae96d4cf7447b2fc62bde261cc6ae102db2f90
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -55,7 +55,7 @@ When switching from another mode, review existing routes, certificates, and the 
 
 ## 2. Set the root domain and authentication service
 
-Open `Domains`, expand the `Subdomain mode` configuration, enter `example.com` under `Domain`, and save. Set `Public HTTPS port for the auth service` to the public port that visitors actually use. Then click `Add auth service` and add `auth.example.com`.
+Open `Domains`, expand the `Subdomain mode` configuration, enter `example.com` under `Domain`, and save. Then click `Add auth service` and add `auth.example.com`. With managed Cloudflare Tunnel, visitors use standard HTTPS port `443`; the public-port field is hidden and generated authentication URLs do not include `:7999`.
 
 The authentication service must:
 
@@ -98,16 +98,14 @@ Prepare the FRP or Cloudflared resources under `System settings`, then create an
 
 ### Cloudflared
 
-In Cloudflare Zero Trust, configure a Public Hostname for each endpoint:
+1. Prepare the executable under `System settings → Cloudflared`.
+2. Open `Tunnels → Cloudflared` and connect the recommended Cloudflare Account API Token with Tunnel, Zone Read, and DNS Edit access.
+3. Select the recommended dedicated Tunnel, then choose `Preview` to review the Tunnel, `*.example.com` Ingress, and proxied CNAME.
+4. Apply the plan after resolving conflicts. fn-knock retrieves the Tunnel Token and starts Cloudflared.
 
-| Public domain | Local service |
-| --- | --- |
-| `auth.example.com` | `http://127.0.0.1:<actual-gateway-port>` |
-| `nas.example.com` | `http://127.0.0.1:<actual-gateway-port>` |
+After apply, `auth.example.com`, `nas.example.com`, and other known Hosts enter the gateway through the wildcard Tunnel. You do not add a Public Hostname for each one in Cloudflare Zero Trust. Visitors use `https://nas.example.com` without `:7999`.
 
-When fn-knock manages Cloudflared in the same runtime environment as the gateway, use `127.0.0.1` and the actual gateway port. Use the fn-knock container service name and port only when Cloudflared runs in a separate container on the same Docker network. If the containers are on different networks, use an address reachable from Cloudflared.
-
-Cloudflare can terminate public TLS. If the local origin uses HTTPS, its certificate must cover the origin address and be trusted by Cloudflared. Otherwise, use HTTP to the origin over a controlled private network.
+Advanced users may use a manual Tunnel Token. Only manual or externally managed Cloudflared requires configuring a Public Hostname and actual origin port yourself. See [Cloudflare Tunnel with cloudflared](/en/guide/cloudflared-tunnel).
 
 ### FRP
 
@@ -146,10 +144,10 @@ New configurations should give each service its own subdomain. See [Path-based R
 
 | Symptom | Check first |
 | --- | --- |
-| Tunnel is connected, but the domain times out | Public Hostname, FRP endpoint, DNS, and tunnel target port |
+| Tunnel is connected, but the domain times out | Cloudflare reconcile conflicts, wildcard DNS, Ingress, the FRP endpoint, and the local Host mapping |
 | Every subdomain opens the same service | The tunnel or edge proxy is not preserving Host |
 | 502 response | The tunnel cannot reach the gateway, or the gateway cannot reach the upstream application |
-| Redirect loop after sign-in | Public scheme, authentication domain, root domain, cookie scope, and the edge proxy's `Host` / `X-Forwarded-*` values do not agree; start a new request from the original application Host |
+| Redirect loops or includes `:7999` | Confirm managed Cloudflared subdomain mapping, use standard public HTTPS, and start again from the original application Host |
 | Cloudflared reports a TLS error | The origin scheme or certificate trust configuration is incorrect |
 | Assets return 404 in Path mode | The upstream does not support a URL prefix; migrate to Subdomain mapping |
 

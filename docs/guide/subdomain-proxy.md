@@ -35,10 +35,12 @@
 | --- | --- | --- |
 | `域名` | 生成业务 Host 的父域，例如 `example.com` | 先保存，再添加鉴权服务和业务映射 |
 | `当前鉴权服务` | 未登录时的统一登录入口 | 使用 `auth.example.com`；只能有一条 |
-| `鉴权服务公网 HTTPS 端口` | 生成登录跳转 URL 时使用的访客侧 HTTPS 端口 | 填写访客实际看到的端口 |
-| `边缘网络真实 IP 识别` | 在公网直连子域模式中读取 EdgeOne / ESA 的访客地址 | 只在对应平台回源时开启 |
+| `鉴权服务公网 HTTPS 端口` | 生成登录跳转 URL 时使用的访客侧 HTTPS 端口 | 公网直连或 FRP 按实际端口填写；托管 Cloudflare Tunnel 不显示此项并固定使用标准 HTTPS |
+| `边缘网络真实 IP 识别` | 在公网直连子域模式中读取 EdgeOne / ESA 的访客地址 | 只在对应平台回源时显示；托管 Cloudflare Tunnel 不显示此项 |
 
 鉴权服务公网 HTTPS 端口只影响外部 URL，不会修改程序监听端口，也不会替路由器、容器或边缘平台开放端口或建立 NAT 转发。
+
+使用托管 Cloudflare Tunnel 时，子域列表、鉴权地址、登录跳转和 `redirect_uri` 都使用 `https://host.example.com`，不会附加旧配置中残留的 `:7999`。Cloudflare 的外部端口与 fn-knock 的本地 Tunnel 入口由托管流程处理。
 
 根域名和 Host 映射都不能包含 `*`。根域应填写 `example.com`，业务映射填写 `nas` 或 `nas.example.com`；DNS 中是否同时配置 `*.example.com` 泛解析是另一层设置，不要把通配符写进 fn-knock 的根域或 Host。
 
@@ -187,7 +189,7 @@ Target 包含路径时，网关会保留这段基础路径并在其后拼接访�
 
 按请求链路检查：
 
-1. DNS 或 Tunnel Public Hostname 是否把当前 Host 送到正确网关端口。
+1. DNS 或 Tunnel 是否把当前 Host 送到正确网关；托管 Cloudflared 先检查对账状态、通配 DNS 和 Ingress。
 2. 请求日志中的 Host 和客户端 IP 是否正确。
 3. 鉴权服务是否存在，且未开启登录或 Basic Auth。
 4. 业务映射是否启用，当前时间是否在开放窗口内。

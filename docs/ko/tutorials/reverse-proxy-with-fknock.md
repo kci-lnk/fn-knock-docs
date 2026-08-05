@@ -3,7 +3,7 @@ lang: ko-KR
 title: "공인 IP 없이 터널로 서브도메인 공개"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae185a21240
+translationSourceHash: 92b38595cf586a2f6634b8882301ad43e413c48f4ea5649cbf49f823352e74c0
 ---
 
 # 공인 IP 없이 터널로 서브도메인 공개
@@ -23,8 +23,8 @@ translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae18
 
 1. `시스템 설정 → 모드`에서 `리버스 프록시 모드`를 선택한 뒤 `서브도메인 매핑`을 선택합니다.
 2. `서브도메인 매핑`에서 루트 도메인, 인증 Host, 첫 번째 서비스 Host를 구성합니다. 서비스 Host의 대상(타깃)에는 fn-knock 실행 환경에서 접속할 수 있는 LAN 서비스 주소를 입력하고 기본적으로 ‘로그인 필요’를 켭니다. 인증 Host는 공개 상태로 유지합니다.
-3. `리버스 프록시 모드`에서 FRP 또는 cloudflared를 설치하고 구성하여 외부 트래픽을 fn-knock의 실제 게이트웨이 포트로 전달합니다.
-4. 터널 제공자에서 인증 Host와 서비스 Host의 DNS 및 공개 호스트 이름(Public Hostname)을 구성하고 Host, WebSocket, 실제 클라이언트 IP가 올바르게 전달되는지 확인합니다.
+3. FRP는 클라이언트가 실제 게이트웨이 포트로 전달하도록 구성합니다. cloudflared는 권장 Account API Token을 연결하고 전용 Tunnel을 선택한 뒤 미리 보기 계획을 적용합니다.
+4. FRP의 DNS와 엔드포인트는 서버에서 구성합니다. 관리 cloudflared는 와일드카드 DNS와 Ingress를 자동 관리하므로 Host별 Public Hostname이 필요하지 않습니다. 두 방식 모두 Host, WebSocket 및 실제 클라이언트 IP를 올바르게 유지해야 합니다.
 5. 외부 HTTPS를 구성합니다. 터널이나 앞단 리버스 프록시에서 TLS를 종료한다면 오리진 프로토콜과 인증서 검증 방식을 명확히 정합니다. 내부 `localhost` 주소를 브라우저 접속 주소로 사용하면 안 됩니다.
 6. 모바일 네트워크에서 인증 Host를 열고 로그인을 완료한 뒤 서비스 Host에 접속합니다.
 
@@ -33,13 +33,13 @@ translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae18
 | 항목 | FRP | cloudflared |
 | --- | --- | --- |
 | 인터넷 엔드포인트 | 직접 운영하는 `frps` 또는 서비스 제공자 노드 | Cloudflare Edge 및 Tunnel |
-| DNS | 일반적으로 FRP 서버를 가리킴 | 공개 호스트 이름이 DNS를 생성하거나 연결하는 경우가 일반적 |
+| DNS | 일반적으로 FRP 서버를 가리킴 | 관리 모드가 와일드카드 프록시 CNAME을 자동 관리 |
 | 실제 출발지 IP | HTTP 헤더 또는 올바르게 구성한 PROXY Protocol | Cloudflare 요청 헤더. 엔드포인트에 맞는 설정 필요 |
-| fn-knock에서의 관리 | 여러 frpc 인스턴스, 설정, 로그 관리 | 리소스, 터널 토큰, 프로세스, 로그 관리 |
+| fn-knock에서의 관리 | 여러 frpc 인스턴스, 설정, 로그 관리 | API Token으로 Tunnel, DNS, Ingress, Token, 프로세스, 로그 및 최적화 관리 |
 
 FRP가 TCP 포워딩만 한다면 fn-knock에 터널 노드나 로컬 중계 주소가 연결 출발지로 보일 수 있습니다. FRP 경로에 맞춰 PROXY Protocol 또는 신뢰할 수 있는 실제 IP 헤더를 구성하고 요청 로그에서 결과를 확인합니다. 페이지가 열린다는 사실만으로 허용 목록, 지역, 스캔 차단 규칙이 실제 클라이언트 주소를 사용한다고 가정하면 안 됩니다.
 
-cloudflared의 공개 호스트 이름은 서비스로 직접 연결하지 말고 `http://127.0.0.1:7999` 같은 게이트웨이 엔드포인트를 오리진으로 사용합니다. 서비스를 직접 오리진으로 지정하면 fn-knock의 Host 라우팅과 인증을 우회합니다.
+cloudflared는 Cloudflare API Token을 연결하고 미리 보기 계획을 적용하여 와일드카드 DNS, Ingress 및 전용 로컬 진입점을 자동 생성하는 방식을 권장합니다. 관리 모드의 공개 주소는 `:7999` 없는 `https://서비스Host`이며 대시보드에 Host별 Public Hostname이 필요하지 않습니다. 수동 또는 외부 관리 cloudflared만 Public Hostname을 실제 게이트웨이 포트로 지정합니다. 서비스를 직접 오리진으로 지정하면 fn-knock의 Host 라우팅과 인증을 우회합니다.
 
 ## 대상(타깃) 주소
 

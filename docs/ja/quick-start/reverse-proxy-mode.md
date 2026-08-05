@@ -3,7 +3,7 @@ lang: ja-JP
 title: "NAT 越え：サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a6b3679193cdf360a0bd2d4e0d0fd3578caa7b920f17bce16967e0363b53abaa
+translationSourceHash: 989de42249c3a4f69bda7bfd0bae96d4cf7447b2fc62bde261cc6ae102db2f90
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -55,7 +55,7 @@ fnOS FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK では、アプ
 
 ## 2. ルートドメインと認証サービスを設定する
 
-`サブドメインマッピング` を開き、`サブドメインモード` の設定を展開します。`ドメイン` に `example.com` を入力して保存してください。`認証サービスの公開 HTTPS ポート` には、利用者が実際にアクセスする外部ポートを入力します。その後、`認証サービスを追加` をクリックし、`auth.example.com` を追加します。
+`サブドメインマッピング` を開き、`サブドメインモード` の設定を展開します。`ドメイン` に `example.com` を入力して保存し、`認証サービスを追加` から `auth.example.com` を追加します。管理 Cloudflare Tunnel では標準 HTTPS `443` を使うため、公開ポート欄は表示されず、認証 URL に `:7999` は追加されません。
 
 認証サービスは、次の条件を満たす必要があります。
 
@@ -98,16 +98,14 @@ Host マッピングの編集画面には、`ログインを必須にする` ス
 
 ### Cloudflared を使う
 
-Cloudflare Zero Trust で、入口ごとに Public Hostname を設定します。
+1. `システム設定 → Cloudflared` で実行リソースを準備します。
+2. `トンネル → Cloudflared` で Tunnel、Zone Read、DNS Edit 権限を持つ推奨の Cloudflare Account API Token を接続します。
+3. 推奨の専用 Tunnel を選び、`プレビュー` で Tunnel、`*.example.com` Ingress、プロキシ CNAME を確認します。
+4. 競合を解消して適用します。fn-knock が Tunnel Token を取得して Cloudflared を起動します。
 
-| 公開ドメイン | ローカルサービス |
-| --- | --- |
-| `auth.example.com` | `http://127.0.0.1:<実際のゲートウェイポート>` |
-| `nas.example.com` | `http://127.0.0.1:<実際のゲートウェイポート>` |
+適用後、`auth.example.com`、`nas.example.com` などの Host はワイルドカード Tunnel からゲートウェイへ入ります。Cloudflare Zero Trust で Host ごとに Public Hostname を作成する必要はありません。利用者は `:7999` を付けず `https://nas.example.com` へアクセスします。
 
-fn-knock が管理する Cloudflared とゲートウェイが同じ実行環境にある場合は、`127.0.0.1` と実際のゲートウェイポートを指定します。Cloudflared を別コンテナで動かし、fn-knock と同じ Docker ネットワークに接続している場合に限り、fn-knock のコンテナサービス名とポートを使用できます。ネットワークが異なる場合は、Cloudflared コンテナから到達可能なアドレスを指定してください。
-
-インターネット側の TLS は Cloudflare で終端できます。ローカルオリジンへの接続に HTTPS を使う場合は、証明書がオリジンアドレスをカバーし、Cloudflared から信頼されていなければなりません。それ以外の場合は、管理された内部ネットワーク内で HTTP オリジン接続を使用します。
+上級者は手動 Tunnel Token も使用できます。Public Hostname と実オリジンポートを自分で設定するのは、手動または外部管理 Cloudflared の場合だけです。詳しくは[Cloudflared トンネルの設定](/ja/guide/cloudflared-tunnel)を参照してください。
 
 ### FRP を使う
 
@@ -146,10 +144,10 @@ FRP で HTTPS を直接提供する場合は、FRP サーバーまたは fn-knoc
 
 | 症状 | 最初に確認する項目 |
 | --- | --- |
-| トンネルはオンラインだがドメインがタイムアウトする | Public Hostname、FRP の入口、DNS、トンネルの転送先ポート |
+| トンネルはオンラインだがドメインがタイムアウトする | Cloudflare 同期競合、ワイルドカード DNS、Ingress、FRP の入口、ローカル Host マッピング |
 | どのサブドメインも同じサービスへ入る | トンネルまたは前段プロキシが Host ヘッダーを保持しているか |
 | 502 が返る | トンネルからゲートウェイへ接続できるか、ゲートウェイから上流サービスへ接続できるか |
-| ログイン後にリダイレクトがループする | 公開側のプロトコル、認証ドメイン、ルートドメイン、Cookie のスコープ、前段プロキシの `Host` / `X-Forwarded-*` が一致しているか。元のサービス用 Host からアクセスし直します |
+| リダイレクトがループする、または `:7999` が付く | 管理 Cloudflared のサブドメインマッピングと標準 HTTPS を確認し、元のサービス Host からアクセスし直す |
 | Cloudflared で TLS エラーが出る | オリジン接続のプロトコルまたは証明書の信頼設定 |
 | パスモードで静的ファイルが 404 になる | 上流がパスプレフィックスに対応していません。サブドメインマッピングへの移行を優先します |
 

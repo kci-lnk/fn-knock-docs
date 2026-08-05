@@ -1,98 +1,165 @@
 # Cloudflared 隧道配置
 
-Cloudflared 从内网主动连接 Cloudflare Tunnel，并把 Public Hostname 的请求送到 fn-knock 网关。fn-knock 只管理 Cloudflared 可执行资源、Tunnel Token、传输协议和进程；域名与源站 Service 仍在 Cloudflare Dashboard 配置。
+Cloudflared 从内网主动连接 Cloudflare Tunnel，并把公网请求送到 fn-knock 网关。推荐使用 fn-knock 的托管模式：填写 Cloudflare API Token 后，程序会发现 Zone 和 Account、创建或接入 Tunnel、维护通配 DNS 与 Ingress，并取得 Tunnel Token 启动 Cloudflared。常规配置不需要进入 Cloudflare 后台逐项添加 Public Hostname。
 
-新部署使用 `内网穿透 → 子域映射`，让 Cloudflare 保留 Host，fn-knock 再按 Host 分发。路径模式只用于兼容已有单域名路径入口。
+新部署应使用 `内网穿透 → 子域映射`。Cloudflare 保留原始 Host，fn-knock 再按 Host 把 `auth.example.com`、`nas.example.com` 等请求分发到本地服务。路径模式只用于兼容已有的单域名路径入口。
 
-群晖 DSM 7 SPK 提供 Cloudflared 的内置资源、Token 和进程管理。Windows x86_64 不提供这些能力；本页的系统设置步骤不适用于 Windows。如在同一台 Windows 主机自行运行 Cloudflared，可将其 Service 指向 `http://127.0.0.1:7999`，并自行负责进程、日志和更新。
-
-## 1. 准备资源与 Tunnel
+## 开始前
 
 1. 在 `系统设置 → Cloudflared` 下载资源，确认状态为已就绪。
-2. 打开 [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/)，进入 `Networks → Tunnels`。
-3. 新建 Cloudflared Tunnel，在安装页面复制 `--token` 后的长字符串。
-4. 回到 `内网穿透 → Cloudflared`，粘贴 Token。也可粘贴整条安装命令，页面会尝试提取 Token。
-5. 传输协议优先使用 `自动`：先尝试 QUIC，失败时回退 HTTP/2。只有 UDP `7844` 明确被阻断时才固定 HTTP/2。
-6. 保存并启动，确认状态和日志显示 Tunnel 已连接。
+2. 在 `系统设置 → 模式` 选择 `内网穿透 → 子域映射`。
+3. 在 `子域映射` 中保存根域名、鉴权服务和至少一条业务映射。
+4. 创建一个限制到目标 Account 和 Zone 的 Cloudflare 账号 API Token。
 
-Token 是隧道接入凭据，应按密码保存，不要放入截图或公开日志。
+### 推荐：创建账号 API Token
 
-## 2. 配置 Host 路由
+账号 API Token 属于 Cloudflare Account，而不是某位用户。它不会因为创建者离开 Account 而自动失效，更适合 fn-knock 这类长期运行的服务。创建账号 Token 需要该 Account 的 Super Administrator 权限；没有此权限时，再改用个人 API Token。
 
-先在 fn-knock 保存根域、鉴权服务和业务 Host，例如：
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)。
+2. 进入 `Manage Account → Account API Tokens`，选择要托管域名的 Account。
+3. 点击 `Create Token`，选择创建自定义 Token，名称可填写 `fn-knock Cloudflare Tunnel`。
+4. 添加下方列出的 Account 和 Zone 权限。
+5. 在 `Account Resources` 中只选择当前 Account；在 `Zone Resources` 中只选择 fn-knock 根域所在的 Zone。
+6. 可按运维策略设置过期时间。只有设备具备固定公网出口 IP 时才设置 Client IP 限制，否则网络变化后 Token 会突然不可用。
+7. 点击 `Continue to summary`，检查没有多余权限和资源，再点击 `Create Token`。
+8. Token 只显示一次。立即复制到 fn-knock 的 `API 连接` 输入框并完成连接，不要另外保存到文档、截图或聊天记录。
 
-```text
-auth.example.com  -> 认证服务
-nas.example.com   -> http://127.0.0.1:5666
-alist.example.com -> http://127.0.0.1:5244
-```
+Cloudflare 对账号 API Token 的说明和最新控制台路径见[官方文档](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/)。如果使用个人 API Token，则从 `My Profile → API Tokens` 创建；它会跟随个人账号生命周期，适合临时测试，不是长期部署的首选。
 
-然后在 Tunnel 的 Public Hostname 中配置：
+基础托管需要以下权限：
 
-```text
-Public Hostname  *.example.com
-Service          http://127.0.0.1:7999
-```
+- `Account / Cloudflare Tunnel / Edit`
+- `Zone / Zone / Read`
+- `Zone / DNS / Edit`
 
-若实际网关不是 `7999`，使用后台显示的端口。通配 Public Hostname 负责把各业务 Host 送入同一网关，具体服务仍由本地 Host 映射决定。
+启用“优选 Beta”时还需要：
 
-Cloudflared 隧道已经保护 Cloudflare 到内网的传输时，本机回源优先使用 HTTP，配置最简单。需要 HTTPS 回源时再按下一节处理证书。
+- `Zone / SSL and Certificates / Edit`
 
-## 3. HTTPS 回源
+Token 需要能够读取根域所在的有效 Zone。根域可以是 Zone 本身，也可以是其下级域名；例如填写 `tu.example.com` 时，程序会继续查找上级 `example.com` Zone。API Token 与 Account API Token 均可使用。不要把 Global API Key 或 Token 放入截图、Issue 和公开日志；Token 一旦泄露应立即轮换。
 
-网关已启用 HTTPS 时，Service 可以写成：
+## 托管模式配置
 
-```text
-https://localhost:7999
-```
+进入 `内网穿透 → Cloudflared`。页面中的每个区域都可以折叠，运行状态和日志位于最前面并默认展开。
 
-Cloudflared 会校验源站证书。自签证书或证书不包含 `localhost` 时，日志可能出现：
+### 1. 连接 Cloudflare
 
-```text
-certificate is valid for nas.example.com, not localhost
-```
+展开 `API 连接`，粘贴 API Token 并连接。连接成功后页面会显示识别到的 Zone；Token 明文不会在后续读取接口中返回。
 
-这表示 Tunnel 已到达源站，但校验的主机名与证书不匹配。选择一种处理方式：
+若连接失败，先根据错误检查 Zone 状态和 Token 的资源范围。仅能读取 Zone、但没有 DNS 编辑权限的 Token，可能在连接时成功，却会在预检或应用时失败。
 
-- 把 Origin Server Name 设为证书覆盖的域名。
-- 在明确接受风险时关闭该源站的 TLS 校验。
-- 改回 `http://127.0.0.1:7999`，由 Cloudflare 承担外部 HTTPS。
+### 2. 选择 Tunnel
 
-不要把关闭校验描述成修复证书；它只是停止验证。证书管理见 [SSL 证书](/guide/ssl)。
+展开 `Tunnel 与域名同步`：
 
-## 路径模式兼容配置
+- `专用 Tunnel`：推荐。fn-knock 创建一个带实例标识的 Tunnel，并只管理自己的配置。
+- `已有 Tunnel`：用于复用 Cloudflare 中现有的远程托管 Cloudflared Tunnel。fn-knock 会保留其他 Ingress 及其顺序，把自己的通配规则放在终止规则之前。
 
-已有 `https://home.example.com/alist` 等 URL 时，可在 `内网穿透 → 路径模式` 保留单个 Public Hostname：
+点击 `预检` 后，页面会列出将创建、更新或保留的 Tunnel、Ingress、DNS 和优选资源。预检计划有效期为 10 分钟；应用前如果远端配置已变化，需要重新预检。遇到同名但不属于 fn-knock 的资源时，页面会报告冲突，只有逐项确认接管后才会修改。
+
+基础托管会自动维护：
 
 ```text
-Public Hostname  home.example.com
-Service          http://127.0.0.1:7999
+*.example.com  -> <tunnel-id>.cfargotunnel.com（代理 CNAME）
+*.example.com  -> fn-knock 的专用本地 Tunnel 入口（Ingress）
+最后一条       -> HTTP 404
 ```
 
-Cloudflare 只负责把请求送到网关，路径拆分继续由 fn-knock 完成。不要同时在 Cloudflare 和 fn-knock 维护两套互相覆盖的路径改写。
+应用成功后，fn-knock 通过 Cloudflare 官方接口取得 Tunnel Token，并使用权限为 `0600` 的 Token 文件启动 Cloudflared。Token 不会出现在进程参数中。
 
-## 客户端 IP 与 `local_exempt`
+### 3. 验证公网访问
 
-登录和白名单以网关识别到的客户端 IP 为准。私网、回环和链路本地来源会成为 `local_exempt`，跳过常规登录和已有严格白名单规则的检查。
+托管 Cloudflare Tunnel 对访客提供标准 HTTPS 地址：
 
-Cloudflared 连接本机时本身来自回环地址，因此必须让内网穿透子域链路正确使用 Cloudflare 传来的访客信息。配置后从移动网络访问，并在 fn-knock 请求日志确认记录的是访客公网 IP，而不是 `127.0.0.1` 或容器地址。EdgeOne / ESA 的客户端 IP 开关不适用于 Cloudflared。
+```text
+https://auth.example.com/
+https://nas.example.com/
+```
 
-## 平台边界
+不要在这些地址后补 `:7999`。即使旧配置中仍保存了公网 HTTPS 端口，Cloudflare Tunnel 模式下的子域列表、鉴权地址和登录跳转也会省略该端口。Cloudflare 负责外部 `443`，fn-knock 自动管理本地 Tunnel 入口。
 
-- Cloudflared 是出站进程，不要求 fn-knock 管理宿主机防火墙；Docker 可以使用。
-- 运行平台必须有匹配架构的 Cloudflared 资源。资源页未就绪时，保存 Token 也不能启动。
-- Docker 中 `127.0.0.1` 只指当前容器；独立运行 Cloudflared 容器时，Service 应改为 fn-knock 的容器服务名和端口。
-- 群晖 DSM 7 SPK 支持应用内 Cloudflared；管理页从 DSM 桌面套件入口进入，网关回源使用实际端口 `7999`。
-- Windows 不提供 Cloudflared 的应用内资源页；独立运行的客户端不受 fn-knock 管理。
-- fn-knock 不会创建 Cloudflare DNS、Tunnel、Public Hostname、缓存规则或 Origin Request 设置。
+保存新业务 Host 后，通配 Tunnel 已能立即接收请求，不需要再去 Cloudflare 后台添加一条 Public Hostname。若启用了优选，精确域资源会在后台继续对账；完成前仍由通配 Tunnel 正常服务。
+
+## 优选 Beta
+
+优选会测试从当前设备到 Cloudflare Anycast IPv4 的实际质量，再为已配置的精确业务域叠加 Cloudflare for SaaS Custom Hostname。标准通配 Tunnel 始终保留作为回退。
+
+### 启用顺序
+
+1. 在 `Tunnel 与域名同步` 中打开 `优选 Beta`。
+2. 先执行 `预检`，确认套餐能力、权限、资源变化和冲突。
+3. 应用预检计划。看到“需要先在 Cloudflare 对账计划中启用优选”时，表示尚未完成这一步。
+4. 展开 `优选 Beta`，运行测速并查看候选结果。
+5. 应用推荐 IP，或选择一个已通过验证的候选。
+
+程序会先用隔离子域探测当前 Zone 是否支持 Custom Hostname、证书签发和 SNI 直连。能力不支持时只停用优选，不会影响基础 Tunnel。
+
+### 候选来源
+
+测速候选可来自：
+
+- Cloudflare 官方 IPv4 网段的确定性抽样。
+- 内置公共域名：瑞典政府 `www.gov.se`、美国国会图书馆 `www.loc.gov`、ICANN `www.icann.org` 和 Visa `www.visa.com`。
+- 用户添加的公共候选域名，最多 16 个。
+
+这些公共域名只用于解析可能的 Cloudflare IPv4。fn-knock 不会把业务 CNAME 指向它们，也不会用它们的 Host 或 SNI 发送业务流量。解析结果还会过滤无效地址、私网地址和常见 Fake IP；如果本地 DNS 使用 Fake IP 模式，可通过其他真实解析来源补充候选。
+
+一个地址的注册机构或 GeoIP 显示“美国”，不代表请求落地在美国。Cloudflare IPv4 是 Anycast 地址，同一个 IP 会从多个边缘机房广播。结果中的 `Cloudflare 机房` 来自实际探测响应的 `CF-Ray` 后缀，例如 `SIN`、`HKG`；它比 IP 归属地更能说明本次连接的落地点。
+
+### 测速与切换
+
+单次测速最多选择 128 个候选，并发不超过 32。每个候选进行 3 次 TLS/延迟探测，延迟较好的 8 个候选再进行两次 1 MiB 下载，单次总下载量不超过 20 MiB。评分越低越好：
+
+```text
+中位延迟 + 2 × 抖动 + 1500 × 丢包率 + 800 / max(下载 Mbps, 1)
+```
+
+候选还必须针对实际业务 Host 通过 TLS、SNI 和 Cloudflare 错误页检查，不能只凭 ping 或 IP 归属地应用。自动策略每 7 天重新测速，每 15 分钟检查当前 IP；新候选至少好 15%，并在相隔 10 分钟的两轮确认中保持领先后才会切换。
+
+当前 IP 连续失败时，程序优先切到已经验证的候选；没有可用候选时会移除 fn-knock 管理的精确 CNAME，让域名恢复匹配通配 Tunnel。也可以随时点击 `回退标准 Tunnel`。
+
+### 套餐与安全边界
+
+优选依赖 Cloudflare for SaaS Custom Hostname。可用数量以当前 Zone 的实际套餐和配额为准；超过配额的业务域会显示为标准 Tunnel 回退。Custom Hostname 和证书未同时激活前，程序不会发布精确 CNAME。
+
+不要手工把代理状态的业务 A 记录直接指向 Cloudflare 边缘 IP，这可能触发 Cloudflare Error 1000。fn-knock 使用 Custom Hostname、专用源站域和 DNS-only 优选入口组合，并在能力探测失败时保持通配 Tunnel。
+
+## 客户端 IP 与登录跳转
+
+托管模式使用只监听回环地址的专用 Tunnel 入口。网关只在这条受控链路上信任 Cloudflare 的 `CF-Connecting-IP`，不会把访客自行发送的 `X-Forwarded-For` 当成可信来源。EdgeOne / ESA 的真实 IP 开关不适用于 Cloudflared，在当前模式不可用时界面会隐藏该设置。
+
+从移动网络访问一条要求登录的业务 Host，并在请求日志确认：
+
+- 登录跳转是 `https://auth.example.com/...`，没有 `:7999`。
+- `redirect_uri` 仍是原业务 Host，也没有 `:7999`。
+- 客户端 IP 是访客公网地址，而不是 `127.0.0.1`、容器地址或自定义 `X-Forwarded-For`。
+
+## 手动 Token 模式
+
+高级用户仍可展开 `手动 Tunnel Token`，粘贴从 Cloudflare 取得的 Tunnel Token，并选择传输协议。`自动`会优先尝试 QUIC，失败时回退 HTTP/2；只有 UDP `7844` 明确被阻断时才固定 HTTP/2。
+
+手动模式不会自动创建 Tunnel、DNS 或 Ingress，需要自行在 Cloudflare 配置 Public Hostname 和回源 Service。自管进程或 Windows 版本也属于这一类；它们可以回源实际网关端口，但其安装、Token、日志和生命周期不由托管流程负责。
+
+## 删除与清理
+
+删除 API Token 只会停止后续远端管理，不会删除 Cloudflare 资源。需要移除资源时，使用 `移除托管资源` 生成清理预检并确认：
+
+- 已有 Tunnel 永远不会被自动删除。
+- fn-knock 创建的专用 Tunnel 也只有在明确勾选确认后才会删除。
+- 清理优选资源会先让精确业务域恢复通配 Tunnel。
 
 ## 排错
 
-1. **进程未启动**：检查资源状态、Token 和传输协议日志。
-2. **Tunnel 在线但域名不通**：检查 Public Hostname、DNS 和 Service 的实际端口。
-3. **返回 TLS 错误**：核对回源协议、证书信任和 Origin Server Name。
-4. **鉴权 Host 可开但业务 Host 404**：确认使用通配 Public Hostname，且请求 Host 已存在本地映射。
-5. **所有访问都像同一个来源**：检查请求日志中的客户端 IP，再排查 Cloudflare 到网关的来源传递。
-6. **页面开但资源失败**：确认 WebSocket 未被禁用；路径模式再检查去前缀和 HTML 改写。
+| 症状 | 优先检查 |
+| --- | --- |
+| Zone 未找到或未激活 | 根域是否属于 Token 可访问的有效 Zone；Token 是否限制到错误 Account / Zone |
+| 提示缺少 DNS Edit | Token 是否具有 `Zone / DNS / Edit`，并允许目标 Zone |
+| DNS tag 配额为 0 | 更新到已支持 comment-only 标记的版本后重新预检；不要手工创建重复记录 |
+| 预检后应用返回 409 | 远端配置或本地根域已变化，重新执行预检 |
+| Tunnel 在线但域名不通 | 查看对账冲突、通配 DNS、Ingress、Cloudflared 日志和业务 Host 映射 |
+| 跳转仍包含 `:7999` | 确认当前模式为 `内网穿透 → 子域映射`、默认 Tunnel 为 Cloudflared，并更新到支持标准端口跳转的版本 |
+| 优选无法启用 | 检查 SSL 权限、Cloudflare for SaaS 是否可用、Custom Hostname 配额和能力探测结果 |
+| IP 归属地显示美国 | 查看测速结果中的 Cloudflare 机房代码；Anycast IP 的注册地不是连接落地点 |
+| 所有访问都像本地来源 | 查看请求日志中的客户端 IP，并确认使用托管专用入口而非错误的自管回源 |
 
-整体运行状态见 [内网穿透](/guide/tunnel)，完整示例见 [反代访问教程](/tutorials/reverse-proxy-with-fknock)。
+整体运行状态见[内网穿透](/guide/tunnel)，Host 配置见[子域映射](/guide/subdomain-proxy)。

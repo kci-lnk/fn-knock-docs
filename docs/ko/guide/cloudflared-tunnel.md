@@ -3,104 +3,171 @@ lang: ko-KR
 title: "cloudflared 기반 Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: eec0d64b8afa9b973302d46c06e9eba28248e07035de9d98c29f37c41e520c0e
+translationSourceHash: bff0db45d864b571554efb273368b024d0a2ba556678b1503ed9a5a32cc1ac9f
 ---
 
 # cloudflared 기반 Cloudflare Tunnel
 
-cloudflared는 LAN에서 Cloudflare Tunnel로 아웃바운드 연결을 만들고 공개 호스트 이름(Public Hostname)으로 들어온 요청을 fn-knock 게이트웨이에 전달합니다. fn-knock는 cloudflared 실행 리소스, 터널 토큰, 전송 프로토콜 및 프로세스만 관리합니다. 도메인과 오리진 `Service`는 계속 Cloudflare 대시보드에서 설정합니다.
+cloudflared는 내부 네트워크에서 Cloudflare Tunnel로 연결하고 외부 요청을 fn-knock 게이트웨이에 전달합니다. fn-knock 관리 모드를 권장합니다. Cloudflare API Token을 입력하면 Zone과 Account 검색, Tunnel 생성 또는 연결, 와일드카드 DNS와 Ingress 관리, Tunnel Token 가져오기 및 cloudflared 시작을 자동으로 처리합니다. 일반 구성에서는 Cloudflare 대시보드에 Public Hostname을 하나씩 추가할 필요가 없습니다.
 
-새로 배포할 때는 `리버스 프록시 모드 → 서브도메인 매핑`을 사용합니다. Cloudflare가 Host를 유지한 채 전달하면 fn-knock가 Host에 따라 요청을 분배합니다. 경로 모드는 기존 단일 도메인 경로 엔드포인트와의 호환 용도로만 사용합니다.
+새 배포에서는 `터널 → 서브도메인 매핑`을 사용합니다. Cloudflare가 원래 Host를 유지하면 fn-knock가 `auth.example.com`, `nas.example.com` 등의 요청을 로컬 서비스로 분배합니다. 경로 모드는 기존 단일 도메인 경로 엔드포인트를 유지할 때만 사용합니다.
 
-Synology DSM 7 SPK는 Cloudflared 내장 리소스, 토큰 및 프로세스 관리를 제공합니다. Windows x86_64에서는 이러한 기능을 제공하지 않으므로 이 페이지의 시스템 설정 절차를 적용할 수 없습니다. 같은 Windows 호스트에서 Cloudflared를 직접 실행한다면 Service를 `http://127.0.0.1:7999`로 지정할 수 있지만 프로세스, 로그 및 업데이트도 직접 관리합니다.
+## 시작 전 준비
 
-## 1. 리소스 및 터널 준비
+1. `시스템 설정 → Cloudflared`에서 리소스를 다운로드하고 준비 완료 상태를 확인합니다.
+2. `시스템 설정 → 모드`에서 `터널 → 서브도메인 매핑`을 선택합니다.
+3. 루트 도메인, 인증 서비스 및 하나 이상의 서비스 매핑을 저장합니다.
+4. 대상 Account와 Zone으로 제한한 Cloudflare Account API Token을 만듭니다.
 
-1. `시스템 설정 → Cloudflared`에서 리소스를 다운로드하고 상태가 준비 완료인지 확인합니다.
-2. [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/)를 열고 `Networks → Tunnels`로 이동합니다.
-3. 새 Cloudflared Tunnel을 만들고 설치 페이지에서 `--token` 뒤에 있는 긴 문자열을 복사합니다.
-4. `리버스 프록시 모드 → Cloudflared`로 돌아가 토큰을 붙여넣습니다. 전체 설치 명령을 붙여넣어도 페이지에서 토큰 추출을 시도합니다.
-5. 전송 프로토콜은 `자동`을 우선 사용합니다. 먼저 QUIC를 시도하고 실패하면 HTTP/2로 전환합니다. UDP `7844`가 명확하게 차단된 경우에만 HTTP/2로 고정합니다.
-6. 저장하고 시작한 뒤 상태와 로그에 Tunnel이 연결된 것으로 표시되는지 확인합니다.
+### 권장: Account API Token 만들기
 
-토큰은 터널 접근 자격 증명입니다. 비밀번호처럼 보관하고 스크린샷이나 공개 로그에 넣지 않습니다.
+Account API Token은 개인 사용자가 아니라 Cloudflare Account에 속합니다. 만든 사용자가 Account에서 나가더라도 그 이유만으로 비활성화되지 않으므로 fn-knock처럼 장기간 실행되는 서비스에 적합합니다. 만들려면 해당 Account의 Super Administrator 권한이 필요합니다. 이 권한이 없을 때만 사용자 API Token을 사용합니다.
 
-## 2. Host 라우트 설정
+1. [Cloudflare Dashboard](https://dash.cloudflare.com/)에 로그인합니다.
+2. `Manage Account → Account API Tokens`를 열고 Zone을 소유한 Account를 선택합니다.
+3. `Create Token`을 선택해 사용자 지정 Token을 만들고 이름을 `fn-knock Cloudflare Tunnel` 등으로 지정합니다.
+4. 아래의 Account 및 Zone 권한을 추가합니다.
+5. `Account Resources`에서는 현재 Account만 선택하고 `Zone Resources`에서는 fn-knock 루트 도메인이 속한 Zone만 선택합니다.
+6. 필요하면 만료 날짜를 설정합니다. 기기의 공인 출구 IP가 고정일 때만 Client IP 제한을 사용합니다. 그렇지 않으면 네트워크 변경으로 Token이 갑자기 작동하지 않을 수 있습니다.
+7. `Continue to summary`를 선택해 불필요한 권한과 리소스가 없는지 확인한 다음 `Create Token`을 선택합니다.
+8. Secret은 한 번만 표시됩니다. fn-knock의 `API 연결` 입력란에 바로 복사해 연결하고 문서, 스크린샷 또는 채팅에 저장하지 않습니다.
 
-먼저 fn-knock에 루트 도메인, 인증 서비스 및 서비스 Host를 저장합니다. 예:
+현재 대시보드 경로는 Cloudflare의 [Account API Token 공식 문서](https://developers.cloudflare.com/fundamentals/api/get-started/account-owned-tokens/)를 참고합니다. 사용자 API Token은 `My Profile → API Tokens`에서 만들 수 있지만 개인 계정 수명 주기를 따르므로 장기 배포보다 임시 테스트에 적합합니다.
 
-```text
-auth.example.com  -> 인증 서비스
-nas.example.com   -> http://127.0.0.1:5666
-alist.example.com -> http://127.0.0.1:5244
-```
+기본 관리 구성에는 다음 권한이 필요합니다.
 
-그런 다음 터널의 공개 호스트 이름을 다음과 같이 설정합니다.
+- `Account / Cloudflare Tunnel / Edit`
+- `Zone / Zone / Read`
+- `Zone / DNS / Edit`
 
-```text
-Public Hostname  *.example.com
-Service          http://127.0.0.1:7999
-```
+최적화 Beta에는 다음 권한도 필요합니다.
 
-실제 게이트웨이 포트가 `7999`가 아니라면 관리 화면에 표시된 포트를 사용합니다. 와일드카드 공개 호스트 이름은 각 서비스 Host를 같은 게이트웨이로 전달하고, 구체적인 서비스는 로컬 Host 매핑에서 결정합니다.
+- `Zone / SSL and Certificates / Edit`
 
-Cloudflared 터널이 Cloudflare와 LAN 사이의 전송을 이미 보호한다면 로컬 오리진은 HTTP를 우선 사용하는 것이 가장 간단합니다. HTTPS 오리진이 필요할 때만 다음 절에 따라 인증서를 설정합니다.
+Token은 루트 도메인이 속한 활성 Zone을 읽을 수 있어야 합니다. 루트는 Zone 자체 또는 하위 도메인일 수 있습니다. 예를 들어 `tu.example.com`을 입력하면 상위 `example.com` Zone까지 검색합니다. API Token과 Account API Token을 모두 지원합니다. Global API Key 또는 Token을 스크린샷, Issue, 공개 로그에 넣지 않습니다. 노출된 Token은 즉시 교체합니다.
 
-## 3. HTTPS 오리진
+## 관리 모드 설정
 
-게이트웨이에서 HTTPS를 활성화했다면 Service를 다음과 같이 입력할 수 있습니다.
+`터널 → Cloudflared`를 엽니다. 모든 영역을 접을 수 있으며 실행 상태와 로그가 맨 위에서 기본으로 펼쳐집니다.
 
-```text
-https://localhost:7999
-```
+### 1. Cloudflare 연결
 
-Cloudflared는 오리진 인증서를 검증합니다. 자체 서명 인증서를 사용하거나 인증서에 `localhost`가 포함되지 않았다면 로그에 다음 메시지가 나타날 수 있습니다.
+`API 연결`을 펼치고 API Token을 붙여넣은 뒤 연결합니다. 성공하면 검색한 Zone이 표시됩니다. 이후 읽기 API에서는 평문 Token을 반환하지 않습니다.
 
-```text
-certificate is valid for nas.example.com, not localhost
-```
+연결에 실패하면 Zone 상태와 Token의 리소스 범위를 확인합니다. Zone 읽기만 가능하고 DNS 편집 권한이 없는 Token은 연결에 성공하더라도 미리 보기 또는 적용 단계에서 실패할 수 있습니다.
 
-이는 터널이 오리진에는 도달했지만 검증하는 호스트 이름과 인증서가 일치하지 않는다는 뜻입니다. 다음 방법 중 하나를 선택합니다.
+### 2. Tunnel 선택
 
-- Origin Server Name을 인증서가 포함하는 도메인으로 설정합니다.
-- 위험을 명확히 이해하고 받아들일 수 있을 때만 해당 오리진의 TLS 검증을 끕니다.
-- `http://127.0.0.1:7999`로 되돌리고 외부 HTTPS는 Cloudflare에서 처리합니다.
+`Tunnel 및 도메인 동기화`를 펼칩니다.
 
-검증을 끄는 것을 인증서 수정이라고 표현하면 안 됩니다. 이는 검증을 중단할 뿐입니다. 인증서 관리 방법은 [SSL 인증서](/ko/guide/ssl)를 참고합니다.
+- `전용 Tunnel`: 권장 옵션입니다. fn-knock가 인스턴스 식별자가 있는 Tunnel을 만들고 자체 구성만 관리합니다.
+- `기존 Tunnel`: Cloudflare에서 원격 관리 중인 Cloudflared Tunnel을 재사용합니다. 다른 Ingress와 순서를 유지하고 fn-knock 와일드카드 규칙을 종료 규칙 앞에 배치합니다.
 
-## 경로 모드 호환 설정
+`미리 보기`를 실행하면 생성, 업데이트 또는 유지할 Tunnel, Ingress, DNS 및 최적화 리소스를 확인할 수 있습니다. 계획은 10분 동안 유효합니다. 적용 전에 원격 상태가 변경되면 다시 미리 봅니다. 이름이 같지만 fn-knock 소유가 아닌 리소스는 충돌로 표시되고, 항목별 인계를 명시적으로 승인한 경우에만 변경합니다.
 
-`https://home.example.com/alist` 같은 기존 URL이 있다면 `리버스 프록시 모드 → 경로 모드`에서 공개 호스트 이름 하나를 그대로 사용할 수 있습니다.
+기본 관리 구성은 다음 상태를 자동으로 유지합니다.
 
 ```text
-Public Hostname  home.example.com
-Service          http://127.0.0.1:7999
+*.example.com  -> <tunnel-id>.cfargotunnel.com (프록시 CNAME)
+*.example.com  -> fn-knock 전용 로컬 Tunnel 진입점 (Ingress)
+마지막 규칙    -> HTTP 404
 ```
 
-Cloudflare는 요청을 게이트웨이까지 전달하기만 하고 경로 분기는 계속 fn-knock에서 처리합니다. Cloudflare와 fn-knock 양쪽에 서로 덮어쓰는 경로 재작성 규칙을 따로 관리하지 않습니다.
+적용 후 fn-knock는 Cloudflare 공식 API로 Tunnel Token을 가져오고 권한이 `0600`인 Token 파일을 사용해 cloudflared를 시작합니다. 프로세스 인자에 Token이 나타나지 않습니다.
 
-## 클라이언트 IP와 `local_exempt`
+### 3. 외부 접속 확인
 
-로그인과 허용 목록은 게이트웨이가 식별한 클라이언트 IP를 기준으로 판단합니다. 사설망, 루프백 및 링크 로컬 출발지는 `local_exempt`로 처리되어 일반 로그인과 기존의 엄격한 허용 목록 검사를 건너뜁니다.
+관리 Cloudflare Tunnel은 표준 HTTPS 주소를 제공합니다.
 
-Cloudflared가 같은 호스트의 게이트웨이에 연결하면 연결 자체는 루프백 주소에서 들어옵니다. 따라서 리버스 프록시 서브도메인 경로에서는 Cloudflare가 전달한 방문자 정보를 올바르게 사용합니다. 설정 후 모바일 네트워크에서 접속하고 fn-knock 요청 로그에 `127.0.0.1`이나 컨테이너 주소가 아닌 방문자의 공인 IP가 기록되는지 확인합니다. EdgeOne / ESA 클라이언트 IP 옵션은 Cloudflared에 적용되지 않습니다.
+```text
+https://auth.example.com/
+https://nas.example.com/
+```
 
-## 플랫폼별 제한
+주소 뒤에 `:7999`를 붙이지 않습니다. 이전 공개 HTTPS 포트 설정이 남아 있어도 Cloudflare Tunnel 모드에서는 서브도메인 목록, 인증 주소 및 로그인 리디렉션에서 해당 포트를 제외합니다. 외부 `443`은 Cloudflare가 처리하고 로컬 Tunnel 진입점은 fn-knock가 자동으로 관리합니다.
 
-- Cloudflared는 아웃바운드 프로세스이므로 fn-knock가 호스트 방화벽을 관리할 필요가 없으며 Docker에서도 사용할 수 있습니다.
-- 실행 플랫폼의 아키텍처와 일치하는 Cloudflared 리소스가 필요합니다. 리소스 페이지가 준비되지 않았다면 토큰을 저장해도 시작할 수 없습니다.
-- Docker에서 `127.0.0.1`은 현재 컨테이너만 가리킵니다. Cloudflared를 별도 컨테이너로 실행한다면 Service를 fn-knock 컨테이너의 서비스 이름과 포트로 변경합니다.
-- Synology DSM 7 SPK는 내장 Cloudflared를 지원합니다. DSM 데스크톱의 패키지 진입점에서 관리 페이지를 열고 실제 게이트웨이 포트 `7999`를 오리진으로 사용합니다.
-- Windows는 내장 Cloudflared 리소스 페이지를 제공하지 않으며 별도로 실행하는 클라이언트는 fn-knock에서 관리하지 않습니다.
-- fn-knock는 Cloudflare DNS, Tunnel, Public Hostname, 캐시 규칙 또는 Origin Request 설정을 생성하지 않습니다.
+새 서비스 Host를 저장하면 와일드카드 Tunnel을 통해 즉시 동작하므로 대시보드에 Public Hostname을 추가할 필요가 없습니다. 최적화를 사용하면 정확한 도메인 리소스를 백그라운드에서 동기화하며, 준비 전까지 와일드카드 Tunnel이 계속 서비스합니다.
+
+## 최적화 Beta
+
+최적화는 현재 기기에서 Cloudflare Anycast IPv4까지 실제 품질을 측정하고 Cloudflare for SaaS Custom Hostname으로 정확한 서비스 도메인에 우선 경로를 추가합니다. 표준 와일드카드 Tunnel은 항상 대체 경로로 유지됩니다.
+
+### 활성화 순서
+
+1. `Tunnel 및 도메인 동기화`에서 `최적화 Beta`를 켭니다.
+2. `미리 보기`를 실행하여 요금제 기능, 권한, 리소스 변경 및 충돌을 확인합니다.
+3. 계획을 적용합니다. “Cloudflare 조정 계획에서 먼저 최적화를 활성화”하라는 메시지는 이 단계가 완료되지 않았다는 뜻입니다.
+4. `최적화 Beta`를 펼치고 속도 테스트를 실행합니다.
+5. 추천 IP 또는 검증된 다른 후보를 적용합니다.
+
+fn-knock는 격리된 호스트 이름으로 현재 Zone의 Custom Hostname, 인증서 발급 및 SNI 직접 연결 지원을 먼저 확인합니다. 지원되지 않으면 최적화만 비활성화하고 기본 Tunnel에는 영향을 주지 않습니다.
+
+### 후보 출처
+
+후보는 다음 출처에서 가져옵니다.
+
+- Cloudflare 공식 IPv4 범위의 결정적 샘플.
+- 기본 공개 호스트 이름: 스웨덴 정부 `www.gov.se`, 미국 의회도서관 `www.loc.gov`, ICANN `www.icann.org`, Visa `www.visa.com`.
+- 사용자가 추가한 공개 후보 호스트 이름(최대 16개).
+
+공개 호스트 이름은 가능한 Cloudflare IPv4를 찾는 용도로만 사용합니다. 서비스 CNAME을 해당 호스트로 지정하거나 해당 Host/SNI로 서비스 트래픽을 보내지 않습니다. 유효하지 않은 주소, 사설 주소 및 일반적인 Fake IP는 제외합니다. 로컬 DNS가 Fake IP 모드라면 실제 해석 결과를 제공할 다른 출처를 추가합니다.
+
+IP 등록 기관 또는 GeoIP에 “미국”이라고 표시되어도 요청이 미국에 도착한다는 뜻은 아닙니다. Cloudflare IPv4는 Anycast이므로 같은 주소를 여러 엣지 위치에서 알립니다. 결과의 `Cloudflare colo`는 실제 프로브의 `CF-Ray` 접미사(예: `SIN`, `HKG`)에서 가져오며 해당 연결의 도착 위치를 더 잘 나타냅니다.
+
+### 측정 및 전환
+
+한 번의 테스트는 최대 128개 후보와 32개 동시 프로브를 사용합니다. 후보마다 TLS/지연 시간 프로브를 3회 실행하고 상위 8개 후보는 1 MiB 다운로드를 두 번 수행합니다. 총 다운로드는 20 MiB 이하입니다. 점수가 낮을수록 좋습니다.
+
+```text
+중앙 지연 시간 + 2 × 지터 + 1500 × 손실률 + 800 / max(다운로드 Mbps, 1)
+```
+
+실제 서비스 Host에 대한 TLS, SNI 및 Cloudflare 오류 페이지 검사도 통과해야 합니다. ping 또는 IP 위치만으로 후보를 적용할 수 없습니다. 자동 정책은 7일마다 다시 측정하고 현재 IP를 15분마다 확인합니다. 새 후보가 15% 이상 좋아야 하며 10분 간격의 두 확인에서 우위를 유지한 후에만 전환합니다.
+
+현재 IP가 연속으로 실패하면 검증된 후보를 우선 사용합니다. 사용 가능한 후보가 없으면 fn-knock가 관리하는 정확한 CNAME을 제거해 도메인을 와일드카드 Tunnel로 되돌립니다. 언제든 `표준 Tunnel로 되돌리기`를 선택할 수 있습니다.
+
+### 요금제 및 안전 경계
+
+최적화는 Cloudflare for SaaS Custom Hostname을 사용합니다. 사용 가능 여부와 수량은 Zone의 실제 요금제와 할당량을 따릅니다. 할당량을 초과한 서비스 도메인은 표준 Tunnel을 사용합니다. Custom Hostname과 인증서가 모두 활성 상태가 되기 전에는 정확한 CNAME을 게시하지 않습니다.
+
+프록시 상태의 서비스 A 레코드를 Cloudflare 엣지 IP로 직접 지정하지 않습니다. Cloudflare Error 1000이 발생할 수 있습니다. fn-knock는 Custom Hostname, 전용 오리진 호스트 이름 및 DNS-only 최적화 진입점을 조합하며, 기능 프로브가 실패하면 와일드카드 Tunnel을 유지합니다.
+
+## 클라이언트 IP와 로그인 리디렉션
+
+관리 모드는 루프백에서만 수신하는 전용 Tunnel 진입점을 사용합니다. 게이트웨이는 이 제어된 경로에서만 Cloudflare의 `CF-Connecting-IP`를 신뢰하고 방문자가 직접 보낸 `X-Forwarded-For`는 신뢰하지 않습니다. EdgeOne/ESA 실제 IP 옵션은 Cloudflared에 적용되지 않으며 현재 모드에서 사용할 수 없으면 숨겨집니다.
+
+모바일 네트워크에서 로그인이 필요한 서비스 Host를 열고 요청 로그에서 다음을 확인합니다.
+
+- 리디렉션이 `https://auth.example.com/...`이고 `:7999`가 없습니다.
+- `redirect_uri`가 원래 서비스 Host이며 `:7999`가 없습니다.
+- 클라이언트 IP가 방문자의 공인 IP이며 `127.0.0.1`, 컨테이너 주소 또는 임의의 `X-Forwarded-For`가 아닙니다.
+
+## 수동 Tunnel Token 모드
+
+고급 사용자는 `수동 Tunnel Token`을 펼쳐 Cloudflare에서 받은 Tunnel Token과 전송 프로토콜을 설정할 수 있습니다. `자동`은 QUIC를 먼저 시도하고 실패하면 HTTP/2로 전환합니다. UDP `7844`가 확실히 차단된 경우에만 HTTP/2로 고정합니다.
+
+수동 모드는 Tunnel, DNS 또는 Ingress를 만들지 않습니다. Cloudflare에서 Public Hostname과 오리진 Service를 직접 설정합니다. 직접 관리하는 프로세스 또는 Windows 설치도 수동 구성입니다. 실제 게이트웨이 포트를 오리진으로 사용할 수 있지만 설치, Token, 로그 및 수명 주기는 관리 모드의 대상이 아닙니다.
+
+## 연결 해제 및 정리
+
+API Token을 삭제하면 이후 원격 관리만 중지되며 Cloudflare 리소스는 삭제되지 않습니다. `관리 리소스 제거`에서 정리 계획을 미리 보고 확인합니다.
+
+- 기존 Tunnel은 자동으로 삭제하지 않습니다.
+- fn-knock가 만든 전용 Tunnel도 명시적으로 확인한 후에만 삭제합니다.
+- 최적화 리소스를 정리할 때 정확한 서비스 도메인을 먼저 와일드카드 Tunnel로 되돌립니다.
 
 ## 문제 해결
 
-1. **프로세스가 시작되지 않음**: 리소스 상태, 토큰 및 전송 프로토콜 로그를 확인합니다.
-2. **Tunnel은 온라인이지만 도메인에 접속할 수 없음**: Public Hostname, DNS 및 Service의 실제 포트를 확인합니다.
-3. **TLS 오류가 반환됨**: 오리진 프로토콜, 인증서 신뢰 및 Origin Server Name을 확인합니다.
-4. **인증 Host는 열리지만 서비스 Host에서 404가 반환됨**: 와일드카드 Public Hostname을 사용하고 요청 Host가 로컬 매핑에 있는지 확인합니다.
-5. **모든 접속이 같은 출발지로 표시됨**: 요청 로그의 클라이언트 IP를 확인한 뒤 Cloudflare에서 게이트웨이까지 출발지 정보가 전달되는 과정을 점검합니다.
-6. **페이지는 열리지만 리소스가 실패함**: WebSocket이 비활성화되지 않았는지 확인합니다. 경로 모드에서는 접두사 제거와 HTML 재작성도 점검합니다.
+| 증상 | 우선 확인 항목 |
+| --- | --- |
+| Zone을 찾지 못했거나 비활성 상태 | 루트가 Token의 Account/Zone 범위에 있는 활성 Zone에 속하는지 확인 |
+| DNS Edit 권한이 필요함 | 대상 Zone에 `Zone / DNS / Edit`가 있는지 확인 |
+| DNS tag 할당량이 0 | comment-only 소유 표시를 지원하는 버전으로 업데이트하고 다시 미리 보기. 중복 레코드를 직접 만들지 않음 |
+| 미리 보기 후 적용이 409 | 원격 상태 또는 로컬 루트가 변경되었으므로 다시 미리 보기 |
+| Tunnel은 온라인이지만 도메인이 동작하지 않음 | 동기화 충돌, 와일드카드 DNS, Ingress, Cloudflared 로그 및 Host 매핑 |
+| 리디렉션에 `:7999`가 남음 | `터널 → 서브도메인 매핑`, 기본 Tunnel이 Cloudflared인지, 표준 포트 리디렉션 지원 버전인지 확인 |
+| 최적화를 활성화할 수 없음 | SSL 권한, Cloudflare for SaaS, Custom Hostname 할당량 및 기능 프로브 |
+| IP 위치가 미국으로 표시됨 | 스캔의 Cloudflare colo 코드를 확인. Anycast 등록 위치는 연결 도착지가 아님 |
+| 모든 요청이 로컬처럼 보임 | 요청 로그의 클라이언트 IP와 잘못된 수동 오리진 대신 전용 관리 진입점을 사용하는지 확인 |
 
-전체 실행 상태는 [터널](/ko/guide/tunnel), 전체 예시는 [리버스 프록시 접속 튜토리얼](/ko/tutorials/reverse-proxy-with-fknock)을 참고합니다.
+전체 실행 상태는 [터널](/ko/guide/tunnel), Host 설정은 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 참고합니다.

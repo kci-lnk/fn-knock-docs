@@ -3,7 +3,7 @@ lang: zh-TW
 title: "無公網 IP：透過隧道發布子網域"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae185a21240
+translationSourceHash: 92b38595cf586a2f6634b8882301ad43e413c48f4ea5649cbf49f823352e74c0
 ---
 
 # 無公網 IP：透過隧道發布子網域
@@ -23,8 +23,8 @@ translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae18
 
 1. 在 `系統設定 → 模式` 選擇 `內網穿透`，並選擇 `子網域映射`。
 2. 在 `子網域映射` 設定根網域、身分驗證 Host 與第一個業務 Host。業務 Host 的 Target 請填入 fn-knock 所在環境可存取的內部網路服務位址，預設開啟「要求登入」；身分驗證 Host 必須公開。
-3. 在 `內網穿透` 中安裝並設定 FRP 或 Cloudflared，將外部流量轉送至 fn-knock 實際使用的閘道連接埠。
-4. 在 Tunnel Provider 端為身分驗證 Host 與業務 Host 設定 DNS／Public Hostname，並確保 Host、WebSocket 與真實 Client IP 都能正確傳遞。
+3. 使用 FRP 時，設定 Client 將流量轉送至實際閘道 Port；使用 Cloudflared 時，連接建議的 Account API Token、選擇專用 Tunnel 並套用預檢計畫。
+4. FRP 的 DNS 與入口由 Server 設定；託管 Cloudflared 會自動維護 Wildcard DNS 與 Ingress，不需要逐筆新增 Public Hostname。兩種方式都要正確傳遞 Host、WebSocket 與真實 Client IP。
 5. 設定對外 HTTPS。如果由 Tunnel 或前置反向代理終止 TLS，請明確設定回源 Protocol 與憑證驗證方式；不要將內部的 `localhost` 位址當成瀏覽器存取位址。
 6. 從行動網路開啟身分驗證 Host，完成登入後再存取業務 Host。
 
@@ -33,13 +33,13 @@ translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae18
 | 項目 | FRP | Cloudflared |
 | --- | --- | --- |
 | 公網入口 | 自有 `frps` 或 Provider 節點 | Cloudflare Edge 與 Tunnel |
-| DNS | 通常指向 FRP Server | Public Hostname 通常會建立或關聯 DNS |
+| DNS | 通常指向 FRP Server | 託管模式自動維護 Wildcard 代理 CNAME |
 | 真實來源 IP | HTTP Header 或正確設定的 PROXY Protocol | Cloudflare Request Header；需要依入口正確設定 |
-| fn-knock 中的管理 | 可管理多個 frpc Instance、設定與記錄 | 管理資源、Tunnel Token、Process 與記錄 |
+| fn-knock 中的管理 | 可管理多個 frpc Instance、設定與記錄 | 透過 API Token 管理 Tunnel、DNS、Ingress、Token、Process、Log 與優選 |
 
 如果 FRP 只進行 TCP Forwarding，fn-knock 看到的連線來源可能是 Tunnel 節點或本機轉接位址；應依 FRP 鏈路設定 PROXY Protocol 或可信任的真實 IP Header，並在請求記錄中驗證結果。請勿因為頁面可以開啟，就假設 IP 允許清單、地區與掃描規則使用了正確的 Client Address。
 
-Cloudflared 的 Public Hostname 應回源至閘道入口，例如 `http://127.0.0.1:7999`，而不是直接回源至業務服務；否則會繞過 fn-knock 的 Host 路由與身分驗證。
+Cloudflared 建議連接 Cloudflare API Token，透過預檢與套用自動建立 Wildcard DNS、Ingress 和專用本機入口。託管模式的訪客位址使用 `https://服務網域`，不附加 `:7999`，也不必在 Dashboard 逐筆建立 Public Hostname。只有手動或外部自管 Cloudflared 才需自行將 Public Hostname 回源至實際閘道 Port；請勿直接回源業務服務，否則會繞過 fn-knock Host 路由與身分驗證。
 
 ## Target 位址
 

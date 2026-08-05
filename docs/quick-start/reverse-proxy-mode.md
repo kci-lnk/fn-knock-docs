@@ -45,7 +45,7 @@
 
 ## 2. 设置根域名和鉴权服务
 
-进入 `子域映射`，展开 `子域模式配置`，在 `域名` 中填写 `example.com` 并保存。`鉴权服务所使用的端口` 应填写访客实际访问的公网端口。然后点击 `添加鉴权服务`，添加 `auth.example.com`。
+进入 `子域映射`，展开 `子域模式配置`，在 `域名` 中填写 `example.com` 并保存。然后点击 `添加鉴权服务`，添加 `auth.example.com`。使用托管 Cloudflare Tunnel 时，访客通过标准 HTTPS `443` 访问，界面不会要求填写公网端口，生成的鉴权地址也不会附加 `:7999`。
 
 鉴权服务需要：
 
@@ -88,16 +88,14 @@
 
 ### 使用 Cloudflared
 
-在 Cloudflare Zero Trust 中为每个入口配置 Public Hostname：
+1. 在 `系统设置 → Cloudflared` 准备好可执行资源。
+2. 进入 `内网穿透 → Cloudflared`，连接推荐的 Cloudflare 账号 API Token，并授予 Tunnel、Zone Read 和 DNS Edit 权限。
+3. 选择推荐的专用 Tunnel，点击 `预检` 查看即将创建的 Tunnel、`*.example.com` Ingress 和代理 CNAME。
+4. 确认没有未处理的冲突后应用计划。fn-knock 会取得 Tunnel Token 并启动 Cloudflared。
 
-| 公网域名 | 本地服务 |
-| --- | --- |
-| `auth.example.com` | `http://127.0.0.1:<实际网关端口>` |
-| `nas.example.com` | `http://127.0.0.1:<实际网关端口>` |
+应用后，`auth.example.com`、`nas.example.com` 等所有已知 Host 都通过通配 Tunnel 进入网关，不需要在 Cloudflare Zero Trust 中逐条配置 Public Hostname。访客访问 `https://nas.example.com`，不要补 `:7999`。
 
-fn-knock 管理的 Cloudflared 与网关在同一运行环境时，使用 `127.0.0.1` 和实际网关端口。若单独运行 Cloudflared 容器且它与 fn-knock 位于同一 Docker 网络，才使用 fn-knock 的容器服务名和端口；不同网络时改用其可达地址。
-
-公网 TLS 可以由 Cloudflare 终止。本地回源若使用 HTTPS，证书必须覆盖回源地址并受 Cloudflared 信任；否则使用受控内网中的 HTTP 回源。
+高级用户可使用手动 Tunnel Token；只有手动或外部自管 Cloudflared 才需要自行配置 Public Hostname 和实际回源端口。完整说明见 [Cloudflared 隧道配置](../guide/cloudflared-tunnel.md)。
 
 ### 使用 FRP
 
@@ -136,10 +134,10 @@ FRP 服务端需要把外部 HTTP 或 HTTPS 流量转发到 fn-knock 的实际�
 
 | 症状 | 优先检查 |
 | --- | --- |
-| 隧道在线但域名超时 | Public Hostname、FRP 入口、DNS 和隧道目标端口 |
+| 隧道在线但域名超时 | Cloudflare 对账冲突、通配 DNS、Ingress、FRP 入口和本地 Host 映射 |
 | 所有子域进入同一服务 | 隧道或前置代理没有保留 Host |
 | 返回 502 | 隧道无法访问网关，或网关无法访问业务上游 |
-| 登录后循环跳转 | 公开协议、认证域名、根域名、Cookie 作用域及前置代理的 `Host` / `X-Forwarded-*` 不一致；从原业务 Host 重新发起访问 |
+| 登录后循环跳转或出现 `:7999` | 确认当前为托管 Cloudflared 子域映射、公开地址使用标准 HTTPS，并从原业务 Host 重新发起访问 |
 | Cloudflared 报 TLS 错误 | 回源协议或证书信任配置错误 |
 | 路径模式资源 404 | 上游不支持路径前缀，优先迁移到子域映射 |
 

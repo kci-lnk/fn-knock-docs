@@ -3,7 +3,7 @@ lang: ja-JP
 title: "NAT 越えとトンネル"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c2b891f7b2d7db4adb386478c542fa4e2d8236d3cee0a0657e0d27dd5eca779d
+translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,9 +21,9 @@ macOS と Synology DSM 7 SPK では、FRP と Cloudflared のリソースおよ�
 | 方式 | 外部リソース | 適した構成 |
 | --- | --- | --- |
 | FRP | frps を実行する公開サーバーとリモートポート | 公開アドレス、ポート、トランスポート設定を自分で管理したい |
-| Cloudflared | Cloudflare Tunnel と Public Hostname | Cloudflare を使用済みで、frps を運用せずドメインから接続したい |
+| Cloudflared | Cloudflare Account、Zone、API Token | Cloudflare を使用し、Tunnel、ワイルドカード DNS、Ingress を自動管理したい |
 
-どちらの場合も、ローカルの転送先は実際のゲートウェイエントリーポイントで、一般的には `127.0.0.1:7999` です。ポートを変更している場合は、管理画面の表示とデプロイ設定を基準にしてください。
+FRP と手動 Cloudflared のローカル転送先は通常 `127.0.0.1:7999` の実ゲートウェイです。管理 Cloudflared は fn-knock が専用ローカル入口を自動設定するため、オリジンポートを手入力する必要はありません。
 
 ## ルーティング方式の選択
 
@@ -35,7 +35,7 @@ macOS と Synology DSM 7 SPK では、FRP と Cloudflared のリソースおよ�
 nas.example.com -> FRP / Cloudflared -> fn-knock -> Host nas.example.com -> FNOS
 ```
 
-トンネルは元の Host を維持し、認証 Host とサービス用 Host の両方を同じゲートウェイへ送る必要があります。Cloudflared では `*.example.com` の Public Hostname を使用できます。FRP の TCP 転送では、DNS とリモートポートの両方を frps へ向けます。
+トンネルは元の Host を維持し、認証 Host とサービス用 Host の両方を同じゲートウェイへ送る必要があります。管理 Cloudflared は `*.example.com` の Ingress とプロキシ CNAME を自動管理します。FRP の TCP 転送では DNS とリモートポートを frps へ向けます。
 
 ### パスモード
 
@@ -69,9 +69,9 @@ PROXY Protocol v2 は、インターネット側のクライアントアドレ�
 
 ## Cloudflared
 
-先に `システム設定 → Cloudflared` でリソースをダウンロードし、その後 `トンネル → Cloudflared` で Tunnel Token を保存します。公開ドメインとオリジンの Service は Cloudflare Dashboard で設定し、fn-knock では作成しません。
+先に `システム設定 → Cloudflared` でリソースをダウンロードし、`トンネル → Cloudflared` で推奨の Cloudflare Account API Token を入力します。専用 Tunnel を選び、プレビューして適用すると、fn-knock が Tunnel の作成または接続、ワイルドカード DNS と Ingress、Tunnel Token 取得、プロセス起動を行います。詳細設定には手動 Tunnel Token モードも残っています。
 
-Host ルーティングの推奨設定と TLS の選択については、[Cloudflared トンネルの設定](/ja/guide/cloudflared-tunnel)を参照してください。
+管理構成、Token 権限、標準 HTTPS URL、最適化 Beta、フォールバックは[Cloudflared トンネルの設定](/ja/guide/cloudflared-tunnel)を参照してください。
 
 ## アクセスポリシーと実クライアント IP
 
@@ -80,7 +80,7 @@ Host ルーティングの推奨設定と TLS の選択については、[Cloudf
 認証の判定には、ゲートウェイが最終的に識別したクライアント IP が使用されます。プライベートネットワーク、ループバック、リンクローカルの送信元は `local_exempt` として扱われ、通常のログインと厳格なホワイトリストの確認をスキップします。そのため、送信元 IP の受け渡しはトンネルのセキュリティ境界の一部です。
 
 - FRP ではデフォルトの PROXY Protocol v2 を維持することを優先します。
-- Cloudflared では、リバースプロキシモード専用のサブドメイン経路を使用し、EdgeOne / ESA スイッチを流用しないでください。
+- 管理 Cloudflared は専用ループバック入口でだけ `CF-Connecting-IP` を信頼します。EdgeOne / ESA 設定を流用したり、訪問者の `X-Forwarded-For` を信頼したりしないでください。
 - 起動後はモバイルネットワークからアクセスし、リクエストログのクライアント IP が `127.0.0.1`、コンテナアドレス、トンネルノードのアドレスではなく、訪問者のグローバル IP になっていることを確認します。
 
 ## プロセス監視と障害診断
@@ -95,7 +95,7 @@ fn-knock サービス自体の再起動後は、常時実行として保存さ�
 
 - トンネルは外向きの接続なので、fn-knock がホストのファイアウォールへルールを書き込む必要はなく、Docker でも使用できます。
 - 実行環境には、アーキテクチャに合う FRP / Cloudflared 実行ファイルが必要です。`システム設定 → FRP` または `システム設定 → Cloudflared` の準備状態を基準にしてください。
-- Synology DSM 7 SPK はこれらの組み込みリソースをサポートします。管理用エントリーポイントは引き続き DSM デスクトップの CGI からだけ利用でき、サービス用トラフィックは `7999` ゲートウェイへ入ります。
+- Synology DSM 7 SPK はこれらの組み込みリソースをサポートします。管理入口は DSM デスクトップ CGI から利用します。管理 Cloudflared のローカル入口は fn-knock が設定し、FRP と自前 Tunnel は実ゲートウェイポートを使います。
 - macOS の Intel / Apple Silicon ネイティブパッケージも組み込みリソースをサポートします。ダウンロードは現在の Darwin アーキテクチャに一致し、管理画面はローカルの `127.0.0.1:7991` だけを待ち受けます。
 - Windows では組み込みリソースも準備状態も提供されません。独自に導入したトンネルプロセスは、fn-knock の起動、停止、ログ管理の対象外です。
 - Docker 内の `127.0.0.1` は現在のコンテナを指します。fn-knock ゲートウェイとトンネルプロセスが同じコンテナ内にある場合は使用できますが、別のトンネルコンテナを独自に構築する場合は、サービス名またはコンテナネットワークのアドレスを使用してください。
@@ -105,7 +105,7 @@ fn-knock サービス自体の再起動後は、常時実行として保存さ�
 ## 起動と検証
 
 1. ルーティング方式、認証 Host、1 件以上のサービス用マッピングを保存します。
-2. FRP または Cloudflared の設定を保存して起動します。
+2. FRP を保存して起動するか、Cloudflared の API Token を接続し、プレビューを適用します。
 3. 実行状態が接続になっていることを確認します。`再起動待ち` の場合は、連続失敗回数、次回再試行時刻、直近の診断を確認し、Token、TLS、ネットワーク、ポートのエラーを調べます。
 4. 外部ネットワークから認証 Host とサービス用 Host へアクセスします。
 5. リクエストログで Host、クライアント IP、認証の種類、アップストリームの Target を確認します。

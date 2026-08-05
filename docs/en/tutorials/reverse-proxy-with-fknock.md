@@ -3,7 +3,7 @@ lang: en-US
 title: "Publish a Subdomain through a Tunnel without a Public IP"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 76576414d16d64aa366385fee2481c3ac258a65993db303ecffe8ae185a21240
+translationSourceHash: 92b38595cf586a2f6634b8882301ad43e413c48f4ea5649cbf49f823352e74c0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,8 +25,8 @@ Path mappings remain available for legacy configurations, but new deployments sh
 
 1. Under `System settings → Mode`, select `Reverse proxy mode`, then choose `Subdomain mapping`.
 2. Under `Domains`, configure the root domain, authentication Host, and first application Host. Set the application Target to a private-network service address reachable from the fn-knock runtime, and leave `Require sign-in` enabled by default. The authentication Host must remain public.
-3. Under `Tunnels`, install and configure FRP or Cloudflared so that external traffic is forwarded to the actual fn-knock gateway port.
-4. At the tunnel provider, configure DNS / Public Hostname entries for the authentication and application Hosts. Make sure Host, WebSocket traffic, and the real client IP are forwarded correctly.
+3. With FRP, configure the client to forward traffic to the actual gateway port. With Cloudflared, connect the recommended Account API Token, select a dedicated Tunnel, and apply the preview.
+4. Configure DNS and the endpoint on the FRP server. Managed Cloudflared maintains wildcard DNS and Ingress automatically, so per-host Public Hostnames are unnecessary. Both paths must preserve Host, WebSockets, and the real client IP.
 5. Configure public HTTPS. If the tunnel or an upstream reverse proxy terminates TLS, define the origin scheme and certificate-validation policy explicitly. Do not use an internal `localhost` address as a browser-facing URL.
 6. Open the authentication Host over cellular data, sign in, then open the application Host.
 
@@ -35,13 +35,13 @@ Path mappings remain available for legacy configurations, but new deployments sh
 | Item | FRP | Cloudflared |
 | --- | --- | --- |
 | Public endpoint | Your own `frps` or a provider node | Cloudflare edge and Tunnel |
-| DNS | Usually points to the FRP server | A Public Hostname normally creates or associates the DNS record |
+| DNS | Usually points to the FRP server | Managed mode maintains a wildcard proxied CNAME automatically |
 | Real source IP | HTTP headers or a correctly configured PROXY Protocol chain | Cloudflare request headers, configured for the selected ingress path |
-| Management in fn-knock | Manage multiple frpc instances, configurations, and logs | Manage resources, Tunnel tokens, processes, and logs |
+| Management in fn-knock | Manage multiple frpc instances, configurations, and logs | Use an API Token to manage Tunnel, DNS, Ingress, Token, process, logs, and optimization |
 
 If FRP performs only TCP forwarding, fn-knock may see the tunnel node or a local relay address as the connection source. Configure PROXY Protocol or a trusted real-IP header for the FRP path, then verify the result in `Request Logs`. A page loading successfully does not prove that the allowlist, region rules, and scanner protections are using the correct client address.
 
-The Cloudflared Public Hostname should use the gateway entry point as its origin, for example `http://127.0.0.1:7999`, rather than connecting directly to the application. Otherwise, it bypasses fn-knock Host routing and authentication.
+For Cloudflared, the recommended flow is to connect a Cloudflare API Token and apply a preview so fn-knock creates the wildcard DNS, Ingress, and dedicated local entry. Managed public URLs use `https://service-host` without `:7999`, and no per-host Public Hostname is required in the dashboard. Only manual or externally managed Cloudflared needs a Public Hostname pointed at the actual gateway port. Never point it directly at the application, which would bypass fn-knock Host routing and authentication.
 
 ## Target addresses
 

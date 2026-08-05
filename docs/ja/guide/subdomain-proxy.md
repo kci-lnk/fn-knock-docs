@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd777f0b9
+translationSourceHash: cdbb83deedca2c8f0c853d696a22417372c1a12eb8c00a21c5346b9126f16abc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -45,10 +45,12 @@ translationSourceHash: d17d9d5c8ba6ec3b98c2c620a4153d722b98dc5af4813cf250ad107bd
 | --- | --- | --- |
 | `ドメイン` | サービス用 Host の親ドメイン（例：`example.com`）を生成 | 認証サービスやサービス用マッピングを追加する前に保存 |
 | `現在の認証サービス` | 未ログイン時に使用する共通のログイン用エントリーポイント | `auth.example.com` を使用。作成できるのは 1 件だけ |
-| `認証サービスの公開 HTTPS ポート` | ログインへのリダイレクト URL を生成するときに使用する、訪問者側の HTTPS ポート | 訪問者から実際に見えるポートを入力 |
-| `エッジ経由の実クライアント IP 検出` | インターネット直結のサブドメインモードで、EdgeOne / ESA から訪問者のアドレスを取得 | 該当プラットフォームをオリジンの前段に置く場合のみ有効化 |
+| `認証サービスの公開 HTTPS ポート` | ログインへのリダイレクト URL を生成するときに使用する、訪問者側の HTTPS ポート | 直接接続または FRP では実ポートを入力。管理 Cloudflare Tunnel では非表示になり標準 HTTPS を使用 |
+| `エッジ経由の実クライアント IP 検出` | インターネット直結のサブドメインモードで、EdgeOne / ESA から訪問者のアドレスを取得 | 対象プラットフォームの場合だけ表示。管理 Cloudflare Tunnel では非表示 |
 
 認証サービスの公開 HTTPS ポートが影響するのは外部 URL だけです。プログラムのリッスンポートを変更したり、ルーター、コンテナ、エッジプラットフォームでポートを開放したり、NAT 転送を作成したりすることはありません。
+
+管理 Cloudflare Tunnel では、一覧、認証 URL、ログインリダイレクト、`redirect_uri` が `https://host.example.com` になり、古い `:7999` は追加されません。Cloudflare の外部ポートと fn-knock のローカル Tunnel 入口は管理処理が設定します。
 
 ルートドメインと Host マッピングには `*` を含められません。ルートドメインには `example.com`、サービス用マッピングには `nas` または `nas.example.com` を入力します。DNS で `*.example.com` のワイルドカードレコードを設定するかどうかは別の層の設定であり、fn-knock のルートドメインや Host には入力しないでください。
 
@@ -197,7 +199,7 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 
 リクエスト経路に沿って確認します。
 
-1. DNS または Tunnel Public Hostname が、現在の Host を正しいゲートウェイポートへ送っているか。
+1. DNS または Tunnel が現在の Host を正しいゲートウェイへ送っているか。管理 Cloudflared では同期状態、ワイルドカード DNS、Ingress を先に確認します。
 2. リクエストログの Host とクライアント IP が正しいか。
 3. 認証サービスが存在し、ログイン必須または Basic 認証が有効になっていないか。
 4. サービス用マッピングが有効で、現在時刻が公開時間内か。
