@@ -1,24 +1,45 @@
 ---
 lang: en-US
-title: "Request Logs"
+title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7bdb9ba812ca5916a1cff51c5a9e2b28d612f2e1e5bcf4b7abf7da480d56444f
+translationSourceHash: 0bd507f3091783ae5db3a34b52b1e3ba1e219bc57dd46b5d200b4ba3eb81cca9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
-# Request Logs
+# Request Analysis
 
-Request Logs record HTTP requests that pass through the gateway. Use them to confirm whether a request reached fn-knock, which Host or path it matched, and where it was ultimately forwarded. They are not sign-in logs and do not record connections to original ports that never enter the gateway.
+`Request Analysis` turns HTTP requests that pass through the gateway into traffic, performance, source, and security views while retaining individual log records for troubleshooting. It analyzes gateway request logs, not sign-in events, and does not include connections to original ports that never enter the HTTP gateway.
 
-Under `System settings → Logs`, enable gateway request logging and set a retention period of at least 1 day. The Go gateway writes daily JSON structured files to the `logs` directory under its runtime directory. The admin console's `Request logs` page reads them by date and supports search and detailed inspection. Logging adds storage and write overhead, so choose a retention period appropriate for your needs after troubleshooting.
+## Enable data collection
+
+Under `System settings → Logs`, enable gateway request logging and set a retention period of at least 1 day. The Go gateway writes daily structured JSON files to the `logs` directory under its runtime directory, and the `Request Analysis` page reads those files directly. Disabling logging stops new analysis data. Files removed after the retention period are no longer available for historical analysis. Logging adds storage and write overhead, so choose a suitable retention period.
 
 `Log requests from local loopback 127.0.0.1` is disabled by default. As a result, local health checks, same-host reverse proxies, and other requests entering the gateway through `127.0.0.1` normally do not appear in the list. Enable it only while tracing a local request path; it changes what is logged, not the access permissions granted to loopback sources.
 
 Writes use an asynchronous queue. If the settings page shows a cumulative dropped count, the queue was congested and some requests were not written to disk. This number is not a count of requests rejected by the gateway. Requests disconnected immediately by gateway reverse-proxy throttling are also absent from the access log.
 
-## Read a Record
+## Use the Analysis tab
+
+Select Today, Last 7 days, or Last 30 days. Statistics are grouped in the gateway timezone, with a maximum range of 30 consecutive calendar days. If log retention is shorter than the selected range, earlier dates naturally have no data.
+
+The top metrics show requests, unique clients, 5xx error rate, P95 response time, and outbound traffic. The trend chart compares all requests, 4xx responses, and 5xx responses. The breakdown cards cover:
+
+- Request targets: paths, routes, Hosts, and upstreams.
+- Traffic sources: Referrer and UTM source, medium, and campaign.
+- Countries and regions: aggregated from deduplicated valid client IPs.
+- Clients: device type, browser, and operating system.
+- Responses: status code, method, and latency band.
+- Authentication and security: authentication decisions and WAF actions.
+
+Geographic data comes from the IP location cache. On first view it may show resolving or partial coverage; start a geographic refresh and check again later. The analysis API returns only aggregated country and region buckets, not the client-IP list used to build them. Corrupt or incomplete log records are excluded, and the page reports how many were skipped.
+
+Averages, P95, and error rates help reveal trends; they are not a replacement for full upstream application tracing. When you find an anomaly, switch to the `Logs` tab and locate specific requests by Host, path, time, and status code.
+
+## Use the Logs tab
+
+### Read a Record
 
 | Field | Purpose |
 | --- | --- |
@@ -31,7 +52,7 @@ Writes use an asynchronous queue. If the settings page shows a cumulative droppe
 
 Request Logs can contain access paths, Query parameters, source IPs, User-Agent values, authentication results, and upstream addresses. Treat them as sensitive operations data. Before sharing a troubleshooting excerpt, remove tokens, query parameters, internal addresses, and personally identifying information.
 
-## Recommended Troubleshooting Order
+### Recommended Troubleshooting Order
 
 1. Make one reproducible request from an external network.
 2. Find the matching Host and path, and confirm that the request reached the gateway.
@@ -45,7 +66,7 @@ If only some requests are missing, check whether gateway throttling disconnected
 
 With subdomain advanced authentication enabled, an Auth result of `Allowed by subdomain rule` means that advanced authentication allowed the request. Use `Subdomain rule group ID` to locate the triggering configuration. `One-request access` means the request matched a rule but created no persistent grant, which commonly occurs during the initial Cookie probe, with a client that does not store Cookies, during a WebSocket upgrade, or when persistence falls back. `Issued` means this request created a persistent grant, `Renewed` refreshed its idle lifetime, and `Reused` continued to use an existing grant. See [Advanced Authentication for Subdomains](/en/guide/advanced-auth) for rule behavior.
 
-## Act on a Suspicious IP
+### Act on a Suspicious IP
 
 After confirming that an address is the actual attack source, you can open General blacklist or IP Allowlist actions from the log. First rule out a shared egress address or preceding proxy, and preserve context such as time, Host, and path.
 

@@ -24,7 +24,7 @@ features:
     details: NAS とセルフホストアプリを別々のサブドメインで公開し、ログイン、TLS 証明書、アクセス方針を一元管理します。
     link: /ja/guide/subdomain-proxy
   - title: サービスへ到達する前に認証
-    details: TOTP、パスキー、パスワード、外部 IdP に対応し、セッション、IP 許可リスト、WAF、リクエストログも利用できます。
+    details: TOTP、パスキー、パスワード、外部 IdP に対応し、セッション、IP 許可リスト、WAF、リクエスト分析も利用できます。
     link: /ja/guide/auth
   - title: 機器とネットワーク構成に合わせて導入
     details: fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM、Windows に対応し、FRP や Cloudflare Tunnel とも組み合わせられます。

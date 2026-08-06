@@ -24,7 +24,7 @@ features:
     details: 以不同子網域存取 NAS 與自架應用，集中管理登入、TLS 憑證與存取原則。
     link: /zh-tw/guide/subdomain-proxy
   - title: 先驗證身分，再連入服務
-    details: 支援 TOTP、Passkey、帳號密碼與外部 IdP，並提供工作階段、IP 允許清單、WAF 與請求記錄。
+    details: 支援 TOTP、Passkey、帳號密碼與外部 IdP，並提供工作階段、IP 允許清單、WAF 與請求分析。
     link: /zh-tw/guide/auth
   - title: 配合既有設備與網路拓撲
     details: 支援 fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM 與 Windows，也可搭配 FRP 或 Cloudflare Tunnel。

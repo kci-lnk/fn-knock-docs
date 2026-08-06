@@ -24,7 +24,7 @@ features:
     details: 用不同子域访问 NAS 和自建应用，登录、证书与访问策略集中管理。
     link: /guide/subdomain-proxy
   - title: 先确认身份，再进入服务
-    details: 支持 TOTP、Passkey、账号密码和外部账号，并提供会话、白名单、WAF 与请求日志。
+    details: 支持 TOTP、Passkey、账号密码和外部账号，并提供会话、白名单、WAF 与请求分析。
     link: /guide/auth
   - title: 按你的设备和网络来部署
     details: 支持 fnOS、Docker、OpenWrt、Linux、macOS、群晖与 Windows，也支持 FRP 和 Cloudflared。

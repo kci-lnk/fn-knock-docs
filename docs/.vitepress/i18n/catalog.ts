@@ -460,11 +460,11 @@ export const PAGE_TITLES = {
     ko: 'QQ 빠른 로그인 연동',
   },
   'guide/request-logs': {
-    root: '请求日志',
-    'zh-tw': '請求記錄',
-    en: 'Request Logs',
-    ja: 'リクエストログ',
-    ko: '요청 로그',
+    root: '请求分析',
+    'zh-tw': '請求分析',
+    en: 'Request Analysis',
+    ja: 'リクエスト分析',
+    ko: '요청 분석',
   },
   'guide/reverse-proxy': {
     root: '路径映射（兼容模式）',

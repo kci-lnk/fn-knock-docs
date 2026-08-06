@@ -3,7 +3,7 @@ lang: en-US
 title: "Passkeys"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3513530a35a853969bc9498a2f849156483d2a2a775317abdf5102064ce147b8
+translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c7c357cf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,6 +18,8 @@ A Passkey lets a bound device complete sign-in with system biometrics or device 
 - Create a working TOTP credential first.
 - Make sure the authentication Host, Cookie domain, and Passkey RP configuration match your domain plan.
 - Use a browser and operating system that support WebAuthn.
+
+Version 2.2.1 improves compatibility with Windows Passkey providers, Android / Google Password Manager, and credential formats returned by different browsers. Upgrading does not change the RP binding of existing Passkeys. If an older credential still fails, sign in with TOTP and bind a test credential again on the same final domain; do not delete your only recovery method first.
 
 For a subdomain setup, you can bind Passkeys to the authentication Host or use the product's parent-domain RP option. Changing the RP configuration affects whether existing Passkeys work, so retain a working TOTP before switching.
 
@@ -54,6 +56,8 @@ Before migrating, retain a working TOTP and bind a test Passkey on the new domai
 - **You changed browsers or devices:** Availability depends on whether the operating system or password manager synchronized the Passkey; do not assume that it always migrates automatically.
 - **Creation was cancelled or timed out:** Start the binding flow again and complete the biometric or unlock prompt from the system.
 - **The system could not create a Passkey:** Confirm that the device has a screen lock, the browser allows Passkeys, and the password manager or system credential service is available.
+- **Android registration fails:** fn-knock automatically retries with the standard registration profile for compatible errors. If it still fails, update the browser and Google Play services and confirm that Google Password Manager is enabled.
+- **Windows does not show the expected provider:** Update the browser and operating system, confirm that Windows Hello or your password manager is enabled, then start binding again from the status page.
 - **This device already has the Passkey:** Do not bind it again; use Passkey sign-in directly. If a new device did not receive the synchronized credential, add another from the status page.
 
 - [TOTP Authenticator Apps](/en/guide/totp)

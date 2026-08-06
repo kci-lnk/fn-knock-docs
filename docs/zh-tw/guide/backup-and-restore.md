@@ -3,7 +3,7 @@ lang: zh-TW
 title: "備份、還原與資料清理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c8198a923e8f1ea949c18bb94c42e8b30c2617f8d6d1affc349f39acd4cb8ae4
+translationSourceHash: d46e1b9568edee48aa0dc258a5ae88402645ec0953a3aee51b346be5a18f28b3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,10 +18,10 @@ translationSourceHash: c8198a923e8f1ea949c18bb94c42e8b30c2617f8d6d1affc349f39acd
 
 - 身分驗證帳號、TOTP、Passkey 與外部登入設定；
 - 子網域、路徑、閘道、WAF、工作階段原則等應用程式設定；
-- 憑證與私密金鑰、DDNS、通知及 Tunnel 連線設定；
+- 憑證與私密金鑰、DDNS、通知及 Tunnel 設定；
 - 其他由 fn-knock 持久化，且可在新執行個體重新套用的物件。
 
-執行記錄、事件、工作階段、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、DDNS 最近一次位址，以及其他短期執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Host 防火牆狀態、外部 DNS Record 與上游應用程式資料，也不包含在應用程式備份內。
+執行記錄、事件、工作階段、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、DDNS 最近一次位址，以及其他短期執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、Host 防火牆狀態、外部 DNS Record 與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API，或重新填入手動 Tunnel Token；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
 
 因此，移轉整套環境時通常需要兩層備份：
 
@@ -95,14 +95,17 @@ translationSourceHash: c8198a923e8f1ea949c18bb94c42e8b30c2617f8d6d1affc349f39acd
 3. 閱讀覆寫警告並確認。
 4. 等待匯入結果；成功後頁面會重新載入。
 
-伺服器端會清除現有的 `fn_knock:` 資料，寫入封存檔中允許還原的項目，再依序嘗試同步：
+伺服器會先驗證完整封存檔，並為目前可還原資料建立 Transaction Snapshot，再取代 `fn_knock:` 應用程式資料。封存檔中帶有效期的項目會扣除匯出到匯入之間已經過的時間；已過期項目不會還原。
+
+Schema、版本、項目格式、重複 Key、設定 Migration 或 Cloudflared 憑據清除等致命步驟失敗時，伺服器會嘗試還原匯入前的儲存 Snapshot；錯誤訊息也會指出儲存或 Runtime Rollback 是否失敗。通過這些步驟後，系統依序同步：
 
 - 目前的執行模式與閘道路由；
-- 直連模式允許清單（如適用）；
-- 閘道記錄、WAF 與 SSL 部署；
+- 閘道信任用戶端 IP、請求記錄、WAF 與 SSL 部署；
+- 自動 HTTPS、Smart Connect、飛牛連接埠圖示接管與飛牛網路調校（適用時）；
+- 語言設定；
 - 舊身分驗證記錄清理，以及系統資源監控狀態。
 
-匯入結果中的「警告」代表設定項目已經匯入，但一或多個 Runtime 同步步驟失敗。系統不會自動將整個執行個體回復至匯入前的狀態。請保存警告內容、確保管理入口仍可使用，再依下一節逐項處理。
+匯入結果中的「警告」代表設定項目已匯入，但一個或多個非致命 Runtime 同步或 Transaction 收尾步驟失敗。此時不會因警告自動回復已匯入的設定。請保存警告內容、確保管理入口仍可使用，再依下一節逐項處理。
 
 ## 還原後驗收
 
@@ -111,7 +114,7 @@ translationSourceHash: c8198a923e8f1ea949c18bb94c42e8b30c2617f8d6d1affc349f39acd
 1. 是否能重新進入管理後台，身分驗證帳號、TOTP、Passkey 或外部登入是否符合預期。
 2. 執行模式、根網域、身分驗證 Host、映射數量與關鍵 Target 是否正確。
 3. 閘道、WAF、憑證與請求記錄是否正常；若有警告，先檢查對應的同步步驟。
-4. FRP / Cloudflared 資源是否已安裝並重新執行。
+4. FRP / Cloudflared 資源是否已安裝並重新執行；Cloudflare 託管模式需重新連線 API Token，手動模式需重新填入 Tunnel Token。
 5. DDNS、通知供應商與外部登入憑據是否能通過測試。
 6. 從行動網路存取身分驗證 Host，以及至少一個受保護的服務 Host。
 7. 確認請求記錄中的真實用戶端 IP、路由與上游狀態正確。
@@ -126,7 +129,8 @@ translationSourceHash: c8198a923e8f1ea949c18bb94c42e8b30c2617f8d6d1affc349f39acd
 | 檔案附檔名不正確 | 選擇原始 `.knock` 檔，不要只修改一般 ZIP 或 JSON 的附檔名 |
 | 不支援 Schema 或版本 | 將目標環境升級至提示的支援範圍內；不要手動竄改封存檔的版本欄位 |
 | 封存檔過大 | 確認檔案未損毀或遭取代；單一封存檔上限為 `128 MiB` |
-| 無法讀取封存檔 | 檢查檔案完整性、磁碟空間與 `unzip` 是否可用；部分 Linux / OpenWrt 環境會嘗試透過系統套件管理員安裝 `unzip` |
+| 無法讀取封存檔 | 檢查檔案完整性、封存密碼、內部 `fn-knock-backup.json` 與磁碟空間；自 2.2.1 起由程式直接讀取 ZIP，不再依賴系統 `unzip` 指令 |
+| 匯入失敗並提示已回復 | 目前設定通常已從匯入前 Snapshot 還原；若同時提示儲存或 Runtime Rollback 失敗，請停止重複匯入、保留完整錯誤，並從平台入口檢查執行個體 |
 | 分享資料夾無法使用 | 檢查平台是否提供分享根目錄、目錄是否仍已掛載，以及處理程序是否具備讀寫權限；也可改用本機下載與上傳 |
 | 匯入成功但出現警告 | 不要重複匯入；先檢查警告所對應的執行模式、WAF、SSL 或閘道同步，再視需要手動儲存相關設定 |
 | 頁面重新載入後無法從公網登入 | 從保留的區域網路或平台入口進入，檢查身分驗證 Host、DNS、憑證與外部連接埠，再決定是否還原匯入前的備份 |

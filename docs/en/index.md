@@ -24,7 +24,7 @@ features:
     details: Route separate subdomains to your NAS and apps while managing sign-in, TLS, and access policies in one place.
     link: /en/guide/subdomain-proxy
   - title: Authenticate before reaching the service
-    details: Use TOTP, passkeys, passwords, or an external IdP, with sessions, IP allowlists, WAF rules, and request logs.
+    details: Use TOTP, passkeys, passwords, or an external IdP, with sessions, IP allowlists, WAF rules, and request analysis.
     link: /en/guide/auth
   - title: Fits your hardware and network topology
     details: Deploy on fnOS, Docker, OpenWrt, Linux, macOS, Synology DSM, or Windows, with optional FRP and Cloudflare Tunnel connectivity.

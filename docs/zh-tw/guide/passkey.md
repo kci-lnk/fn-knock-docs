@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Passkey"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3513530a35a853969bc9498a2f849156483d2a2a775317abdf5102064ce147b8
+translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c7c357cf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,6 +18,8 @@ Passkey 可讓已綁定的裝置透過系統生物辨識或裝置解鎖完成登
 - 已建立可用的 TOTP 憑據。
 - 身分驗證 Host、Cookie Domain 與 Passkey RP 設定符合網域規劃。
 - 瀏覽器或作業系統支援 WebAuthn。
+
+2.2.1 改善了 Windows Passkey Provider、Android / Google Password Manager，以及不同瀏覽器回傳格式的相容性。升級不會改變既有 Passkey 的 RP 綁定；若舊憑據仍無法使用，請先透過 TOTP 登入，在同一個最終網域重新綁定測試，不要先刪除唯一復原方式。
 
 子網域情境可選擇將 Passkey 綁定至身分驗證 Host，或依產品設定使用父網域。修改 RP 設定會影響既有 Passkey 的可用性，切換前應先保留可用的 TOTP。
 
@@ -54,6 +56,8 @@ WebAuthn 會將 Passkey 綁定至 Relying Party（RP）Domain。身分驗證 Hos
 - 更換瀏覽器或裝置：是否可用取決於系統有沒有同步該 Passkey；不要假設一定會自動移轉。
 - 顯示建立已取消或逾時：重新發起綁定，並完成系統跳出的生物辨識或解鎖確認。
 - 顯示系統無法建立：確認裝置已設定螢幕鎖定、瀏覽器允許使用 Passkey，且密碼管理器或系統憑據服務可用。
+- Android 建立失敗：系統會在相容錯誤下自動改用標準註冊參數重試；若仍失敗，請更新瀏覽器與 Google Play 服務，並確認 Google Password Manager 已啟用。
+- Windows 未顯示預期的 Provider：請更新瀏覽器與系統，確認 Windows Hello 或所用密碼管理器已啟用，再從狀態頁面重新發起綁定。
 - 顯示目前裝置已有此 Passkey：不必重複綁定，直接在登入頁面使用 Passkey；若新裝置尚未同步，可從狀態頁面再新增一個。
 
 - [TOTP 與驗證器](/zh-tw/guide/totp)

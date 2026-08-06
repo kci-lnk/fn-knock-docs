@@ -3,7 +3,7 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c8198a923e8f1ea949c18bb94c42e8b30c2617f8d6d1affc349f39acd4cb8ae4
+translationSourceHash: d46e1b9568edee48aa0dc258a5ae88402645ec0953a3aee51b346be5a18f28b3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,10 +18,10 @@ An export collects restorable configuration and credentials from the fn-knock ap
 
 - Authentication accounts, TOTP, Passkey, and external sign-in configuration.
 - Application settings for subdomains, paths, the gateway, WAF, session policies, and similar features.
-- Certificates and private keys, DDNS, notification, and tunnel-connection configuration.
+- Certificates and private keys, DDNS, notification, and tunnel configuration.
 - Other objects persisted by fn-knock that can be reapplied on a new instance.
 
-Runtime logs, events, sessions, temporary authorizations, login backoff, locks, traffic statistics, WAF statistics, tunnel runtime state, the last DDNS address, and other short-lived runtime data are excluded. Downloaded FRP / Cloudflared / `acme.sh` files, host firewall state, external DNS records, and upstream application data are also outside the application backup.
+Runtime logs, events, sessions, temporary authorizations, login backoff, locks, traffic statistics, WAF statistics, tunnel runtime state, the last DDNS address, and other short-lived runtime data are excluded. Downloaded FRP / Cloudflared / `acme.sh` files, Cloudflare API and Tunnel Tokens, host firewall state, external DNS records, and upstream application data are also outside the application backup. After restore, reconnect the Cloudflare API or enter the manual Tunnel Token again. Importing a backup does not automatically delete or recreate remote Cloudflare resources.
 
 A full environment migration therefore normally requires two backup layers:
 
@@ -95,14 +95,17 @@ A backup exported by a newer release therefore cannot be restored directly to an
 3. Read and confirm the overwrite warning.
 4. Wait for the import result. The page reloads after a successful import.
 
-The server clears the existing `fn_knock:` data and writes the restorable entries from the archive, then attempts to synchronize:
+The server first validates the complete archive and takes a transactional snapshot of the currently restorable data, then replaces the `fn_knock:` application data. Entries with a TTL are aged by the time elapsed between export and import; entries that have already expired are not restored.
+
+If a fatal schema, version, entry-format, duplicate-key, configuration-migration, or Cloudflared credential-cleanup step fails, the server attempts to restore the pre-import storage snapshot. The error additionally reports whether storage or runtime rollback failed. After those fatal steps pass, the system synchronizes:
 
 - The current run mode and gateway routes.
-- The Direct mode allowlist, when applicable.
-- Gateway logging, WAF, and SSL deployment.
+- Trusted gateway client IPs, request logging, WAF, and SSL deployment.
+- Automatic HTTPS, Smart Connect, fnOS port-icon takeover, and fnOS network tuning where applicable.
+- Locale configuration.
 - Legacy authentication-log cleanup and system resource-monitoring state.
 
-A `Warning` in the import result means that configuration entries were imported but one or more runtime synchronization steps failed. It does not automatically roll back the entire instance to its pre-import state. Save the warning details, keep the admin entry point available, and work through the checks below.
+A `Warning` in the import result means that configuration entries were imported but one or more nonfatal runtime-synchronization or transaction-finalization steps failed. A warning does not roll back the imported configuration. Save the warning details, keep the admin entry point available, and work through the checks below.
 
 ## Post-restore validation
 
@@ -111,7 +114,7 @@ Check the system from the admin side through to the public request path:
 1. Confirm that you can reopen the admin panel and that authentication accounts, TOTP credentials, Passkeys, and external sign-in settings are as expected.
 2. Verify the run mode, root domain, authentication Host, mapping count, and critical Targets.
 3. Check the gateway, WAF, certificates, and `Request Logs`. If the import reported a warning, inspect the corresponding synchronization step first.
-4. Confirm that FRP / Cloudflared resources are installed and running again.
+4. Confirm that FRP / Cloudflared resources are installed and running again. Managed Cloudflare mode requires reconnecting the API Token; manual mode requires entering the Tunnel Token again.
 5. Test DDNS, notification providers, and external sign-in credentials.
 6. Open the authentication Host and at least one protected application Host over cellular data.
 7. Confirm the real client IP, route, and upstream status in `Request Logs`.
@@ -126,7 +129,8 @@ Restored configuration may refer to loopback addresses, LAN IPs, file paths, or 
 | Incorrect file extension | Select the original `.knock` file; do not merely rename a regular ZIP or JSON file |
 | Unsupported schema or version | Upgrade the target into the reported range; do not edit the archive version fields manually |
 | Archive is too large | Confirm that the file is not corrupt or replaced; each archive is limited to `128 MiB` |
-| Failed to read archive | Check file integrity, free disk space, and `unzip` availability; some Linux / OpenWrt environments attempt to install `unzip` through the system package manager |
+| Failed to read archive | Check file integrity, the archive password, the internal `fn-knock-backup.json`, and free disk space. Since 2.2.1, fn-knock reads ZIP data directly and no longer depends on the system `unzip` command |
+| Import failed and reports rollback | The previous configuration was normally restored from the pre-import snapshot. If storage or runtime rollback also failed, stop retrying the import, preserve the full error, and inspect the instance from a platform entry point |
 | Shared directory unavailable | Confirm that the platform provides a shared root, the directory is still mounted, and the process can read and write it; alternatively, use local download and upload |
 | Import succeeds with warnings | Do not import again; first inspect the run-mode, WAF, SSL, or gateway synchronization named by the warning, then save the relevant configuration manually if needed |
 | Public sign-in fails after the page reloads | Enter through the retained LAN or platform entry point, inspect the authentication Host, DNS, certificate, and external port, then decide whether to restore the pre-import backup |

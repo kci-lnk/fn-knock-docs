@@ -24,7 +24,7 @@ features:
     details: NAS와 자체 호스팅 서비스를 개별 서브도메인으로 라우팅하고 로그인, TLS 및 접근 정책을 한곳에서 관리합니다.
     link: /ko/guide/subdomain-proxy
   - title: 서비스 연결 전 사용자 인증
-    details: TOTP, 패스키, 비밀번호, 외부 IdP를 지원하며 세션, IP 허용 목록, WAF 및 요청 로그를 제공합니다.
+    details: TOTP, 패스키, 비밀번호, 외부 IdP를 지원하며 세션, IP 허용 목록, WAF 및 요청 분석을 제공합니다.
     link: /ko/guide/auth
   - title: 장비와 네트워크 구성에 맞춘 배포
     details: fnOS, Docker, OpenWrt, Linux, macOS, Synology DSM, Windows에 배포하고 FRP 또는 Cloudflare Tunnel을 함께 사용할 수 있습니다.

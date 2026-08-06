@@ -9,6 +9,8 @@ Passkey 让已绑定的设备通过系统生物识别或设备解锁完成登录
 - 认证 Host、Cookie 域和 Passkey RP 设置与域名规划一致。
 - 浏览器或系统支持 WebAuthn。
 
+2.2.1 改进了 Windows Passkey 提供商、Android / Google Password Manager 以及不同浏览器返回格式的兼容性。升级不会改变现有 Passkey 的 RP 绑定；如果旧凭据仍不能使用，先通过 TOTP 登录，在同一最终域名重新绑定测试，不要先删除唯一恢复方式。
+
 子域场景可选择把 Passkey 绑定到认证 Host，或按产品设置使用父域。修改 RP 配置会影响已有 Passkey 的可用性，应在切换前保留可用 TOTP。
 
 ## 绑定与登录
@@ -44,6 +46,8 @@ WebAuthn 会把 Passkey 绑定到 Relying Party（RP）域。认证 Host、根�
 - 换了浏览器或设备：取决于系统是否同步该 Passkey；不要假设一定自动迁移。
 - 提示创建已取消或超时：重新发起绑定，并完成系统弹出的生物识别或解锁确认。
 - 提示系统无法创建：确认设备已设置屏幕锁，浏览器允许 Passkey，且密码管理器或系统凭据服务可用。
+- Android 创建失败：系统会在兼容错误下自动改用标准注册参数重试；仍失败时更新浏览器和 Google Play 服务，并确认 Google Password Manager 已启用。
+- Windows 没有出现预期的提供商：更新浏览器和系统，确认 Windows Hello 或所用密码管理器已启用，再从状态页重新发起绑定。
 - 提示当前设备已有此 Passkey：无需重复绑定，直接在登录页使用 Passkey；若新设备未同步，可从状态页再添加一个。
 
 - [TOTP 与密码器](/guide/totp)

@@ -32,7 +32,7 @@
 - 安装与首次登录：fnOS、Docker、OpenWrt、Linux、macOS、Synology DSM 和 Windows
 - 公网子域访问、反向代理模式、直连授权与端口规划
 - 密码、TOTP、Passkey、OIDC、会话与访问策略
-- HTTPS 证书、DDNS、Cloudflared、FRP、WAF、白名单与请求日志
+- HTTPS 证书、DDNS、Cloudflared、FRP、WAF、白名单与请求分析
 - 备份恢复、更新、系统监控、通知和常见问题排查
 
 ## 本地开发
