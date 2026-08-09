@@ -3,7 +3,7 @@ lang: en-US
 title: "Gateway Portal"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 28b758f444d713042a4301263fba9b34ad792846770bc55cb7cd91edf31d138c
+translationSourceHash: c221bf25ccf8054e9f174402f93ecd44b391eb25ec13885dba028b80abbb29e7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,6 +25,7 @@ Under `System settings → Gateway → Portal settings`, you can select the Port
 | `Portal display` | Selects the domain or site title; an empty title falls back to the domain |
 | `Portal icon drag position` | `Corners` snaps the icon to a corner, while `Free` lets it remain anywhere in the viewport |
 | `Show app icons` | Shows collected or custom icons; v1 omits empty icon slots, while v2 generates a placeholder icon |
+| `Show Wake-on-LAN shortcut` | Appears when WOL is enabled and lets authorized signed-in accounts open the built-in device wake page |
 
 These options are saved and synchronized as soon as you select them. You do not need to return to the main Gateway page and run a separate save. Switching versions or changing the display style does not end the sign-in session.
 
@@ -34,6 +35,8 @@ When subdomain mappings use `Grouped view`, the portal and built-in `/__select__
 
 After configuring the portal, sign in through a protected application Host and confirm that the selected version, titles, icons, and drag behavior match your expectations. The portal itself grants no permissions. Even if a Host appears in the list, access for a restricted credential is still determined by its actual service scope when the request is made.
 
+The Wake-on-LAN shortcut is enabled by default but is displayed only while `System settings → Features → Wake-on-LAN` is enabled. The built-in `/__wol__` page lists only enabled-device names and simplified status. A credential with a custom service scope must also include `Built-in Wake-on-LAN page` under `Auth settings → Permissions`. Disabling the shortcut also blocks the page through the public authentication API, but it does not prevent an administrator or third-party platform from triggering wake. See [Wake-on-LAN](/en/guide/wake-on-lan) for full setup.
+
 If the display is incorrect, check in this order:
 
 1. Confirm that the global portal is enabled and that the current Host has not disabled `Show portal`.
@@ -42,7 +45,9 @@ If the display is incorrect, check in this order:
 4. If an icon is missing, edit the corresponding Host under `Domains`, open `App icon`, then recollect it or upload a custom image. v2 displays a generated placeholder until an icon is available.
 5. If grouping or ordering is incorrect, confirm that subdomain mappings currently use `Grouped view`, then inspect the order under `Manage groups`.
 6. Compare the credential's service scope. Seeing an entry in the list does not mean the credential can access it.
+7. If Wake-on-LAN is missing, check the WOL feature, the portal shortcut, and whether the current credential includes the built-in WOL page.
 
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)
 - [Subdomain Routing](/en/guide/subdomain-proxy)
 - [Path-based Reverse Proxy (Compatibility Mode)](/en/guide/reverse-proxy)
+- [Wake-on-LAN](/en/guide/wake-on-lan)

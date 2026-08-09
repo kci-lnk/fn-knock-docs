@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b1cfbc7c38a8c1b046e8459d1356beab323b7233cd416ed90e584673a16b269e
+translationSourceHash: 31d6535a1a5e1bb80e5df0f6d67341adeeaedad06d094df6ea64c5dd25f3d5fe
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -42,7 +42,7 @@ If the app on an fnOS device is named `Knock Lite`, it is a native non-root pack
 | `Location` | Configures the IP geolocation database and CIDR location database | [IP Geolocation](/en/guide/ip-location) |
 | `fnOS` | Manages fnOS Share Bypass, port-icon takeover, available network optimizations, and FN Connect WAF ingress on the standard FPK | [fnOS Share Bypass](/en/guide/fnos-share-bypass), [WAF](/en/guide/waf#route-fn-connect-traffic-through-waf) |
 | `Blocking` | Configures the scanner firewall, trigger window, thresholds, and exemptions | [Automated Scan Blocking](/en/guide/scanner-interception) |
-| `Features` | Controls home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, sidebar ordering, and the Smart Connect entry | See the corresponding feature documentation |
+| `Features` | Controls date/time display, home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, Wake-on-LAN, sidebar ordering, and the Smart Connect entry | [Wake-on-LAN](/en/guide/wake-on-lan) and the corresponding feature documentation |
 | `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
 | `WAF`, `Logs` | Manages HTTP rule protection and structured request logs | [Web Application Firewall (WAF)](/en/guide/waf), [Request Logs](/en/guide/request-logs) |
 | `Terminal` | Visible when the platform supports Web Terminal and is not Synology | [Web Terminal](/en/guide/web-terminal) |
@@ -56,6 +56,15 @@ If the app on an fnOS device is named `Knock Lite`, it is a native non-root pack
 Under `System settings → Features → Sidebar menu order`, drag menu items to change the order of the left navigation for this instance. The order saves automatically when a drag ends. Select `Restore default order` to remove all custom ordering.
 
 The page lists only entries visible under the current runtime mode and feature switches. Temporarily hidden entries keep their place in the full order and return to the same relative position when the feature is enabled or the mode changes; they are not appended arbitrarily. This setting changes navigation order only and does not enable, disable, or grant access to any feature.
+
+## Date and Time Display
+
+`System settings → Features → Date and time display` controls time fields that use the shared display component in the admin console:
+
+- `Human-friendly` is the default and shows relative values such as “a few minutes ago” or “yesterday.” Hover, or tap on a touch device, to see the full date and time.
+- `Full time` shows the localized full date and time directly. Hovering or tapping instead provides the relative value.
+
+The selection is stored in instance configuration and applied throughout the admin console. It does not change the server time zone, system clock, original log timestamps, or protocol-mapping schedules. Use server time and time zone when troubleshooting scheduled tasks.
 
 ## Additional Firewall Ports on the Standard fnOS FPK
 

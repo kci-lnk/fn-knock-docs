@@ -3,7 +3,7 @@ lang: ko-KR
 title: "백업, 복원 및 데이터 정리"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d46e1b9568edee48aa0dc258a5ae88402645ec0953a3aee51b346be5a18f28b3
+translationSourceHash: d112f5cea88027b537b4e2f13578a5c7584014266dd773261af4949b9f470e5f
 ---
 
 # 백업, 복원 및 데이터 정리
@@ -19,7 +19,7 @@ translationSourceHash: d46e1b9568edee48aa0dc258a5ae88402645ec0953a3aee51b346be5a
 - 인증서와 개인 키, DDNS, 알림 및 터널 연결 설정
 - fn-knock가 영구 저장하며 새 인스턴스에 다시 적용할 수 있는 기타 객체
 
-런타임 로그, 이벤트, 세션, 임시 접근 권한, 로그인 재시도 제한, 잠금, 트래픽 통계, WAF 통계, 터널 실행 상태, DDNS의 마지막 주소 및 기타 단기 런타임 데이터는 제외됩니다. 다운로드한 FRP / Cloudflared / `acme.sh` 파일, Cloudflare API Token과 Tunnel Token, 호스트 방화벽 상태, 외부 DNS 레코드 및 업스트림 서비스 데이터도 포함되지 않습니다. 복원 뒤에는 Cloudflare API를 다시 연결하거나 수동 Tunnel Token을 다시 입력합니다. 백업을 가져와도 원격 Cloudflare 리소스가 자동으로 삭제되거나 다시 생성되지 않습니다.
+런타임 로그, 이벤트, 세션, 임시 접근 권한, 로그인 재시도 제한, 잠금, 트래픽 통계, WAF 통계, 터널 실행 상태, WOL 온라인 상태, DDNS의 마지막 주소 및 기타 단기 런타임 데이터는 제외됩니다. 다운로드한 FRP / Cloudflared / `acme.sh` 파일, Cloudflare API Token과 Tunnel Token, WOL Relay PSK, Blinker 장치 키, Bemfa 개인 키, 호스트 방화벽 상태, 외부 DNS 레코드 및 업스트림 서비스 데이터도 포함되지 않습니다. 복원 뒤에는 Cloudflare API를 다시 연결하고 수동 Tunnel Token을 다시 입력하며 WOL Relay를 다시 페어링하거나 외부 플랫폼 자격 증명을 다시 입력합니다. 백업을 가져와도 원격 Cloudflare 리소스가 자동으로 삭제되거나 다시 생성되지 않습니다.
 
 따라서 전체 환경을 마이그레이션할 때는 일반적으로 다음 두 종류의 백업이 모두 필요합니다.
 
@@ -114,9 +114,10 @@ Schema, 버전, 항목 형식, 중복 키, 설정 마이그레이션 또는 Clou
 3. 게이트웨이, WAF, 인증서 및 요청 로그가 정상인지 확인합니다. 경고가 있다면 해당 동기화 단계를 먼저 점검합니다.
 4. FRP / Cloudflared 리소스가 설치되어 있고 다시 실행 중인지 확인합니다. Cloudflare 관리 모드는 API Token을 다시 연결하고 수동 모드는 Tunnel Token을 다시 입력합니다.
 5. DDNS, 알림 제공자 및 외부 로그인 자격 증명의 테스트가 성공하는지 확인합니다.
-6. 모바일 네트워크에서 인증 Host와 보호된 서비스 Host 하나 이상에 접속합니다.
-7. 요청 로그의 실제 클라이언트 IP, 라우트 및 업스트림 상태가 올바른지 확인합니다.
-8. 플랫폼 간에 마이그레이션했다면 포트 공개, 호스트 방화벽, Smart Connect 및 시스템 서비스를 다시 구성합니다.
+6. Wake-on-LAN을 사용한다면 Relay를 다시 페어링하고 Blinker 또는 Bemfa 자격 증명을 입력한 뒤 장치 IP, 브로드캐스트 주소 및 온라인 확인을 검증합니다.
+7. 모바일 네트워크에서 인증 Host와 보호된 서비스 Host 하나 이상에 접속합니다.
+8. 요청 로그의 실제 클라이언트 IP, 라우트 및 업스트림 상태가 올바른지 확인합니다.
+9. 플랫폼 간에 마이그레이션했다면 포트 공개, 호스트 방화벽, Smart Connect 및 시스템 서비스를 다시 구성합니다.
 
 복원된 설정이 이전 환경의 루프백 주소, LAN IP, 파일 경로 또는 도메인을 참조할 수 있습니다. 설정이 존재한다고 해서 이러한 외부 의존성도 새 플랫폼에 존재하는 것은 아닙니다.
 

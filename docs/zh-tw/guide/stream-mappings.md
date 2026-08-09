@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 55796732746b2a9d3669475e2028c41086a4fa479b1aede8d705e52f3469805a
+translationSourceHash: ce575462560986ee2b8720bcf68021de488d12060e10d49a1ad3515c90f36e57
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -71,6 +71,19 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 
 停用 `要求驗證` 會將該 Listen Port 公開轉送。Target Service 本身的 SSH Key、資料庫密碼、TLS 與最小權限仍必須妥善設定。
 
+## 全域開放時間
+
+在協定映射頁面的 `新增映射` 右側開啟更多操作，選擇 `定時啟用或停用`，即可為所有 TCP／UDP 規則設定同一個每日開放時間窗。時間使用 `HH:mm`，依伺服器本機時間每天重複；啟用與停用時間不可相同。跨午夜設定會自動延續至隔日，例如 `22:00-06:00`。
+
+定時關閉與關閉協定映射功能不同：
+
+- 關閉功能開關時，所有協定 Listener 都會停止；
+- 定時關閉時，連接埠仍保持 Listen，但會拒絕新的 TCP 連線並丟棄 UDP 封包；
+- 進入關閉時段前已建立的 TCP Session 不會被強制中斷；
+- 到達開放時間後會繼續接受新連線，不需要重新同步閘道。
+
+這是作用於所有協定映射的執行時間規則，無法為單一連接埠設定不同時段。後台會依伺服器時間顯示目前為 `定時開放中` 或 `定時關閉中`；瀏覽器或伺服器時區設定錯誤時，顯示與實際存取時間窗都可能不符，請先修正伺服器時間與時區。
+
 ### `local_exempt`
 
 身分驗證服務會將閘道識別到的 Loopback、私有網路與 Link-local 來源歸類為 `local_exempt`。這些來源連線至已啟用驗證的通訊協定映射時，也會被視為本地網路存取，不要求先完成 Web 登入。
@@ -101,6 +114,7 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 3. 從 fn-knock Runtime 環境直接連線至 Target。
 4. 檢查 Container Port Publishing、Host 防火牆、路由器轉送與 Cloud Security Group。
 5. 啟用驗證時，確認瀏覽器登入與通訊協定用戶端使用相同的公網出口 IP、登入後 IP 授權未停用，且自訂憑據已選取目前通訊協定與對外連接埠。
-6. 儲存後仍未 Listen 時，按下 `同步閘道`，再查看狀態與 Log。
+6. 確認目前伺服器時間位於全域開放時間窗；定時關閉時連接埠仍可能被掃描到，但不會轉送新流量。
+7. 儲存後仍未 Listen 時，按下 `同步閘道`，再查看狀態與 Log。
 
 相關功能開關請參閱[系統設定](/zh-tw/guide/system)。

@@ -3,7 +3,7 @@ lang: en-US
 title: "TOTP Authenticator Apps"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 20d6170c8fa0828578e82301a734592617bbc47361c9075ff630426d161eb366
+translationSourceHash: f585853abe37ff472a2bb7f925ba4226cf35ce6e31ca6c21df67c484719091c0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ Do not keep your only TOTP on a single phone. A lost device, operating-system re
 
 ## Service Scopes
 
-In the TOTP list, `Permission` can be set to `All scopes` or `Custom scopes`. The custom list groups application Hosts that require sign-in, the built-in select page, and authenticated TCP / UDP protocol mappings. Entries removed from the mappings but retained in the permission are marked `Unavailable`. When the custom scope is empty, the credential cannot access any protected entry point.
+In the TOTP list, `Permission` can be set to `All scopes` or `Custom scopes`. The custom list groups application Hosts that require sign-in, the built-in select page, the enabled built-in Wake-on-LAN page, and authenticated TCP / UDP protocol mappings. Entries removed from the mappings but retained in the permission are marked `Unavailable`. When the custom scope is empty, the credential cannot access any protected entry point.
 
 This restriction also applies to linked Passkeys, QQ accounts, other OIDC external accounts, and LDAP / Active Directory accounts. A TOTP with a restricted service scope does not create general automatic post-login IP authorization. If the scope includes a specific protocol mapping and post-login IP authorization is enabled, the system authorizes the current source IP only for that protocol and external port. Separate credentials for personal, family, automation, and administrative use so that each can be revoked and audited independently.
 

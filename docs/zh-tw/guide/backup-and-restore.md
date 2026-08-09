@@ -3,7 +3,7 @@ lang: zh-TW
 title: "備份、還原與資料清理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d46e1b9568edee48aa0dc258a5ae88402645ec0953a3aee51b346be5a18f28b3
+translationSourceHash: d112f5cea88027b537b4e2f13578a5c7584014266dd773261af4949b9f470e5f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,7 +21,7 @@ translationSourceHash: d46e1b9568edee48aa0dc258a5ae88402645ec0953a3aee51b346be5a
 - 憑證與私密金鑰、DDNS、通知及 Tunnel 設定；
 - 其他由 fn-knock 持久化，且可在新執行個體重新套用的物件。
 
-執行記錄、事件、工作階段、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、DDNS 最近一次位址，以及其他短期執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、Host 防火牆狀態、外部 DNS Record 與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API，或重新填入手動 Tunnel Token；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
+執行記錄、事件、工作階段、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、WOL 上線狀態、DDNS 最近一次位址，以及其他短期執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、WOL Relay PSK、點燈裝置金鑰與巴法雲私鑰、Host 防火牆狀態、外部 DNS Record 與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API、重新填入手動 Tunnel Token，並重新配對 WOL Relay 或填寫第三方平台憑據；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
 
 因此，移轉整套環境時通常需要兩層備份：
 
@@ -116,9 +116,10 @@ Schema、版本、項目格式、重複 Key、設定 Migration 或 Cloudflared �
 3. 閘道、WAF、憑證與請求記錄是否正常；若有警告，先檢查對應的同步步驟。
 4. FRP / Cloudflared 資源是否已安裝並重新執行；Cloudflare 託管模式需重新連線 API Token，手動模式需重新填入 Tunnel Token。
 5. DDNS、通知供應商與外部登入憑據是否能通過測試。
-6. 從行動網路存取身分驗證 Host，以及至少一個受保護的服務 Host。
-7. 確認請求記錄中的真實用戶端 IP、路由與上游狀態正確。
-8. 跨平台移轉時，重新設定連接埠發布、Host 防火牆、智慧連線與系統服務。
+6. 若使用遠端喚醒，重新配對 Relay、填寫點燈或巴法雲憑據，並驗證裝置 IP、廣播位址與上線偵測。
+7. 從行動網路存取身分驗證 Host，以及至少一個受保護的服務 Host。
+8. 確認請求記錄中的真實用戶端 IP、路由與上游狀態正確。
+9. 跨平台移轉時，重新設定連接埠發布、Host 防火牆、智慧連線與系統服務。
 
 還原的設定可能引用舊環境的 Loopback 位址、區域網路 IP、檔案路徑或網域。設定存在，不代表這些外部相依項目在新平台上也同樣存在。
 

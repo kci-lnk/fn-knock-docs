@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道入口頁"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 28b758f444d713042a4301263fba9b34ad792846770bc55cb7cd91edf31d138c
+translationSourceHash: c221bf25ccf8054e9f174402f93ecd44b391eb25ec13885dba028b80abbb29e7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,6 +25,7 @@ translationSourceHash: 28b758f444d713042a4301263fba9b34ad792846770bc55cb7cd91edf
 | `傳送門顯示` | 選擇顯示網域或網站標題；標題為空時改用網域 |
 | `傳送門圖示拖曳位置` | `四個角落` 會將圖示吸附至角落，`自由` 則允許停留在 Viewport 內任意位置 |
 | `顯示應用程式圖示` | 顯示自動擷取或自訂圖示；v1 不會為無圖示入口保留空位，v2 會產生預留圖示 |
+| `顯示遠端喚醒快速入口` | WOL 功能開啟時顯示；允許有權限的已登入帳號開啟內建裝置喚醒頁面 |
 
 點選這些選項後會立即儲存並同步，不必回到閘道頁面再次按下統一儲存。切換版本或修改顯示樣式不會結束登入工作階段。
 
@@ -34,6 +35,8 @@ translationSourceHash: 28b758f444d713042a4301263fba9b34ad792846770bc55cb7cd91edf
 
 完成設定後，請從受保護的服務 Host 登入，確認所選版本、標題、圖示與拖曳方式符合預期。傳送門本身不會授予權限；即使清單中出現某個 Host，受限憑據能否存取，仍以實際請求的服務範圍判斷。
 
+遠端喚醒快速入口預設開啟，但只在 `系統設定 → 功能 → 遠端喚醒` 已啟用時實際顯示。內建 `/__wol__` 頁面只列出已啟用裝置的名稱與簡化狀態；使用自訂服務範圍的憑據還必須在 `驗證設定 → 權限` 中勾選 `內建遠端喚醒頁面`。關閉快速入口會同時禁止透過公開驗證 API 使用該頁面，不影響管理員或第三方平台觸發喚醒。完整設定請參閱[遠端喚醒](/zh-tw/guide/wake-on-lan)。
+
 顯示不正確時，請依下列順序檢查：
 
 1. 確認全域傳送門已啟用，且目前 Host 未停用「顯示傳送門」。
@@ -42,7 +45,9 @@ translationSourceHash: 28b758f444d713042a4301263fba9b34ad792846770bc55cb7cd91edf
 4. 沒有圖示時，請在 `子網域映射` 中編輯對應 Host，開啟 `應用程式圖示` 後重新擷取或上傳自訂圖片；v2 會先顯示產生的預留圖示。
 5. 群組或順序不正確時，確認子網域映射目前是否使用 `群組檢視`，並在 `管理群組` 中檢查順序。
 6. 對照憑據的服務範圍；能在清單中看到入口，不代表具備存取權。
+7. 遠端喚醒入口缺少時，檢查 WOL 功能、傳送門快速入口，以及目前憑據是否包含內建 WOL 頁面。
 
 - [身分驗證、工作階段與服務範圍](/zh-tw/guide/auth)
 - [子網域映射](/zh-tw/guide/subdomain-proxy)
 - [路徑映射](/zh-tw/guide/reverse-proxy)
+- [遠端喚醒](/zh-tw/guide/wake-on-lan)

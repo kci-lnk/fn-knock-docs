@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 55796732746b2a9d3669475e2028c41086a4fa479b1aede8d705e52f3469805a
+translationSourceHash: ce575462560986ee2b8720bcf68021de488d12060e10d49a1ad3515c90f36e57
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -71,6 +71,19 @@ Protocol clients have no browser Cookie, so the gateway associates the source IP
 
 Disabling `Require auth` makes the listening port a public forward. You must still configure the target service's own SSH keys, database password, TLS, and least-privilege access.
 
+## Global Open Window
+
+Open the menu beside `Add mapping` on the Protocol mappings page and select `Schedule enable or disable` to set one daily open window for all TCP and UDP rules. Times use `HH:mm` and repeat according to the server's local time. The enable and disable times must differ. A window such as `22:00-06:00` automatically crosses midnight into the next day.
+
+Schedule-closed and feature-disabled are different states:
+
+- Disabling the feature switch stops all protocol listeners.
+- During a schedule-closed period, ports remain bound, but new TCP connections are rejected and UDP packets are dropped.
+- TCP sessions established before the closed period are not forcibly disconnected.
+- New connections are accepted again at the next open time without another gateway synchronization.
+
+This runtime schedule applies to every protocol mapping; individual ports cannot have separate windows. The admin page uses server time to show `Scheduled open` or `Scheduled closed`. If the browser or server time zone is wrong, both the display and effective access window may be unexpected, so correct the server clock and time zone first.
+
 ### `local_exempt`
 
 The authentication service classifies loopback, private, and link-local sources identified by the gateway as `local_exempt`. Connections from these sources to an authenticated Protocol mapping are treated as local-network access and do not require a prior web sign-in.
@@ -101,6 +114,7 @@ Regardless of automatic firewall support, the router's port forwarding, cloud se
 3. Connect to the Target directly from the fn-knock runtime environment.
 4. Check container port publishing, the host firewall, router forwarding, and cloud security group.
 5. With authentication enabled, confirm that the browser sign-in and protocol client use the same public egress IP, post-login IP authorization is enabled, and a custom credential includes the current protocol and external port.
-6. If the listener is still absent after saving, select `Sync gateway`, then review status and logs.
+6. Confirm that server time is inside the global open window. During a schedule-closed period, a port may still appear in a scan but does not forward new traffic.
+7. If the listener is still absent after saving, select `Sync gateway`, then review status and logs.
 
 See [System Settings and Maintenance](/en/guide/system) for the related feature switch.

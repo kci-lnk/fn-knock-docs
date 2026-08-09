@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 906891e1d58cd402eb5764cf40aaa1e3ba3383cee953cabce0ccf26196d70a78
+translationSourceHash: 6e1a02b1e858a24c2ee90119c6da41cb5cc01f082fbcc2dac002cb132794426f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,12 +26,13 @@ Deleting events does not delete delivery records that have already been created.
 
 ## Events
 
-The Events page currently recognizes 27 system event types:
+The Events page currently recognizes 28 system event types:
 
 - Authentication: `Login success`, `Logout`, `Login failure`, and `Session IP drift`;
 - Security: `Scanner blocked`, `Gateway throttle blocked`, `Gateway visibility blocked`, and `WAF blocked`;
 - SSH: `SSH login success`, `SSH login failure`, and `SSH IP blocked`;
 - Network: `DDNS updated`, FRP connected/disconnected, and Cloudflared connected/disconnected;
+- Wake-on-LAN: WOL broadcast completed from an administrator, the portal, Blinker, or Bemfa;
 - System: `App update available`, CPU alert/recovered, and memory alert/recovered;
 - Runtime: component started, stopped, restarted, health check failed, recovered, and exited abnormally.
 
@@ -47,7 +48,7 @@ The page lets you:
 
 `Clear events` deletes every event stored in the Event Center. The count shown in parentheses describes how many events match the current view; it does not mean that only filtered results will be cleared. This operation cannot be undone, but it does not clear notification rules or delivery records.
 
-Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, or tunnel logs.
+Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, WOL target and delivery source, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, tunnel logs, or device online status.
 
 ## Core Service Status and Diagnostics
 
@@ -141,6 +142,7 @@ After creating rules, you can edit their trigger conditions individually. Aggreg
 - DDNS updates are grouped by provider;
 - CPU and memory events are grouped by hostname;
 - Tunnel and app update events are grouped by subject;
+- Wake-on-LAN completion is grouped by subject to distinguish devices;
 - Login success and logout are grouped globally.
 
 A rule can contain multiple providers, but each provider can be added to that rule only once. Some providers require a recipient, Topic, Chat ID, or another destination field in the rule target. These fields apply only to the current rule.
@@ -154,6 +156,7 @@ A rule can contain multiple providers, but each provider can be added to that ru
 - FRP and Cloudflared: group by subject to distinguish tunnels;
 - CPU and memory: configure rules for both alert and recovery events;
 - App update: send one notification grouped by subject.
+- Wake-on-LAN: group by subject. Use failed results for alerts; a successful result still means only that the broadcast was submitted, not that the device is online.
 
 High-frequency events such as login success and SSH login success can generate many notifications when the threshold is 1. Tune the window, trigger count, and cooldown for your actual traffic.
 
@@ -186,3 +189,4 @@ Notifications support incident response; they do not replace request logs, WAF l
 - [Request Logs](/en/guide/request-logs)
 - [Web Application Firewall (WAF)](/en/guide/waf)
 - [SSH Hardening](/en/guide/ssh-security)
+- [Wake-on-LAN](/en/guide/wake-on-lan)

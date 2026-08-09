@@ -564,6 +564,13 @@ export const PAGE_TITLES = {
     ja: 'Web Application Firewall（WAF）',
     ko: '웹 애플리케이션 방화벽(WAF)',
   },
+  'guide/wake-on-lan': {
+    root: '远程唤醒（Wake-on-LAN）',
+    'zh-tw': '遠端喚醒（Wake-on-LAN）',
+    en: 'Wake-on-LAN',
+    ja: 'Wake-on-LAN（リモート起動）',
+    ko: 'Wake-on-LAN(원격 깨우기)',
+  },
   'guide/web-terminal': {
     root: 'Web 终端',
     'zh-tw': 'Web 終端機',
@@ -878,6 +885,7 @@ const SIDEBAR_SECTIONS = [
         label: 'systemOperations',
         collapsed: false,
         items: [
+          'guide/wake-on-lan',
           'guide/web-terminal',
           'guide/system',
           'guide/backup-and-restore',

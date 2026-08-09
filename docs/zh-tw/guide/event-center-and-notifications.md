@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 906891e1d58cd402eb5764cf40aaa1e3ba3383cee953cabce0ccf26196d70a78
+translationSourceHash: 6e1a02b1e858a24c2ee90119c6da41cb5cc01f082fbcc2dac002cb132794426f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,12 +26,13 @@ translationSourceHash: 906891e1d58cd402eb5764cf40aaa1e3ba3383cee953cabce0ccf2619
 
 ## 事件頁面
 
-事件頁面目前可識別下列 27 類系統事件：
+事件頁面目前可識別下列 28 類系統事件：
 
 - 身分驗證：登入成功、登出、登入失敗、工作階段 IP 漂移；
 - 安全性：掃描器攔截、閘道 Rate Limit 封鎖、閘道可見性攔截、WAF 阻擋；
 - SSH：登入成功、登入失敗、IP 封鎖；
 - 網路：DDNS 更新、FRP 連線／中斷、Cloudflared 連線／中斷；
+- 遠端喚醒：WOL 廣播完成（管理員、傳送門、點燈科技或巴法雲）；
 - 系統：應用程式更新提示、CPU 告警／恢復、記憶體告警／恢復；
 - Runtime：元件啟動、停止、重新啟動、健康檢查失敗、恢復與異常結束。
 
@@ -47,7 +48,7 @@ translationSourceHash: 906891e1d58cd402eb5764cf40aaa1e3ba3383cee953cabce0ccf2619
 
 「清除事件」會刪除事件中心保存的所有事件；括號中的數量只代表目前 View 符合的筆數，並不表示只清除目前的篩選結果。此操作無法復原，但不會清除通知規則與投遞記錄。
 
-事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log 或 Tunnel Log 交叉比對。
+事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、WOL 目標與投遞來源、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log、Tunnel Log 或裝置上線狀態交叉比對。
 
 ## 核心服務狀態與診斷
 
@@ -141,6 +142,7 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 - DDNS 更新依供應商；
 - CPU 與記憶體事件依 Hostname；
 - Tunnel 與應用程式更新依主體物件；
+- 遠端喚醒完成依主體物件區分裝置；
 - 登入成功與登出依全域。
 
 一條規則可加入多個供應商，但同一個供應商在該規則中只能加入一次。部分供應商要求在規則目標中填寫接收者、Topic、Chat ID 或其他目標欄位；這些欄位只會影響目前規則。
@@ -154,6 +156,7 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 - FRP 與 Cloudflared：依主體物件區分不同 Tunnel；
 - CPU、記憶體：同時替告警與恢復事件設定規則；
 - 應用程式更新：依主體物件傳送一次提示。
+- 遠端喚醒：依主體物件彙總；失敗結果用於告警，成功結果仍只表示廣播已提交，不代表裝置已上線。
 
 登入成功、SSH 登入成功等高頻事件若臨界值設為 1，可能產生大量通知。請依實際存取量調整時間窗、臨界值與 Cooldown。
 
@@ -186,3 +189,4 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 - [請求記錄](/zh-tw/guide/request-logs)
 - [WAF](/zh-tw/guide/waf)
 - [SSH 安全性](/zh-tw/guide/ssh-security)
+- [遠端喚醒](/zh-tw/guide/wake-on-lan)
