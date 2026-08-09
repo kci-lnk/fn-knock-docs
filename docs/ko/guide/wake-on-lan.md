@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Wake-on-LAN(원격 깨우기)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ecb6dc726ee6ddc51f7e33fef871bdcd94b429ed5dfc828e2424b7ae0f8b5ad
+translationSourceHash: fcd0753cd92696ac03264e1ea4834bb15df28ec1d6e116e5dda261b2c36a2bba
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -94,6 +94,16 @@ Bemfa 개인 키와 구독 토픽을 입력합니다. 토픽에는 영문, 숫�
 - `on`을 받으면 장치를 깨웁니다.
 - `off`를 받아도 장치를 종료하지 않고 현재 상태를 `{토픽}/up`에 게시합니다.
 - 온라인 확인 상태가 바뀌면 업스트림 토픽에도 `on` 또는 `off`를 게시합니다.
+
+### Mi Home 및 XiaoAI 연결
+
+Blinker 또는 Bemfa 설정을 마치고 장치가 연결됨 상태인지 확인한 후 다음 단계를 진행합니다.
+
+1. Mi Home App을 열고 `나 → 타사 플랫폼 연결`로 이동합니다.
+2. `巴法`(Bemfa) 또는 `点灯`(Blinker)을 검색하고 현재 fn-knock 장치에 설정한 것과 같은 플랫폼을 선택한 뒤 안내에 따라 추가합니다.
+3. 계정을 인증하고 장치를 동기화하면 Mi Home App에서 깨우거나 XiaoAI에 켜기 또는 전원 켜기 명령을 내려 장치를 깨울 수 있습니다.
+
+Mi Home과 XiaoAI 명령은 선택한 플랫폼을 통해 전송됩니다. 켜기 명령은 `on`으로 매핑되어 WOL을 실행합니다. 끄기 명령은 대상 장치를 원격 종료하지 않으며 앞에서 설명한 규칙에 따라 현재 상태를 응답하거나 동기화할 뿐입니다.
 
 두 연동 모두 fn-knock에서 제공자의 HTTPS 및 MQTT TLS 서비스로 나가는 연결이 필요합니다. 장치 키, 개인 키, 토픽 또는 이를 포함한 스크린샷을 공개하지 마세요. 플랫폼 명령은 게이트웨이 포털 페이지를 거치지 않으므로 신뢰할 수 있는 사용자에게만 플랫폼 계정과 장치 권한을 부여하세요.
 

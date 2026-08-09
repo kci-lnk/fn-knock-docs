@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Wake-on-LAN（リモート起動）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ecb6dc726ee6ddc51f7e33fef871bdcd94b429ed5dfc828e2424b7ae0f8b5ad
+translationSourceHash: fcd0753cd92696ac03264e1ea4834bb15df28ec1d6e116e5dda261b2c36a2bba
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -94,6 +94,16 @@ Bemfa の秘密鍵と購読トピックを入力します。トピックに使�
 - `on` を受信するとデバイスを起動します。
 - `off` ではシャットダウンせず、現在の状態を `{トピック}/up` に公開します。
 - オンライン状態が変化した場合も、上りトピックへ `on` または `off` を同期します。
+
+### Mi Home と XiaoAI に連携する
+
+Blinker または Bemfa を設定し、デバイスが接続済みであることを確認したら、次の手順を行います。
+
+1. Mi Home アプリを開き、`マイページ → サードパーティプラットフォームに接続` に進みます。
+2. `巴法`（Bemfa）または `点灯`（Blinker）を検索し、fn-knock の対象デバイスに設定したものと同じプラットフォームを選んで、画面の案内に従って追加します。
+3. アカウントを認証してデバイスを同期すると、Mi Home アプリから起動したり、XiaoAI に電源オンや起動を指示したりできます。
+
+Mi Home と XiaoAI の操作は、選択したプラットフォーム経由で送信されます。オン操作は `on` に対応して WOL を実行します。オフ操作では対象デバイスをリモートシャットダウンせず、前述の規則に従って現在の状態を返すか同期するだけです。
 
 どちらも fn-knock からプロバイダーの HTTPS および MQTT TLS サービスへ接続できる必要があります。デバイスキー、秘密鍵、トピック、それらを含むスクリーンショットを公開しないでください。プラットフォームのコマンドはゲートウェイポータル画面を経由しないため、信頼できる利用者だけにアカウントとデバイス権限を付与します。
 

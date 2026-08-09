@@ -3,7 +3,7 @@ lang: en-US
 title: "Wake-on-LAN"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ecb6dc726ee6ddc51f7e33fef871bdcd94b429ed5dfc828e2424b7ae0f8b5ad
+translationSourceHash: fcd0753cd92696ac03264e1ea4834bb15df28ec1d6e116e5dda261b2c36a2bba
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -98,6 +98,16 @@ Enter the Bemfa private key and subscription topic. A topic may contain only let
 - Receiving `on` wakes the device.
 - Receiving `off` does not shut it down; it publishes the current state to `{topic}/up`.
 - Changes detected by online checks also publish `on` or `off` to the upstream topic.
+
+### Connect Mi Home and XiaoAI
+
+After configuring Blinker or Bemfa and confirming that the device is connected:
+
+1. Open the Mi Home app and go to `Me → Connect third-party platforms`.
+2. Search for `巴法` (Bemfa) or `点灯` (Blinker), select the platform configured for the current fn-knock device, and follow the prompts to add it.
+3. Authorize the account and sync devices. You can then wake the device from Mi Home or ask XiaoAI to turn on or power on the device.
+
+Mi Home and XiaoAI send commands through the selected platform. A turn-on command maps to `on` and triggers WOL. A turn-off command does not remotely shut down the target; it only reports or synchronizes the current state as described above.
 
 Both integrations require outbound access from fn-knock to the provider's HTTPS and MQTT TLS services. Never expose device keys, private keys, topics, or screenshots containing them. Platform commands bypass the gateway portal page, so grant platform-account and device access only to trusted users.
 

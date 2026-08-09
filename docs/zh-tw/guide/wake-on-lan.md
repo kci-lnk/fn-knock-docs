@@ -3,7 +3,7 @@ lang: zh-TW
 title: "遠端喚醒（Wake-on-LAN）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ecb6dc726ee6ddc51f7e33fef871bdcd94b429ed5dfc828e2424b7ae0f8b5ad
+translationSourceHash: fcd0753cd92696ac03264e1ea4834bb15df28ec1d6e116e5dda261b2c36a2bba
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -98,6 +98,16 @@ Wake-on-LAN 只能發出喚醒訊號，不能取代裝置本身的電源管理�
 - 收到 `on` 會觸發喚醒；
 - 收到 `off` 不會關機，只會向 `{主題}/up` 發布目前狀態；
 - 上線偵測狀態變更後，也會向上行主題同步 `on` 或 `off`。
+
+### 串接米家與小愛同學
+
+完成點燈科技或巴法雲設定，並確認裝置已經連線後：
+
+1. 開啟米家 App，進入 `我的 → 連接第三方平台`。
+2. 搜尋 `巴法` 或 `點燈`，選擇與 fn-knock 目前裝置設定相同的平台，並依提示新增。
+3. 完成帳號授權並同步裝置，即可在米家 App 中觸發喚醒，或透過小愛同學使用「開啟」「開機」等指令喚醒裝置。
+
+米家與小愛同學會透過所選平台傳送控制指令。「開啟」會對應為 `on` 並觸發 WOL；「關閉」不會遠端關閉目標裝置，只會依前述平台規則回傳或同步目前狀態。
 
 兩種串接都需要 fn-knock 主動存取提供者的 HTTPS 與 MQTT TLS 服務。不要公開裝置金鑰、私鑰、主題或包含它們的螢幕截圖。平台命令會略過閘道傳送門頁面，因此只應把平台帳號與裝置授權交給可信使用者。
 
