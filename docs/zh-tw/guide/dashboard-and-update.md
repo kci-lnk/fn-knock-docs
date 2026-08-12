@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a4f99dd8
+translationSourceHash: 8409fe7b005912f9a314d53e60d24e5b8fe215764acc3dd2d4a5738bad82b1e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a
 
 ## 更新頁面依部署型態運作
 
-路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes，並提供官方網站、使用文件與 GitHub 專案的快捷連結。Release Notes 會安全呈現 Markdown 標題、清單、強調與 HTTPS Link，而不是任意 HTML 頁面。管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
+路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes，並提供官方網站、使用文件與 GitHub 專案的快捷連結。Release Notes 會安全呈現 Markdown 標題、清單、強調、HTTPS Link，以及 GitHub 風格的 `NOTE`、`TIP`、`IMPORTANT`、`WARNING`、`CAUTION` 提示區塊；它不是任意 HTML 頁面，遠端圖片與不安全通訊協定不會變成可執行內容。管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
 
 | 部署型態 | 更新頁面提供的功能 | 實際升級方式 |
 | --- | --- | --- |
@@ -120,6 +120,8 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 在 `版本與更新` 查看版本與 Release Notes 後，下載符合群暉機型架構的 SPK，再透過 DSM 套件中心完成手動更新。網頁不會代替 DSM 安裝或重新啟動套件。
 
 更新前請先匯出應用程式備份。套件資料位於 `/var/packages/fn-knock-synology/var`；升級後從 DSM 桌面的套件入口重新進入，檢查版本、身分驗證設定與閘道存取是否恢復正常。
+
+`2.2.5` 修復 Synology 套件無法啟動的緊急問題。受影響 Instance 即使目前無法啟動，也應直接在套件中心使用相同架構的 `2.2.5` 或更高版本 SPK 覆蓋升級；不要為了恢復啟動而先解除安裝套件或刪除資料目錄。
 
 ## 更新 Windows x86_64
 

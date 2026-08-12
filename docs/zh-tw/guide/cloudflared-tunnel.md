@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Cloudflare Tunnel（cloudflared）設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bff0db45d864b571554efb273368b024d0a2ba556678b1503ed9a5a32cc1ac9f
+translationSourceHash: 7c0624177d11e5824d38d2e63d1f7c49698a4552198f94a79d6f31a7cc35ccc7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -67,6 +67,8 @@ Token 必須能讀取根網域所在的有效 Zone。根網域可以是 Zone 本
 
 按下 `預檢` 後，頁面會列出即將建立、更新或保留的 Tunnel、Ingress、DNS 與優選資源。預檢計畫有效期為 10 分鐘；套用前若遠端設定已變更，必須重新預檢。遇到同名但不屬於 fn-knock 的資源時，頁面會回報衝突，只有逐項確認接管後才會修改。
 
+預檢指紋會忽略 Cloudflare 回傳順序、更新時間與驗證狀態等正常變化，但會保留 DNS 內容、Proxy 狀態、資源歸屬與 Ingress 等安全相關欄位。套用前這些欄位若發生變更，舊計畫會失效並要求重新預檢，不會沿用過時的接管確認。Custom Hostname 所需的所有權或憑證驗證 TXT 會依「名稱 + 內容」分別維護；同名但內容不同的第三方 TXT 不會只因名稱相同而被覆寫。一個名稱下存在多筆無法安全判斷歸屬的 CNAME / A / AAAA 時，應先在 Cloudflare 手動整理，再重新預檢。
+
 基本託管會自動維護：
 
 ```text
@@ -112,7 +114,9 @@ https://nas.example.com/
 - 內建公共網域：瑞典政府 `www.gov.se`、美國國會圖書館 `www.loc.gov`、ICANN `www.icann.org` 與 Visa `www.visa.com`。
 - 使用者新增的公共候選網域，最多 16 個。
 
-這些公共網域只用於找出可能的 Cloudflare IPv4。fn-knock 不會把服務 CNAME 指向它們，也不會以它們的 Host 或 SNI 傳送業務流量。解析結果會過濾無效位址、私有位址和常見 Fake IP；本機 DNS 使用 Fake IP 模式時，可透過其他真實解析來源補充候選。
+這些公共網域只用於找出可能的 Cloudflare IPv4。fn-knock 不會把服務 CNAME 指向它們，也不會以它們的 Host 或 SNI 傳送業務流量。解析不使用本機 DNS，而是並行查詢 Cloudflare、Google、騰訊 DNSPod 與 AliDNS 的加密 DoH；結果只保留 Cloudflare 官方 IPv4 網段內的位址，並優先排列由多個解析器共同回傳的候選。單一解析器失敗不會中止掃描，頁面會保留最近一次掃描的解析器狀態、成功／失敗次數與回退路徑。
+
+若所有 DoH 都無法使用，啟用「Cloudflare 官方 IPv4 網段」時會自動改用官方網段的確定性抽樣；關閉官方網段時，只能重新驗證目前已發布的候選，若也不存在則本次掃描不可用。候選仍需通過後續業務網域 TLS、SNI、Cloudflare 錯誤頁與 Ray ID 驗證，因此 DNS 剛傳播、單一解析器異常或本機 Fake IP 不會直接決定發布結果。
 
 IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國。Cloudflare IPv4 是 Anycast，同一個 IP 會從多個邊緣機房公告。結果中的 `Cloudflare 機房` 來自實際探測回應的 `CF-Ray` 後綴，例如 `SIN`、`HKG`，比 IP 歸屬地更能代表此次連線的落點。
 
@@ -137,6 +141,8 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 ## Client IP 與登入重新導向
 
 託管模式使用只監聽 Loopback 的專用 Tunnel 入口。閘道只在這條受控路徑信任 Cloudflare 的 `CF-Connecting-IP`，不會把訪客自行傳送的 `X-Forwarded-For` 當成可信來源。EdgeOne / ESA 的真實 IP 開關不適用於 Cloudflared，在目前模式不可用時介面會隱藏。
+
+若 Cloudflare 的 `Pseudo IPv4` 設為 `Overwrite Headers`，IPv6 訪客的 `CF-Connecting-IP` 會變成 `240.0.0.0/4` 的 Class E 位址。託管專用入口會嚴格驗證單值 Header，並從 `CF-Connecting-IPv6` 還原有效的公網 IPv6，用於 Session、可見性、WAF 與 Request Log；Header 缺少、重複、屬於私有位址或格式異常時會保留 Pseudo IPv4，不會信任其他轉送 Header。此還原只適用 fn-knock 託管入口；手動 Cloudflare Origin 建議將 Pseudo IPv4 設為 `Off` 或 `Add Header`。
 
 從行動網路開啟一個要求登入的服務 Host，並在 Request Log 確認：
 
@@ -169,7 +175,9 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 | Tunnel 已上線但網域無法使用 | 核對衝突、Wildcard DNS、Ingress、Cloudflared Log 與本機 Host 映射 |
 | 重新導向仍包含 `:7999` | 確認使用 `內網穿透 → 子網域映射`、預設 Tunnel 為 Cloudflared，並更新至支援標準 Port 重新導向的版本 |
 | 無法啟用優選 | SSL 權限、Cloudflare for SaaS 可用性、Custom Hostname 配額與能力探測結果 |
+| 所有候選網域都解析失敗 | 展開最近一次解析器診斷；允許官方網段時確認是否已自動回退，否則啟用官方網段後重新測速 |
 | IP 歸屬地顯示美國 | 查看測速中的 Cloudflare 機房代碼；Anycast 註冊地不是連線落點 |
+| Log 中的 IPv6 變成 `240.0.0.0/4` | 託管模式升級至支援 Pseudo IPv4 還原的版本；手動 Origin 將 Cloudflare Pseudo IPv4 改為 `Off` 或 `Add Header` |
 | 所有存取都像本機來源 | 查看 Request Log 的 Client IP，並使用託管專用入口而非錯誤的手動 Origin |
 
 整體執行狀態請參閱[內網穿透](/zh-tw/guide/tunnel)，Host 設定請參閱[子網域映射](/zh-tw/guide/subdomain-proxy)。

@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f69b433d1ea8a63c7269de61b818cbfdc0e7b72686c15fb97bcbd782a4f99dd8
+translationSourceHash: 8409fe7b005912f9a314d53e60d24e5b8fe215764acc3dd2d4a5738bad82b1e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,7 +44,7 @@ From the upper-right corner of the Dashboard, you can choose `Default`, `Hermes 
 
 ## How the Update Page Varies by Deployment
 
-Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes, plus quick links to the official website, documentation, and GitHub project. Release notes safely render Markdown headings, lists, emphasis, and HTTPS links; they are not arbitrary HTML pages. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
+Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes, plus quick links to the official website, documentation, and GitHub project. Release notes safely render Markdown headings, lists, emphasis, HTTPS links, and GitHub-style `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION` alert blocks. They are not arbitrary HTML pages; remote images and unsafe protocols do not become executable content. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
 
 | Deployment | What the update page can do | How to upgrade |
 | --- | --- | --- |
@@ -120,6 +120,8 @@ Use `--allow-untrusted` for a local `.apk` only when the package came from a tru
 After reviewing the version and release notes under `Version and updates`, download the SPK matching your Synology model's architecture and perform a manual update through DSM Package Center. The web page does not install or restart the package on behalf of DSM.
 
 Export an app backup first. Package data is stored in `/var/packages/fn-knock-synology/var`. After the upgrade, reopen the package from the DSM desktop and check that the version, authentication settings, and gateway access have recovered.
+
+`2.2.5` fixes an urgent Synology package startup problem. Even if an affected instance cannot currently start, install a `2.2.5` or newer SPK for the same architecture directly over it in Package Center. Do not uninstall the package or remove its data directory just to restore startup.
 
 ## Update Windows x86_64
 

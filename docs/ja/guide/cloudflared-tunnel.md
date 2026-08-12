@@ -3,7 +3,7 @@ lang: ja-JP
 title: "cloudflared による Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bff0db45d864b571554efb273368b024d0a2ba556678b1503ed9a5a32cc1ac9f
+translationSourceHash: 7c0624177d11e5824d38d2e63d1f7c49698a4552198f94a79d6f31a7cc35ccc7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -67,6 +67,8 @@ Token はルートドメインを含む有効な Zone を読み取れる必要�
 
 `プレビュー` を実行すると、作成、更新、維持される Tunnel、Ingress、DNS、最適化リソースが表示されます。プレビューの有効時間は 10 分です。適用前にリモート設定が変化した場合は、もう一度プレビューしてください。同名で fn-knock 所有ではないリソースは競合として表示され、個別に引き継ぎを承認した場合だけ変更されます。
 
+プレビューのフィンガープリントは、Cloudflare のレスポンス順序、更新時刻、検証状態など通常の変動を無視しますが、DNS 内容、Proxy 状態、リソース所有者、Ingress などセキュリティに関わる項目は保持します。適用前にこれらが変わると古いプランは無効になり、再プレビューが必要です。古い引き継ぎ承認が再利用されることはありません。Custom Hostname の所有権または証明書検証用 TXT は「名前 + 内容」ごとに管理されるため、同名でも値が異なる第三者 TXT は上書きされません。同じ名前に所有者を安全に判断できない CNAME / A / AAAA が複数ある場合は、Cloudflare で手動整理してから再プレビューしてください。
+
 基本構成は自動的に次を維持します。
 
 ```text
@@ -112,7 +114,9 @@ fn-knock は隔離したホスト名で、現在の Zone における Custom Hos
 - 組み込み公開ホスト名：スウェーデン政府 `www.gov.se`、米国議会図書館 `www.loc.gov`、ICANN `www.icann.org`、Visa `www.visa.com`。
 - ユーザー定義の公開候補ホスト名（最大 16 件）。
 
-公開ホスト名は Cloudflare IPv4 候補の検出だけに使われます。サービス CNAME をこれらへ向けたり、これらの Host / SNI で業務トラフィックを送ったりしません。無効、プライベート、一般的な Fake IP は除外されます。ローカル DNS が Fake IP モードの場合は、実際の解析結果を返せる別の取得元を追加してください。
+公開ホスト名は Cloudflare IPv4 候補の検出だけに使われます。サービス CNAME をこれらへ向けたり、これらの Host / SNI で業務トラフィックを送ったりしません。名前解決にはホストの DNS を使わず、Cloudflare、Google、Tencent DNSPod、AliDNS の暗号化 DoH を並行して問い合わせます。Cloudflare 公式 IPv4 範囲内のアドレスだけを残し、複数リゾルバーが返した候補を優先します。1 つのリゾルバーが失敗してもスキャンは停止せず、画面には直近スキャンの状態、成功／失敗回数、フォールバック経路が保持されます。
+
+すべての DoH が利用できない場合でも、「Cloudflare 公式 IPv4 範囲」が有効なら公式範囲の決定的サンプリングへ自動的にフォールバックします。公式範囲を無効にしている場合は現在公開済みの候補だけを再検証でき、それもなければ今回のスキャンは利用できません。候補にはさらに業務ドメインの TLS、SNI、Cloudflare エラーページ、Ray ID の検証が必要なので、DNS 伝播直後、単一リゾルバーの異常、ローカル Fake IP が公開結果を直接決めることはありません。
 
 IP レジストリや GeoIP に「米国」と表示されても、通信が米国へ到達したとは限りません。Cloudflare IPv4 は Anycast で、同じ IP が複数のエッジ拠点から広告されます。結果の `Cloudflare コロケーション` は実際のプローブで得た `CF-Ray` の末尾（`SIN`、`HKG` など）であり、その接続の到達地点をより正確に表します。
 
@@ -137,6 +141,8 @@ IP レジストリや GeoIP に「米国」と表示されても、通信が米�
 ## クライアント IP とログインリダイレクト
 
 管理モードはループバックだけで待ち受ける専用 Tunnel 入口を使います。ゲートウェイが Cloudflare の `CF-Connecting-IP` を信頼するのはこの管理経路だけで、訪問者が送信した `X-Forwarded-For` は信頼しません。EdgeOne / ESA の実クライアント IP 設定は Cloudflared には適用されず、現在のモードで利用できない場合は非表示になります。
+
+Cloudflare の `Pseudo IPv4` を `Overwrite Headers` に設定すると、IPv6 訪問者の `CF-Connecting-IP` は `240.0.0.0/4` の Class E アドレスになります。専用管理入口では単一値ヘッダーを厳密に検証し、`CF-Connecting-IPv6` の有効な公開 IPv6 をセッション、公開範囲、WAF、リクエストログに使用します。ヘッダーが欠落、重複、プライベート、または不正な形式の場合は Pseudo IPv4 を維持し、別の転送ヘッダーを信頼しません。この復元は fn-knock 管理入口だけに適用されます。手動 Cloudflare オリジンでは Pseudo IPv4 を `Off` または `Add Header` にしてください。
 
 モバイル回線からログインが必要なサービス Host を開き、リクエストログで次を確認します。
 
@@ -169,7 +175,9 @@ API Token を削除しても、今後のリモート管理が止まるだけで 
 | Tunnel はオンラインだがドメインが使えない | 同期競合、ワイルドカード DNS、Ingress、Cloudflared ログ、Host マッピング |
 | リダイレクトに `:7999` が残る | `トンネル → サブドメインマッピング`、既定 Tunnel が Cloudflared、標準ポート対応版であること |
 | 最適化を有効にできない | SSL 権限、Cloudflare for SaaS、Custom Hostname クォータ、機能プローブ |
+| すべての候補ホスト名の解決に失敗 | 直近のリゾルバー診断を展開する。公式範囲を許可している場合は自動フォールバックを確認し、それ以外は公式範囲を有効にして再スキャンする |
 | IP 所在地が米国 | スキャンの Cloudflare 拠点コードを確認する。Anycast の登録地は接続先ではない |
+| ログの IPv6 が `240.0.0.0/4` になる | 管理モードを Pseudo IPv4 復元対応版へ更新する。手動オリジンでは Cloudflare Pseudo IPv4 を `Off` または `Add Header` にする |
 | すべてローカルアクセスに見える | リクエストログのクライアント IP と、誤った手動オリジンではなく専用管理入口を使っているか |
 
 全体の実行状態は[トンネル](/ja/guide/tunnel)、Host 設定は[サブドメインマッピング](/ja/guide/subdomain-proxy)を参照してください。

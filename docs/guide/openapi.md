@@ -1,6 +1,6 @@
 # OpenAPI：开放管理 API 与 AI Agent
 
-fn-knock 的 Rust 管理后端提供 OpenAPI 3.0 文档，可用于查看管理接口、生成客户端代码或接入自动化工具。本文以管理后端监听 `127.0.0.1:7998`、对外使用 `knock.example.com:7999` 为例，通过 fn-knock 自身的协议映射访问文档。
+fn-knock 的 Rust 管理后端提供 OpenAPI 3.1 文档，可用于查看管理接口、生成客户端代码或接入自动化工具。本文以管理后端监听 `127.0.0.1:7998`、对外使用 `knock.example.com:7999` 为例，通过 fn-knock 自身的协议映射访问文档。
 
 管理 API 可以修改映射、证书、DDNS、WAF 和其他系统配置。不要把它当作普通公开网页直接暴露；应启用协议映射鉴权，并配合固定来源 IP、VPN 或其他网络访问限制。
 
@@ -9,7 +9,7 @@ fn-knock 的 Rust 管理后端提供 OpenAPI 3.0 文档，可用于查看管理�
 | 地址 | 内容 |
 | --- | --- |
 | `http://127.0.0.1:7998/docs` | Swagger UI 交互式文档 |
-| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.0 JSON |
+| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.1 JSON |
 | `http://knock.example.com:7999/docs` | 完成下文映射后的外部文档入口 |
 
 示例假定当前实例的管理后端端口是 `7998`。OpenWrt 默认使用 `17998`；自定义过端口时，以实际部署配置为准。先在 fn-knock 所在设备上打开本地 `/docs`，确认后端端口和文档可用，再建立对外映射。
@@ -45,7 +45,7 @@ fn-knock 的 Rust 管理后端提供 OpenAPI 3.0 文档，可用于查看管理�
 
 ![通过 fn-knock 协议映射打开的 Swagger UI，显示 server-admin API 与接口列表](/openapi-swagger-ui.webp)
 
-Swagger UI 的脚本和样式从 jsDelivr 加载。页面无法访问 CDN 时可能显示空白，但 `/docs/json` 仍可直接读取。
+Swagger UI 的脚本、样式和图标已经打包进 fn-knock，并从 `/docs/assets/` 本地加载，不依赖 jsDelivr、unpkg 或其他公共 CDN。只要管理后端和 `/docs/json` 可访问，离线或无法连接前端 CDN 的环境也能完整打开文档；某个未知资源路径会直接返回 `404`。
 
 ### 返回 403 或无法连接
 
@@ -66,7 +66,7 @@ curl --fail \
   -o fn-knock-openapi.json
 ```
 
-当前文档主要提供路由、HTTP 方法和分组信息。部分请求体、响应结构和认证细节可能没有完整模型，生成的代码仍需在测试实例中验证。优先从只读 `GET` 接口开始，确认响应结构后再封装写操作。
+当前契约由实际注册的管理路由生成，并为请求体、响应、路径参数和主要错误结构提供 Schema；构建与测试会检查文档中的 path / method 是否确实存在。契约版本会随 fn-knock 更新，因此生成客户端时应保存所依据实例的 `/docs/json` 和版本号，不要把旧版 Schema 直接用于更高或更低版本。即使类型完整，生成的代码仍需在测试实例中验证；优先从只读 `GET` 接口开始，再封装写操作。
 
 ## 让 AI Agent 编写集成代码
 

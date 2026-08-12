@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0bd507f3091783ae5db3a34b52b1e3ba1e219bc57dd46b5d200b4ba3eb81cca9
+translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f2ed3259
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,6 +63,8 @@ Request Logs can contain access paths, Query parameters, source IPs, User-Agent 
 If no request appears at all, first check whether the test traffic came from `127.0.0.1` and whether loopback logging was enabled. After excluding local traffic, the problem is usually earlier in the path—DNS, CDN, tunnel, router, or port exposure. Do not start by changing mapping rules.
 
 If only some requests are missing, check whether gateway throttling disconnected them immediately and whether the log settings page reports a dropped-queue warning. If the status code came from the gateway rather than the upstream, continue with authentication, Visibility, WAF, and mapping checks. If the correct Upstream target is already shown, move on to the application's own logs.
+
+With managed Cloudflare Tunnel and `Pseudo IPv4 → Overwrite Headers`, an IPv6 visitor's initial edge header can be in `240.0.0.0/4`. A supporting fn-knock release validates `CF-Connecting-IPv6` on the dedicated managed entry and restores `Client IP` to the real public IPv6; `Connection source IP` still reflects the local Tunnel path. If a Class E address remains after upgrading, check whether the origin is manual or whether the header is missing or duplicated. For a manual origin, set Pseudo IPv4 to `Off` or `Add Header`. Do not work around this by adding `240.0.0.0/4` to an allowlist.
 
 With subdomain advanced authentication enabled, an Auth result of `Allowed by subdomain rule` means that advanced authentication allowed the request. Use `Subdomain rule group ID` to locate the triggering configuration. `One-request access` means the request matched a rule but created no persistent grant, which commonly occurs during the initial Cookie probe, with a client that does not store Cookies, during a WebSocket upgrade, or when persistence falls back. `Issued` means this request created a persistent grant, `Renewed` refreshed its idle lifetime, and `Reused` continued to use an existing grant. See [Advanced Authentication for Subdomains](/en/guide/advanced-auth) for rule behavior.
 

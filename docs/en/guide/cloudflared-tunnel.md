@@ -3,7 +3,7 @@ lang: en-US
 title: "Cloudflare Tunnel with cloudflared"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bff0db45d864b571554efb273368b024d0a2ba556678b1503ed9a5a32cc1ac9f
+translationSourceHash: 7c0624177d11e5824d38d2e63d1f7c49698a4552198f94a79d6f31a7cc35ccc7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -67,6 +67,8 @@ Expand `Tunnel and domain sync`:
 
 Select `Preview` to see the Tunnel, Ingress, DNS, and optimization resources that will be created, updated, or kept. A preview is valid for 10 minutes. If the remote configuration changes before apply, generate a new preview. A resource with the same name but different ownership is reported as a conflict and is modified only after you explicitly approve takeover.
 
+The preview fingerprint ignores ordinary Cloudflare churn such as response ordering, update timestamps, and validation status, while retaining security-relevant fields such as DNS content, proxy state, resource ownership, and Ingress. If any of those fields changes before apply, the old plan expires and a new preview is required; stale takeover approval is never reused. Ownership or certificate-validation TXT records required by a Custom Hostname are managed by both name and content, so an unrelated TXT with the same name but a different value is not overwritten. If one name has multiple CNAME / A / AAAA records whose ownership cannot be determined safely, clean them up in Cloudflare before previewing again.
+
 Managed setup maintains this baseline automatically:
 
 ```text
@@ -112,7 +114,9 @@ Candidates may come from:
 - Built-in public hostnames: Sweden's government `www.gov.se`, the US Library of Congress `www.loc.gov`, ICANN `www.icann.org`, and Visa `www.visa.com`.
 - Up to 16 user-defined public candidate hostnames.
 
-These hostnames are used only to discover possible Cloudflare IPv4 addresses. fn-knock never points an application CNAME at them and never sends application traffic with their Host or SNI. Invalid, private, and common fake-IP results are filtered. If local DNS uses fake-IP mode, add a source that can provide real resolution results.
+These hostnames are used only to discover possible Cloudflare IPv4 addresses. fn-knock never points an application CNAME at them and never sends application traffic with their Host or SNI. Resolution does not use the host's DNS settings. Instead, it queries encrypted DoH from Cloudflare, Google, Tencent DNSPod, and AliDNS concurrently, keeps only addresses inside Cloudflare's official IPv4 ranges, and ranks candidates returned by more resolvers first. One resolver failing does not stop the scan; the page retains the latest resolver state, success/failure counts, and fallback path.
+
+If every DoH resolver is unavailable and `Cloudflare official IPv4 ranges` is enabled, the scan automatically falls back to deterministic samples from those ranges. With official ranges disabled, it can only revalidate a currently published candidate; if there is none, the scan is unavailable. Candidates must still pass application-domain TLS, SNI, Cloudflare error-page, and Ray ID checks, so recent DNS propagation, one bad resolver, or local fake-IP DNS cannot directly decide what is published.
 
 An IP registry or GeoIP result of “United States” does not mean the request lands in the United States. Cloudflare IPv4 is Anycast, so the same address is advertised from many edge locations. The `Cloudflare colo` in scan results comes from the `CF-Ray` suffix observed during the actual probe, such as `SIN` or `HKG`, and better describes that connection's landing point.
 
@@ -137,6 +141,8 @@ Do not manually point a proxied application A record directly to a Cloudflare ed
 ## Client IP and sign-in redirects
 
 Managed mode uses a dedicated Tunnel entry bound to loopback. The gateway trusts Cloudflare's `CF-Connecting-IP` only on this controlled path and does not treat a visitor-supplied `X-Forwarded-For` as authoritative. EdgeOne / ESA client-IP controls do not apply to Cloudflared and are hidden when unavailable in the current mode.
+
+When Cloudflare `Pseudo IPv4` is set to `Overwrite Headers`, an IPv6 visitor's `CF-Connecting-IP` becomes a Class E address in `240.0.0.0/4`. On the dedicated managed entry, fn-knock strictly validates single-value headers and restores a valid public IPv6 from `CF-Connecting-IPv6` for sessions, Visibility, WAF, and request logs. If that header is missing, duplicated, private, or malformed, fn-knock keeps the Pseudo IPv4 and does not trust another forwarding header. This recovery applies only to the managed entry; for a manual Cloudflare origin, set Pseudo IPv4 to `Off` or `Add Header`.
 
 From a mobile network, open an application Host that requires sign-in and confirm in request logs:
 
@@ -169,7 +175,9 @@ Deleting the API Token only stops future remote management; it does not delete C
 | Tunnel is online but the domain fails | Reconcile conflicts, wildcard DNS, Ingress, Cloudflared logs, and the local Host mapping |
 | Redirect still includes `:7999` | Confirm `Tunnels → Subdomain mapping`, Cloudflared as the default Tunnel, and a version with standard-port redirect support |
 | Optimization cannot be enabled | SSL permission, Cloudflare for SaaS availability, Custom Hostname quota, and the capability probe |
+| Every candidate hostname fails to resolve | Expand the latest resolver diagnostics; if official ranges are allowed, confirm automatic fallback, otherwise enable official ranges and scan again |
 | IP geolocation says United States | Use the Cloudflare colo code from the scan; Anycast registration location is not the connection landing point |
+| An IPv6 visitor appears as `240.0.0.0/4` in logs | Upgrade managed mode to a release that restores Pseudo IPv4; for a manual origin, set Cloudflare Pseudo IPv4 to `Off` or `Add Header` |
 | Every request appears local | Check the request-log client IP and use the dedicated managed entry instead of an incorrect manual origin |
 
 See [Tunnels](/en/guide/tunnel) for overall runtime behavior and [Subdomain Mapping](/en/guide/subdomain-proxy) for Host configuration.

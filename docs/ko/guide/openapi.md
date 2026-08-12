@@ -3,14 +3,14 @@ lang: ko-KR
 title: "OpenAPI: 관리 API 공개와 AI Agent"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbaa030928ee6b0fa8a075f19ec2564f978c2e91c2e29f5c88bc76ea6f1b5b50
+translationSourceHash: 4b815692c6b937004aad1ab085b5447d3fdfe04bd8f608a2c4bea21be2dda281
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # OpenAPI: 관리 API 공개와 AI Agent
 
-fn-knock의 Rust 관리 백엔드는 관리 엔드포인트 확인, 클라이언트 코드 생성 및 자동화 도구 연동에 사용할 수 있는 OpenAPI 3.0 문서를 제공합니다. 이 문서에서는 관리 백엔드가 `127.0.0.1:7998`에서 수신 대기하고 fn-knock 자체의 프로토콜 매핑을 사용하여 `knock.example.com:7999`에서 문서에 접근하는 구성을 예로 설명합니다.
+fn-knock의 Rust 관리 백엔드는 관리 엔드포인트 확인, 클라이언트 코드 생성 및 자동화 도구 연동에 사용할 수 있는 OpenAPI 3.1 문서를 제공합니다. 이 문서에서는 관리 백엔드가 `127.0.0.1:7998`에서 수신 대기하고 fn-knock 자체의 프로토콜 매핑을 사용하여 `knock.example.com:7999`에서 문서에 접근하는 구성을 예로 설명합니다.
 
 관리 API는 매핑, 인증서, DDNS, WAF 및 기타 시스템 설정을 변경할 수 있습니다. 일반 공개 웹 페이지처럼 직접 노출하지 마십시오. 프로토콜 매핑 인증을 활성화하고 고정 출발지 IP, VPN 또는 다른 네트워크 접근 제한과 함께 사용합니다.
 
@@ -19,7 +19,7 @@ fn-knock의 Rust 관리 백엔드는 관리 엔드포인트 확인, 클라이언
 | 주소 | 내용 |
 | --- | --- |
 | `http://127.0.0.1:7998/docs` | Swagger UI 대화형 문서 |
-| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.0 JSON |
+| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.1 JSON |
 | `http://knock.example.com:7999/docs` | 아래 매핑을 완료한 뒤 사용하는 외부 문서 엔드포인트 |
 
 이 예시는 현재 인스턴스의 관리 백엔드 포트가 `7998`이라고 가정합니다. OpenWrt는 기본적으로 `17998`을 사용합니다. 포트를 사용자 지정했다면 실제 배포 설정을 사용합니다. 외부 매핑을 만들기 전에 fn-knock 호스트에서 로컬 `/docs`를 열어 백엔드 포트와 문서가 정상인지 확인합니다.
@@ -55,7 +55,7 @@ fn-knock의 Rust 관리 백엔드는 관리 엔드포인트 확인, 클라이언
 
 ![fn-knock 프로토콜 매핑을 통해 연 Swagger UI. server-admin API와 엔드포인트 목록이 표시됩니다.](/openapi-swagger-ui.webp)
 
-Swagger UI는 jsDelivr에서 스크립트와 스타일을 불러옵니다. 브라우저가 이 CDN에 접근할 수 없으면 페이지가 비어 보일 수 있지만 `/docs/json`은 계속 직접 읽을 수 있습니다.
+Swagger UI의 스크립트, 스타일 및 아이콘은 fn-knock에 포함되어 `/docs/assets/`에서 로컬로 제공됩니다. jsDelivr, unpkg 또는 다른 공개 CDN에 의존하지 않습니다. 관리 백엔드와 `/docs/json`에 접근할 수 있으면 오프라인이거나 프런트엔드 CDN이 차단된 환경에서도 전체 문서를 열 수 있습니다. 알 수 없는 에셋 경로는 `404`를 반환합니다.
 
 ### 403 응답 또는 연결 실패
 
@@ -76,7 +76,7 @@ curl --fail \
   -o fn-knock-openapi.json
 ```
 
-현재 문서는 주로 경로, HTTP 메서드 및 그룹 정보를 제공합니다. 일부 요청 본문, 응답 구조 및 인증 세부 정보에는 완전한 모델이 없을 수 있으므로 생성된 코드는 테스트 인스턴스에서 검증해야 합니다. 먼저 읽기 전용 `GET` 엔드포인트에서 응답 구조를 확인한 다음 쓰기 작업을 래핑합니다.
+현재 계약은 실제 등록된 관리 경로에서 생성되며 요청 본문, 응답, 경로 매개변수 및 주요 오류 구조의 Schema를 제공합니다. 빌드와 테스트에서는 문서의 path / method가 실제로 존재하는지도 확인합니다. 계약은 fn-knock 버전에 따라 달라지므로 클라이언트를 생성할 때 대상 인스턴스의 `/docs/json`과 버전 번호를 함께 보관하고 이전 Schema를 다른 버전에 그대로 적용하지 않습니다. 타입이 완전해도 생성 코드는 테스트 인스턴스에서 검증해야 하며 먼저 읽기 전용 `GET` 엔드포인트부터 사용합니다.
 
 ## AI Agent에게 연동 코드 작성 요청
 

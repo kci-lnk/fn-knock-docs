@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 54d5e9d1b56598ed44eb5c38239b4e727fad19a037608bdc4595c77fc2bf6163
+translationSourceHash: 7b3c4a39f3e77db7abc0a56d2415e317de99cb605d798e5cc78a4745a097f740
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -90,6 +90,17 @@ The request item's menu can also show task logs, download the certificate, updat
 | Delete request item | Deletes the request configuration; its existing certificate and link are cleaned up with it |
 
 List actions are temporarily locked during a task or automatic renewal. Task logs point to issues such as DNS credentials, DNS API rate limiting, or ACME rate limits. `Stop task` terminates the running `acme.sh` process and marks the task as stopped; start it again later when ready.
+
+### Automatic renewal scheduling and recovery
+
+Request items with automatic renewal enabled are checked immediately after the service starts and then every 6 hours by default. A certificate enters the renewal queue when no more than 30 days remain. When several items qualify, they run sequentially from the earliest expiration to the latest, avoiding concurrent calls to the DNS API and ACME client.
+
+- Automatic scans and per-item issuance jobs use separate owned, heartbeating runtime locks, preventing duplicate renewal in one service. If a manual job is already active, that scan is skipped safely.
+- After a service restart, fn-knock scans again. It clears a leftover lock only after confirming that its job has ended; a job still finishing cancellation remains locked so old and new processes cannot overlap.
+- Both RFC 3339 and the OpenSSL UTC expiration format found in existing certificates are recognized. An invalid expiration produces a warning and is skipped rather than being treated as not due.
+- After each scan, the certificate library and gateway deployment are reconciled again. One renewal failure does not prevent a later scheduled scan, and the previous usable certificate and SSL configuration follow the recovery rules above.
+
+The page has no separate “next scan” switch. Verify renewal from the request item's latest task state, certificate expiration, and logs instead of repeatedly starting manual issuance.
 
 ## Native Windows: DNS-01 Certificates
 

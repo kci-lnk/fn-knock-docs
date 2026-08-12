@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求分析"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0bd507f3091783ae5db3a34b52b1e3ba1e219bc57dd46b5d200b4ba3eb81cca9
+translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f2ed3259
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,6 +63,8 @@ translationSourceHash: 0bd507f3091783ae5db3a34b52b1e3ba1e219bc57dd46b5d200b4ba3e
 如果記錄中完全找不到請求，請先確認測試流量是否來自 `127.0.0.1`，以及回環記錄開關是否已開啟。排除本機請求後，問題通常發生在 DNS、CDN、Tunnel、路由器或連接埠發布等更前端的環節；不要一開始就修改映射規則。
 
 如果只有部分請求缺少記錄，請檢查閘道 Rate Limit 是否直接中斷連線，以及記錄設定頁面是否出現 Queue 捨棄警告。若 Status Code 來自閘道而非上游，請繼續檢查身分驗證、可見性、WAF 與映射；若已顯示正確的上游 Target，再轉往應用程式本身的 Log。
+
+託管 Cloudflare Tunnel 開啟 `Pseudo IPv4 → Overwrite Headers` 時，IPv6 訪客的初始邊緣 Header 可能是 `240.0.0.0/4`。支援此模式的 fn-knock 會在託管專用入口驗證 `CF-Connecting-IPv6`，並將「Client IP」還原為真實公網 IPv6；「Connection source IP」仍反映本機 Tunnel 路徑。升級後若仍記錄 Class E 位址，請檢查是否使用手動 Origin，或 Header 是否缺少／重複；手動 Origin 建議將 Pseudo IPv4 改為 `Off` 或 `Add Header`。不要把 `240.0.0.0/4` 加入允許清單來繞過問題。
 
 啟用子網域進階驗證後，驗證結果 `子網域規則放行` 代表請求已透過進階驗證放行。詳細資訊中的規則組 ID 可用來定位觸發設定；`單次請求放行` 表示本次請求命中規則但未建立持久憑據，常見於首次 Cookie 探測、不儲存 Cookie 的用戶端、WebSocket Upgrade 或持久化降級；`已簽發` 表示本次建立持久憑據，`已續期` 表示重新計算閒置有效期，`已重複使用` 表示繼續沿用既有憑據。規則行為請參閱[子網域進階驗證](/zh-tw/guide/advanced-auth)。
 

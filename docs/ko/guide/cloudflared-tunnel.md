@@ -3,7 +3,7 @@ lang: ko-KR
 title: "cloudflared 기반 Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bff0db45d864b571554efb273368b024d0a2ba556678b1503ed9a5a32cc1ac9f
+translationSourceHash: 7c0624177d11e5824d38d2e63d1f7c49698a4552198f94a79d6f31a7cc35ccc7
 ---
 
 # cloudflared 기반 Cloudflare Tunnel
@@ -65,6 +65,8 @@ Token은 루트 도메인이 속한 활성 Zone을 읽을 수 있어야 합니�
 
 `미리 보기`를 실행하면 생성, 업데이트 또는 유지할 Tunnel, Ingress, DNS 및 최적화 리소스를 확인할 수 있습니다. 계획은 10분 동안 유효합니다. 적용 전에 원격 상태가 변경되면 다시 미리 봅니다. 이름이 같지만 fn-knock 소유가 아닌 리소스는 충돌로 표시되고, 항목별 인계를 명시적으로 승인한 경우에만 변경합니다.
 
+미리 보기 지문은 Cloudflare 응답 순서, 업데이트 시간 및 검증 상태 같은 일반적인 변동은 무시하지만 DNS 내용, 프록시 상태, 리소스 소유권 및 Ingress처럼 보안과 관련된 필드는 유지합니다. 적용 전에 이 필드가 바뀌면 이전 계획이 무효화되고 새 미리 보기가 필요하며 오래된 인계 승인은 재사용되지 않습니다. Custom Hostname의 소유권 또는 인증서 검증 TXT는 ‘이름 + 내용’별로 관리하므로 이름이 같더라도 값이 다른 타사 TXT를 덮어쓰지 않습니다. 한 이름에 소유권을 안전하게 판단할 수 없는 CNAME / A / AAAA가 여러 개 있으면 Cloudflare에서 직접 정리한 뒤 다시 미리 봅니다.
+
 기본 관리 구성은 다음 상태를 자동으로 유지합니다.
 
 ```text
@@ -110,7 +112,9 @@ fn-knock는 격리된 호스트 이름으로 현재 Zone의 Custom Hostname, 인
 - 기본 공개 호스트 이름: 스웨덴 정부 `www.gov.se`, 미국 의회도서관 `www.loc.gov`, ICANN `www.icann.org`, Visa `www.visa.com`.
 - 사용자가 추가한 공개 후보 호스트 이름(최대 16개).
 
-공개 호스트 이름은 가능한 Cloudflare IPv4를 찾는 용도로만 사용합니다. 서비스 CNAME을 해당 호스트로 지정하거나 해당 Host/SNI로 서비스 트래픽을 보내지 않습니다. 유효하지 않은 주소, 사설 주소 및 일반적인 Fake IP는 제외합니다. 로컬 DNS가 Fake IP 모드라면 실제 해석 결과를 제공할 다른 출처를 추가합니다.
+공개 호스트 이름은 가능한 Cloudflare IPv4를 찾는 용도로만 사용합니다. 서비스 CNAME을 해당 호스트로 지정하거나 해당 Host/SNI로 서비스 트래픽을 보내지 않습니다. 이름 해석에는 호스트 DNS를 사용하지 않고 Cloudflare, Google, Tencent DNSPod 및 AliDNS의 암호화 DoH를 동시에 조회합니다. Cloudflare 공식 IPv4 범위에 속한 주소만 유지하고 여러 리졸버가 함께 반환한 후보를 우선합니다. 한 리졸버가 실패해도 스캔은 중단되지 않으며 페이지에는 최근 스캔의 리졸버 상태, 성공/실패 횟수 및 폴백 경로가 저장됩니다.
+
+모든 DoH를 사용할 수 없더라도 ‘Cloudflare 공식 IPv4 범위’를 활성화했다면 공식 범위의 결정적 샘플링으로 자동 폴백합니다. 공식 범위를 껐다면 현재 게시된 후보만 다시 검증할 수 있으며 이 후보도 없으면 해당 스캔을 사용할 수 없습니다. 후보는 이후에도 실제 서비스 도메인의 TLS, SNI, Cloudflare 오류 페이지 및 Ray ID 검증을 통과해야 하므로 DNS 전파 직후 상태, 한 리졸버의 오류 또는 로컬 Fake IP가 게시 결과를 직접 결정하지 않습니다.
 
 IP 등록 기관 또는 GeoIP에 “미국”이라고 표시되어도 요청이 미국에 도착한다는 뜻은 아닙니다. Cloudflare IPv4는 Anycast이므로 같은 주소를 여러 엣지 위치에서 알립니다. 결과의 `Cloudflare colo`는 실제 프로브의 `CF-Ray` 접미사(예: `SIN`, `HKG`)에서 가져오며 해당 연결의 도착 위치를 더 잘 나타냅니다.
 
@@ -135,6 +139,8 @@ IP 등록 기관 또는 GeoIP에 “미국”이라고 표시되어도 요청이
 ## 클라이언트 IP와 로그인 리디렉션
 
 관리 모드는 루프백에서만 수신하는 전용 Tunnel 진입점을 사용합니다. 게이트웨이는 이 제어된 경로에서만 Cloudflare의 `CF-Connecting-IP`를 신뢰하고 방문자가 직접 보낸 `X-Forwarded-For`는 신뢰하지 않습니다. EdgeOne/ESA 실제 IP 옵션은 Cloudflared에 적용되지 않으며 현재 모드에서 사용할 수 없으면 숨겨집니다.
+
+Cloudflare의 `Pseudo IPv4`를 `Overwrite Headers`로 설정하면 IPv6 방문자의 `CF-Connecting-IP`가 `240.0.0.0/4`의 Class E 주소로 바뀝니다. 전용 관리 진입점은 단일 값 헤더를 엄격히 검증하고 `CF-Connecting-IPv6`에서 유효한 공인 IPv6를 복원하여 세션, 접근 범위, WAF 및 요청 로그에 사용합니다. 헤더가 없거나 중복되었거나 사설 주소이거나 형식이 잘못되면 Pseudo IPv4를 유지하고 다른 전달 헤더를 신뢰하지 않습니다. 이 복원은 fn-knock 관리 진입점에만 적용됩니다. 수동 Cloudflare 오리진에서는 Pseudo IPv4를 `Off` 또는 `Add Header`로 설정합니다.
 
 모바일 네트워크에서 로그인이 필요한 서비스 Host를 열고 요청 로그에서 다음을 확인합니다.
 
@@ -167,7 +173,9 @@ API Token을 삭제하면 이후 원격 관리만 중지되며 Cloudflare 리소
 | Tunnel은 온라인이지만 도메인이 동작하지 않음 | 동기화 충돌, 와일드카드 DNS, Ingress, Cloudflared 로그 및 Host 매핑 |
 | 리디렉션에 `:7999`가 남음 | `터널 → 서브도메인 매핑`, 기본 Tunnel이 Cloudflared인지, 표준 포트 리디렉션 지원 버전인지 확인 |
 | 최적화를 활성화할 수 없음 | SSL 권한, Cloudflare for SaaS, Custom Hostname 할당량 및 기능 프로브 |
+| 모든 후보 호스트 이름 해석 실패 | 최근 리졸버 진단을 펼쳐 확인. 공식 범위를 허용했다면 자동 폴백 여부를 확인하고, 아니라면 공식 범위를 켠 뒤 다시 스캔 |
 | IP 위치가 미국으로 표시됨 | 스캔의 Cloudflare colo 코드를 확인. Anycast 등록 위치는 연결 도착지가 아님 |
+| 로그의 IPv6가 `240.0.0.0/4`로 표시됨 | 관리 모드를 Pseudo IPv4 복원 지원 버전으로 업그레이드. 수동 오리진에서는 Cloudflare Pseudo IPv4를 `Off` 또는 `Add Header`로 변경 |
 | 모든 요청이 로컬처럼 보임 | 요청 로그의 클라이언트 IP와 잘못된 수동 오리진 대신 전용 관리 진입점을 사용하는지 확인 |
 
 전체 실행 상태는 [터널](/ko/guide/tunnel), Host 설정은 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 참고합니다.

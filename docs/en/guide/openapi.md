@@ -3,14 +3,14 @@ lang: en-US
 title: "OpenAPI: Management API Access and AI Agents"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbaa030928ee6b0fa8a075f19ec2564f978c2e91c2e29f5c88bc76ea6f1b5b50
+translationSourceHash: 4b815692c6b937004aad1ab085b5447d3fdfe04bd8f608a2c4bea21be2dda281
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # OpenAPI: Management API Access and AI Agents
 
-fn-knock's Rust management backend provides OpenAPI 3.0 documentation for reviewing management endpoints, generating client code, and connecting automation tools. This guide assumes that the management backend listens on `127.0.0.1:7998` and uses fn-knock's own Protocol mapping to make the documentation available at `knock.example.com:7999`.
+fn-knock's Rust management backend provides OpenAPI 3.1 documentation for reviewing management endpoints, generating client code, and connecting automation tools. This guide assumes that the management backend listens on `127.0.0.1:7998` and uses fn-knock's own Protocol mapping to make the documentation available at `knock.example.com:7999`.
 
 The management API can change mappings, certificates, DDNS, WAF, and other system settings. Do not expose it like an ordinary public web page. Enable Protocol mapping authentication and combine it with a fixed source IP, VPN, or another network access restriction.
 
@@ -19,7 +19,7 @@ The management API can change mappings, certificates, DDNS, WAF, and other syste
 | Address | Content |
 | --- | --- |
 | `http://127.0.0.1:7998/docs` | Interactive Swagger UI |
-| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.0 JSON |
+| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.1 JSON |
 | `http://knock.example.com:7999/docs` | External documentation endpoint after completing the mapping below |
 
 The example assumes that the current instance's management backend uses port `7998`. OpenWrt uses `17998` by default. If you customized the port, use the actual deployment setting. Before creating an external mapping, open the local `/docs` endpoint on the fn-knock host and confirm that the backend port and documentation are available.
@@ -55,7 +55,7 @@ Browser
 
 ![Swagger UI opened through an fn-knock Protocol mapping, showing the server-admin API and endpoint list](/openapi-swagger-ui.webp)
 
-Swagger UI loads its scripts and styles from jsDelivr. If the browser cannot reach that CDN, the page may be blank, but `/docs/json` remains directly accessible.
+Swagger UI's scripts, styles, and icons are bundled into fn-knock and served locally under `/docs/assets/`; it does not depend on jsDelivr, unpkg, or another public CDN. As long as the management backend and `/docs/json` are reachable, the complete documentation works offline or where frontend CDNs are blocked. An unknown asset path returns `404`.
 
 ### A 403 Response or Connection Failure
 
@@ -76,7 +76,7 @@ curl --fail \
   -o fn-knock-openapi.json
 ```
 
-The current document primarily provides route, HTTP method, and grouping information. Some request bodies, response structures, and authentication details may not have complete models, so generated code still needs validation against a test instance. Start with read-only `GET` endpoints and confirm their response structures before wrapping write operations.
+The contract is generated from the management routes that are actually registered and provides schemas for request bodies, responses, path parameters, and the main error structures. Build and test checks verify that every documented path and method exists. The contract changes with fn-knock releases, so when generating a client, retain both the instance's `/docs/json` and its version number; do not apply an old schema unchanged to a newer or older release. Even with complete types, generated code still needs validation against a test instance. Start with read-only `GET` endpoints before wrapping write operations.
 
 ## Ask an AI Agent to Build an Integration
 

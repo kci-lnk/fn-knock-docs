@@ -57,6 +57,8 @@ Token 需要能够读取根域所在的有效 Zone。根域可以是 Zone 本身
 
 点击 `预检` 后，页面会列出将创建、更新或保留的 Tunnel、Ingress、DNS 和优选资源。预检计划有效期为 10 分钟；应用前如果远端配置已变化，需要重新预检。遇到同名但不属于 fn-knock 的资源时，页面会报告冲突，只有逐项确认接管后才会修改。
 
+预检指纹会忽略 Cloudflare 返回顺序、更新时间和验证状态等正常变化，但会保留 DNS 内容、代理状态、资源归属和 Ingress 等安全相关字段。应用前这些字段发生变化时，旧计划会失效并要求重新预检，不会沿用过时的接管确认。Custom Hostname 所需的所有权或证书验证 TXT 会按“名称 + 内容”分别维护；同名但内容不同的第三方 TXT 不会仅因名称相同而被覆盖。一个名称下存在多条无法安全判断归属的 CNAME / A / AAAA 时，应先在 Cloudflare 手工整理，再重新预检。
+
 基础托管会自动维护：
 
 ```text
@@ -102,7 +104,9 @@ https://nas.example.com/
 - 内置公共域名：瑞典政府 `www.gov.se`、美国国会图书馆 `www.loc.gov`、ICANN `www.icann.org` 和 Visa `www.visa.com`。
 - 用户添加的公共候选域名，最多 16 个。
 
-这些公共域名只用于解析可能的 Cloudflare IPv4。fn-knock 不会把业务 CNAME 指向它们，也不会用它们的 Host 或 SNI 发送业务流量。解析结果还会过滤无效地址、私网地址和常见 Fake IP；如果本地 DNS 使用 Fake IP 模式，可通过其他真实解析来源补充候选。
+这些公共域名只用于解析可能的 Cloudflare IPv4。fn-knock 不会把业务 CNAME 指向它们，也不会用它们的 Host 或 SNI 发送业务流量。解析不会使用本机 DNS，而是并发查询 Cloudflare、Google、腾讯 DNSPod 和 AliDNS 的加密 DoH；结果只保留 Cloudflare 官方 IPv4 网段内的地址，并优先排列被多个解析器共同返回的候选。单个解析器失败不会终止扫描，页面会保留最近一次扫描的解析器状态、成功/失败次数和回退路径。
+
+如果全部 DoH 都不可用，启用了“Cloudflare 官方 IPv4 网段”时会自动改用官方网段确定性抽样；关闭官方网段时，只能复核当前已发布候选，若也不存在则本次扫描不可用。候选仍需通过后续业务域名 TLS、SNI、Cloudflare 错误页和 Ray ID 验证，因此 DNS 刚传播、单个解析器异常或本地 Fake IP 不会直接决定发布结果。
 
 一个地址的注册机构或 GeoIP 显示“美国”，不代表请求落地在美国。Cloudflare IPv4 是 Anycast 地址，同一个 IP 会从多个边缘机房广播。结果中的 `Cloudflare 机房` 来自实际探测响应的 `CF-Ray` 后缀，例如 `SIN`、`HKG`；它比 IP 归属地更能说明本次连接的落地点。
 
@@ -127,6 +131,8 @@ https://nas.example.com/
 ## 客户端 IP 与登录跳转
 
 托管模式使用只监听回环地址的专用 Tunnel 入口。网关只在这条受控链路上信任 Cloudflare 的 `CF-Connecting-IP`，不会把访客自行发送的 `X-Forwarded-For` 当成可信来源。EdgeOne / ESA 的真实 IP 开关不适用于 Cloudflared，在当前模式不可用时界面会隐藏该设置。
+
+如果 Cloudflare 的 `Pseudo IPv4` 设置为 `Overwrite Headers`，IPv6 访客的 `CF-Connecting-IP` 会变成 `240.0.0.0/4` 的 Class E 地址。托管专用入口会严格校验单值头，并从 `CF-Connecting-IPv6` 恢复有效的公网 IPv6，用于会话、可见性、WAF 和请求日志；缺失、重复、私网或格式异常时会保留 Pseudo IPv4，不会信任其他转发头。这个恢复只适用于 fn-knock 托管入口；手动 Cloudflare 回源建议把 Pseudo IPv4 设为 `Off` 或 `Add Header`。
 
 从移动网络访问一条要求登录的业务 Host，并在请求日志确认：
 
@@ -159,7 +165,9 @@ https://nas.example.com/
 | Tunnel 在线但域名不通 | 查看对账冲突、通配 DNS、Ingress、Cloudflared 日志和业务 Host 映射 |
 | 跳转仍包含 `:7999` | 确认当前模式为 `内网穿透 → 子域映射`、默认 Tunnel 为 Cloudflared，并更新到支持标准端口跳转的版本 |
 | 优选无法启用 | 检查 SSL 权限、Cloudflare for SaaS 是否可用、Custom Hostname 配额和能力探测结果 |
+| 候选域名全部解析失败 | 展开最近一次解析器诊断；允许官方网段时确认是否已自动回退，否则启用官方网段后重新测速 |
 | IP 归属地显示美国 | 查看测速结果中的 Cloudflare 机房代码；Anycast IP 的注册地不是连接落地点 |
+| 日志中的 IPv6 变成 `240.0.0.0/4` | 托管模式升级到支持 Pseudo IPv4 恢复的版本；手动回源将 Cloudflare Pseudo IPv4 改为 `Off` 或 `Add Header` |
 | 所有访问都像本地来源 | 查看请求日志中的客户端 IP，并确认使用托管专用入口而非错误的自管回源 |
 
 整体运行状态见[内网穿透](/guide/tunnel)，Host 配置见[子域映射](/guide/subdomain-proxy)。

@@ -3,14 +3,14 @@ lang: zh-TW
 title: "OpenAPI：開放管理 API 與 AI Agent"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbaa030928ee6b0fa8a075f19ec2564f978c2e91c2e29f5c88bc76ea6f1b5b50
+translationSourceHash: 4b815692c6b937004aad1ab085b5447d3fdfe04bd8f608a2c4bea21be2dda281
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # OpenAPI：開放管理 API 與 AI Agent
 
-fn-knock 的 Rust 管理後端提供 OpenAPI 3.0 文件，可用來查看管理介面、產生用戶端程式碼或串接自動化工具。本文假設管理後端監聽 `127.0.0.1:7998`，並以 fn-knock 本身的通訊協定映射，讓外部可透過 `knock.example.com:7999` 存取文件。
+fn-knock 的 Rust 管理後端提供 OpenAPI 3.1 文件，可用來查看管理介面、產生用戶端程式碼或串接自動化工具。本文假設管理後端監聽 `127.0.0.1:7998`，並以 fn-knock 本身的通訊協定映射，讓外部可透過 `knock.example.com:7999` 存取文件。
 
 管理 API 可以修改映射、憑證、DDNS、WAF 與其他系統設定。請勿將它當成一般公開網頁直接暴露；應啟用通訊協定映射驗證，並搭配固定來源 IP、VPN 或其他網路存取限制。
 
@@ -19,7 +19,7 @@ fn-knock 的 Rust 管理後端提供 OpenAPI 3.0 文件，可用來查看管理�
 | 位址 | 內容 |
 | --- | --- |
 | `http://127.0.0.1:7998/docs` | Swagger UI 互動式文件 |
-| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.0 JSON |
+| `http://127.0.0.1:7998/docs/json` | OpenAPI 3.1 JSON |
 | `http://knock.example.com:7999/docs` | 完成下文映射後的外部文件入口 |
 
 此範例假設目前 Instance 的管理後端連接埠為 `7998`。OpenWrt 預設使用 `17998`；若曾自訂連接埠，請以實際部署設定為準。建立外部映射前，先在 fn-knock 所在裝置開啟本機 `/docs`，確認後端連接埠與文件可用。
@@ -55,7 +55,7 @@ fn-knock 的 Rust 管理後端提供 OpenAPI 3.0 文件，可用來查看管理�
 
 ![透過 fn-knock 通訊協定映射開啟的 Swagger UI，顯示 server-admin API 與介面清單](/openapi-swagger-ui.webp)
 
-Swagger UI 的 Script 與 Style 會從 jsDelivr 載入。瀏覽器無法連線至該 CDN 時，頁面可能顯示空白，但仍可直接讀取 `/docs/json`。
+Swagger UI 的 Script、Style 與圖示已封裝在 fn-knock 內，並從 `/docs/assets/` 在本機載入，不依賴 jsDelivr、unpkg 或其他公共 CDN。只要管理後端與 `/docs/json` 可存取，在離線或無法連線前端 CDN 的環境也能完整開啟文件；未知的資源路徑會直接回傳 `404`。
 
 ### 回傳 403 或無法連線
 
@@ -76,7 +76,7 @@ curl --fail \
   -o fn-knock-openapi.json
 ```
 
-目前文件主要提供路由、HTTP Method 與分組資訊。部分 Request Body、Response 結構與驗證細節可能沒有完整 Model，產生的程式碼仍需在測試 Instance 中驗證。請先從唯讀 `GET` 介面開始，確認 Response 結構後再封裝寫入操作。
+目前契約由實際註冊的管理路由產生，並為 Request Body、Response、路徑參數與主要錯誤結構提供 Schema；建置與測試會檢查文件中的 path / method 是否確實存在。契約會隨 fn-knock 版本更新，因此產生 Client 時應保留該 Instance 的 `/docs/json` 與版本號，不要將舊版 Schema 原樣套用至較新或較舊版本。即使型別完整，產生的程式碼仍需在測試 Instance 中驗證；請先從唯讀 `GET` 介面開始，再封裝寫入操作。
 
 ## 讓 AI Agent 編寫整合程式
 
