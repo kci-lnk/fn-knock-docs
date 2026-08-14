@@ -3,7 +3,7 @@ lang: en-US
 title: "Sessions, Source-IP Authorization, and IP Changes"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
+translationSourceHash: 9fb59be7237653628227d70a91e79c682ca1cc2cca4169e49a2a068f74e80462
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ An expired or nonexistent session Cookie is cleared on a later request, and the 
 
 ## Session Lifetimes and IP Authorization
 
-Under `System settings → Sessions`, configure regular sign-in, `Remember me`, and post-login IP authorization separately. Regular and Remember-me lifetimes must both be at least 60 seconds, and Remember me cannot be shorter than the regular lifetime. A custom IP authorization must also last at least 60 seconds. Lifetimes and authorization modes affect only new sessions subsequently created by TOTP or Passkey; they do not retroactively rewrite issued Cookies, Redis sessions, or post-login IP authorizations.
+Under `System settings → Sessions`, configure regular sign-in, `Remember me`, and post-login IP authorization separately. Regular and Remember-me lifetimes must both be at least 60 seconds, and Remember me cannot be shorter than the regular lifetime. Their units can be seconds, minutes, hours, days, weeks, months, or years; one month is calculated as 30 days. A custom IP authorization must also last at least 60 seconds but offers only seconds, minutes, and hours, while the IP mobility retention window offers only minutes and hours. Lifetimes and authorization modes affect only new sessions subsequently created by TOTP or Passkey; they do not retroactively rewrite issued Cookies, Redis sessions, or post-login IP authorizations.
 
 | Post-login IP authorization | Behavior |
 | --- | --- |

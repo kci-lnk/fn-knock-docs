@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8409fe7b005912f9a314d53e60d24e5b8fe215764acc3dd2d4a5738bad82b1e8
+translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a366716bfa6a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -121,7 +121,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 更新前請先匯出應用程式備份。套件資料位於 `/var/packages/fn-knock-synology/var`；升級後從 DSM 桌面的套件入口重新進入，檢查版本、身分驗證設定與閘道存取是否恢復正常。
 
-`2.2.5` 修復 Synology 套件無法啟動的緊急問題。受影響 Instance 即使目前無法啟動，也應直接在套件中心使用相同架構的 `2.2.5` 或更高版本 SPK 覆蓋升級；不要為了恢復啟動而先解除安裝套件或刪除資料目錄。
+`2.2.5` 修復 Synology 套件無法啟動的緊急問題，`2.2.6` 進一步加固冷啟動時的閘道就緒與設定同步。受影響或啟動不穩定的 Instance 即使目前無法啟動，也應直接在套件中心使用相同架構的 `2.2.6` 或更高版本 SPK 覆蓋升級；不要為了恢復啟動而先解除安裝套件或刪除資料目錄。
 
 ## 更新 Windows x86_64
 

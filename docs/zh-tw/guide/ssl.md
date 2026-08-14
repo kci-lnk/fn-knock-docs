@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TLS 憑證與 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7b3c4a39f3e77db7abc0a56d2415e317de99cb605d798e5cc78a4745a097f740
+translationSourceHash: 7b5a628d6989a35bd4dee266ca2d216ed967a33d391e2196292a37057f319512
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,16 +89,17 @@ Server Certificate 有效期限為 20 年。長期有效不代表可以忽略私
 | 刪除憑證 | 保留申請項目設定，移除目前儲存的簽發結果與憑證庫關聯 |
 | 刪除申請項目 | 刪除申請設定；既有憑證與關聯也會隨該項目一併清除 |
 
-工作執行中或自動續期時，清單操作會暫時鎖定。工作 Log 會提示 DNS 憑據、DNS API Rate Limit 或 ACME Rate Limit 等排查方向；停止工作會終止目前執行中的 `acme.sh` Process，並將工作標記為已停止，之後必須重新發起。
+工作執行中或自動續期時，仍可編輯並儲存申請項目的 DNS 設定；再次申請、部署、刪除等會與目前工作衝突的操作仍會鎖定。工作 Log 會提示 DNS 憑據、DNS API Rate Limit 或 ACME Rate Limit 等排查方向。停止工作會先要求取消並終止由該工作擁有的 Process Group，等 Executor 與 Runtime Lock 都結束後才回報成功。若頁面仍顯示 PID 或停止錯誤，不要立即啟動第二個工作；應先確認舊 Process 已退出。
 
 ### 自動續期排程與復原
 
 啟用自動續期的申請項目會在服務啟動後立即檢查，之後預設每 6 小時掃描一次。憑證距離到期不超過 30 天時會進入續期佇列；多個申請項目會依到期時間由近到遠循序處理，避免同時呼叫 DNS API 與 ACME Client。
 
 - 自動掃描與單項簽發工作分別使用具備所有權與心跳的 Runtime Lock，服務內不會同時執行重複續期；已有手動工作執行時，本輪掃描會安全略過。
-- 服務重新啟動後會再次掃描。已結束工作殘留的 Lock 會在確認狀態後清除；仍在停止收尾的工作會保持鎖定，避免新工作與舊 Process 重疊。
+- 服務重新啟動後，會將在新 Process 中沒有 Executor 的 `queued`／`running` 工作恢復為已停止，清除其殘留 Runtime Lock，再重新掃描；Process 內正在取消的工作仍會保留 Lock，直到原 Executor 完成收尾，避免新舊工作重疊。
 - 系統同時辨識 RFC 3339 與既有憑證常見的 OpenSSL UTC 到期時間；無法解析的到期時間會寫入警告並略過，不會誤判為尚未需要續期。
 - 每輪完成後會再次核對憑證庫與閘道部署。單一續期失敗不會阻止後續排程掃描，先前可用的憑證與 SSL 設定會依上一節的復原規則保留。
+- 自動續期失敗或遭停止後，預設進入 6 小時重試退避，避免每次掃描立即再次呼叫 DNS API 與 CA；編輯該申請項目後，下一輪即可重新嘗試。
 
 頁面沒有獨立的「下次掃描時間」開關；應從申請項目的最近工作狀態、憑證到期時間與 Log 判斷是否成功，而不是反覆點擊手動申請。
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 31d6535a1a5e1bb80e5df0f6d67341adeeaedad06d094df6ea64c5dd25f3d5fe
+translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c856d437b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,12 @@ translationSourceHash: 31d6535a1a5e1bb80e5df0f6d67341adeeaedad06d094df6ea64c5dd2
 - `完整時間` 直接顯示本地化的完整日期時間；滑鼠停留或點擊時改為補充相對時間。
 
 此設定會儲存至執行個體設定並統一套用於管理介面，不會修改伺服器時區、系統時鐘、Log 原始時間或協定映射定時規則。排查排程工作時仍應以伺服器時間與時區為準。
+
+## 執行模式切換與智慧連線回退
+
+切換執行模式會先儲存候選設定，再依序同步智慧連線、閘道路由與平台 Runtime 狀態。`2.2.6` 修復了此流程中可能發生的互相等待。切換期間不要關閉頁面，完成後依結果訊息驗證新的入口路徑。
+
+在支援智慧連線的飛牛標準 FPK 上，若切換模式時本機 IP 或 `dnsmasq` 同步失敗，fn-knock 仍會完成模式切換，但自動關閉智慧連線並顯示警告，避免 DNS Split-horizon 失敗阻塞整個操作。請先檢查本機 IP、根網域與 `dnsmasq` 寫入權限，再從 `系統設定 → 功能` 重新啟用智慧連線。若閘道路由或防火牆套用本身失敗，系統仍會嘗試回復原設定；應保留 LAN 或 Console 入口並查看錯誤，不要連續切換多種模式。
 
 ## 飛牛標準 FPK 的額外防火牆連接埠
 

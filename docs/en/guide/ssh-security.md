@@ -3,7 +3,7 @@ lang: en-US
 title: "SSH Hardening"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 07ad3f7930657b453cf219c2ef9de4852cd6fdb280e1411fc2712336e4223c6f
+translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -31,7 +31,7 @@ The feature-menu switch controls whether the page and backend capability are ena
 | Enable SSH security | Off by default | Watches SSH sign-in logs and maintains blocks by threshold or source range |
 | Window | 10 minutes by default; 1–1440 minutes | Counts failures from one source within this window |
 | Failure threshold | 5 by default; 1–1000 | Adds the source to the block list when the threshold is reached |
-| Block duration | 1 day by default; numeric value 1–365 | Unit can be minutes, hours, or days; the block is removed automatically at expiration |
+| Block duration | 1 day by default; numeric value 1–365 | Unit can be minutes, hours, days, or months; one month is 30 days, and the block is removed automatically at expiration |
 | Regions allowed to access SSH | Empty by default | With no entries, regions are unrestricted; otherwise only selected regions, custom CIDRs, and built-in local sources are allowed |
 | Custom CIDRs | Empty by default; one per line | Adds non-standard VPNs, office public egress addresses, or other fixed IPv4/IPv6 networks |
 

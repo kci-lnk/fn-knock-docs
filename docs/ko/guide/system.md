@@ -3,7 +3,7 @@ lang: ko-KR
 title: "시스템 설정 및 유지 관리"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 31d6535a1a5e1bb80e5df0f6d67341adeeaedad06d094df6ea64c5dd25f3d5fe
+translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c856d437b
 ---
 
 # 시스템 설정 및 유지 관리
@@ -63,6 +63,12 @@ fnOS 기기의 앱 이름이 `Knock Lite`라면 표의 완전한 FPK가 아니�
 - `전체 시간`은 현지화된 전체 날짜와 시간을 직접 표시하며, 마우스를 올리거나 누르면 상대 시간을 보충합니다.
 
 선택은 인스턴스 설정에 저장되어 관리 화면 전체에 적용됩니다. 서버 시간대, 시스템 시계, 로그 원본 타임스탬프 또는 프로토콜 매핑 예약 규칙은 변경하지 않습니다. 예약 작업을 조사할 때는 서버 시간과 시간대를 기준으로 합니다.
+
+## 실행 모드 전환 및 Smart Connect 폴백
+
+실행 모드를 바꾸면 후보 설정을 저장한 뒤 Smart Connect, 게이트웨이 라우트 및 플랫폼 런타임 상태를 순서대로 동기화합니다. `2.2.6`은 이 경로에서 발생할 수 있던 상호 대기 문제를 수정했습니다. 전환 중에는 페이지를 닫지 말고 완료 후 결과 메시지에 따라 새 진입 경로를 검증합니다.
+
+Smart Connect를 지원하는 표준 fnOS FPK에서 전환 중 로컬 IP 또는 `dnsmasq` 동기화가 실패하면 fn-knock는 모드 전환을 완료하되 Smart Connect를 자동으로 끄고 경고를 표시합니다. DNS 분할 동기화 실패가 전체 작업을 막지 않게 하기 위한 동작입니다. 로컬 IP, 루트 도메인 및 `dnsmasq` 쓰기 상태를 확인한 뒤 `시스템 설정 → 기능`에서 Smart Connect를 다시 켭니다. 게이트웨이 라우트나 방화벽 적용 자체가 실패하면 이전 설정으로 롤백을 시도합니다. LAN 또는 콘솔 진입점을 유지하고 오류를 확인하며 여러 모드를 연속으로 전환하지 않습니다.
 
 ## 표준 fnOS FPK의 추가 방화벽 포트
 

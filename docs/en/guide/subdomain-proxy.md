@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdbb83deedca2c8f0c853d696a22417372c1a12eb8c00a21c5346b9126f16abc
+translationSourceHash: b30a4ea3b731fd599a6cb1285c2621724c522edb11a31d1172cc22036afe5956
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -81,6 +81,7 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 | --- | --- |
 | `Host / subdomain` | Matches the request Host; after saving a root domain, you can enter only `nas` |
 | `Target` | HTTP, HTTPS, WS, or WSS upstream URL; it may include a base path and must be reachable from the fn-knock runtime |
+| `Target path usage` | When the Target has a non-root path, choose `Entry only` or `Fixed prefix`; the auth service always uses Entry mode |
 | `Require sign-in` | Redirects unsigned-in users to the auth Host, then returns them to the original URL |
 | `Disable` / `Schedule enable or disable` | Takes the mapping offline manually or controls its daily open window using server-local time |
 | `Group` | Places an application Host in an existing group; the auth service cannot be grouped |
@@ -95,7 +96,12 @@ Editing the Host / subdomain of a saved mapping is treated as a rename and prese
 
 Whenever possible, bind application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
 
-When a Target contains a path, the gateway preserves that base path and appends the visitor's request path. This can be used for services such as fnOS Photos or Music that are mounted below a subpath. After saving, test the home page, static assets, redirects, Cookies, and WebSockets. A base-path Target cannot make an application that only supports root deployment subpath-aware. Title and icon collection uses the complete Target and preserves an explicit port.
+When a Target contains a non-root path, the editor shows `Target path usage`:
+
+- `Entry only (compatibility)` is the default. The Target path is used only when the visitor requests the Host root; other request paths are kept unchanged. For example, with a Target path of `/login`, `/` goes to upstream `/login`, while `/assets/app.js` still goes to upstream `/assets/app.js`. Use this for an app whose entry page is below a subpath but whose assets or sign-in callbacks remain at the upstream root.
+- `Fixed prefix (directory mount)` prepends the Target path to every upstream request. With a Target path of `/webdav`, visitor path `/floccus/a` becomes upstream `/webdav/floccus/a`. Use it for WebDAV or another service explicitly designed for directory mounting.
+
+Existing mappings without this field use `Entry only`. In either mode, test the home page, static assets, redirects, Cookies, and WebSockets. The setting controls only how upstream request paths are combined; it cannot rewrite HTML, Cookie Path attributes, or absolute URLs for the upstream application. Title and icon collection uses the complete Target and preserves an explicit port.
 
 The auth service is a special Host mapping. It must remain public and must not require sign-in or inject Basic Auth credentials, or the sign-in entry point will loop or block itself.
 

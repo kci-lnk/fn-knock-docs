@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7b3c4a39f3e77db7abc0a56d2415e317de99cb605d798e5cc78a4745a097f740
+translationSourceHash: 7b5a628d6989a35bd4dee266ca2d216ed967a33d391e2196292a37057f319512
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,16 +89,17 @@ The request item's menu can also show task logs, download the certificate, updat
 | Delete certificate | Keeps the request-item configuration but removes the currently saved issuance result and certificate-library link |
 | Delete request item | Deletes the request configuration; its existing certificate and link are cleaned up with it |
 
-List actions are temporarily locked during a task or automatic renewal. Task logs point to issues such as DNS credentials, DNS API rate limiting, or ACME rate limits. `Stop task` terminates the running `acme.sh` process and marks the task as stopped; start it again later when ready.
+During a task or automatic renewal, you can still edit and save the request item's DNS configuration; conflicting actions such as another issuance, deployment, or deletion remain locked. Task logs point to issues such as DNS credentials, DNS API rate limiting, or ACME rate limits. `Stop task` first requests cancellation and terminates the process group owned by that task. It reports success only after both the executor and runtime lock finish. If the page still reports a PID or a stop error, do not immediately start a second task; confirm that the old process has exited first.
 
 ### Automatic renewal scheduling and recovery
 
 Request items with automatic renewal enabled are checked immediately after the service starts and then every 6 hours by default. A certificate enters the renewal queue when no more than 30 days remain. When several items qualify, they run sequentially from the earliest expiration to the latest, avoiding concurrent calls to the DNS API and ACME client.
 
 - Automatic scans and per-item issuance jobs use separate owned, heartbeating runtime locks, preventing duplicate renewal in one service. If a manual job is already active, that scan is skipped safely.
-- After a service restart, fn-knock scans again. It clears a leftover lock only after confirming that its job has ended; a job still finishing cancellation remains locked so old and new processes cannot overlap.
+- After a service restart, fn-knock marks `queued` or `running` jobs with no executor in the new process as stopped and removes their leftover runtime locks before scanning again. An in-process cancellation keeps its lock until the original executor finishes, preventing old and new work from overlapping.
 - Both RFC 3339 and the OpenSSL UTC expiration format found in existing certificates are recognized. An invalid expiration produces a warning and is skipped rather than being treated as not due.
 - After each scan, the certificate library and gateway deployment are reconciled again. One renewal failure does not prevent a later scheduled scan, and the previous usable certificate and SSL configuration follow the recovery rules above.
+- After an automatic renewal fails or is stopped, a 6-hour retry backoff applies by default so every scan does not immediately call the DNS API and CA again. Editing that request item allows the next scan to retry.
 
 The page has no separate “next scan” switch. Verify renewal from the request item's latest task state, certificate expiration, and logs instead of repeatedly starting manual issuance.
 

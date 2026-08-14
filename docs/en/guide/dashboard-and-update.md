@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8409fe7b005912f9a314d53e60d24e5b8fe215764acc3dd2d4a5738bad82b1e8
+translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a366716bfa6a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -121,7 +121,7 @@ After reviewing the version and release notes under `Version and updates`, downl
 
 Export an app backup first. Package data is stored in `/var/packages/fn-knock-synology/var`. After the upgrade, reopen the package from the DSM desktop and check that the version, authentication settings, and gateway access have recovered.
 
-`2.2.5` fixes an urgent Synology package startup problem. Even if an affected instance cannot currently start, install a `2.2.5` or newer SPK for the same architecture directly over it in Package Center. Do not uninstall the package or remove its data directory just to restore startup.
+`2.2.5` fixes an urgent Synology package startup problem, and `2.2.6` further hardens gateway readiness and configuration synchronization during cold boot. Even if an affected or unstable instance cannot currently start, install a `2.2.6` or newer SPK for the same architecture directly over it in Package Center. Do not uninstall the package or remove its data directory just to restore startup.
 
 ## Update Windows x86_64
 

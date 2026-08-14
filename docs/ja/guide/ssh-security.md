@@ -3,7 +3,7 @@ lang: ja-JP
 title: "SSH のセキュリティ強化"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 07ad3f7930657b453cf219c2ef9de4852cd6fdb280e1411fc2712336e4223c6f
+translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -31,7 +31,7 @@ SSH セキュリティは、ホストのログイン記録、失敗回数、地�
 | SSH セキュリティを有効化 | デフォルトは無効 | SSH ログインログを監視し、しきい値または送信元の範囲に基づいてブロックを管理 |
 | 集計期間 | デフォルト 10 分、1～1440 分 | 同じ送信元による期間内の失敗回数を集計 |
 | 失敗しきい値 | デフォルト 5 回、1～1000 回 | しきい値に達するとブロックリストへ追加 |
-| ブロック期間 | デフォルト 1 日、数値は 1～365 | 単位は分、時間、日から選択でき、期限後に自動解除 |
+| ブロック期間 | デフォルト 1 日、数値は 1～365 | 単位は分、時間、日、月から選択可能。1 か月は 30 日として計算され、期限後に自動解除 |
 | SSH アクセスを許可する地域 | デフォルトは空 | 空の場合は地域を制限せず、指定した場合は選択地域、カスタム CIDR、組み込みのローカル送信元だけを許可 |
 | カスタム CIDR | デフォルトは空、1 行に 1 件 | 標準外 VPN、オフィスのグローバル IP、その他の固定 IPv4 / IPv6 ネットワークを追加 |
 

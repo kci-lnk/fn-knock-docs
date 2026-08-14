@@ -3,7 +3,7 @@ lang: zh-TW
 title: "SSH 安全強化"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 07ad3f7930657b453cf219c2ef9de4852cd6fdb280e1411fc2712336e4223c6f
+translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -31,7 +31,7 @@ SSH 安全性會依 Host 登入記錄、失敗次數、地區與 CIDR 規則維�
 | 啟用 SSH 安全性 | 預設關閉 | 監聽 SSH 登入 Log，並依臨界值或來源範圍維護封鎖 |
 | 時間窗 | 預設 10 分鐘，1～1440 分鐘 | 統計同一來源在此時間窗內的失敗次數 |
 | 失敗臨界值 | 預設 5 次，1～1000 次 | 達到臨界值後加入封鎖清單 |
-| 封鎖時間 | 預設 1 天，數值 1～365 | 單位可選分鐘、小時或天；到期後自動解除 |
+| 封鎖時間 | 預設 1 天，數值 1～365 | 單位可選分鐘、小時、天或月；一個月按 30 天換算，到期後自動解除 |
 | 允許存取 SSH 的地區 | 預設空白 | 空白時不限制地區；非空白時只允許所選地區、自訂 CIDR 與內建本機來源 |
 | 自訂 CIDR | 預設空白，每行一筆 | 補上非標準 VPN、辦公室公網出口或其他固定 IPv4／IPv6 網段 |
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6e1a02b1e858a24c2ee90119c6da41cb5cc01f082fbcc2dac002cb132794426f
+translationSourceHash: 828f49d3eae30a49bacb356eeb20561eac29e5cd1042afc2b162e9b604c6d284
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,17 @@ The Status page provides three kinds of troubleshooting material:
 Core diagnostic logs have a combined `6 MiB` cap. At the cap, files rotate or lower-priority entries are dropped. The page shows coverage time, disk usage, and the number of dropped INFO entries. Clearing one component's log removes only its current and previous core runtime log; runtime events, crash logs, and other component logs remain.
 
 Common secret fields are redacted, but a diagnostic archive can still expose versions, platform details, paths, component state, and incident timestamps. Review it before sharing. Export request details from Request Logs or WAF Logs separately; these are different log classes.
+
+### Go gateway memory
+
+The memory button on the Go gateway process card controls garbage-collection aggressiveness and the Go runtime soft memory limit, and can trigger an immediate reclaim. Heap, RSS, GC count, active requests, and connection counts on the status card help reveal trends. The soft limit constrains memory managed by the Go runtime; it is not a hard process RSS cap.
+
+- `Aggressive (GOGC 50)` collects more often and usually reduces memory at the cost of CPU. `Balanced (100)` is the default. `Relaxed (200)` favors throughput. A custom value can be `25–500`.
+- Automatic memory-limit mode uses roughly one quarter of effective runtime memory, clamped to `128–512 MiB`; it uses `256 MiB` if effective memory cannot be detected.
+- A manual limit can be `64–4096 MiB` and cannot exceed 50% of current effective system memory. The saved setting is restored during gateway startup before production traffic is accepted.
+- `Reclaim now` may briefly increase CPU use or pause work. Use it for troubleshooting or to confirm reclamation behavior, not as a button to press on a schedule.
+
+On a low-memory NAS or container, keep the automatic limit first. Lower GOGC or set a manual limit gradually only after the status page shows sustained Heap or RSS pressure and you have ruled out traffic, deep monitoring, or abnormal connections. Watch CPU, latency, and gateway health after each change.
 
 ## CPU and Memory Monitoring
 

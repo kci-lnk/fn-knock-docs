@@ -3,7 +3,7 @@ lang: zh-TW
 title: "工作階段、IP 授權與 IP 漂移"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
+translationSourceHash: 9fb59be7237653628227d70a91e79c682ca1cc2cca4169e49a2a068f74e80462
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e
 
 ## 工作階段有效時間與 IP 授權
 
-在 `系統設定 → 工作階段` 中，可分別設定一般登入、`記住我` 與登入後 IP 授權原則。一般登入和記住我都至少為 60 秒，記住我不可短於一般登入；自訂 IP 授權也至少為 60 秒。有效時間與授權方式只會影響之後透過 TOTP 或 Passkey 建立的新工作階段，不會追溯改寫已簽發的 Cookie、Redis 工作階段與登入後 IP 授權。
+在 `系統設定 → 工作階段` 中，可分別設定一般登入、`記住我` 與登入後 IP 授權原則。一般登入和記住我都至少為 60 秒，記住我不可短於一般登入；單位可選秒、分鐘、小時、天、週、月或年，其中一個月按 30 天換算。自訂 IP 授權也至少為 60 秒，但只提供秒、分鐘與小時；IP 漂移保留時間只提供分鐘與小時。有效時間與授權方式只會影響之後透過 TOTP 或 Passkey 建立的新工作階段，不會追溯改寫已簽發的 Cookie、Redis 工作階段與登入後 IP 授權。
 
 | 登入後 IP 授權 | 行為 |
 | --- | --- |

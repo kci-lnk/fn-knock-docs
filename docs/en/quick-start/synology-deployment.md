@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Synology DSM 7 (x86_64 / ARM)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 775564537dbeca6ccf08aac194f4192d7813a4d080ee869deee5f2d40e2016f9
+translationSourceHash: f3284b1a1cc6cd51015285966a0774a7cfc69c197dec084db44679c9f993cf53
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,7 +13,7 @@ translationSourceHash: 775564537dbeca6ccf08aac194f4192d7813a4d080ee869deee5f2d40
 `fn-knock` provides native SPK packages for Synology DSM 7 in the `x86_64`, `armv8`, and `armv7` package architecture families. Each SPK contains native binaries for one architecture only, so select the file that matches the NAS. An FPK built for fnOS cannot be used as a DSM package.
 
 > [!IMPORTANT]
-> `2.2.5` is an emergency Synology fix for a package startup failure on some DSM systems. If an affected installed version cannot start, do not uninstall it or clear the data directory first. Download a `2.2.5` or newer SPK for the same package architecture and install it over the existing package from Package Center. A normal in-place upgrade preserves `/var/packages/fn-knock-synology/var`.
+> `2.2.5` fixed a package startup failure on some DSM systems, and `2.2.6` further hardens readiness synchronization between the management service and Go gateway during cold boot. If an older installation cannot start reliably, do not uninstall it or clear the data directory first. Download a `2.2.6` or newer SPK for the same package architecture and install it over the existing package from Package Center. A normal in-place upgrade preserves `/var/packages/fn-knock-synology/var`.
 
 The package runs under the DSM-created `fn-knock-synology` package account and does not require a persistent root process. This preserves DSM's package privilege boundary, but it also means that features requiring direct control of the host are unavailable.
 
@@ -109,6 +109,8 @@ This directory contains sensitive data. Before an upgrade, export an fn-knock ap
 An application `.knock` archive makes configuration migration easier, while a DSM directory snapshot preserves SQLite, certificates, and package runtime data. They cover different data. See [Backup, Restore, and Data Cleanup](/en/guide/backup-and-restore) for the restore order and import-version limits.
 
 The native DSM package does not use the in-app FPK update flow. After downloading a new SPK, choose it under **Package Center → Manual Install** to upgrade. The service briefly restarts during installation. After the upgrade, reopen the admin interface from the DSM main menu and verify the gateway, authentication, and one configured application mapping.
+
+The `2.2.6` startup sequence waits for the Go gateway control plane and retries transient connection refusals, timeouts, or `502 / 503 / 504` responses within a bounded total startup period. The app reports ready only after memory settings and the complete Host-rule set have been applied. The DSM lifecycle script passes its startup timeout into the application so the script cannot declare failure while background initialization keeps running. Permanent errors such as `400` responses or invalid Host rules are not retried indefinitely; inspect the earliest startup synchronization error in `fn-knock.log` and correct the configuration.
 
 The newer lifecycle script terminates fn-knock's complete isolated process group during stop or restart and also checks the management-backend and Go-gateway PIDs, preventing child processes from retaining ports after the parent exits. If Package Center reports that the package is stopped but an old process still owns `7998` or `7999`, upgrade to `2.2.5` or newer before starting it again. Do not repeatedly install SPKs for different architectures or delete PID files to make the package appear stopped.
 

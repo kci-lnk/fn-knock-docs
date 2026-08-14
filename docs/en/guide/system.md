@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 31d6535a1a5e1bb80e5df0f6d67341adeeaedad06d094df6ea64c5dd25f3d5fe
+translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c856d437b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,12 @@ The page lists only entries visible under the current runtime mode and feature s
 - `Full time` shows the localized full date and time directly. Hovering or tapping instead provides the relative value.
 
 The selection is stored in instance configuration and applied throughout the admin console. It does not change the server time zone, system clock, original log timestamps, or protocol-mapping schedules. Use server time and time zone when troubleshooting scheduled tasks.
+
+## Runtime mode switching and Smart Connect fallback
+
+Changing runtime mode saves a candidate configuration, then synchronizes Smart Connect, gateway routes, and platform runtime state in sequence. Version `2.2.6` fixes a mutual-wait condition in this path. Keep the page open while switching, then verify the new entry path as instructed by the result message.
+
+On the standard fnOS FPK with Smart Connect support, if the local IP or `dnsmasq` cannot synchronize during the change, fn-knock completes the mode switch but automatically disables Smart Connect and shows a warning instead of letting DNS split-horizon failure block the entire operation. Check the local IP, root domain, and `dnsmasq` write access before enabling Smart Connect again under `System settings → Features`. A failure while applying gateway routes or firewall state still triggers an attempted rollback to the previous configuration. Keep a LAN or console entry available, read the error, and do not switch repeatedly through several modes.
 
 ## Additional Firewall Ports on the Standard fnOS FPK
 

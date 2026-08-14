@@ -3,7 +3,7 @@ lang: ko-KR
 title: "대시보드 및 시스템 업데이트"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8409fe7b005912f9a314d53e60d24e5b8fe215764acc3dd2d4a5738bad82b1e8
+translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a366716bfa6a
 ---
 
 # 대시보드 및 시스템 업데이트
@@ -119,7 +119,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 업데이트 전에 fn-knock 설정 백업을 내보냅니다. 패키지 데이터는 `/var/packages/fn-knock-synology/var`에 있습니다. 업그레이드가 끝나면 DSM 데스크톱의 패키지 진입점에서 다시 들어가 버전, 인증 설정 및 게이트웨이 접근이 정상으로 돌아왔는지 확인합니다.
 
-`2.2.5`는 Synology 패키지가 시작되지 않는 긴급 문제를 해결합니다. 영향을 받은 인스턴스가 현재 시작되지 않더라도 같은 아키텍처의 `2.2.5` 이상 SPK를 패키지 센터에서 바로 덮어 설치합니다. 시작을 복구하려고 패키지를 먼저 제거하거나 데이터 디렉터리를 삭제하지 않습니다.
+`2.2.5`는 Synology 패키지가 시작되지 않는 긴급 문제를 해결했고 `2.2.6`은 콜드 부팅 중 게이트웨이 준비 상태와 설정 동기화를 더욱 강화합니다. 영향을 받았거나 시작이 불안정한 인스턴스가 현재 시작되지 않더라도 같은 아키텍처의 `2.2.6` 이상 SPK를 패키지 센터에서 바로 덮어 설치합니다. 시작을 복구하려고 패키지를 먼저 제거하거나 데이터 디렉터리를 삭제하지 않습니다.
 
 ## Windows x86_64 업데이트
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdbb83deedca2c8f0c853d696a22417372c1a12eb8c00a21c5346b9126f16abc
+translationSourceHash: b30a4ea3b731fd599a6cb1285c2621724c522edb11a31d1172cc22036afe5956
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -81,6 +81,7 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 | --- | --- |
 | `Host／子網域名稱` | 比對請求的 Host；已儲存根網域時可只填 `nas` |
 | `Target` | HTTP、HTTPS、WS 或 WSS 上游 URL，可包含 Base Path，且必須能從 fn-knock 所在環境連線 |
+| `目標路徑用法` | Target 含非根路徑時選擇 `僅作為入口` 或 `固定前綴`；驗證服務固定使用入口模式 |
 | `要求登入` | 尚未登入時導向身分驗證 Host，完成後返回原始 URL |
 | `停用`／`排程啟用或停用` | 手動下線，或依伺服器本機時間每天控制開放時段 |
 | `群組` | 將服務 Host 放入現有群組；身分驗證服務不能分組 |
@@ -95,7 +96,12 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 
 服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
 
-Target 包含 Path 時，閘道會保留這段 Base Path，並在其後接上訪客 Request Path，可用於掛載在子路徑下的 fnOS 相簿、音樂等服務。儲存後必須實際驗證首頁、靜態資源、Redirect、Cookie 與 WebSocket；若上游只支援根路徑部署，單純填入 Base Path 無法取代應用程式端改寫。標題與圖示擷取會使用完整 Target，並保留明確連接埠。
+Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
+
+- `僅作為入口（相容模式）`：預設值。只有訪客存取網域根路徑時才使用 Target 內的路徑，其他 Request Path 保持不變。例如 Target 路徑為 `/login` 時，`/` 會進入上游 `/login`，但 `/assets/app.js` 仍進入上游 `/assets/app.js`。適合入口頁位於子路徑、但靜態資源或登入 Callback 仍位於上游根目錄的應用程式。
+- `固定前綴（目錄掛載）`：將 Target 路徑加到每個上游 Request 前。例如 Target 路徑為 `/webdav` 時，訪客 `/floccus/a` 會轉送到上游 `/webdav/floccus/a`。適合 WebDAV 或明確支援目錄掛載的服務。
+
+既有映射若缺少此欄位，會依 `僅作為入口` 處理。無論選擇哪一種模式，都應實際驗證首頁、靜態資源、Redirect、Cookie 與 WebSocket；此選項只決定上游 Request Path 的組合方式，無法替上游改寫 HTML、Cookie Path 或絕對 URL。標題與圖示擷取會使用完整 Target，並保留明確連接埠。
 
 身分驗證服務是一筆特殊的 Host 映射：它必須公開，不能再啟用要求登入或 Basic Auth 注入，否則登入入口會形成 Redirect Loop 或被自身攔截。
 

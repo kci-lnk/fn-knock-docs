@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6e1a02b1e858a24c2ee90119c6da41cb5cc01f082fbcc2dac002cb132794426f
+translationSourceHash: 828f49d3eae30a49bacb356eeb20561eac29e5cd1042afc2b162e9b604c6d284
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -65,6 +65,17 @@ translationSourceHash: 6e1a02b1e858a24c2ee90119c6da41cb5cc01f082fbcc2dac002cb132
 核心診斷 Log 的總容量上限為 `6 MiB`；達到上限後會輪替檔案或捨棄低優先級資訊。狀態頁會顯示涵蓋時間、磁碟用量與已捨棄的 INFO 數量。清除單一元件 Log 只會移除該元件目前與上一代的核心 Runtime Log，不會刪除 Runtime 事件、Crash Log 或其他元件 Log。
 
 診斷 Log 會遮蔽常見密鑰欄位，但診斷包仍可能揭露版本、平台、路徑、元件狀態與故障時間。對外分享前請先檢查內容；Request 明細應另從 Request Log 或 WAF Log 匯出，三者並非同一類型的記錄。
+
+### Go 閘道記憶體
+
+Go 閘道程序卡右下角的記憶體按鈕可調整 Garbage Collection 強度與 Go Runtime 軟性記憶體上限，也可立即執行一次回收。狀態卡中的 Heap、RSS、GC 次數、Active Request 與連線數可用來判斷趨勢；軟性上限只限制 Go Runtime 管理的記憶體，不是 Process RSS 的硬上限。
+
+- `積極（GOGC 50）` 會更頻繁回收，通常降低記憶體但增加 CPU 開銷；`平衡（100）` 是預設值；`寬鬆（200）` 更重視 Throughput。自訂範圍為 `25–500`。
+- 記憶體上限預設使用自動模式：取執行環境有效記憶體約四分之一，並限制在 `128–512 MiB`；無法讀取有效記憶體時使用 `256 MiB`。
+- 手動上限可設為 `64–4096 MiB`，且不能超過目前有效系統記憶體的 50%。儲存值會在閘道啟動時、接受業務流量前先行恢復。
+- `立即回收` 可能短暫增加 CPU 或造成暫停，只適合疑難排解或確認回收效果，不應當作定期最佳化按鈕反覆點擊。
+
+低記憶體 NAS 或 Container 請先保留自動上限；只有狀態頁持續顯示 Heap／RSS 壓力，且已排除流量、深度監控或異常連線後，再逐步降低 GOGC 或設定手動上限。每次調整後都要同時觀察 CPU、延遲與閘道健康狀態。
 
 ## CPU 與記憶體監控
 

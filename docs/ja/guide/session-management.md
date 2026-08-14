@@ -3,7 +3,7 @@ lang: ja-JP
 title: "セッション・送信元 IP 許可・IP 変更"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e9a8d3d3
+translationSourceHash: 9fb59be7237653628227d70a91e79c682ca1cc2cca4169e49a2a068f74e80462
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ translationSourceHash: cfb19d7f25da7c40908361befa0f9fd47eab1438878efa1e32ee6c68e
 
 ## セッション期間と IP アクセス許可
 
-`システム設定 → セッション` では、通常ログイン、`ログイン状態を保持`、ログイン後の IP アクセス許可を個別に設定できます。通常ログインとログイン状態の保持はいずれも 60 秒以上にする必要があり、ログイン状態の保持期間を通常ログインより短くすることはできません。カスタム IP アクセス許可も 60 秒以上必要です。期間と許可方式が影響するのは、以後 TOTP または Passkey で作成される新しいセッションだけです。発行済みの Cookie、Redis セッション、ログイン後の IP アクセス許可が遡って書き換えられることはありません。
+`システム設定 → セッション` では、通常ログイン、`ログイン状態を保持`、ログイン後の IP アクセス許可を個別に設定できます。通常ログインとログイン状態の保持はいずれも 60 秒以上にする必要があり、ログイン状態の保持期間を通常ログインより短くすることはできません。単位は秒、分、時間、日、週、月、年から選択でき、1 か月は 30 日として計算されます。カスタム IP アクセス許可も 60 秒以上必要ですが、単位は秒、分、時間だけです。IP 移動の保持期間は分と時間だけです。期間と許可方式が影響するのは、以後 TOTP または Passkey で作成される新しいセッションだけです。発行済みの Cookie、Redis セッション、ログイン後の IP アクセス許可が遡って書き換えられることはありません。
 
 | ログイン後の IP アクセス許可 | 動作 |
 | --- | --- |

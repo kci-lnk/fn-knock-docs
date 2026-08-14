@@ -3,7 +3,7 @@ lang: en-US
 title: "Cloudflare Tunnel with cloudflared"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7c0624177d11e5824d38d2e63d1f7c49698a4552198f94a79d6f31a7cc35ccc7
+translationSourceHash: e67dbb1d5b3ddbd00b5e8cb8121d43a27750d4fd67efc97ddb31678eee923b00
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -69,6 +69,8 @@ Select `Preview` to see the Tunnel, Ingress, DNS, and optimization resources tha
 
 The preview fingerprint ignores ordinary Cloudflare churn such as response ordering, update timestamps, and validation status, while retaining security-relevant fields such as DNS content, proxy state, resource ownership, and Ingress. If any of those fields changes before apply, the old plan expires and a new preview is required; stale takeover approval is never reused. Ownership or certificate-validation TXT records required by a Custom Hostname are managed by both name and content, so an unrelated TXT with the same name but a different value is not overwritten. If one name has multiple CNAME / A / AAAA records whose ownership cannot be determined safely, clean them up in Cloudflare before previewing again.
 
+Applying a plan creates a background reconcile job and the page displays its progress. If you refresh the page or the response is interrupted while the Tunnel is being reconfigured, reopen the page to resume following the same job; do not click Apply again. The server runs only one reconcile job at a time and revalidates the remote fingerprint and takeover confirmations immediately before mutation. Submitting the same plan again with the same confirmations returns the existing job, while a different confirmation set is rejected. If a job fails, read the error and create a new preview; do not assume that every partial remote change was rolled back automatically.
+
 Managed setup maintains this baseline automatically:
 
 ```text
@@ -113,10 +115,13 @@ Candidates may come from:
 - Deterministic samples from Cloudflare's official IPv4 ranges.
 - Built-in public hostnames: Sweden's government `www.gov.se`, the US Library of Congress `www.loc.gov`, ICANN `www.icann.org`, and Visa `www.visa.com`.
 - Up to 16 user-defined public candidate hostnames.
+- A user-specified `Preferred IP`, which must be inside Cloudflare's official IPv4 ranges.
 
 These hostnames are used only to discover possible Cloudflare IPv4 addresses. fn-knock never points an application CNAME at them and never sends application traffic with their Host or SNI. Resolution does not use the host's DNS settings. Instead, it queries encrypted DoH from Cloudflare, Google, Tencent DNSPod, and AliDNS concurrently, keeps only addresses inside Cloudflare's official IPv4 ranges, and ranks candidates returned by more resolvers first. One resolver failing does not stop the scan; the page retains the latest resolver state, success/failure counts, and fallback path.
 
-If every DoH resolver is unavailable and `Cloudflare official IPv4 ranges` is enabled, the scan automatically falls back to deterministic samples from those ranges. With official ranges disabled, it can only revalidate a currently published candidate; if there is none, the scan is unavailable. Candidates must still pass application-domain TLS, SNI, Cloudflare error-page, and Ray ID checks, so recent DNS propagation, one bad resolver, or local fake-IP DNS cannot directly decide what is published.
+A Preferred IP is forced into the measurement shortlist, but it does not bypass Cloudflare-range, latency, download, application-domain TLS, SNI, or Ray ID validation. It becomes the recommended candidate only after passing every check. If it fails, the page preserves the rejection reason and you can still choose another verified candidate manually.
+
+If every DoH resolver is unavailable and `Cloudflare official IPv4 ranges` is enabled, the scan automatically falls back to deterministic samples from those ranges. With official ranges disabled, it validates any available Preferred IP and currently published candidate; if neither exists, the scan is unavailable. Candidates must still pass application-domain TLS, SNI, Cloudflare error-page, and Ray ID checks, so recent DNS propagation, one bad resolver, or local fake-IP DNS cannot directly decide what is published.
 
 An IP registry or GeoIP result of “United States” does not mean the request lands in the United States. Cloudflare IPv4 is Anycast, so the same address is advertised from many edge locations. The `Cloudflare colo` in scan results comes from the `CF-Ray` suffix observed during the actual probe, such as `SIN` or `HKG`, and better describes that connection's landing point.
 
@@ -172,10 +177,12 @@ Deleting the API Token only stops future remote management; it does not delete C
 | DNS Edit is required | The Token has `Zone / DNS / Edit` for the target Zone |
 | DNS tag quota is 0 | Upgrade to a version that supports comment-only ownership, then preview again; do not create a duplicate record manually |
 | Apply returns 409 after preview | Remote state or the local root changed; create a new preview |
+| The page refreshes or disconnects during Apply | Reopen the Cloudflared page and continue following the background reconcile job; do not resubmit the same plan with different confirmations |
 | Tunnel is online but the domain fails | Reconcile conflicts, wildcard DNS, Ingress, Cloudflared logs, and the local Host mapping |
 | Redirect still includes `:7999` | Confirm `Tunnels → Subdomain mapping`, Cloudflared as the default Tunnel, and a version with standard-port redirect support |
 | Optimization cannot be enabled | SSL permission, Cloudflare for SaaS availability, Custom Hostname quota, and the capability probe |
 | Every candidate hostname fails to resolve | Expand the latest resolver diagnostics; if official ranges are allowed, confirm automatic fallback, otherwise enable official ranges and scan again |
+| The Preferred IP is not selected | Confirm it is inside Cloudflare's official IPv4 ranges and inspect latency, download, application-domain TLS, SNI, and Ray ID validation |
 | IP geolocation says United States | Use the Cloudflare colo code from the scan; Anycast registration location is not the connection landing point |
 | An IPv6 visitor appears as `240.0.0.0/4` in logs | Upgrade managed mode to a release that restores Pseudo IPv4; for a manual origin, set Cloudflare Pseudo IPv4 to `Off` or `Add Header` |
 | Every request appears local | Check the request-log client IP and use the dedicated managed entry instead of an incorrect manual origin |

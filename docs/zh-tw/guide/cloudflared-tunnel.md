@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Cloudflare Tunnel（cloudflared）設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7c0624177d11e5824d38d2e63d1f7c49698a4552198f94a79d6f31a7cc35ccc7
+translationSourceHash: e67dbb1d5b3ddbd00b5e8cb8121d43a27750d4fd67efc97ddb31678eee923b00
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -69,6 +69,8 @@ Token 必須能讀取根網域所在的有效 Zone。根網域可以是 Zone 本
 
 預檢指紋會忽略 Cloudflare 回傳順序、更新時間與驗證狀態等正常變化，但會保留 DNS 內容、Proxy 狀態、資源歸屬與 Ingress 等安全相關欄位。套用前這些欄位若發生變更，舊計畫會失效並要求重新預檢，不會沿用過時的接管確認。Custom Hostname 所需的所有權或憑證驗證 TXT 會依「名稱 + 內容」分別維護；同名但內容不同的第三方 TXT 不會只因名稱相同而被覆寫。一個名稱下存在多筆無法安全判斷歸屬的 CNAME / A / AAAA 時，應先在 Cloudflare 手動整理，再重新預檢。
 
+套用計畫會建立背景核對工作，頁面會顯示執行進度。若重新整理頁面，或 Tunnel 重新設定時套用 Response 中斷，重新進入頁面即可繼續追蹤同一工作；不要再次點擊套用。服務端同一時間只會執行一個核對工作，並在實際修改前再次驗證遠端指紋與接管確認。以相同確認重複提交同一計畫會回傳原工作，不同確認則會被拒絕。工作失敗時請先閱讀錯誤並重新預檢，不要假設所有部分完成的遠端變更都會自動回復。
+
 基本託管會自動維護：
 
 ```text
@@ -113,10 +115,13 @@ https://nas.example.com/
 - Cloudflare 官方 IPv4 網段的確定性抽樣。
 - 內建公共網域：瑞典政府 `www.gov.se`、美國國會圖書館 `www.loc.gov`、ICANN `www.icann.org` 與 Visa `www.visa.com`。
 - 使用者新增的公共候選網域，最多 16 個。
+- 使用者填寫的 `自訂優選 IP`，只接受 Cloudflare 官方 IPv4 網段內的位址。
 
 這些公共網域只用於找出可能的 Cloudflare IPv4。fn-knock 不會把服務 CNAME 指向它們，也不會以它們的 Host 或 SNI 傳送業務流量。解析不使用本機 DNS，而是並行查詢 Cloudflare、Google、騰訊 DNSPod 與 AliDNS 的加密 DoH；結果只保留 Cloudflare 官方 IPv4 網段內的位址，並優先排列由多個解析器共同回傳的候選。單一解析器失敗不會中止掃描，頁面會保留最近一次掃描的解析器狀態、成功／失敗次數與回退路徑。
 
-若所有 DoH 都無法使用，啟用「Cloudflare 官方 IPv4 網段」時會自動改用官方網段的確定性抽樣；關閉官方網段時，只能重新驗證目前已發布的候選，若也不存在則本次掃描不可用。候選仍需通過後續業務網域 TLS、SNI、Cloudflare 錯誤頁與 Ray ID 驗證，因此 DNS 剛傳播、單一解析器異常或本機 Fake IP 不會直接決定發布結果。
+自訂優選 IP 會強制進入測速 Shortlist，但不會略過 Cloudflare 網段、延遲、下載、業務網域 TLS、SNI 與 Ray ID 驗證；全部通過後才會成為本輪建議候選。若自訂位址失敗，頁面會保留拒絕原因，仍可從其他已驗證候選中手動選擇。
+
+若所有 DoH 都無法使用，啟用「Cloudflare 官方 IPv4 網段」時會自動改用官方網段的確定性抽樣；關閉官方網段時，會驗證現有的自訂優選 IP 與目前已發布候選，兩者都不存在時本次掃描不可用。候選仍需通過後續業務網域 TLS、SNI、Cloudflare 錯誤頁與 Ray ID 驗證，因此 DNS 剛傳播、單一解析器異常或本機 Fake IP 不會直接決定發布結果。
 
 IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國。Cloudflare IPv4 是 Anycast，同一個 IP 會從多個邊緣機房公告。結果中的 `Cloudflare 機房` 來自實際探測回應的 `CF-Ray` 後綴，例如 `SIN`、`HKG`，比 IP 歸屬地更能代表此次連線的落點。
 
@@ -172,10 +177,12 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 | 提示需要 DNS Edit | Token 是否對目標 Zone 具備 `Zone / DNS / Edit` |
 | DNS tag 配額為 0 | 更新至支援只使用 comment 標記的版本後重新預檢；不要手動建立重複 Record |
 | 預檢後套用回傳 409 | 遠端狀態或本機根網域已變更，重新執行預檢 |
+| 套用時頁面重新整理或連線中斷 | 重新開啟 Cloudflared 頁面並繼續追蹤背景核對工作；不要用另一組確認重複提交相同計畫 |
 | Tunnel 已上線但網域無法使用 | 核對衝突、Wildcard DNS、Ingress、Cloudflared Log 與本機 Host 映射 |
 | 重新導向仍包含 `:7999` | 確認使用 `內網穿透 → 子網域映射`、預設 Tunnel 為 Cloudflared，並更新至支援標準 Port 重新導向的版本 |
 | 無法啟用優選 | SSL 權限、Cloudflare for SaaS 可用性、Custom Hostname 配額與能力探測結果 |
 | 所有候選網域都解析失敗 | 展開最近一次解析器診斷；允許官方網段時確認是否已自動回退，否則啟用官方網段後重新測速 |
+| 自訂優選 IP 未被採用 | 確認位於 Cloudflare 官方 IPv4 網段內，並查看延遲、下載、業務網域 TLS、SNI 與 Ray ID 驗證結果 |
 | IP 歸屬地顯示美國 | 查看測速中的 Cloudflare 機房代碼；Anycast 註冊地不是連線落點 |
 | Log 中的 IPv6 變成 `240.0.0.0/4` | 託管模式升級至支援 Pseudo IPv4 還原的版本；手動 Origin 將 Cloudflare Pseudo IPv4 改為 `Off` 或 `Add Header` |
 | 所有存取都像本機來源 | 查看 Request Log 的 Client IP，並使用託管專用入口而非錯誤的手動 Origin |

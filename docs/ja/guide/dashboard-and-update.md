@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダッシュボードとシステム更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 8409fe7b005912f9a314d53e60d24e5b8fe215764acc3dd2d4a5738bad82b1e8
+translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a366716bfa6a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -121,7 +121,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 更新前にアプリバックアップをエクスポートします。パッケージデータは `/var/packages/fn-knock-synology/var` にあります。更新後は DSM デスクトップのパッケージ入口から開き直し、バージョン、認証設定、ゲートウェイへのアクセスが復旧していることを確認してください。
 
-`2.2.5` は Synology パッケージが起動できない緊急問題を修正します。影響を受けるインスタンスが現在起動できない場合も、同じアーキテクチャの `2.2.5` 以降の SPK をパッケージセンターから直接上書きしてください。起動を復旧するためにパッケージを先にアンインストールしたり、データディレクトリを削除したりしないでください。
+`2.2.5` は Synology パッケージが起動できない緊急問題を修正し、`2.2.6` はコールドブート時のゲートウェイ準備完了と設定同期をさらに強化します。影響を受ける、または起動が不安定なインスタンスが現在起動できない場合も、同じアーキテクチャの `2.2.6` 以降の SPK をパッケージセンターから直接上書きしてください。起動を復旧するためにパッケージを先にアンインストールしたり、データディレクトリを削除したりしないでください。
 
 ## Windows x86_64 の更新
 
