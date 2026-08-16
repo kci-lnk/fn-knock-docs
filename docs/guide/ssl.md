@@ -44,6 +44,217 @@ HTTPS 是 Passkey、OIDC 回调和多数公网服务的基础。证书要覆盖�
 
 子域场景应覆盖认证 Host 和所有对外业务 Host。通配符 `*.example.com` 只覆盖一层子域，不覆盖根域 `example.com`，也不覆盖 `a.b.example.com`。页面的 Host 覆盖分析会结合当前映射给出缺失项。
 
+## 接收外部工具推送的证书
+
+`证书配置 → 接收外部证书` 用于把证书申请和续期交给 Certd、acme.sh、lego 或 Certbot，再由这些工具把完整证书链和私钥推送到 fn-knock。fn-knock 不会通过这个入口向 CA 申请证书；它负责鉴权、校验证书、写入证书库，并在需要时更新网关。
+
+这种方式适合以下场景：
+
+- 已经使用 Certd 集中管理多个域名、VPS、NAS 或 CDN 的证书；
+- 希望继续使用现有 acme.sh、lego 或 Certbot 续期任务，而不在 fn-knock 中重复保存 DNS API 凭据；
+- 一张证书签发后需要分发到多台 fn-knock 实例；
+- fn-knock 所在机器不能直接完成 DNS-01，但可以接收内部网络中的证书推送。
+
+### 工作模型
+
+一次完整部署按以下顺序执行：
+
+1. 外部工具向 CA 申请或续期证书。
+2. 签发成功后，Webhook 或 deploy hook 把 `fullchain` 和私钥发送到绑定专用地址。
+3. fn-knock 使用该绑定的 Bearer Token 鉴权，并检查请求大小、PEM、完整证书链、证书有效期及证书与私钥是否匹配。
+4. 证书写入绑定对应的固定槽位 `external_<binding_id>`。以后续期始终替换同一条记录，不会每次增加一张证书。
+5. 如果该证书当前正在使用，fn-knock 会保持它的活动 / 默认角色并立即更新网关；如果它不是当前证书，则不会抢占已有的默认证书。多证书 SNI 模式会重新同步整个证书集。
+6. 网关下发成功后，入口显示最近接收时间、证书域名和有效期。下发失败时，请求返回非 2xx，fn-knock 尝试恢复旧配置，外部工具应把本次部署标记为失败并按其策略重试。
+
+如果 fn-knock 还没有任何当前证书，第一张通过外部入口成功推送的证书会自动设为当前证书并下发网关。若已经存在当前证书，新建入口第一次收到的证书默认只加入证书库；需要替换默认对外证书时，再从证书库手工启用。
+
+| 工具 | fn-knock 生成的配置 | 调用时机 |
+| --- | --- | --- |
+| Certd | `PUT` Webhook 地址、Header、JSON 模板和成功标志 | 在 Certd 证书流水线中添加“Webhook 方式部署证书”步骤 |
+| acme.sh | 包含地址和 Token 的 deploy hook 脚本 | 签发后执行 `--deploy-hook fnknock` |
+| lego | 兼容 lego v5 deploy hook 和 v4 renew hook 的脚本 | 续期命令或 `.lego.yaml` 调用脚本 |
+| Certbot | 读取 `RENEWED_LINEAGE` 的 deploy hook 脚本 | 放入 renewal hook 目录，或由 `certbot renew --deploy-hook` 调用 |
+
+### 创建证书接收入口
+
+1. 打开 `SSL 证书 → 证书配置`，展开 `接收外部证书`。
+2. 在“证书工具”中选择 Certd、acme.sh、lego 或 Certbot。
+3. 输入能够区分证书或目标节点的入口名称，例如 `Certd example.com` 或 `Certbot gateway-01`。
+4. 点击 `创建接收入口`。
+5. 立即复制页面生成的全部配置。Token 只在创建入口或重新生成 Token 后显示一次；关闭配置区后无法再次读取原 Token。
+
+一个入口对应一个固定证书槽位和一个独立 Token。不要让多个不相关证书共用同一入口，否则后一次推送会替换前一次推送的证书。多台 fn-knock 实例也不要共用 Token；应在每台实例分别创建入口。
+
+### `BACKEND_PORT`、本机地址与反向代理
+
+页面生成的默认推送地址类似：
+
+```text
+http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
+```
+
+其中端口来自 fn-knock 运行时的 `BACKEND_PORT`，`7998` 只是默认值。管理后端默认只监听 `127.0.0.1` 和 `::1`，因此这个地址只适用于证书工具与 fn-knock 位于同一台主机或同一网络命名空间的情况。
+
+| 部署位置 | 地址处理 |
+| --- | --- |
+| Certd / ACME 客户端与 fn-knock 同机 | 直接使用页面生成的 `127.0.0.1:${BACKEND_PORT}` 地址 |
+| Certd 在宿主机，fn-knock 在隔离容器中 | 需要让反向代理能够访问容器内的 `BACKEND_PORT`；宿主机的 `127.0.0.1` 不自动等于容器内部回环地址 |
+| Certd 或 ACME 客户端位于另一台机器 | 先把 fn-knock 的 `127.0.0.1:${BACKEND_PORT}` 反向代理到该机器可访问的 HTTP 或 HTTPS 地址，再替换生成地址中的主机和端口 |
+
+反向代理只需要公开 `/api/integrations/certificates/` 路径，不应把整个管理后端直接暴露到网络。代理必须保留 `PUT` 方法、`Authorization` Header 和原始 JSON 请求体。以下 Nginx 片段以默认端口为例：
+
+```nginx
+location ^~ /api/integrations/certificates/ {
+    proxy_pass http://127.0.0.1:7998;
+    proxy_set_header Authorization $http_authorization;
+    proxy_pass_request_headers on;
+    client_max_body_size 1m;
+}
+
+location / {
+    return 404;
+}
+```
+
+反向代理入口可以使用 HTTP 或 HTTPS，fn-knock 不强制协议。应根据网络边界决定：可信内网可直接使用 HTTP；跨公网时应由反向代理提供传输保护，并限制来源地址。不要把 Token 写入 URL、查询参数、代理访问日志或脚本调试输出。
+
+### 在 Certd 中配置 Webhook
+
+创建 Certd 类型的入口后，把 fn-knock 显示的字段复制到 Certd 对应证书流水线：
+
+1. 确保证书流水线已经有成功输出域名证书的申请任务。
+2. 在申请任务之后添加 `Webhook 方式部署证书` 步骤。
+3. “域名证书”选择前置申请任务输出的证书，不要选择另一张无关证书。
+4. 按下表填写部署参数，然后保存流水线。
+
+| Certd 字段 | 填写值 | 说明 |
+| --- | --- | --- |
+| 任务名称 | `推送证书到 fn-knock` | 可按目标节点命名 |
+| Webhook 地址 | fn-knock 显示的推送地址 | 同机使用 `127.0.0.1:${BACKEND_PORT}`；异机使用反向代理地址 |
+| 请求方式 | `PUT` | 不要改成 POST |
+| ContentType | `application/json` | 保证 Certd 按 JSON 发送 |
+| Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | Certd 此处使用 `key=value` 格式；完整 Token 只应从 fn-knock 页面复制 |
+| 消息 body 模板 | `{"cert":"${crt}","key":"${key}"}` | `${crt}` 是完整证书内容，`${key}` 是私钥 |
+| 忽略证书校验 | 通常关闭 | 使用 HTTP 时没有 TLS 证书需要校验；使用 HTTPS 反代时应优先修复反代证书链 |
+| 成功判定 | `"success":true` | 响应同时必须是 2xx；非 2xx 应视为失败 |
+
+![Certd Webhook 部署证书到 fn-knock 的字段配置](/images/ssl/certd-webhook-deployment.png)
+
+图中的 `<BINDING_ID>` 和 `fnk_cert_<YOUR_TOKEN>` 是文档占位符，不能原样使用。实际值必须从刚创建或刚轮换的入口复制。Header 是 `Authorization=Bearer ...`，不是 HTTP 文档中常见的冒号写法 `Authorization: Bearer ...`，因为 Certd 这个输入框要求每行使用 `key=value`。
+
+保存后手工运行一次 Certd 流水线。只运行 Webhook 步骤前，应确认它能够读取前置任务的证书输出。部署成功时 Certd 显示步骤成功，fn-knock 返回包含 `"success":true` 的 JSON，并更新入口的最近接收状态。
+
+### 使用 acme.sh、lego 或 Certbot
+
+这三种工具不需要手工拼接 JSON。选择对应工具并创建入口后，fn-knock 会生成已经嵌入推送地址和 Token 的脚本；脚本使用 `jq` 安全构造包含 PEM 换行的 JSON，并使用 `curl` 发送请求。保存脚本的文件必须限制权限，且不应把脚本内容打印到 CI 日志。
+
+#### acme.sh
+
+1. 把生成脚本保存为 `~/.acme.sh/deploy/fnknock.sh`。
+2. 执行 `chmod 700 ~/.acme.sh/deploy/fnknock.sh`。
+3. 证书签发成功后执行：
+
+```bash
+~/.acme.sh/acme.sh --deploy -d example.com --deploy-hook fnknock
+```
+
+脚本使用 acme.sh deploy hook 传入的私钥和 fullchain 参数。通配符证书应使用该证书在 acme.sh 中的主域名执行部署，不要把 `--deploy` 当成重新签发命令。
+
+#### lego
+
+1. 把生成脚本保存到固定路径并执行 `chmod 700 /path/to/fn-knock-lego-hook.sh`。
+2. lego v5 使用：
+
+```bash
+lego --deploy-hook=/path/to/fn-knock-lego-hook.sh renew
+```
+
+也可以在 `.lego.yaml` 的 `hooks.deploy.command` 中配置。仍使用 lego v4 时，改用 `--renew-hook=/path/to/fn-knock-lego-hook.sh`。fn-knock 生成的脚本同时识别 v5 的 `LEGO_HOOK_*` 和 v4 的兼容环境变量。
+
+#### Certbot
+
+1. 把生成脚本保存为 `/etc/letsencrypt/renewal-hooks/deploy/fn-knock`。
+2. 执行 `chmod 700 /etc/letsencrypt/renewal-hooks/deploy/fn-knock`。
+3. 执行一次演练或指定 hook：
+
+```bash
+certbot renew --deploy-hook /etc/letsencrypt/renewal-hooks/deploy/fn-knock
+```
+
+脚本从 Certbot 的 `RENEWED_LINEAGE` 读取 `fullchain.pem` 和 `privkey.pem`。deploy hook 只会在成功续期后运行；如果只是验证脚本，应使用 Certbot 提供的测试方式，并确认测试不会把暂存证书当作正式证书推送。
+
+### 首次推送、续期与部署角色
+
+| 推送前状态 | fn-knock 的行为 |
+| --- | --- |
+| 没有当前证书 | 创建固定外部证书记录，自动设为当前证书并同步网关 |
+| 已有其他当前证书，处于单活动证书模式 | 新证书加入证书库但不改变当前对外证书 |
+| 该入口的证书已经是当前证书 | 原位替换并继续保持当前证书角色，随后更新网关 |
+| 多证书 SNI 模式 | 原位替换该入口的证书，并重新同步整个证书集；原默认项保持不变 |
+| 重复推送完全相同的证书与私钥 | 幂等成功，不重复写入证书库，也不触发无意义的网关重载 |
+| 推送的证书到期时间早于槽位中的现有证书 | 返回 `409 Conflict`，防止旧证书意外回滚当前证书 |
+
+系统会校验证书链顺序、签名关系、中间证书的 CA / Key Usage、链中每张证书的生效时间和到期时间，以及叶证书与私钥是否匹配。只上传叶证书而缺少必要中间证书、证书链顺序错误、证书尚未生效、证书已过期或证钥不匹配都会被拒绝。请求体上限为 1 MiB。
+
+证书来源记录为“外部推送”，并保留 `source_provider` 以区分 Certd、acme.sh、lego 和 Certbot。状态与日志只记录绑定、结果、证书指纹、域名和有效期，不应记录 PEM 私钥或明文 Token。
+
+### 验证是否成功
+
+推送后按以下顺序检查：
+
+1. 外部工具的部署任务返回成功，而不是仅完成证书申请。
+2. fn-knock 入口显示 `接收中` 和 `最近接收成功`，并显示正确域名、最近接收时间和证书到期时间。
+3. 证书库中只有一个与该入口关联的外部证书记录；再次续期后记录数量不增加。
+4. 如果该证书应当对外生效，确认它是当前 / 默认证书，或已经进入多证书 SNI 的网关证书集。
+5. 从实际访问链路检查网关返回的证书：
+
+```bash
+openssl s_client \
+  -connect auth.example.com:443 \
+  -servername auth.example.com </dev/null 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+```
+
+![fn-knock 外部证书接收入口的成功状态](/images/ssl/external-certificate-binding-status.png)
+
+“最近接收成功”表示 fn-knock 已接受本次内容；是否已经成为公网证书仍取决于活动证书角色、部署模式，以及公网是否确实到达这台网关。
+
+### 管理入口与 Token
+
+- `暂停接收`：入口和现有证书都保留，但新的推送返回不可用；适合临时停止自动更新。
+- `重新生成 Token`：旧 Token 立即失效，新 Token 只显示一次。必须同步更新 Certd 或 deploy hook 脚本，使用旧 Token 的任务会返回 `401`。
+- `保存名称`：只改变入口显示名称，不改变证书槽位、URL、Token 或已保存证书。
+- `删除入口`：撤销该部署地址和 Token，但默认保留已经导入的证书，避免删除入口时中断正在使用的 HTTPS。需要清理证书时再到证书库操作。
+
+Token 只授予向单个绑定证书槽位部署证书的权限，不能调用 `/api/admin/ssl/*` 管理接口，也不能操作其他绑定。不要把管理会话 Cookie 用于自动部署。
+
+### 多台 fn-knock 实例
+
+Certd 集中向多台 VPS 或 NAS 分发时，应在每台 fn-knock 上分别创建入口，并在 Certd 流水线中为每个实例添加独立部署步骤：
+
+```text
+申请 / 续期证书
+├── 推送到 fn-knock gateway-01（独立 URL + Token）
+├── 推送到 fn-knock gateway-02（独立 URL + Token）
+└── 推送到 CDN 或其他服务
+```
+
+这样单个 Token 泄露、某台节点不可达或某次网关同步失败，不会扩大为所有节点共用凭据。应让 Certd 分别记录每个部署步骤的结果，不要用一个脚本吞掉部分节点的失败状态。
+
+### 外部推送排查
+
+| HTTP 状态 | 常见原因 | 处理方式 |
+| --- | --- | --- |
+| `400 Bad Request` | JSON 格式错误、PEM 损坏、证书链不完整 / 顺序错误、证钥不匹配、证书尚未生效或已过期 | 检查外部工具传入的是 fullchain 和对应私钥；Certd 保持 `${crt}` / `${key}` JSON 模板 |
+| `401 Unauthorized` | Token 缺失、复制错误、已经轮换，或 Certd Header 格式错误 | 从 fn-knock 重新生成 Token，并完整更新 `Authorization=Bearer ...` |
+| `404 Not Found` | 绑定已删除、已暂停，或 URL 中的绑定 ID 不存在 | 检查入口状态和完整推送路径；不要复用另一个实例的 URL |
+| `409 Conflict` | 新证书比现有证书更早到期，或高并发修改导致无法安全提交 | 确认流水线没有推送旧产物；稍后重试并避免多个任务同时写同一入口 |
+| `413 Payload Too Large` | JSON 请求超过 1 MiB | 检查是否误把日志、PKCS#12、重复证书或无关内容拼入 PEM |
+| `500 Internal Server Error` | 保存配置或部署状态失败 | 查看 fn-knock 运行日志和磁盘 / 配置存储状态，外部工具应保留失败并重试 |
+| `502 Bad Gateway` | 证书已校验，但同步网关失败；响应会说明是否确认恢复旧配置 | 先确认当前公网证书是否仍为旧证书，再检查网关状态和 fn-knock 日志后重试 |
+
+如果 Certd 显示申请成功但 fn-knock 一直显示“等待首次推送”，说明流水线没有执行部署步骤、Webhook 无法连接，或部署步骤选择了错误的前置证书输出。先从 Certd 任务日志确认请求确实发出，再检查同机 `127.0.0.1:${BACKEND_PORT}` 或异机反向代理链路。
+
 ## 自签根 CA
 
 `自签证书` 的使用顺序：

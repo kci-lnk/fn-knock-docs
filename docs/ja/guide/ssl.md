@@ -3,7 +3,7 @@ lang: ja-JP
 title: "TLS 証明書と HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7b5a628d6989a35bd4dee266ca2d216ed967a33d391e2196292a37057f319512
+translationSourceHash: dfc34f5be70cf1a410521b76bc46afb6f09bd6a6e5340a1fa89b5ae0adad66d2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -53,6 +53,217 @@ HTTPS は、Passkey、OIDC コールバック、インターネットで公開�
 複数の証明書 SNI でも、デフォルトのフォールバック証明書が 1 枚必要です。クライアントが SNI を送信しない場合、不明な Host にアクセスした場合、または一致する証明書がない場合、ゲートウェイはデフォルトの証明書を返します。展開モードを切り替えた後は、ページの `ゲートウェイが現在受信している証明書のセット` を確認してください。保存済みモードと実行中のモードが一致しない場合や同期エラーがある場合は、証明書ストアの内容だけで適用済みと判断しないでください。
 
 サブドメイン構成では、認証 Host とインターネットへ公開するすべてのサービス用 Host をカバーする必要があります。ワイルドカード `*.example.com` がカバーするのは 1 階層のサブドメインだけで、ルートドメイン `example.com` や `a.b.example.com` は対象外です。ページの Host カバレッジ分析では、現在のマッピングをもとに不足している項目が表示されます。
+
+## 外部ツールから証明書を受信する
+
+`証明書設定 → 外部証明書を受信` では、証明書の発行と更新を Certd、acme.sh、lego、または Certbot に任せ、完全な証明書チェーンと秘密鍵を fn-knock へプッシュできます。この受信先から CA へ証明書を申請することはありません。fn-knock は認証、証明書の検証、証明書ストアへの保存、および必要に応じたゲートウェイ更新を担当します。
+
+次のような環境に適しています。
+
+- Certd ですでに複数のドメイン、VPS、NAS、CDN の証明書を一元管理している
+- 既存の acme.sh、lego、Certbot 更新ジョブを維持し、DNS API 認証情報を fn-knock に重複保存したくない
+- 1 枚の発行済み証明書を複数の fn-knock インスタンスへ配布する必要がある
+- fn-knock ホスト自身は DNS-01 を実行できないが、内部ネットワークから証明書を受信できる
+
+### 動作モデル
+
+1 回の完全な展開は次の順序で実行されます。
+
+1. 外部ツールが CA から証明書を発行または更新します。
+2. 発行成功後、Webhook または deploy hook が `fullchain` と秘密鍵をバインド専用の URL へ送信します。
+3. fn-knock はバインドの Bearer Token で認証し、リクエストサイズ、PEM、完全な証明書チェーン、有効期間、証明書と秘密鍵の一致を検証します。
+4. 証明書は固定スロット `external_<binding_id>` に保存されます。以後の更新は常に同じストア記録を置き換え、更新のたびに証明書が増えることはありません。
+5. その証明書が使用中なら、有効／デフォルトの役割を維持して直ちにゲートウェイを更新します。使用中でなければ、既存のデフォルト証明書を奪いません。複数の証明書 SNI モードでは証明書セット全体を再同期します。
+6. ゲートウェイ同期が成功すると、受信先に最終受信時刻、ドメイン、有効期限が表示されます。同期に失敗した場合は非 2xx を返し、fn-knock は以前の設定の復元を試みます。外部ツールはその展開を失敗として記録し、設定したポリシーで再試行してください。
+
+fn-knock に現在の証明書が 1 枚もない場合、外部受信先から最初に正常受信した証明書が自動的に有効化され、ゲートウェイへ送信されます。すでに別の現在の証明書がある場合、新しい受信先への初回プッシュは証明書ストアへの追加だけを行います。公開デフォルトを置き換えるときは、証明書ストアから手動で有効化してください。
+
+| ツール | fn-knock が生成する設定 | 実行タイミング |
+| --- | --- | --- |
+| Certd | `PUT` Webhook URL、Header、JSON テンプレート、成功判定文字列 | Certd の証明書パイプラインに「Webhook 方式で証明書をデプロイ」ステップを追加 |
+| acme.sh | URL と Token を含む deploy hook スクリプト | 発行後に `--deploy-hook fnknock` を実行 |
+| lego | lego v5 deploy hook と v4 renew hook に対応するスクリプト | 更新コマンドまたは `.lego.yaml` から実行 |
+| Certbot | `RENEWED_LINEAGE` を読む deploy hook スクリプト | renewal hook ディレクトリへ配置するか、`certbot renew --deploy-hook` から実行 |
+
+### 証明書の受信先を作成する
+
+1. `SSL 証明書 → 証明書設定` を開き、`外部証明書を受信` を展開します。
+2. `証明書ツール` で Certd、acme.sh、lego、または Certbot を選択します。
+3. `Certd example.com` や `Certbot gateway-01` のように、証明書または対象ノードを識別できる名前を入力します。
+4. `受信先を作成` をクリックします。
+5. 生成された設定をすぐにすべてコピーします。Token は作成時または Token 再生成時に 1 回だけ表示され、設定欄を閉じた後に再表示することはできません。
+
+1 つの受信先には 1 つの固定証明書スロットと独立した Token があります。無関係な複数の証明書を同じ受信先へ送ると、後のプッシュが前の証明書を置き換えます。複数の fn-knock インスタンス間でも Token を共有せず、各インスタンスで受信先を作成してください。
+
+### `BACKEND_PORT`、ループバック、リバースプロキシ
+
+生成される URL は次の形式です。
+
+```text
+http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
+```
+
+ポートは fn-knock の実行時 `BACKEND_PORT` から取得され、`7998` はデフォルト値にすぎません。管理バックエンドはデフォルトで `127.0.0.1` と `::1` だけをリッスンします。この URL を直接使用できるのは、証明書ツールと fn-knock が同じホストまたは同じネットワーク名前空間にある場合だけです。
+
+| 配置 | URL の扱い |
+| --- | --- |
+| Certd／ACME クライアントと fn-knock が同一ホスト | 生成された `127.0.0.1:${BACKEND_PORT}` をそのまま使用 |
+| Certd がホスト、fn-knock が隔離コンテナ | リバースプロキシからコンテナ内の `BACKEND_PORT` へ到達できるようにする。ホストの `127.0.0.1` はコンテナ内ループバックを自動的には指さない |
+| Certd または ACME クライアントが別のマシン | fn-knock の `127.0.0.1:${BACKEND_PORT}` を、そのマシンから到達可能な HTTP または HTTPS URL へリバースプロキシし、生成 URL のホストとポートを置き換える |
+
+リバースプロキシで公開するのは `/api/integrations/certificates/` だけにし、管理バックエンド全体をネットワークへ公開しないでください。プロキシは `PUT` メソッド、`Authorization` Header、元の JSON Body を保持する必要があります。次の Nginx 例はデフォルトポートを使用します。
+
+```nginx
+location ^~ /api/integrations/certificates/ {
+    proxy_pass http://127.0.0.1:7998;
+    proxy_set_header Authorization $http_authorization;
+    proxy_pass_request_headers on;
+    client_max_body_size 1m;
+}
+
+location / {
+    return 404;
+}
+```
+
+リバースプロキシ URL は HTTP と HTTPS のどちらでも使用でき、fn-knock は特定のプロトコルを強制しません。信頼できる内部ネットワークでは HTTP を使用できます。インターネットを経由する場合は、リバースプロキシで通信を保護し、接続元を制限してください。Token を URL、Query String、プロキシの Access Log、スクリプトのデバッグ出力に記録しないでください。
+
+### Certd Webhook を設定する
+
+Certd 用の受信先を作成した後、fn-knock に表示された値を対応する Certd 証明書パイプラインへコピーします。
+
+1. パイプラインに、ドメイン証明書を正常に出力する申請タスクがあることを確認します。
+2. 申請タスクの後に `Webhook 方式で証明書をデプロイ` ステップを追加します。
+3. `ドメイン証明書` には、直前の申請タスクの出力を選択します。無関係な証明書を選ばないでください。
+4. 次の表の値を入力してパイプラインを保存します。
+
+| Certd の項目 | 値 | 説明 |
+| --- | --- | --- |
+| タスク名 | `fn-knock へ証明書をプッシュ` | 対象ノード名を含めても構いません |
+| Webhook URL | fn-knock に表示されたプッシュ URL | 同一ホストでは `127.0.0.1:${BACKEND_PORT}`、別ホストではリバースプロキシ URL を使用 |
+| リクエスト方式 | `PUT` | POST に変更しない |
+| ContentType | `application/json` | Certd が JSON として送信するために必要 |
+| Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | この Certd 欄は `key=value` 形式。完全な Token を fn-knock からコピーする |
+| メッセージ Body テンプレート | `{"cert":"${crt}","key":"${key}"}` | `${crt}` は完全な証明書内容、`${key}` は秘密鍵 |
+| 証明書検証を無視 | 通常はオフ | HTTP には検証対象の TLS 証明書がない。HTTPS リバースプロキシでは可能な限り信頼チェーンを修正する |
+| 成功判定 | `"success":true` | Response も 2xx である必要があり、非 2xx は失敗として扱う |
+
+![Certd Webhook から fn-knock へ証明書をデプロイする設定](/images/ssl/certd-webhook-deployment.png)
+
+画像の `<BINDING_ID>` と `fnk_cert_<YOUR_TOKEN>` はドキュメント用のプレースホルダーであり、そのまま使用できません。作成またはローテーション直後の受信先から実際の値をコピーしてください。Header は `Authorization=Bearer ...` です。一般的な HTTP 記法の `Authorization: Bearer ...` ではありません。この Certd 入力欄が 1 行ごとの `key=value` を要求するためです。
+
+保存後、Certd パイプラインを 1 回手動実行します。Webhook ステップだけを実行する場合は、前段タスクの証明書出力を読み取れることを先に確認してください。成功すると Certd のステップが成功になり、fn-knock は `"success":true` を含む JSON を返し、受信先の最新状態を更新します。
+
+### acme.sh、lego、Certbot を使用する
+
+これら 3 つでは JSON を手動作成する必要はありません。ツールを選択して受信先を作成すると、fn-knock が URL と Token を埋め込んだスクリプトを生成します。スクリプトは `jq` で PEM の改行を安全に JSON 化し、`curl` で送信します。ファイルの権限を制限し、CI ログへスクリプト内容を出力しないでください。
+
+#### acme.sh
+
+1. 生成スクリプトを `~/.acme.sh/deploy/fnknock.sh` として保存します。
+2. `chmod 700 ~/.acme.sh/deploy/fnknock.sh` を実行します。
+3. 発行成功後、次を実行します。
+
+```bash
+~/.acme.sh/acme.sh --deploy -d example.com --deploy-hook fnknock
+```
+
+スクリプトは acme.sh deploy hook が渡す秘密鍵と fullchain を使用します。ワイルドカード証明書では、その証明書の acme.sh 上のメインドメインを指定してください。`--deploy` は既存の発行結果を展開する操作であり、再発行コマンドではありません。
+
+#### lego
+
+1. 生成スクリプトを固定パスへ保存し、`chmod 700 /path/to/fn-knock-lego-hook.sh` を実行します。
+2. lego v5 では次を実行します。
+
+```bash
+lego --deploy-hook=/path/to/fn-knock-lego-hook.sh renew
+```
+
+`.lego.yaml` の `hooks.deploy.command` に設定することもできます。lego v4 では `--renew-hook=/path/to/fn-knock-lego-hook.sh` を使用します。生成スクリプトは v5 の `LEGO_HOOK_*` と v4 互換環境変数の両方を認識します。
+
+#### Certbot
+
+1. 生成スクリプトを `/etc/letsencrypt/renewal-hooks/deploy/fn-knock` として保存します。
+2. `chmod 700 /etc/letsencrypt/renewal-hooks/deploy/fn-knock` を実行します。
+3. テストするか、Hook を明示して実行します。
+
+```bash
+certbot renew --deploy-hook /etc/letsencrypt/renewal-hooks/deploy/fn-knock
+```
+
+スクリプトは Certbot の `RENEWED_LINEAGE` から `fullchain.pem` と `privkey.pem` を読みます。deploy hook は更新成功時だけ実行されます。テスト時は Certbot が提供する手順を使用し、Staging 証明書を本番証明書としてプッシュしないことを確認してください。
+
+### 初回プッシュ、更新、展開ロール
+
+| プッシュ前の状態 | fn-knock の動作 |
+| --- | --- |
+| 現在の証明書がない | 固定外部証明書記録を作成し、自動的に現在の証明書に設定してゲートウェイへ同期 |
+| 単一の有効な証明書モードで別の現在の証明書がある | 新しい証明書をストアへ追加するが、公開証明書は変更しない |
+| この受信先の証明書がすでに現在の証明書 | 同じ記録を置き換え、現在のロールを維持してゲートウェイを更新 |
+| 複数の証明書 SNI モード | 受信先の証明書を置き換えてセット全体を再同期し、既存のデフォルトは維持 |
+| 完全に同一の証明書と秘密鍵を再送 | 冪等に成功し、ストアへの再書き込みや不要なゲートウェイ再読み込みを行わない |
+| 既存スロットの証明書より早く期限切れになる証明書を送信 | 古い証明書への誤ったロールバックを防ぐため `409 Conflict` を返す |
+
+fn-knock はチェーンの順序と署名、中間証明書の CA／Key Usage、チェーン内すべての証明書の有効開始・終了時刻、およびリーフ証明書と秘密鍵の一致を検証します。必要な中間証明書の欠落、順序違い、未発効または期限切れの証明書、鍵の不一致は拒否されます。Request Body の上限は 1 MiB です。
+
+証明書の取得元は「外部プッシュ」として記録され、`source_provider` で Certd、acme.sh、lego、Certbot を区別します。状態とログにはバインド、結果、Fingerprint、ドメイン、有効期間だけを記録し、PEM 秘密鍵や平文 Token は記録しません。
+
+### 成功を確認する
+
+プッシュ後は次の順序で確認します。
+
+1. 外部ツールで証明書申請だけでなく展開タスクも成功している。
+2. fn-knock の受信先が `受信中` と `前回の受信は成功` を表示し、ドメイン、最終受信時刻、有効期限が正しい。
+3. 証明書ストアに受信先用の外部証明書が 1 件だけあり、再更新しても件数が増えない。
+4. 公開する証明書なら、現在／デフォルトの証明書であるか、複数の証明書 SNI のゲートウェイセットに含まれている。
+5. 実際のアクセス経路で返る証明書を確認する。
+
+```bash
+openssl s_client \
+  -connect auth.example.com:443 \
+  -servername auth.example.com </dev/null 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+```
+
+![fn-knock の外部証明書受信先が成功している状態](/images/ssl/external-certificate-binding-status.png)
+
+`前回の受信は成功` は fn-knock が今回の内容を受け付けたことを示します。公開証明書になっているかは、有効ロール、展開モード、公開トラフィックが実際にこのゲートウェイへ到達するかにも依存します。
+
+### 受信先と Token を管理する
+
+- `受信を一時停止`：受信先と既存証明書を保持したまま、新しいプッシュを利用不可にします。
+- `新しい Token を生成`：古い Token は直ちに無効になり、新しい Token は 1 回だけ表示されます。Certd または deploy hook スクリプトを更新しないと `401` になります。
+- `名前を保存`：表示名だけを変更し、証明書スロット、URL、Token、保存済み証明書は変わりません。
+- `受信先を削除`：URL と Token を無効にしますが、取り込み済みの証明書はデフォルトで残します。使用中 HTTPS の停止を避けるためです。不要な証明書は証明書ストアから別途削除します。
+
+Token が許可するのは 1 つのバインド専用証明書スロットへの展開だけです。`/api/admin/ssl/*` の呼び出しや他のバインドの操作はできません。自動化に管理セッション Cookie を使用しないでください。
+
+### 複数の fn-knock インスタンス
+
+Certd から複数の VPS／NAS へ配布するときは、各 fn-knock で受信先を作成し、インスタンスごとに独立した展開ステップを追加します。
+
+```text
+証明書を発行／更新
+├── fn-knock gateway-01 へプッシュ（独立 URL + Token）
+├── fn-knock gateway-02 へプッシュ（独立 URL + Token）
+└── CDN または別サービスへプッシュ
+```
+
+これにより、1 つの Token 漏えい、到達不能なノード、ゲートウェイ同期失敗が全ノード共通の認証情報問題に拡大しません。Certd では各展開ステップの結果を個別に保持し、ラッパースクリプトで一部ノードの失敗を隠さないでください。
+
+### 外部プッシュのトラブルシューティング
+
+| HTTP ステータス | 主な原因 | 対処 |
+| --- | --- | --- |
+| `400 Bad Request` | JSON／PEM が不正、チェーンが不完全または順序違い、鍵不一致、未発効、期限切れ | fullchain と対応する秘密鍵を送る。Certd の `${crt}`／`${key}` JSON テンプレートを維持する |
+| `401 Unauthorized` | Token の欠落、コピー誤り、ローテーション済み、Certd Header の形式誤り | fn-knock で Token を再生成し、`Authorization=Bearer ...` を完全に更新する |
+| `404 Not Found` | バインドが削除／一時停止済み、または URL のバインド ID が不明 | 受信先状態と完全なパスを確認し、別インスタンスの URL を流用しない |
+| `409 Conflict` | 受信証明書の期限が既存証明書より早い、または並行変更を安全に保存できない | 古い成果物を送っていないか確認し、同じ受信先への同時書き込みを避けて再試行する |
+| `413 Payload Too Large` | JSON Body が 1 MiB を超えた | ログ、PKCS#12、重複証明書、無関係な内容が PEM に追加されていないか確認する |
+| `500 Internal Server Error` | 設定または展開状態の保存に失敗 | fn-knock ログとディスク／設定ストレージを確認し、外部ジョブは失敗のまま再試行する |
+| `502 Bad Gateway` | 検証後のゲートウェイ同期に失敗。以前の設定を復元できたか Response に表示される | 現在公開中の証明書を確認し、ゲートウェイ状態と fn-knock ログを調べて再試行する |
+
+Certd で発行成功でも fn-knock が `最初の送信を待機中` のままなら、展開ステップが実行されていない、Webhook に到達できない、または前段の証明書出力選択が誤っています。Certd タスクログでリクエスト送信を確認し、同一ホストの `127.0.0.1:${BACKEND_PORT}` またはホスト間のリバースプロキシ経路を確認してください。
 
 ## 自己署名ルート CA
 

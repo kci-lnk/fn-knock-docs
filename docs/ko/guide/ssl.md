@@ -3,7 +3,7 @@ lang: ko-KR
 title: "TLS 인증서 및 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7b5a628d6989a35bd4dee266ca2d216ed967a33d391e2196292a37057f319512
+translationSourceHash: dfc34f5be70cf1a410521b76bc46afb6f09bd6a6e5340a1fa89b5ae0adad66d2
 ---
 
 # TLS 인증서 및 HTTPS
@@ -51,6 +51,217 @@ HTTPS는 패스키, OIDC 콜백 및 대부분의 인터넷 서비스를 위한 �
 다중 인증서 SNI에서도 기본 / 폴백 인증서가 하나 필요합니다. 클라이언트가 SNI를 보내지 않거나 알 수 없는 Host에 접근하거나 일치하는 인증서가 없으면 게이트웨이는 기본 인증서를 반환합니다. 인증서 배포 모드를 전환한 뒤에는 페이지의 “현재 게이트웨이에서 받은 인증서”를 확인합니다. 저장된 모드와 실행 모드가 다르거나 동기화 오류가 있다면 인증서 라이브러리 내용만 보고 적용 여부를 판단하면 안 됩니다.
 
 서브도메인 환경에서는 인증 Host와 외부에 공개하는 모든 서비스 Host를 포함합니다. 와일드카드 `*.example.com`은 한 단계의 서브도메인만 포함하며 루트 도메인 `example.com`이나 `a.b.example.com`은 포함하지 않습니다. 페이지의 Host 적용 범위 분석은 현재 매핑을 함께 확인해 누락된 항목을 표시합니다.
+
+## 외부 도구에서 인증서 받기
+
+`인증서 설정 → 외부 인증서 받기`를 사용하면 인증서 발급과 갱신은 Certd, acme.sh, lego 또는 Certbot이 담당하고 전체 인증서 체인과 개인 키는 fn-knock으로 푸시할 수 있습니다. 이 엔드포인트가 CA에 인증서를 신청하지는 않습니다. fn-knock은 배포 요청을 인증하고 인증서를 검증해 라이브러리에 저장하며, 필요한 경우 게이트웨이를 업데이트합니다.
+
+다음 환경에 적합합니다.
+
+- Certd에서 여러 도메인, VPS, NAS 또는 CDN 인증서를 이미 중앙 관리함
+- DNS API 자격 증명을 fn-knock에 중복 저장하지 않고 기존 acme.sh, lego 또는 Certbot 갱신 작업을 유지하려 함
+- 발급한 인증서 하나를 여러 fn-knock 인스턴스에 배포해야 함
+- fn-knock 호스트에서 DNS-01을 직접 실행할 수 없지만 내부 네트워크의 인증서 푸시는 받을 수 있음
+
+### 동작 모델
+
+전체 배포는 다음 순서로 진행됩니다.
+
+1. 외부 도구가 CA에서 인증서를 발급하거나 갱신합니다.
+2. 발급이 성공하면 Webhook 또는 deploy hook이 `fullchain`과 개인 키를 바인딩 전용 주소로 보냅니다.
+3. fn-knock은 해당 바인딩의 Bearer Token으로 인증하고 요청 크기, PEM, 전체 인증서 체인, 유효 기간 및 인증서/개인 키 일치를 확인합니다.
+4. 인증서는 고정 슬롯 `external_<binding_id>`에 저장됩니다. 이후 갱신은 같은 라이브러리 레코드를 교체하므로 매번 인증서가 추가되지 않습니다.
+5. 해당 인증서가 현재 사용 중이면 활성/기본 역할을 유지한 채 게이트웨이를 즉시 업데이트합니다. 활성 인증서가 아니라면 기존 기본 인증서를 차지하지 않습니다. 다중 인증서 SNI 모드에서는 전체 인증서 세트를 다시 동기화합니다.
+6. 게이트웨이 동기화가 성공하면 엔드포인트에 최근 수신 시각, 도메인 및 만료 시각이 표시됩니다. 동기화에 실패하면 비 2xx 응답을 반환하고 fn-knock은 이전 설정 복원을 시도합니다. 외부 도구는 이 배포를 실패로 기록하고 자체 정책에 따라 재시도해야 합니다.
+
+fn-knock에 현재 인증서가 하나도 없으면 외부 엔드포인트에서 처음으로 받은 인증서가 자동으로 활성화되어 게이트웨이에 배포됩니다. 이미 다른 현재 인증서가 있으면 새 엔드포인트의 첫 푸시는 인증서 라이브러리에만 추가됩니다. 공개 기본 인증서를 교체하려면 라이브러리에서 직접 활성화합니다.
+
+| 도구 | fn-knock에서 생성하는 구성 | 실행 시점 |
+| --- | --- | --- |
+| Certd | `PUT` Webhook URL, Header, JSON 템플릿 및 성공 표시 | Certd 인증서 파이프라인에 “Webhook 방식으로 인증서 배포” 단계 추가 |
+| acme.sh | URL과 Token이 포함된 deploy hook 스크립트 | 발급 후 `--deploy-hook fnknock` 실행 |
+| lego | lego v5 deploy hook 및 v4 renew hook과 호환되는 스크립트 | 갱신 명령이나 `.lego.yaml`에서 호출 |
+| Certbot | `RENEWED_LINEAGE`를 읽는 deploy hook 스크립트 | renewal hook 디렉터리에 두거나 `certbot renew --deploy-hook`으로 호출 |
+
+### 인증서 수신 엔드포인트 만들기
+
+1. `SSL 인증서 → 인증서 설정`을 열고 `외부 인증서 받기`를 펼칩니다.
+2. `인증서 도구`에서 Certd, acme.sh, lego 또는 Certbot을 선택합니다.
+3. `Certd example.com` 또는 `Certbot gateway-01`처럼 인증서나 대상 노드를 구분할 이름을 입력합니다.
+4. `수신 엔드포인트 만들기`를 클릭합니다.
+5. 생성된 구성을 즉시 모두 복사합니다. Token은 엔드포인트 생성 또는 Token 재생성 직후 한 번만 표시되며 구성 영역을 닫은 뒤에는 다시 읽을 수 없습니다.
+
+엔드포인트 하나는 고정 인증서 슬롯 하나와 독립 Token 하나를 가집니다. 서로 관계없는 인증서를 같은 엔드포인트로 보내면 나중 푸시가 이전 인증서를 교체합니다. 여러 fn-knock 인스턴스도 Token을 공유하지 말고 각 인스턴스에 엔드포인트를 만듭니다.
+
+### `BACKEND_PORT`, 루프백 및 역방향 프록시
+
+생성되는 기본 URL은 다음과 같습니다.
+
+```text
+http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
+```
+
+포트는 fn-knock 런타임의 `BACKEND_PORT`에서 가져오며 `7998`은 기본값일 뿐입니다. 관리 백엔드는 기본적으로 `127.0.0.1`과 `::1`에서만 수신하므로 인증서 도구와 fn-knock이 같은 호스트 또는 네트워크 네임스페이스에 있을 때만 이 주소를 직접 사용할 수 있습니다.
+
+| 배포 위치 | 주소 처리 |
+| --- | --- |
+| Certd/ACME 클라이언트와 fn-knock이 같은 호스트 | 생성된 `127.0.0.1:${BACKEND_PORT}` 주소를 그대로 사용 |
+| Certd는 호스트에 있고 fn-knock은 격리 컨테이너에 있음 | 역방향 프록시가 컨테이너 내부 `BACKEND_PORT`에 접근하도록 구성합니다. 호스트의 `127.0.0.1`은 컨테이너 내부 루프백을 자동으로 가리키지 않음 |
+| Certd 또는 ACME 클라이언트가 다른 컴퓨터에 있음 | fn-knock의 `127.0.0.1:${BACKEND_PORT}`를 해당 컴퓨터가 접근할 수 있는 HTTP 또는 HTTPS 주소로 역방향 프록시한 뒤 생성 URL의 호스트와 포트를 교체 |
+
+역방향 프록시에는 `/api/integrations/certificates/` 경로만 공개하고 관리 백엔드 전체를 네트워크에 직접 노출하지 않습니다. 프록시는 `PUT` 방식, `Authorization` Header 및 원본 JSON Body를 유지해야 합니다. 다음 Nginx 예시는 기본 포트를 사용합니다.
+
+```nginx
+location ^~ /api/integrations/certificates/ {
+    proxy_pass http://127.0.0.1:7998;
+    proxy_set_header Authorization $http_authorization;
+    proxy_pass_request_headers on;
+    client_max_body_size 1m;
+}
+
+location / {
+    return 404;
+}
+```
+
+역방향 프록시 엔드포인트는 HTTP 또는 HTTPS를 사용할 수 있으며 fn-knock은 특정 프로토콜을 강제하지 않습니다. 신뢰할 수 있는 내부 네트워크에서는 HTTP를 사용할 수 있습니다. 인터넷을 거치면 역방향 프록시에서 전송을 보호하고 출발지 주소를 제한합니다. Token을 URL, Query String, 프록시 Access Log 또는 스크립트 디버그 출력에 기록하지 않습니다.
+
+### Certd Webhook 설정
+
+Certd 엔드포인트를 만든 뒤 fn-knock에 표시된 필드를 해당 Certd 인증서 파이프라인에 복사합니다.
+
+1. 파이프라인에 도메인 인증서를 성공적으로 출력하는 발급 작업이 있는지 확인합니다.
+2. 발급 작업 다음에 `Webhook 방식으로 인증서 배포` 단계를 추가합니다.
+3. `도메인 인증서`에는 앞 발급 작업의 출력 인증서를 선택하고 관계없는 인증서를 선택하지 않습니다.
+4. 아래 표대로 배포 값을 입력한 뒤 파이프라인을 저장합니다.
+
+| Certd 필드 | 값 | 설명 |
+| --- | --- | --- |
+| 작업 이름 | `fn-knock으로 인증서 푸시` | 대상 노드 이름을 포함할 수 있음 |
+| Webhook URL | fn-knock에 표시된 푸시 URL | 같은 호스트에서는 `127.0.0.1:${BACKEND_PORT}`, 다른 호스트에서는 역방향 프록시 URL 사용 |
+| 요청 방식 | `PUT` | POST로 변경하지 않음 |
+| ContentType | `application/json` | Certd가 JSON으로 전송하도록 설정 |
+| Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | Certd의 이 입력란은 `key=value` 형식이며 전체 Token은 fn-knock에서 복사 |
+| 메시지 Body 템플릿 | `{"cert":"${crt}","key":"${key}"}` | `${crt}`는 전체 인증서 내용이고 `${key}`는 개인 키 |
+| 인증서 검증 무시 | 일반적으로 끔 | HTTP에는 검증할 TLS 인증서가 없고, HTTPS 역방향 프록시는 가능하면 신뢰 체인을 수정 |
+| 성공 판정 | `"success":true` | 응답 상태도 2xx여야 하며 비 2xx는 실패로 처리 |
+
+![Certd Webhook으로 fn-knock에 인증서를 배포하는 필드 구성](/images/ssl/certd-webhook-deployment.png)
+
+이미지의 `<BINDING_ID>`와 `fnk_cert_<YOUR_TOKEN>`은 문서용 자리표시자이므로 그대로 사용할 수 없습니다. 생성하거나 Token을 교체한 엔드포인트에서 실제 값을 복사합니다. Header는 `Authorization=Bearer ...`이며 일반 HTTP 문서의 콜론 표기 `Authorization: Bearer ...`가 아닙니다. 이 Certd 입력란은 각 줄에 `key=value` 형식을 요구합니다.
+
+저장 후 Certd 파이프라인을 한 번 직접 실행합니다. Webhook 단계만 실행하려면 앞 작업의 인증서 출력을 읽을 수 있는지 먼저 확인합니다. 성공하면 Certd 단계가 성공으로 표시되고 fn-knock은 `"success":true`가 포함된 JSON을 반환하며 엔드포인트의 최근 수신 상태를 업데이트합니다.
+
+### acme.sh, lego 또는 Certbot 사용
+
+이 세 도구에서는 JSON을 직접 만들 필요가 없습니다. 도구를 선택해 엔드포인트를 만들면 fn-knock이 푸시 URL과 Token이 포함된 스크립트를 생성합니다. 스크립트는 `jq`로 PEM 줄바꿈을 안전하게 JSON으로 만들고 `curl`로 요청합니다. 파일 권한을 제한하고 CI 로그에 스크립트 내용을 출력하지 않습니다.
+
+#### acme.sh
+
+1. 생성된 스크립트를 `~/.acme.sh/deploy/fnknock.sh`로 저장합니다.
+2. `chmod 700 ~/.acme.sh/deploy/fnknock.sh`를 실행합니다.
+3. 발급 성공 뒤 다음 명령으로 배포합니다.
+
+```bash
+~/.acme.sh/acme.sh --deploy -d example.com --deploy-hook fnknock
+```
+
+스크립트는 acme.sh deploy hook이 전달하는 개인 키와 fullchain 인자를 사용합니다. 와일드카드 인증서는 acme.sh에 등록된 해당 인증서의 주 도메인을 지정합니다. `--deploy`는 기존 발급 결과를 배포하며 새 인증서를 신청하는 명령이 아닙니다.
+
+#### lego
+
+1. 생성된 스크립트를 고정 경로에 저장하고 `chmod 700 /path/to/fn-knock-lego-hook.sh`를 실행합니다.
+2. lego v5에서는 다음 명령을 사용합니다.
+
+```bash
+lego --deploy-hook=/path/to/fn-knock-lego-hook.sh renew
+```
+
+`.lego.yaml`의 `hooks.deploy.command`에도 설정할 수 있습니다. lego v4에서는 `--renew-hook=/path/to/fn-knock-lego-hook.sh`를 사용합니다. 생성 스크립트는 v5 `LEGO_HOOK_*` 변수와 v4 호환 변수를 모두 인식합니다.
+
+#### Certbot
+
+1. 생성된 스크립트를 `/etc/letsencrypt/renewal-hooks/deploy/fn-knock`에 저장합니다.
+2. `chmod 700 /etc/letsencrypt/renewal-hooks/deploy/fn-knock`를 실행합니다.
+3. 테스트하거나 Hook을 직접 지정합니다.
+
+```bash
+certbot renew --deploy-hook /etc/letsencrypt/renewal-hooks/deploy/fn-knock
+```
+
+스크립트는 Certbot의 `RENEWED_LINEAGE`에서 `fullchain.pem`과 `privkey.pem`을 읽습니다. deploy hook은 갱신 성공 뒤에만 실행됩니다. 테스트할 때는 Certbot이 제공하는 절차를 사용하고 Staging 인증서가 운영 인증서로 푸시되지 않는지 확인합니다.
+
+### 첫 푸시, 갱신 및 배포 역할
+
+| 푸시 전 상태 | fn-knock 동작 |
+| --- | --- |
+| 현재 인증서 없음 | 고정 외부 인증서 레코드를 만들고 현재 인증서로 자동 설정한 뒤 게이트웨이 동기화 |
+| 단일 활성 인증서 모드에서 다른 현재 인증서가 있음 | 새 인증서를 라이브러리에 추가하지만 공개 인증서는 변경하지 않음 |
+| 이 엔드포인트 인증서가 이미 현재 인증서임 | 같은 레코드를 교체하고 현재 역할을 유지한 채 게이트웨이 업데이트 |
+| 다중 인증서 SNI 모드 | 엔드포인트 인증서를 교체하고 전체 세트를 다시 동기화하며 기존 기본 항목은 유지 |
+| 완전히 같은 인증서와 개인 키를 다시 푸시 | 멱등 성공하며 라이브러리에 다시 쓰거나 불필요한 게이트웨이 재로드를 하지 않음 |
+| 새 인증서 만료가 슬롯의 기존 인증서보다 빠름 | 이전 인증서로 잘못 롤백하는 것을 막기 위해 `409 Conflict` 반환 |
+
+fn-knock은 인증서 체인의 순서와 서명, 중간 인증서의 CA/Key Usage, 체인 내 모든 인증서의 시작 및 만료 시각, 리프 인증서와 개인 키 일치를 검증합니다. 필수 중간 인증서가 없거나 순서가 잘못된 체인, 아직 유효하지 않거나 만료된 인증서, 일치하지 않는 키는 거부됩니다. Request Body 상한은 1 MiB입니다.
+
+인증서 출처는 `외부 푸시`로 기록되고 `source_provider`로 Certd, acme.sh, lego 및 Certbot을 구분합니다. 상태와 로그에는 바인딩, 결과, Fingerprint, 도메인 및 유효 기간만 기록하며 PEM 개인 키나 평문 Token은 기록하지 않습니다.
+
+### 배포 성공 확인
+
+푸시 뒤 다음 순서로 확인합니다.
+
+1. 외부 도구에서 인증서 발급뿐 아니라 배포 작업도 성공했는지 확인합니다.
+2. fn-knock 엔드포인트가 `수신 중`과 `최근 수신 성공`을 표시하고 도메인, 최근 수신 시각 및 만료 시각이 올바른지 확인합니다.
+3. 라이브러리에 해당 엔드포인트용 외부 인증서가 하나만 있고 다음 갱신 뒤에도 개수가 늘지 않는지 확인합니다.
+4. 공개할 인증서라면 현재/기본 인증서인지 또는 다중 인증서 SNI 게이트웨이 세트에 포함되었는지 확인합니다.
+5. 실제 접속 경로에서 게이트웨이가 반환하는 인증서를 확인합니다.
+
+```bash
+openssl s_client \
+  -connect auth.example.com:443 \
+  -servername auth.example.com </dev/null 2>/dev/null \
+  | openssl x509 -noout -subject -issuer -dates -ext subjectAltName
+```
+
+![fn-knock 외부 인증서 수신 엔드포인트의 성공 상태](/images/ssl/external-certificate-binding-status.png)
+
+`최근 수신 성공`은 fn-knock이 이번 내용을 수락했다는 뜻입니다. 실제 공개 인증서인지는 활성 역할, 배포 모드 및 인터넷 트래픽이 이 게이트웨이에 도착하는지에 따라 달라집니다.
+
+### 엔드포인트 및 Token 관리
+
+- `수신 일시 중지`: 엔드포인트와 기존 인증서는 유지하지만 새 푸시는 사용할 수 없게 합니다.
+- `새 Token 생성`: 이전 Token은 즉시 무효가 되고 새 Token은 한 번만 표시됩니다. Certd 또는 deploy hook 스크립트를 갱신하지 않으면 `401`을 받습니다.
+- `이름 저장`: 표시 이름만 바꾸며 인증서 슬롯, URL, Token 및 저장된 인증서는 바뀌지 않습니다.
+- `엔드포인트 삭제`: URL과 Token을 취소하지만 가져온 인증서는 기본적으로 유지하여 사용 중 HTTPS가 끊기지 않게 합니다. 인증서가 필요 없으면 라이브러리에서 별도로 삭제합니다.
+
+Token은 바인딩 하나의 인증서 슬롯에 배포할 권한만 제공합니다. `/api/admin/ssl/*`을 호출하거나 다른 바인딩을 조작할 수 없습니다. 자동화에 관리 세션 Cookie를 사용하지 않습니다.
+
+### 여러 fn-knock 인스턴스
+
+Certd에서 여러 VPS 또는 NAS로 배포할 때는 각 fn-knock에서 엔드포인트를 만들고 인스턴스마다 독립 배포 단계를 추가합니다.
+
+```text
+인증서 발급/갱신
+├── fn-knock gateway-01로 푸시(독립 URL + Token)
+├── fn-knock gateway-02로 푸시(독립 URL + Token)
+└── CDN 또는 다른 서비스로 푸시
+```
+
+이렇게 하면 Token 하나의 유출, 접근할 수 없는 노드 또는 게이트웨이 동기화 실패가 모든 노드의 공용 자격 증명 문제로 확대되지 않습니다. Certd에서 각 배포 단계 결과를 따로 기록하고 래퍼 스크립트가 일부 노드 실패를 숨기지 않게 합니다.
+
+### 외부 푸시 문제 해결
+
+| HTTP 상태 | 일반적인 원인 | 해결 방법 |
+| --- | --- | --- |
+| `400 Bad Request` | 잘못된 JSON/PEM, 불완전하거나 순서가 틀린 체인, 키 불일치, 아직 유효하지 않거나 만료된 인증서 | fullchain과 일치하는 개인 키를 보내고 Certd의 `${crt}`/`${key}` JSON 템플릿 유지 |
+| `401 Unauthorized` | Token 누락, 복사 오류, 교체된 Token 또는 잘못된 Certd Header 형식 | fn-knock에서 Token을 다시 생성하고 `Authorization=Bearer ...`를 완전히 업데이트 |
+| `404 Not Found` | 바인딩이 삭제/일시 중지되었거나 URL의 바인딩 ID가 없음 | 엔드포인트 상태와 전체 경로를 확인하고 다른 인스턴스 URL을 재사용하지 않음 |
+| `409 Conflict` | 새 인증서가 기존 인증서보다 먼저 만료되거나 동시 변경을 안전하게 저장할 수 없음 | 파이프라인이 이전 결과물을 보내지 않는지 확인하고 같은 엔드포인트 동시 쓰기를 피한 뒤 재시도 |
+| `413 Payload Too Large` | JSON Body가 1 MiB 초과 | 로그, PKCS#12, 중복 인증서 또는 관계없는 내용이 PEM에 포함되지 않았는지 확인 |
+| `500 Internal Server Error` | 구성 또는 배포 상태 저장 실패 | fn-knock 로그와 디스크/구성 저장소를 확인하고 외부 작업은 실패로 유지한 채 재시도 |
+| `502 Bad Gateway` | 검증 뒤 게이트웨이 동기화 실패. 이전 설정 복원 확인 여부가 응답에 표시됨 | 현재 공개 인증서를 확인하고 게이트웨이 상태와 fn-knock 로그를 점검한 뒤 재시도 |
+
+Certd에서 발급은 성공했지만 fn-knock이 `첫 푸시 대기 중`이면 배포 단계가 실행되지 않았거나 Webhook에 접근할 수 없거나 잘못된 앞 단계 인증서 출력을 선택한 것입니다. Certd 작업 로그에서 요청이 실제 전송되었는지 확인한 뒤 같은 호스트의 `127.0.0.1:${BACKEND_PORT}` 또는 다른 호스트용 역방향 프록시 경로를 확인합니다.
 
 ## 자체 서명 루트 CA
 
