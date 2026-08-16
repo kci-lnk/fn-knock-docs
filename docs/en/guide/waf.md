@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: db97ca504b3859840b8237329798bf441587b0f7faf3afc081b7cc1fae75d9a0
+translationSourceHash: 4db3f6b804a08ba4362063d304e051074821ff170f48030a8670ef2330fad212
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -100,6 +100,10 @@ The `WAF logs` page reads persisted events by date. Historical events remain ava
 - Deleting all WAF events for the selected date.
 
 Logs for a deleted date cannot be restored from the admin UI. Export or copy the details first when audit evidence must be retained.
+
+The gateway delivers queued WAF events under a lease. The backend stores the event, date index, and counters in one SQLite transaction and acknowledges the queued copy only after the whole transaction succeeds. A persistence failure releases the lease for a later retry, and repeat delivery of the same Trace ID does not increment event counters twice. A temporarily busy disk or write error may therefore delay a log entry, but one failed attempt should not drop it or double-count it.
+
+When Request Logs links to a WAF Trace ID that has not been persisted yet, the page retries every `5` seconds for up to about `1` minute. If it still finds nothing, check whether the request entered WAF, whether WAF is enabled for the Host, and whether the server log reports a persistence error.
 
 ### Log Detail Fields
 

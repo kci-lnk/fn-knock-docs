@@ -3,7 +3,7 @@ lang: zh-TW
 title: "DDNS 管理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e86a3edaacbf546ce67762e99db72171dcac09583a855d24bdd2732d5eab4975
+translationSourceHash: 3e154d83516c4287c91030fbcdcdce2cc480bcb3a627d6a70e661b4ccccc2668
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -47,6 +47,12 @@ DDNS 只負責將 DNS Record 更新為目前的公網 IP。它不會開放連接
 | `TTL` | 選填，預設 `600` 秒 |
 
 DNSHE 支援 A 與 AAAA，以及 Apex、一般子網域與 Wildcard Record。同步時，既有且位址變更的 Record 會更新，不存在時會建立，位址未變時不會重複寫入。若 Log 顯示找不到託管網域、狀態不可用或 Record 缺少內部 ID，請先在 DNSHE Console 核對網域狀態與 Record 歸屬。
+
+### Tencent Cloud DNSPod
+
+使用 `Tencent Cloud DNSPod` 時，fn-knock 會先依根網域、子網域、Record Type 與線路尋找目標 Record。Record 不存在時會自動建立 A 或 AAAA；Record 存在但位址不同時會更新，位址相同則不會重複寫入。設定的線路與 TTL 會同時用於建立及更新。
+
+若 Log 仍停在 Record 查詢階段，請勿先手動建立 Placeholder Record。應核對根網域與子網域拆分、Record 線路及 Token 權限；真正的查詢錯誤會保留 DNSPod 回傳資訊，而「沒有 Record」會進入自動建立流程。
 
 ## 主網域與更多網域
 
@@ -102,7 +108,7 @@ IPv4 與 IPv6 可分別維護多個偵測來源。來源可以是回傳純 IP �
 
 ## 自動同步與 Log
 
-自動同步間隔可設為 `5` 至 `1440` 分鐘，預設為 `10` 分鐘。儲存新間隔後，會從下一輪同步開始套用。手動執行 `立即重新整理`，或針對單一額外網域執行 `立即更新`，都不必等待下一個週期。
+自動同步間隔可設為 `2` 至 `1440` 分鐘，預設為 `10` 分鐘。儲存新間隔後，會從下一輪同步開始套用。手動執行 `立即重新整理`，或針對單一額外網域執行 `立即更新`，都不必等待下一個週期。
 
 Log 可用來區分四類問題：
 

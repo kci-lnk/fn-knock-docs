@@ -3,7 +3,7 @@ lang: ko-KR
 title: "시스템 설정 및 유지 관리"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c856d437b
+translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b3b2da3b
 ---
 
 # 시스템 설정 및 유지 관리
@@ -40,7 +40,7 @@ fnOS 기기의 앱 이름이 `Knock Lite`라면 표의 완전한 FPK가 아니�
 | `위치` | IP 식별 데이터베이스와 CIDR 주소 데이터베이스 설정 | [IP 위치](/ko/guide/ip-location) |
 | `fnOS` | fnOS 공유 우회, 포트별 서비스 아이콘 연결, 지원되는 네트워크 최적화 및 표준 FPK의 FN Connect WAF 연결 관리 | [fnOS 공유 우회](/ko/guide/fnos-share-bypass), [WAF](/ko/guide/waf#fn-connect-트래픽을-waf로-전달) |
 | `차단` | 스캐너 방화벽, 집계 시간, 임계값 및 예외 설정 | [스캔 차단](/ko/guide/scanner-interception) |
-| `기능` | 날짜/시간 표시, 홈 화면 진입점 상태, 패스키 등록 안내, 자동 HTTPS, SSH 보안, 프로토콜 매핑, Wake-on-LAN, 사이드바 정렬 및 Smart Connect 메뉴 | [Wake-on-LAN](/ko/guide/wake-on-lan) 및 각 기능 문서 |
+| `기능` | 날짜/시간 표시, 홈 화면 진입점 상태, fnOS 콘솔 애플리케이션 바, 패스키 등록 안내, 자동 HTTPS, SSH 보안, 프로토콜 매핑, Wake-on-LAN, 사이드바 정렬 및 Smart Connect 메뉴 | [Wake-on-LAN](/ko/guide/wake-on-lan) 및 각 기능 문서 |
 | `게이트웨이` | 인증 캐시, 리버스 프록시 요청 제한, 크롤러 차단, 포털, 접근 범위 및 Host별 전달 옵션 | 아래 내용 |
 | `WAF`, `로그` | HTTP 규칙 보호 및 구조화된 요청 로그 | [WAF](/ko/guide/waf), [요청 로그](/ko/guide/request-logs) |
 | `터미널` | 웹 터미널 기능을 지원하고 Synology가 아닐 때 표시 | [웹 터미널](/ko/guide/web-terminal) |
@@ -63,6 +63,14 @@ fnOS 기기의 앱 이름이 `Knock Lite`라면 표의 완전한 FPK가 아니�
 - `전체 시간`은 현지화된 전체 날짜와 시간을 직접 표시하며, 마우스를 올리거나 누르면 상대 시간을 보충합니다.
 
 선택은 인스턴스 설정에 저장되어 관리 화면 전체에 적용됩니다. 서버 시간대, 시스템 시계, 로그 원본 타임스탬프 또는 프로토콜 매핑 예약 규칙은 변경하지 않습니다. 예약 작업을 조사할 때는 서버 시간과 시간대를 기준으로 합니다.
+
+## fnOS 콘솔 애플리케이션 바
+
+표준 fnOS FPK와 `Knock Lite`는 `시스템 설정 → 기능`에서 `콘솔 상단에 애플리케이션 목록 표시`를 켤 수 있습니다. 기본값은 꺼짐입니다. 켜면 관리 콘텐츠 상단에 가로로 스크롤할 수 있는 바로 가기 바가 표시되고 각 게이트웨이 애플리케이션을 새 탭에서 엽니다. Docker, OpenWrt, Linux, Synology 및 Windows에는 이 스위치가 표시되지 않습니다.
+
+Host 라우팅에서는 활성화된 비인증 Host 매핑을 나열하고 포털의 애플리케이션 이름, 아이콘 표시 설정 및 그룹 순서를 따릅니다. 사용할 수 있는 Host 항목이 없으면 경로 모드에서 저장된 경로 매핑으로 진입점을 만듭니다. 링크는 현재 관리 페이지의 프로토콜과 설정된 공용 진입 포트를 기준으로 생성됩니다. 이는 바로 가기일 뿐 DNS, 포트 포워딩 또는 인증서 설정을 대신하지 않습니다.
+
+이 스위치는 매핑을 활성화하거나 공개하거나 변경하지 않으며 로그인 또는 서비스 범위를 우회하지 않습니다. 바가 비어 있으면 현재 모드에 사용할 수 있는 매핑이 있는지 확인합니다. 링크는 열리지만 접근이 거부되면 해당 매핑의 인증과 진입 경로를 점검합니다.
 
 ## 실행 모드 전환 및 Smart Connect 폴백
 

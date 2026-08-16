@@ -3,7 +3,7 @@ lang: en-US
 title: "Dynamic DNS (DDNS)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e86a3edaacbf546ce67762e99db72171dcac09583a855d24bdd2732d5eab4975
+translationSourceHash: 3e154d83516c4287c91030fbcdcdce2cc480bcb3a627d6a70e661b4ccccc2668
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -47,6 +47,12 @@ For `DNSHE`, enter the `API Key` generated under API Management and its paired `
 | `TTL` | Optional; defaults to `600` seconds |
 
 DNSHE supports A and AAAA records at the apex, ordinary subdomains, and wildcards. Synchronization updates an existing record when its address changes, creates a missing record, and skips unnecessary writes when the address is unchanged. If the log reports a missing or unavailable managed domain or a record without an internal ID, verify the domain status and record ownership in DNSHE before retrying.
+
+### Tencent Cloud DNSPod
+
+With `Tencent Cloud DNSPod`, fn-knock first looks up the target by root domain, subdomain, record type, and line. It automatically creates a missing A or AAAA record, updates a record whose address differs, and skips a write when the address is unchanged. The configured line and TTL are used for both creation and update.
+
+If the log still fails at record lookup, do not create a placeholder record first. Verify the root-domain/subdomain split, record line, and Token permissions. DNSPod's actual query errors remain visible, while “no records” proceeds to automatic creation.
 
 ## Primary and Additional Domains
 
@@ -102,7 +108,7 @@ You can maintain multiple IPv4 and IPv6 detection sources separately. A source m
 
 ## Automatic Sync and Logs
 
-The automatic sync interval can be set from `5` to `1440` minutes and defaults to `10` minutes. A new interval starts with the next sync cycle after it is saved. Manual `Refresh now` and `Update now` actions for additional domains do not wait for the interval.
+The automatic sync interval can be set from `2` to `1440` minutes and defaults to `10` minutes. A new interval starts with the next sync cycle after it is saved. Manual `Refresh now` and `Update now` actions for additional domains do not wait for the interval.
 
 Use the logs to distinguish four classes of problem:
 

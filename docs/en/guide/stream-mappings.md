@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ce575462560986ee2b8720bcf68021de488d12060e10d49a1ad3515c90f36e57
+translationSourceHash: f5c4d7358cda482e5837b48086c3f502bffc7540759ff37c8810799164797f5c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -53,7 +53,17 @@ A same-port local-loop rule left by an older version can automatically disable P
 
 The Target must be reachable from the fn-knock runtime environment. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a host or LAN target.
 
-The list search matches protocol, External port, Comment, Target address, and authentication state. You can edit a Comment directly in the list; use the mapping editor for protocol, port, Target, or authentication changes.
+The list search matches protocol, External port, Comment, Target address, service-detection results, and authentication state. You can edit a Comment directly in the list; use the mapping editor for protocol, port, Target, or authentication changes.
+
+## Service Detection and Strict Protocol Validation
+
+Starting with `2.3.0`, a new Protocol mapping initially saves only its port and Target and remains disabled. After saving, open the rule's actions menu and select `Probe`. The system actively connects to the Target. It enables the mapping and changes its validation mode to `Strict protocol validation` only when the result identifies a strictly validatable service with high confidence. The rule remains disabled if probing fails, the result is ambiguous, or the identified service does not support the selected transport.
+
+Upstream authentication can make an HTTP probe see only `401`, preventing it from reliably distinguishing ordinary HTTP from a service such as WebDAV. In that case, select `Specify service type` from the actions menu, verify what is actually running at the Target, and choose `Confirm and enable validation`. Selecting the wrong type rejects legitimate connections as a protocol mismatch. Clearing a manually specified service type also turns off strict validation and disables the mapping.
+
+Changing a rule's Target invalidates its previous service profile and automatically disables the rule. Probe the new Target or specify its service type before using it. An already verified service profile is preserved only when the transport, External port, and Target remain unchanged and you edit a field such as the Comment or login requirement. Changing the transport or port creates a new rule identity and likewise requires another probe or manual service selection.
+
+Rules created before the upgrade may appear as legacy or as not using strict validation. An upgrade alone does not assign a service type to them. Verify each Target and run `Probe`. Before that verification is complete, do not edit the Target merely to test a service, because a Target change follows the new behavior and disables the mapping.
 
 ## Authentication Checks Source IP and Credential Scope
 
@@ -70,6 +80,14 @@ If the egress IP changes, authorization expires, post-login IP authorization is 
 Protocol clients have no browser Cookie, so the gateway associates the source IP confirmed by the current session with the protocol grant. While the session remains valid, its current source IP stays eligible for the full lifetime of that protocol grant. Additional IPs observed through mobile-network drift are valid only within the configured mobility window. Once the session or protocol grant expires, connections are denied; an IP is not retained permanently merely because it was used for an earlier sign-in.
 
 Disabling `Require auth` makes the listening port a public forward. You must still configure the target service's own SSH keys, database password, TLS, and least-privilege access.
+
+## Allow Selected Sources to Bypass Login
+
+For a mapping with `Require auth` enabled, open its actions menu and select `Configure login bypass` to let selected sources connect without signing in through the web UI first. Conditions can match an exact source IP, a CIDR, or a source region. All conditions in one group use AND; separate groups use OR. Sources that do not match still follow the normal login-authentication flow.
+
+Region conditions are compiled into a fixed CIDR set when the policy is saved; they are not rewritten automatically when the location database changes. Save the policy again after such an update. A very broad CIDR or a permissive rule made entirely of negative conditions requires a second confirmation. Each mapping can contain up to `16` groups with up to `16` conditions per group.
+
+Login bypass skips only fn-knock's login check. It does not skip service detection or strict protocol validation, and it does not replace the Target's own accounts, keys, or TLS. Turning off `Require auth` already makes the mapping directly reachable from every source, so an enabled bypass policy is disabled while its rules may remain as a draft. Review the policy again if authentication is later re-enabled.
 
 ## Global Open Window
 

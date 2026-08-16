@@ -3,7 +3,7 @@ lang: ko-KR
 title: "OpenAPI: 관리 API 공개와 AI Agent"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4b815692c6b937004aad1ab085b5447d3fdfe04bd8f608a2c4bea21be2dda281
+translationSourceHash: 73ac2ba908f907a1d52a4eb5d88b113b07f6a7e2e2e6de7ef839df741165488b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,6 +56,10 @@ fn-knock의 Rust 관리 백엔드는 관리 엔드포인트 확인, 클라이언
 ![fn-knock 프로토콜 매핑을 통해 연 Swagger UI. server-admin API와 엔드포인트 목록이 표시됩니다.](/openapi-swagger-ui.webp)
 
 Swagger UI의 스크립트, 스타일 및 아이콘은 fn-knock에 포함되어 `/docs/assets/`에서 로컬로 제공됩니다. jsDelivr, unpkg 또는 다른 공개 CDN에 의존하지 않습니다. 관리 백엔드와 `/docs/json`에 접근할 수 있으면 오프라인이거나 프런트엔드 CDN이 차단된 환경에서도 전체 문서를 열 수 있습니다. 알 수 없는 에셋 경로는 `404`를 반환합니다.
+
+`2.3.0`부터 OpenAPI 계약은 모든 관리 작업에 중국어 간체 카테고리 설명, 작업 요약, 동작 경계 및 응답 설명을 제공합니다. 일부 복잡한 작업에는 요청 예시, 응답 예시 및 Schema 필드 설명도 포함됩니다. 같은 내용이 Swagger UI와 `/docs/json`에 모두 있으므로 코드 생성기와 AI Agent도 읽을 수 있습니다. 경로, 메서드 및 필드 이름은 코드의 원래 형식을 유지합니다.
+
+계약 설명은 관리 화면 언어에 따라 바뀌지 않으며 현재 중국어 간체로 제공됩니다. 쓰기 작업의 부작용을 이름만으로 추측하지 말고 호출 전에 작업 설명과 Schema를 함께 확인합니다.
 
 ### 403 응답 또는 연결 실패
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Web Application Firewall（WAF）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: db97ca504b3859840b8237329798bf441587b0f7faf3afc081b7cc1fae75d9a0
+translationSourceHash: 4db3f6b804a08ba4362063d304e051074821ff170f48030a8670ef2330fad212
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -100,6 +100,10 @@ Host ごとの設定は、独立した WAF インスタンスではありませ�
 - 選択した日付の WAF イベントをすべて削除。
 
 特定の日付のログを削除すると、管理画面からは復元できません。監査証跡を保持する必要がある場合は、先に詳細をエクスポートまたはコピーしてください。
+
+ゲートウェイは待機中の WAF イベントをリース付きで配信します。バックエンドはイベント、日付インデックス、統計を 1 つの SQLite トランザクションで保存し、すべて成功した後にだけキュー内のコピーを確認済みにします。永続化に失敗するとリースを解放して後で再試行し、同じ Trace ID が再配信されてもイベント統計を二重加算しません。そのため、一時的なディスクのビジー状態や書き込みエラーでログ表示が遅れることはありますが、1 回の失敗だけで消失または二重計上されることはありません。
+
+まだ永続化されていない WAF Trace ID をリクエストログから開いた場合、ページは `5` 秒ごとに最長約 `1` 分間再試行します。それでも見つからない場合は、そのリクエストが WAF に入ったか、対象 Host で WAF が有効か、サーバーログに永続化エラーがあるかを確認してください。
 
 ### ログ詳細のフィールド
 

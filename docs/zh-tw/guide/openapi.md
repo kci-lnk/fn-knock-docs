@@ -3,7 +3,7 @@ lang: zh-TW
 title: "OpenAPI：開放管理 API 與 AI Agent"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4b815692c6b937004aad1ab085b5447d3fdfe04bd8f608a2c4bea21be2dda281
+translationSourceHash: 73ac2ba908f907a1d52a4eb5d88b113b07f6a7e2e2e6de7ef839df741165488b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,6 +56,10 @@ fn-knock 的 Rust 管理後端提供 OpenAPI 3.1 文件，可用來查看管理�
 ![透過 fn-knock 通訊協定映射開啟的 Swagger UI，顯示 server-admin API 與介面清單](/openapi-swagger-ui.webp)
 
 Swagger UI 的 Script、Style 與圖示已封裝在 fn-knock 內，並從 `/docs/assets/` 在本機載入，不依賴 jsDelivr、unpkg 或其他公共 CDN。只要管理後端與 `/docs/json` 可存取，在離線或無法連線前端 CDN 的環境也能完整開啟文件；未知的資源路徑會直接回傳 `404`。
+
+從 `2.3.0` 起，OpenAPI 契約為所有管理操作補充簡體中文的分類說明、操作摘要、行為邊界與 Response 說明；部分複雜操作也包含 Request Example、Response Example 與 Schema 欄位說明。這些內容同時存在於 Swagger UI 及 `/docs/json`，程式碼產生器與 AI Agent 也能讀取；Path、Method 與欄位名稱仍維持程式碼中的原始形式。
+
+契約中的說明文字不會隨管理後台介面語言切換，目前以簡體中文提供。呼叫前應同時閱讀操作說明與 Schema，不要只依介面名稱推測寫入操作的副作用。
 
 ### 回傳 403 或無法連線
 

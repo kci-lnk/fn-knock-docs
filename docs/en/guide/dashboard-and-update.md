@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a366716bfa6a
+translationSourceHash: 080dda8f392548154e9345a0699cd4b09328038ec8e4bf5c5f7bce95903b5871
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,6 +63,14 @@ Do not try to install an FPK from the update page on Docker, OpenWrt, or Synolog
 Check for a new version under `Version and updates`. When an update is available, the page downloads the FPK for the device architecture, verifies the file, and then installs it through fnOS App Center before restarting the app. The page shows progress during download, verification, and installation; do not close it during the installation stage.
 
 The admin console and gateway are briefly unavailable during the update. Export a configuration backup before starting. After the update completes, reopen the app from the fnOS desktop and confirm that the version, authentication settings, and gateway entry points are all working.
+
+### SQLite Protection During an Update
+
+Starting with `2.3.0`, an in-app installation on the standard fnOS FPK first checkpoints the SQLite WAL, runs a quick integrity check, and creates a verified, consistent `fn-knock.sqlite3.pre-update.bak` snapshot in the data directory. After this preflight succeeds, subsequent writes temporarily use stricter synchronization. A failure at any step aborts installation before the program version is switched.
+
+A normal service stop also waits for background work to finish and checkpoints the WAL again. Package scripts on fnOS, OpenWrt, and Synology allow SQLite to complete its graceful shutdown. If the process cannot stop, upgrade or uninstall exits with an error instead of replacing files while the old process is still writing.
+
+The pre-update snapshot resides beside the active database and only reduces risk during the update transition. It is not an independent backup and does not replace a `.knock` export, a data-directory backup, or a system snapshot. Keep an off-device backup as described by the deployment guide.
 
 ## Update Docker Compose
 

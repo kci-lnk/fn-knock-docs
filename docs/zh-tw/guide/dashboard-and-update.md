@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a366716bfa6a
+translationSourceHash: 080dda8f392548154e9345a0699cd4b09328038ec8e4bf5c5f7bce95903b5871
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -63,6 +63,14 @@ translationSourceHash: aa0d25c89d02eba8670c3e91db9ee85dad011adba03c21f9f7c2a3667
 請在 `版本與更新` 中檢查新版本。偵測到更新後，頁面會下載符合裝置架構的 FPK 與 Checksum 檔案，再透過飛牛應用程式中心安裝並重新啟動應用程式。下載、驗證與安裝期間會顯示進度；進入安裝階段後請勿關閉頁面。
 
 更新期間，管理後台與閘道會短暫無法使用。開始前請先匯出設定備份；更新完成後，從飛牛桌面重新開啟應用程式，確認版本號、身分驗證設定與閘道入口均已恢復正常。
+
+### 更新時的 SQLite 保護
+
+從 `2.3.0` 起，飛牛標準 FPK 的應用程式內安裝會先將 SQLite WAL 寫回主資料庫、執行快速完整性檢查，並在資料目錄建立經過驗證的 `fn-knock.sqlite3.pre-update.bak` 一致性 Snapshot。預檢成功後，後續寫入會暫時使用更嚴格的同步模式；任一步驟失敗都會在切換程式版本前停止安裝。
+
+正常停止服務時，也會等待背景工作結束並再次寫回 WAL。飛牛、OpenWrt 與 Synology 的套件 Script 會保留足夠時間讓 SQLite 正常停止；若 Process 無法停止，升級或解除安裝會回報錯誤並退出，不會在舊 Process 仍寫入資料庫時繼續替換檔案。
+
+這份更新前 Snapshot 與作用中的資料庫位於相同資料目錄，只用來降低更新切換期間的風險；它不是獨立備份，也不能取代 `.knock` 匯出、資料目錄備份或系統 Snapshot。更新前仍應依部署文件保存一份異機備份。
 
 ## 更新 Docker Compose
 

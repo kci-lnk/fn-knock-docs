@@ -3,7 +3,7 @@ lang: zh-TW
 title: "WAF"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: db97ca504b3859840b8237329798bf441587b0f7faf3afc081b7cc1fae75d9a0
+translationSourceHash: 4db3f6b804a08ba4362063d304e051074821ff170f48030a8670ef2330fad212
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -100,6 +100,10 @@ Scanner 攔截也有獨立的常用地豁免開關；變更 WAF 開關不會連�
 - 刪除所選日期的所有 WAF Event。
 
 刪除某一天的 Log 後，無法從管理頁面還原。需要保留稽核證據時，應先匯出或複製詳細資料。
+
+閘道會以 Lease 交付待寫入的 WAF Event；後端會在同一個 SQLite Transaction 中儲存 Event、日期索引與統計，全部成功後才確認移除 Queue 中的副本。若持久化失敗，Lease 會釋放並在之後重新整理時重試；重複交付相同 Trace ID 不會重複累加 Event 統計。因此短暫的磁碟忙碌或寫入錯誤可能讓 Log 延後出現，但不應因一次失敗而直接遺失或重複計數。
+
+從 Request Log 依 Trace ID 跳轉到一筆尚未落盤的 WAF Event 時，頁面會每 `5` 秒自動重試，最多約 `1` 分鐘。仍沒有結果時，請再確認 Request 是否實際進入 WAF、目標 Host 是否啟用 WAF，以及伺服器 Log 中是否有持久化錯誤。
 
 ### Log 詳細欄位
 

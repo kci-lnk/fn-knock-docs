@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c856d437b
+translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b3b2da3b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -42,7 +42,7 @@ If the app on an fnOS device is named `Knock Lite`, it is a native non-root pack
 | `Location` | Configures the IP geolocation database and CIDR location database | [IP Geolocation](/en/guide/ip-location) |
 | `fnOS` | Manages fnOS Share Bypass, port-icon takeover, available network optimizations, and FN Connect WAF ingress on the standard FPK | [fnOS Share Bypass](/en/guide/fnos-share-bypass), [WAF](/en/guide/waf#route-fn-connect-traffic-through-waf) |
 | `Blocking` | Configures the scanner firewall, trigger window, thresholds, and exemptions | [Automated Scan Blocking](/en/guide/scanner-interception) |
-| `Features` | Controls date/time display, home-page entry status, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, Wake-on-LAN, sidebar ordering, and the Smart Connect entry | [Wake-on-LAN](/en/guide/wake-on-lan) and the corresponding feature documentation |
+| `Features` | Controls date/time display, home-page entry status, the fnOS console application bar, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, Wake-on-LAN, sidebar ordering, and the Smart Connect entry | [Wake-on-LAN](/en/guide/wake-on-lan) and the corresponding feature documentation |
 | `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
 | `WAF`, `Logs` | Manages HTTP rule protection and structured request logs | [Web Application Firewall (WAF)](/en/guide/waf), [Request Logs](/en/guide/request-logs) |
 | `Terminal` | Visible when the platform supports Web Terminal and is not Synology | [Web Terminal](/en/guide/web-terminal) |
@@ -65,6 +65,14 @@ The page lists only entries visible under the current runtime mode and feature s
 - `Full time` shows the localized full date and time directly. Hovering or tapping instead provides the relative value.
 
 The selection is stored in instance configuration and applied throughout the admin console. It does not change the server time zone, system clock, original log timestamps, or protocol-mapping schedules. Use server time and time zone when troubleshooting scheduled tasks.
+
+## fnOS Console Application Bar
+
+The standard fnOS FPK and `Knock Lite` can enable `Show application list at the top of the console` under `System settings → Features`. It is off by default. When enabled, a horizontally scrollable shortcut bar appears above the admin content and opens each gateway application in a new tab. Docker, OpenWrt, Linux, Synology, and Windows do not show this switch.
+
+With Host routing, the bar lists enabled, non-authentication Host mappings and follows the portal's application labels, icon-display setting, and group order. If no eligible Host item exists, a path-mode configuration falls back to saved path mappings. Links are generated from the current admin-page protocol and configured public entry port. They are shortcuts only and do not replace DNS, port forwarding, or certificate configuration.
+
+The switch does not enable, publish, or alter a mapping, nor does it bypass login or service scope. If the bar is empty, confirm that the current mode has eligible mappings. If a link opens but access is denied, troubleshoot the corresponding mapping's authentication and entry path.
 
 ## Runtime mode switching and Smart Connect fallback
 

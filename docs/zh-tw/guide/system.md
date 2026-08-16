@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c856d437b
+translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b3b2da3b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -42,7 +42,7 @@ translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c8
 | `屬地` | 設定 IP 地理位置資料庫與 CIDR 位址庫 | [IP 地理位置](/zh-tw/guide/ip-location) |
 | `fnOS` | 管理飛牛分享直通、連接埠圖示接管、可用的網路最佳化，以及標準 FPK 的 FN Connect WAF 接入 | [飛牛分享直通](/zh-tw/guide/fnos-share-bypass)、[WAF](/zh-tw/guide/waf#fn-connect-流量接入-waf) |
 | `攔截` | Scanner 防火牆、觸發時間窗、門檻及豁免 | [Scanner 攔截](/zh-tw/guide/scanner-interception) |
-| `功能` | 日期時間顯示、首頁入口狀態、Passkey 綁定提示、自動 HTTPS、SSH 安全性、協定映射、遠端喚醒、側邊欄排序及智慧連線入口 | [遠端喚醒](/zh-tw/guide/wake-on-lan)及各功能文件 |
+| `功能` | 日期時間顯示、首頁入口狀態、fnOS 控制台應用程式列、Passkey 綁定提示、自動 HTTPS、SSH 安全性、協定映射、遠端喚醒、側邊欄排序及智慧連線入口 | [遠端喚醒](/zh-tw/guide/wake-on-lan)及各功能文件 |
 | `閘道` | 驗證快取、反代節流、Crawler 攔截、Portal、可見性及 Host 層級轉送選項 | 請參考本頁後續章節 |
 | `WAF`、`Log` | HTTP 規則防護及結構化 Request Log | [WAF](/zh-tw/guide/waf)、[Request Log](/zh-tw/guide/request-logs) |
 | `終端機` | 平台具備 Web 終端機能力，且不是 Synology 時顯示 | [Web 終端機](/zh-tw/guide/web-terminal) |
@@ -65,6 +65,14 @@ translationSourceHash: e8bb28123a4f102556f936fd8d4858ccae71bdfc195514a6dfe0808c8
 - `完整時間` 直接顯示本地化的完整日期時間；滑鼠停留或點擊時改為補充相對時間。
 
 此設定會儲存至執行個體設定並統一套用於管理介面，不會修改伺服器時區、系統時鐘、Log 原始時間或協定映射定時規則。排查排程工作時仍應以伺服器時間與時區為準。
+
+## fnOS 控制台應用程式列
+
+飛牛標準 FPK 與 `敲門 knock Lite` 可在 `系統設定 → 功能` 開啟 `在控制台頂端顯示應用程式清單`。此功能預設關閉；開啟後，管理內容區頂端會顯示可水平捲動的應用程式捷徑列，點擊項目會在新分頁開啟對應的閘道位址。Docker、OpenWrt、Linux、Synology 與 Windows 不會顯示此開關。
+
+使用 Host 路由時，應用程式列會列出已啟用、且不是驗證入口的 Host 映射，並沿用 Portal 的應用程式名稱、圖示顯示設定與群組順序；沒有可用 Host 項目時，Path 模式會依已儲存的路徑映射產生入口。連結會依目前管理頁面 Protocol 與已設定的公網入口連接埠產生，因此它只是存取捷徑，不會取代 DNS、Port Forwarding 或憑證設定。
+
+此開關不會啟用、公開或變更任何映射，也不會繞過登入與服務範圍。應用程式列為空時，請先確認目前模式中有可用映射；連結可開啟但存取遭拒時，請繼續排查對應映射的驗證與入口路徑。
 
 ## 執行模式切換與智慧連線回退
 
