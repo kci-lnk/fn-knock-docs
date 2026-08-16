@@ -382,6 +382,13 @@ export const PAGE_TITLES = {
     ja: 'アップストリームへの転送時に Host ヘッダーを維持',
     ko: '업스트림 Host 헤더 유지',
   },
+  'guide/gateway-built-in-pages': {
+    root: '网关内置页面',
+    'zh-tw': '閘道內建頁面',
+    en: 'Built-in Gateway Pages',
+    ja: 'ゲートウェイ内蔵ページ',
+    ko: '게이트웨이 내장 페이지',
+  },
   'guide/gateway-path-response': {
     root: '路径响应',
     'zh-tw': '路徑回應',
@@ -850,6 +857,7 @@ const SIDEBAR_SECTIONS = [
           'guide/openapi',
           'guide/gateway-proxy-headers',
           'guide/gateway-host-response',
+          'guide/gateway-built-in-pages',
           'guide/gateway-portal',
           'guide/smart-connect',
           'guide/fnos-share-bypass',
