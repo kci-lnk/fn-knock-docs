@@ -3,7 +3,7 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d112f5cea88027b537b4e2f13578a5c7584014266dd773261af4949b9f470e5f
+translationSourceHash: 9056a8ac97b6f3f055a74b5e5193e86eabfd4c8e2946ad7ff177721f2677822e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -83,7 +83,7 @@ The server currently accepts only an archive that:
 - Uses the `.knock` extension.
 - Is no larger than `128 MiB`.
 - Uses the currently supported backup schema, which is Schema `1`.
-- Was exported by an application version no older than the minimum compatible version defined by the current code, currently `1.4.0`.
+- Was exported by an application version that satisfies the minimum compatibility requirement defined by the current code.
 - Was exported by an application version no newer than the running fn-knock version.
 
 A backup exported by a newer release therefore cannot be restored directly to an older release. Upgrade the target to the same or a later version before importing. Use the version range in any failure message as the authoritative compatibility range.
@@ -130,7 +130,7 @@ Restored configuration may refer to loopback addresses, LAN IPs, file paths, or 
 | Incorrect file extension | Select the original `.knock` file; do not merely rename a regular ZIP or JSON file |
 | Unsupported schema or version | Upgrade the target into the reported range; do not edit the archive version fields manually |
 | Archive is too large | Confirm that the file is not corrupt or replaced; each archive is limited to `128 MiB` |
-| Failed to read archive | Check file integrity, the archive password, the internal `fn-knock-backup.json`, and free disk space. Since 2.2.1, fn-knock reads ZIP data directly and no longer depends on the system `unzip` command |
+| Failed to read archive | Check file integrity, the archive password, the internal `fn-knock-backup.json`, and free disk space. fn-knock reads ZIP data directly and does not depend on the system `unzip` command |
 | Import failed and reports rollback | The previous configuration was normally restored from the pre-import snapshot. If storage or runtime rollback also failed, stop retrying the import, preserve the full error, and inspect the instance from a platform entry point |
 | Shared directory unavailable | Confirm that the platform provides a shared root, the directory is still mounted, and the process can read and write it; alternatively, use local download and upload |
 | Import succeeds with warnings | Do not import again; first inspect the run-mode, WAF, SSL, or gateway synchronization named by the warning, then save the relevant configuration manually if needed |

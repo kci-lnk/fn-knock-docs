@@ -17,6 +17,7 @@ const discouraged = [
   ['模板化收尾', /标准完成状态/g],
   ['模板化收尾', /相关阅读/g],
   ['模板化铺垫', /一句话理解/g],
+  ['具体产品版本号', /(?<![\d.])v?\d+\.\d+\.\d+(?![\d.])/gi],
 ]
 
 async function collectMarkdown(directory) {

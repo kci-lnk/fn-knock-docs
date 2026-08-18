@@ -3,14 +3,14 @@ lang: en-US
 title: "Wake-on-LAN"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fcd0753cd92696ac03264e1ea4834bb15df28ec1d6e116e5dda261b2c36a2bba
+translationSourceHash: 41a223ca58fec4c7ab27b00142ea69d1e243f1e754436b23ad42d6d70367ca73
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Wake-on-LAN
 
-`Wake-on-LAN` starts a powered-off or sleeping device by sending a Magic Packet on its LAN. fn-knock can broadcast directly onto its local network or use the built-in Relay of another fn-knock instance to reach a different network. Signed-in users can also open a simplified wake page from the gateway portal.
+`Wake-on-LAN` starts a powered-off or sleeping device by sending a Magic Packet on its LAN. fn-knock can broadcast directly onto its local network or use the built-in Relay of another fn-knock instance to reach a different network. It can also shut down an online device over SSH. Signed-in users can open a simplified power-control page from the gateway portal.
 
 Wake-on-LAN only sends a wake signal; it does not replace the device's own power management. WOL must already be enabled in the target motherboard, network adapter, firmware, and operating system, and the adapter must remain powered after shutdown.
 
@@ -62,7 +62,25 @@ All of the following are required:
 3. The browser has a live sign-in session.
 4. The sign-in credential's service scope includes the built-in WOL page.
 
-A credential with `All scopes` includes this entry automatically. For `Custom scopes`, select `Built-in Wake-on-LAN page` under `Auth settings → Permissions`. Hiding the portal shortcut does not delete devices or affect wake requests from an administrator, Relay, or third-party platform, but it does prevent the public authentication API from opening or operating the built-in page.
+A credential with `All scopes` includes this entry automatically. For `Custom scopes`, select `Built-in Wake-on-LAN page` under `Auth settings → Permissions`. The same scope permits shutdown for an online device whose SSH shutdown configuration is enabled. Hiding the portal shortcut does not delete devices or affect administrator, Relay, or third-party operations, but it does prevent the public authentication API from opening or operating the built-in page.
+
+## SSH remote shutdown
+
+Edit a saved device to configure `SSH remote shutdown`. The device must be directly reachable over SSH from fn-knock and cannot be the machine running the current fn-knock instance. Linux, macOS, and Windows targets are supported, using either a password or a private key.
+
+fn-knock uses a fixed command for each operating system rather than accepting an arbitrary command:
+
+```text
+Linux:   sudo -n /usr/bin/systemctl poweroff --no-block
+macOS:   sudo -n /sbin/shutdown -h now
+Windows: shutdown.exe /s /t 0
+```
+
+Run `Test SSH` after saving. The test pins the server host key and verifies login and shutdown permission without powering off the device. Retest whenever the host, port, username, authentication method, operating system, or server host key changes.
+
+The shutdown action appears only while the device is online and its SSH configuration is complete. It requires a confirmation countdown. An accepted SSH command is not proof that the device has powered off: fn-knock checks status again after short delays and applies a per-device cooldown to prevent repeated requests.
+
+SSH credentials are stored in the current installation's encrypted credential directory. Use a dedicated least-privilege account and grant only the exact fixed command. Do not enable general passwordless `sudo`, Administrator access, or interactive shell privileges solely for this feature.
 
 ## Cross-network Relay
 
@@ -113,9 +131,9 @@ Both integrations require outbound access from fn-knock to the provider's HTTPS 
 
 ## Events, backups, and migration
 
-Each wake attempt creates a `Wake-on-LAN completed` event with the target, delivery method, source (administrator, portal, Blinker, or Bemfa), result, and latency. You can create a notification rule for it in the Event Center. The event reports the broadcast workflow, not that the device completed its boot; confirm that with the later online state.
+Each wake attempt creates a `Wake-on-LAN completed` event with the target, delivery method, source (administrator, portal, Blinker, or Bemfa), result, and latency. A shutdown attempt creates an `SSH remote shutdown completed` event. You can create notification rules for both in the Event Center. A wake event reports the broadcast workflow rather than a completed boot, and a shutdown event reports SSH command handling rather than a guaranteed power-off; confirm either result with the later online state.
 
-Devices, Relays, and non-sensitive integration settings are application configuration. Relay PSKs, Blinker device keys, and Bemfa private keys are kept in the current installation's encrypted credential directory and are not included in a `.knock` application backup. After migration or restore, pair Relays again, re-enter third-party credentials, and verify that broadcast addresses, device IPs, UDP ports, and firewall rules still match the new environment.
+Devices, Relays, and non-sensitive integration settings are application configuration. SSH passwords and private keys, Relay PSKs, Blinker device keys, and Bemfa private keys are kept in the current installation's encrypted credential directory and are not included in a `.knock` application backup. After migration or restore, re-enter and retest SSH credentials, pair Relays again, re-enter third-party credentials, and verify that device addresses, ports, host keys, and firewall rules still match the new environment.
 
 ## Troubleshooting order
 
@@ -126,7 +144,8 @@ Devices, Relays, and non-sensitive integration settings are application configur
 5. If broadcast succeeds but the device stays off, investigate the device, switch, or broadcast path instead of repeatedly selecting Wake.
 6. If status remains pending, check the device IP, ICMP, neighbor table, inter-VLAN routing, and Relay status probing.
 7. If the portal entry is missing, check the feature switch, `Show Wake-on-LAN shortcut`, and credential service scope.
-8. If a third-party platform does not respond, inspect connection state and the latest error, confirm outbound HTTPS/MQTT TLS, credentials, and topic, then save the device again.
+8. If SSH testing fails, verify direct reachability, the pinned host key, credentials, the selected operating system, and permission for the exact fixed command. Do not work around it by granting unrestricted administrative access.
+9. If a third-party platform does not respond, inspect connection state and the latest error, confirm outbound HTTPS/MQTT TLS, credentials, and topic, then save the device again.
 
 - [Gateway Portal](/en/guide/gateway-portal)
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)

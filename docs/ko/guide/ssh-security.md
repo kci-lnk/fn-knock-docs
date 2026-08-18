@@ -3,7 +3,7 @@ lang: ko-KR
 title: "SSH 보안 강화"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
+translationSourceHash: 93a607a9d11e1588b4637de6ea0e44937e87295d8779d52c70672b17d05ed542
 ---
 
 # SSH 보안 강화
@@ -33,7 +33,7 @@ SSH 보안은 호스트 로그인 기록, 실패 횟수, 지역 및 CIDR 규칙�
 | SSH 접근 허용 지역 | 기본적으로 비어 있음 | 비어 있으면 지역을 제한하지 않으며 값이 있으면 선택한 지역, 사용자 지정 CIDR 및 기본 로컬 출발지만 허용 |
 | 사용자 지정 CIDR | 기본적으로 비어 있으며 한 줄에 하나 | 비표준 VPN, 사무실 공인 인터넷 출구 또는 다른 고정 IPv4/IPv6 네트워크 대역 추가 |
 
-지역은 광역 지역, 기초 지역 및 통신사별로 선택할 수 있습니다. China Telecom, China Unicom 또는 China Mobile별 CIDR 세분화에는 CIDR 주소 데이터베이스 `0.1.3` 이상이 필요합니다. 지역 목록을 불러올 수 없다면 확인하지 않은 제한 범위를 저장하지 말고 우선 고정 CIDR만 사용합니다.
+지역은 광역 지역, 기초 지역 및 통신사별로 선택할 수 있습니다. 연결된 CIDR 주소 데이터베이스가 통신사 데이터를 제공하면 China Telecom, China Unicom 또는 China Mobile별로 CIDR을 세분화할 수 있습니다. 지역 목록을 불러올 수 없다면 확인하지 않은 제한 범위를 저장하지 말고 우선 고정 CIDR만 사용합니다.
 
 사용자 지정 CIDR은 페이지에서 검증하며 형식 오류가 있으면 저장할 수 없습니다. 지역 제한을 추가하기 전에 현재 신뢰하는 인터넷 출구와 예비 관리 네트워크를 사용자 지정 CIDR에 먼저 추가합니다.
 

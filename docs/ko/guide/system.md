@@ -3,7 +3,7 @@ lang: ko-KR
 title: "시스템 설정 및 유지 관리"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b3b2da3b
+translationSourceHash: 12ec0714b62341ef746ea4281a15daf4dc9005053f4e0deeb2221449ec50d7e8
 ---
 
 # 시스템 설정 및 유지 관리
@@ -74,7 +74,7 @@ Host 라우팅에서는 활성화된 비인증 Host 매핑을 나열하고 포�
 
 ## 실행 모드 전환 및 Smart Connect 폴백
 
-실행 모드를 바꾸면 후보 설정을 저장한 뒤 Smart Connect, 게이트웨이 라우트 및 플랫폼 런타임 상태를 순서대로 동기화합니다. `2.2.6`은 이 경로에서 발생할 수 있던 상호 대기 문제를 수정했습니다. 전환 중에는 페이지를 닫지 말고 완료 후 결과 메시지에 따라 새 진입 경로를 검증합니다.
+실행 모드를 바꾸면 후보 설정을 저장한 뒤 Smart Connect, 게이트웨이 라우트 및 플랫폼 런타임 상태를 순서대로 동기화하며 각 동기화 단계가 서로 기다리지 않게 합니다. 전환 중에는 페이지를 닫지 말고 완료 후 결과 메시지에 따라 새 진입 경로를 검증합니다.
 
 Smart Connect를 지원하는 표준 fnOS FPK에서 전환 중 로컬 IP 또는 `dnsmasq` 동기화가 실패하면 fn-knock는 모드 전환을 완료하되 Smart Connect를 자동으로 끄고 경고를 표시합니다. DNS 분할 동기화 실패가 전체 작업을 막지 않게 하기 위한 동작입니다. 로컬 IP, 루트 도메인 및 `dnsmasq` 쓰기 상태를 확인한 뒤 `시스템 설정 → 기능`에서 Smart Connect를 다시 켭니다. 게이트웨이 라우트나 방화벽 적용 자체가 실패하면 이전 설정으로 롤백을 시도합니다. LAN 또는 콘솔 진입점을 유지하고 오류를 확인하며 여러 모드를 연속으로 전환하지 않습니다.
 

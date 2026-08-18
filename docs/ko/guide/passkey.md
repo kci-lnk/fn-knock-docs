@@ -3,7 +3,7 @@ lang: ko-KR
 title: "패스키"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c7c357cf
+translationSourceHash: 86ea645fe3edf31535747fe19df3f2209f795644a3a67551074668a50c648e15
 ---
 
 # 패스키
@@ -17,7 +17,7 @@ translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c
 - 인증 Host, 쿠키 도메인 및 패스키 RP 설정이 도메인 구성과 일치합니다.
 - 브라우저 또는 운영체제에서 WebAuthn을 지원합니다.
 
-2.2.1에서는 Windows 패스키 공급자, Android / Google Password Manager 및 브라우저별 자격 증명 형식과의 호환성을 개선했습니다. 업그레이드해도 기존 패스키의 RP 연결은 바뀌지 않습니다. 이전 자격 증명이 계속 실패하면 TOTP로 로그인한 뒤 동일한 최종 도메인에서 테스트 패스키를 다시 연결합니다. 유일한 복구 수단을 먼저 삭제하지 않습니다.
+현재 구현은 Windows 패스키 공급자, Android / Google Password Manager 및 브라우저별 자격 증명 형식을 지원합니다. 앱을 업데이트해도 기존 패스키의 RP 연결은 바뀌지 않습니다. 기존 자격 증명이 계속 실패하면 TOTP로 로그인한 뒤 동일한 최종 도메인에서 테스트 패스키를 다시 연결합니다. 유일한 복구 수단을 먼저 삭제하지 않습니다.
 
 서브도메인 환경에서는 패스키를 인증 Host에 연결하거나 제품 설정에 따라 상위 도메인을 사용할 수 있습니다. RP 설정을 변경하면 기존 패스키를 사용하지 못할 수 있으므로 전환 전에 유효한 TOTP를 남겨 둡니다.
 

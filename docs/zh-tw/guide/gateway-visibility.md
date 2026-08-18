@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道可見性"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5727aa90
+translationSourceHash: 2880c3aae15d392fe8c633b10f8499530e10b970ec3482000861f876c3a7efcb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,7 +30,7 @@ translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5
 3. 使用自訂 CIDR 補上固定 VPN、辦公室出口或其他可信任網段。
 4. 儲存並同步至閘道。
 
-地區選項會在儲存時解析成最終 CIDR。自訂 CIDR 每行一筆，支援 IPv4 與 IPv6；只要有格式錯誤就無法儲存。依中國電信、聯通或移動篩選地區時，需要 CIDR 資料庫 `0.1.3` 或更新版本；不支援時仍可使用一般地區與自訂 CIDR。
+地區選項會在儲存時解析成最終 CIDR。自訂 CIDR 每行一筆，支援 IPv4 與 IPv6；只要有格式錯誤就無法儲存。只有連接的 CIDR 資料庫提供電信業者資料時，才能依中國電信、聯通或移動篩選地區；不支援時仍可使用一般地區與自訂 CIDR。
 
 請先加入一個確認可用的 CIDR，例如自己的 VPN 或辦公室出口，再啟用限制。地區資料庫、行動網路與 Proxy 出口都可能有誤差；只依地區限縮時，旅行、漫遊與企業網路使用者容易遭到誤擋。
 

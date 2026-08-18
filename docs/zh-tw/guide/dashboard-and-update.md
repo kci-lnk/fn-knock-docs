@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 080dda8f392548154e9345a0699cd4b09328038ec8e4bf5c5f7bce95903b5871
+translationSourceHash: 7965bdcd45c2fc36faa2f7c126e79f742a0610507fc422736623e1a64a70bd57
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -66,7 +66,7 @@ translationSourceHash: 080dda8f392548154e9345a0699cd4b09328038ec8e4bf5c5f7bce959
 
 ### 更新時的 SQLite 保護
 
-從 `2.3.0` 起，飛牛標準 FPK 的應用程式內安裝會先將 SQLite WAL 寫回主資料庫、執行快速完整性檢查，並在資料目錄建立經過驗證的 `fn-knock.sqlite3.pre-update.bak` 一致性 Snapshot。預檢成功後，後續寫入會暫時使用更嚴格的同步模式；任一步驟失敗都會在切換程式版本前停止安裝。
+飛牛標準 FPK 的應用程式內安裝會先將 SQLite WAL 寫回主資料庫、執行快速完整性檢查，並在資料目錄建立經過驗證的 `fn-knock.sqlite3.pre-update.bak` 一致性 Snapshot。預檢成功後，後續寫入會暫時使用更嚴格的同步模式；任一步驟失敗都會在切換程式檔案前停止安裝。
 
 正常停止服務時，也會等待背景工作結束並再次寫回 WAL。飛牛、OpenWrt 與 Synology 的套件 Script 會保留足夠時間讓 SQLite 正常停止；若 Process 無法停止，升級或解除安裝會回報錯誤並退出，不會在舊 Process 仍寫入資料庫時繼續替換檔案。
 
@@ -129,7 +129,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 更新前請先匯出應用程式備份。套件資料位於 `/var/packages/fn-knock-synology/var`；升級後從 DSM 桌面的套件入口重新進入，檢查版本、身分驗證設定與閘道存取是否恢復正常。
 
-`2.2.5` 修復 Synology 套件無法啟動的緊急問題，`2.2.6` 進一步加固冷啟動時的閘道就緒與設定同步。受影響或啟動不穩定的 Instance 即使目前無法啟動，也應直接在套件中心使用相同架構的 `2.2.6` 或更高版本 SPK 覆蓋升級；不要為了恢復啟動而先解除安裝套件或刪除資料目錄。
+Synology 套件已加固冷啟動時的閘道就緒與設定同步。Instance 啟動不穩定或目前無法啟動時，應直接在套件中心使用目前發布管道中相同架構的最新 SPK 覆蓋安裝；不要為了恢復啟動而先解除安裝套件或刪除資料目錄。
 
 ## 更新 Windows x86_64
 

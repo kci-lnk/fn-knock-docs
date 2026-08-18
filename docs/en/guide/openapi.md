@@ -3,7 +3,7 @@ lang: en-US
 title: "OpenAPI: Management API Access and AI Agents"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 73ac2ba908f907a1d52a4eb5d88b113b07f6a7e2e2e6de7ef839df741165488b
+translationSourceHash: 1f07d795513a4d82ca764b91f61813af77e76c83f9d1481da4b0f4b50bbdc86d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -57,7 +57,7 @@ Browser
 
 Swagger UI's scripts, styles, and icons are bundled into fn-knock and served locally under `/docs/assets/`; it does not depend on jsDelivr, unpkg, or another public CDN. As long as the management backend and `/docs/json` are reachable, the complete documentation works offline or where frontend CDNs are blocked. An unknown asset path returns `404`.
 
-Starting with `2.3.0`, the OpenAPI contract adds Simplified Chinese category descriptions, operation summaries, behavioral boundaries, and response descriptions for every management operation. Selected complex operations also include request and response examples and Schema field documentation. The same material appears in Swagger UI and `/docs/json`, so code generators and AI Agents can read it. Paths, methods, and field names remain in their original code form.
+The OpenAPI contract provides Simplified Chinese category descriptions, operation summaries, behavioral boundaries, and response descriptions for every management operation. Selected complex operations also include request and response examples and Schema field documentation. The same material appears in Swagger UI and `/docs/json`, so code generators and AI Agents can read it. Paths, methods, and field names remain in their original code form.
 
 The contract's explanatory text does not follow the admin console language and is currently provided in Simplified Chinese. Read both the operation description and its Schema before calling it; do not infer the side effects of a write operation from its name alone.
 

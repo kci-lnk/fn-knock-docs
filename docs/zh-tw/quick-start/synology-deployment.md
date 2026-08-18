@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Synology DSM 7 部署（x86_64 / ARM）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f3284b1a1cc6cd51015285966a0774a7cfc69c197dec084db44679c9f993cf53
+translationSourceHash: b9283ba31b6fe311560cf621e1db02527e13499f003ce717f25fb977b1f4c178
 ---
 
 # Synology DSM 7 部署（x86_64 / ARM）
@@ -11,7 +11,7 @@ translationSourceHash: f3284b1a1cc6cd51015285966a0774a7cfc69c197dec084db44679c9f
 `fn-knock` 提供適用於 Synology DSM 7 的原生 SPK 套件，支援 `x86_64`、`armv8` 與 `armv7` 三種 Synology 套件架構。每個 SPK 只包含一種架構的原生二進位檔，必須選擇與 NAS 相符的檔案；也不能將 fnOS 使用的 FPK 當成 DSM 安裝套件。
 
 > [!IMPORTANT]
-> `2.2.5` 修復了部分 DSM 環境中套件無法啟動的問題，`2.2.6` 又加固了冷啟動時管理服務與 Go 閘道的就緒同步。已安裝舊版但無法穩定啟動時，不要先解除安裝或清空資料目錄；請下載相同套件架構的 `2.2.6` 或更高版本 SPK，透過套件中心手動覆蓋安裝。正常就地升級會保留 `/var/packages/fn-knock-synology/var`。
+> 目前套件已加固 DSM 冷啟動時管理服務與 Go 閘道的就緒同步。既有安裝無法穩定啟動時，不要先解除安裝或清空資料目錄；請從目前發布管道下載相同套件架構的最新 SPK，透過套件中心手動覆蓋安裝。正常就地升級會保留 `/var/packages/fn-knock-synology/var`。
 
 套件會以 DSM 建立的 `fn-knock-synology` 套件帳號執行，不需要長期以 root 身分執行。如此可保留 DSM 的套件權限邊界，但也代表部分需要直接管理主機的功能無法使用。
 
@@ -108,9 +108,9 @@ SPK 會將 `7999/tcp` 宣告為套件的公開閘道連接埠，讓 DSM 能在�
 
 DSM 原生套件不使用應用程式內的 FPK 更新流程。取得新版 SPK 後，請在「套件中心 → 手動安裝」中選取新檔案完成升級；安裝期間服務會短暫重新啟動。升級後，請重新從 DSM 主選單進入管理介面，並驗證閘道、身分驗證與一筆已設定的業務映射。
 
-`2.2.6` 的啟動流程會等待 Go 閘道 Control Plane 可用，並在有限總時長內重試暫時性的 Connection Refused、Timeout 或 `502 / 503 / 504`；記憶體設定與完整 Host 規則成功下發後，應用程式才會回報就緒。DSM 生命週期 Script 會將啟動逾時傳遞給應用程式，避免 Script 已判定失敗但背景仍繼續初始化。持續出現 `400`、無效 Host 規則等永久設定錯誤時不會無限重試，應查看 `fn-knock.log` 中最早的啟動同步錯誤並修正設定。
+啟動流程會等待 Go 閘道 Control Plane 可用，並在有限總時長內以逐步增加且有上限的間隔重試暫時性的 Connection Refused、Timeout 或 `500 / 502 / 503 / 504`；記憶體設定與完整 Host 規則成功下發後，應用程式才會回報就緒。DSM 生命週期 Script 會將啟動逾時傳遞給應用程式，避免 Script 已判定失敗但背景仍繼續初始化。持續出現 `400`、無效 Host 規則等永久設定錯誤時不會無限重試，應查看 `fn-knock.log` 中最早的啟動同步錯誤並修正設定。
 
-新版生命週期 Script 會在停止或重新啟動時終止 fn-knock 的整個獨立 Process Group，並額外檢查管理後端與 Go 閘道 PID，避免父 Process 結束後仍有子 Process 佔用連接埠。若套件顯示已停止，但 `7998` 或 `7999` 仍被舊 Process 佔用，請先升級至 `2.2.5` 或更高版本再從套件中心啟動；不要反覆安裝不同架構的 SPK，也不要直接刪除 PID 檔案來假裝套件已停止。
+生命週期 Script 會在停止或重新啟動時終止 fn-knock 的整個獨立 Process Group，並額外檢查管理後端與 Go 閘道 PID，避免父 Process 結束後仍有子 Process 佔用連接埠。若套件顯示已停止，但 `7998` 或 `7999` 仍被舊 Process 佔用，請先覆蓋安裝相同架構的最新 SPK 再從套件中心啟動；不要反覆安裝不同架構的 SPK，也不要直接刪除 PID 檔案來假裝套件已停止。
 
 繼續閱讀：
 

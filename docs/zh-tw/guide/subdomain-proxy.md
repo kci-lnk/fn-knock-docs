@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b30a4ea3b731fd599a6cb1285c2621724c522edb11a31d1172cc22036afe5956
+translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -170,6 +170,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 清單操作包括：
 
+- `多選`：進入選擇模式後，可選取目前搜尋結果、單一群組或任意服務 Host，批次移動群組、啟用、停用、套用相同每日開放時間窗或刪除；驗證服務不參與批次選擇。搜尋條件或檢視變更會清除目前選擇，批次刪除無法復原。
 - `重新整理圖示與標題`：重新擷取 Upstream Metadata。
 - `清理過期服務`：先以 `HEAD`、失敗後改用 `GET` 檢查 HTTP / HTTPS Upstream，由管理員確認後刪除無法連線的映射。
 - `匯出為書籤`：匯出服務 Host，不包含驗證服務。

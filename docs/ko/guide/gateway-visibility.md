@@ -3,7 +3,7 @@ lang: ko-KR
 title: "게이트웨이 접근 범위"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5727aa90
+translationSourceHash: 2880c3aae15d392fe8c633b10f8499530e10b970ec3482000861f876c3a7efcb
 ---
 
 # 게이트웨이 접근 범위
@@ -28,7 +28,7 @@ translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5
 3. 사용자 지정 CIDR에 고정 VPN, 사무실 인터넷 출구 또는 기타 신뢰할 수 있는 네트워크 대역을 추가합니다.
 4. 저장하고 게이트웨이에 동기화합니다.
 
-선택한 지역은 저장할 때 최종 CIDR로 변환됩니다. 사용자 지정 CIDR은 한 줄에 하나씩 입력하며 IPv4와 IPv6를 지원합니다. 형식 오류가 하나라도 있으면 저장할 수 없습니다. China Telecom, China Unicom 또는 China Mobile로 지역을 필터링하려면 CIDR 주소 데이터베이스 `0.1.3` 이상이 필요합니다. 지원되지 않는 경우에도 일반 지역과 사용자 지정 CIDR은 사용할 수 있습니다.
+선택한 지역은 저장할 때 최종 CIDR로 변환됩니다. 사용자 지정 CIDR은 한 줄에 하나씩 입력하며 IPv4와 IPv6를 지원합니다. 형식 오류가 하나라도 있으면 저장할 수 없습니다. 연결된 CIDR 주소 데이터베이스가 통신사 데이터를 제공하면 China Telecom, China Unicom 또는 China Mobile로 지역을 필터링할 수 있습니다. 지원되지 않는 경우에도 일반 지역과 사용자 지정 CIDR은 사용할 수 있습니다.
 
 먼저 자신의 VPN이나 사무실 인터넷 출구처럼 접속 가능하다고 확인한 CIDR을 하나 추가한 뒤 제한을 활성화합니다. 지역 데이터베이스, 모바일 네트워크 및 프록시 출구에는 오차가 있습니다. 지역만으로 제한하면 여행, 로밍 및 기업 네트워크 사용자가 잘못 차단되기 쉽습니다.
 

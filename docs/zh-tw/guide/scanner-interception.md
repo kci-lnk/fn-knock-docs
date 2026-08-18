@@ -3,7 +3,7 @@ lang: zh-TW
 title: "自動化掃描攔截"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be47f0d92d
+translationSourceHash: 5b99c573555da5f0849b7f5ce3e928cdba8186d75607de8662f63ecb8057031b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be4
 
 ## 豁免範圍
 
-可以替已知地區或 CIDR 設定豁免。地區選項會在儲存時解析成最終 CIDR；自訂 CIDR 每行一筆，支援 IPv4 與 IPv6，格式錯誤時頁面會阻止儲存。地區條件也能依中國電信、聯通或移動篩選 CIDR；此功能需要 CIDR 位址資料庫 `0.1.3` 或更新版本。
+可以替已知地區或 CIDR 設定豁免。地區選項會在儲存時解析成最終 CIDR；自訂 CIDR 每行一筆，支援 IPv4 與 IPv6，格式錯誤時頁面會阻止儲存。地區條件也能依中國電信、聯通或移動篩選 CIDR；只有連接的 CIDR 位址資料庫提供電信業者資料時，此功能才可使用。
 
 `常用地區豁免` 會使用近期成功登入所建立的常用地區。`地區允許清單豁免` 與 `CIDR 允許清單豁免` 則由管理員固定設定。命中任一豁免的來源不會被掃描器封鎖清單攔截，也不會累計非一般路徑命中。豁免能降低誤擋，也會同時降低該來源的掃描防護；請只加入自己能確認的辦公室網路、VPN 或服務供應商網段。
 

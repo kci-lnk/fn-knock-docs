@@ -3,7 +3,7 @@ lang: en-US
 title: "IP Geolocation"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddc818b63ebec820784d4b213445ecc55bd9dc42a601e70222b910c06bb22566
+translationSourceHash: c7b106ccf83e900b8bc5bbb4d9389bd9fc91eef0ca21ff98d7fa18321312e084
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,7 +56,7 @@ In Docker, `127.0.0.1` points to the fn-knock container itself. If a self-hosted
 
 Save only after both tests pass. A successful test means that the endpoint and response format work, but it does not guarantee complete data for every address and region.
 
-Region selection can filter CIDRs by China Telecom, China Unicom, or China Mobile. A self-hosted CIDR database needs version `0.1.3` or later for carrier filtering. The connection test prompts you to upgrade an older version, but regular province and city queries remain available.
+Region selection can filter CIDRs by China Telecom, China Unicom, or China Mobile. A self-hosted CIDR database must provide carrier data for this filtering. If it does not, the connection test prompts you to update the database while regular province and city queries remain available.
 
 ## How Data Appears in the UI
 

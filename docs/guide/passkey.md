@@ -9,7 +9,7 @@ Passkey 让已绑定的设备通过系统生物识别或设备解锁完成登录
 - 认证 Host、Cookie 域和 Passkey RP 设置与域名规划一致。
 - 浏览器或系统支持 WebAuthn。
 
-2.2.1 改进了 Windows Passkey 提供商、Android / Google Password Manager 以及不同浏览器返回格式的兼容性。升级不会改变现有 Passkey 的 RP 绑定；如果旧凭据仍不能使用，先通过 TOTP 登录，在同一最终域名重新绑定测试，不要先删除唯一恢复方式。
+当前实现兼容 Windows Passkey 提供商、Android / Google Password Manager 以及不同浏览器返回的凭据格式。更新程序不会改变现有 Passkey 的 RP 绑定；如果已有凭据仍不能使用，先通过 TOTP 登录，在同一最终域名重新绑定测试，不要先删除唯一恢复方式。
 
 子域场景可选择把 Passkey 绑定到认证 Host，或按产品设置使用父域。修改 RP 配置会影响已有 Passkey 的可用性，应在切换前保留可用 TOTP。
 

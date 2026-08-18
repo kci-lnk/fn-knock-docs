@@ -3,7 +3,7 @@ lang: en-US
 title: "SSH Hardening"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
+translationSourceHash: 93a607a9d11e1588b4637de6ea0e44937e87295d8779d52c70672b17d05ed542
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -35,7 +35,7 @@ The feature-menu switch controls whether the page and backend capability are ena
 | Regions allowed to access SSH | Empty by default | With no entries, regions are unrestricted; otherwise only selected regions, custom CIDRs, and built-in local sources are allowed |
 | Custom CIDRs | Empty by default; one per line | Adds non-standard VPNs, office public egress addresses, or other fixed IPv4/IPv6 networks |
 
-Regions can be selected by province, city, and carrier. Filtering CIDRs by China Telecom, China Unicom, or China Mobile requires CIDR database version `0.1.3` or later. If the region list cannot be loaded, do not submit an unverified restriction; use only fixed CIDRs until it is available.
+Regions can be selected by province, city, and carrier. CIDRs can be filtered by China Telecom, China Unicom, or China Mobile when the connected CIDR database provides carrier data. If the region list cannot be loaded, do not submit an unverified restriction; use only fixed CIDRs until it is available.
 
 Built-in local sources include loopback, RFC 1918 private networks, IPv4 link-local, Tailscale's `100.64.0.0/10`, and IPv6 ULA/link-local addresses. Region and failed-attempt blocks do not apply to these sources, so Tailscale access should still be controlled by tailnet ACLs. If Headscale, WireGuard, ZeroTier, or another overlay uses a different address pool, add its observed source range under Custom CIDRs.
 

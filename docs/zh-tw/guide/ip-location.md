@@ -3,7 +3,7 @@ lang: zh-TW
 title: "IP 地理位置服務"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddc818b63ebec820784d4b213445ecc55bd9dc42a601e70222b910c06bb22566
+translationSourceHash: c7b106ccf83e900b8bc5bbb4d9389bd9fc91eef0ca21ff98d7fa18321312e084
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,7 +56,7 @@ IP 地理位置服務由兩個可獨立設定的資料來源組成：一個負�
 
 兩項測試都通過後再儲存。測試成功只代表 API 與回應格式可用，不保證所有 IP 與地區資料都完整。
 
-地區選項可依中國電信、聯通或移動篩選 CIDR。自架 CIDR 位址資料庫必須為 `0.1.3` 或更新版本，才能使用電信業者篩選；舊版本的連線測試會提示升級，但一般省市查詢仍可使用。
+地區選項可依中國電信、聯通或移動篩選 CIDR。自架 CIDR 位址資料庫必須提供電信業者資料才能使用該篩選；不支援時連線測試會提示更新位址資料庫，但一般省市查詢仍可使用。
 
 ## 資料如何載入頁面
 

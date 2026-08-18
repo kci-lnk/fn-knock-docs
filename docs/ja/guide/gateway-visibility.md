@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ゲートウェイの公開範囲"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5727aa90
+translationSourceHash: 2880c3aae15d392fe8c633b10f8499530e10b970ec3482000861f876c3a7efcb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,7 +30,7 @@ translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5
 3. 固定 VPN、オフィスネットワークの出口、その他の信頼できるネットワーク範囲をカスタム CIDR で追加します。
 4. 保存してゲートウェイへ同期します。
 
-選択した地域は、保存時に最終的な CIDR へ解決されます。カスタム CIDR は 1 行に 1 件入力し、IPv4 と IPv6 の両方を使用できます。形式に誤りがあると保存できません。地域を China Telecom、China Unicom、China Mobile で絞り込むには、CIDR データベース `0.1.3` 以降が必要です。対応していない場合でも、通常の地域選択とカスタム CIDR は引き続き利用できます。
+選択した地域は、保存時に最終的な CIDR へ解決されます。カスタム CIDR は 1 行に 1 件入力し、IPv4 と IPv6 の両方を使用できます。形式に誤りがあると保存できません。接続先の CIDR データベースに通信事業者データがある場合は、地域を China Telecom、China Unicom、China Mobile で絞り込めます。対応していない場合でも、通常の地域選択とカスタム CIDR は引き続き利用できます。
 
 最初に、自分の VPN やオフィスネットワークの出口など、確実に利用できる CIDR を 1 件追加してから制限を有効にしてください。地域データベース、モバイルネットワーク、プロキシの出口には誤差があります。地域だけで制限すると、旅行中、ローミング中、企業ネットワークからのアクセスが誤ってブロックされやすくなります。
 

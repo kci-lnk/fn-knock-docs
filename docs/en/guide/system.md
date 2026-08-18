@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b3b2da3b
+translationSourceHash: 12ec0714b62341ef746ea4281a15daf4dc9005053f4e0deeb2221449ec50d7e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -76,7 +76,7 @@ The switch does not enable, publish, or alter a mapping, nor does it bypass logi
 
 ## Runtime mode switching and Smart Connect fallback
 
-Changing runtime mode saves a candidate configuration, then synchronizes Smart Connect, gateway routes, and platform runtime state in sequence. Version `2.2.6` fixes a mutual-wait condition in this path. Keep the page open while switching, then verify the new entry path as instructed by the result message.
+Changing runtime mode saves a candidate configuration, then synchronizes Smart Connect, gateway routes, and platform runtime state in sequence while preventing those synchronization steps from waiting on one another. Keep the page open while switching, then verify the new entry path as instructed by the result message.
 
 On the standard fnOS FPK with Smart Connect support, if the local IP or `dnsmasq` cannot synchronize during the change, fn-knock completes the mode switch but automatically disables Smart Connect and shows a warning instead of letting DNS split-horizon failure block the entire operation. Check the local IP, root domain, and `dnsmasq` write access before enabling Smart Connect again under `System settings → Features`. A failure while applying gateway routes or firewall state still triggers an attempted rollback to the previous configuration. Keep a LAN or console entry available, read the error, and do not switch repeatedly through several modes.
 

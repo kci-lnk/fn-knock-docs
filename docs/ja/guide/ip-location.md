@@ -3,7 +3,7 @@ lang: ja-JP
 title: "IP ジオロケーション"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddc818b63ebec820784d4b213445ecc55bd9dc42a601e70222b910c06bb22566
+translationSourceHash: c7b106ccf83e900b8bc5bbb4d9389bd9fc91eef0ca21ff98d7fa18321312e084
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,7 +56,7 @@ Docker 内の `127.0.0.1` は、fn-knock コンテナ自身を指します。セ
 
 両方のテストに成功してから保存してください。テストの成功は、API とレスポンス形式が利用できることだけを示します。すべてのアドレスと地域データが完全に揃っていることを保証するものではありません。
 
-地域を選択する際は、China Telecom、China Unicom、China Mobile で CIDR を絞り込めます。セルフホストした CIDR データベースで通信事業者による絞り込みを使用するには、`0.1.3` 以降が必要です。旧バージョンでは接続テスト時に更新を求めるメッセージが表示されますが、通常の省／市検索は引き続き利用できます。
+地域を選択する際は、China Telecom、China Unicom、China Mobile で CIDR を絞り込めます。セルフホストした CIDR データベースでこの絞り込みを使うには、通信事業者データが必要です。対応していない場合は接続テストでデータベースの更新を求められますが、通常の省／市検索は引き続き利用できます。
 
 ## 画面にデータが反映される仕組み
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "IP 允許清單"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e5b5a53b
+translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af486ad36dc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,11 +34,11 @@ translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e
 | 有效期限 | 1 小時、24 小時、7 天或自訂時數；也可永久保存 |
 | 備註 | 記錄用途、負責人或複核時間 |
 
-依地區選擇 CIDR 時，會另存為獨立的地區允許清單 Group，不會將所有網段展開至一般允許清單。地區還能依中國電信、中國聯通或中國移動篩選；電信業者篩選需要 CIDR 位址資料庫 `0.1.3` 或以上版本。
+依地區選擇 CIDR 時，會另存為獨立的地區允許清單 Group，不會將所有網段展開至一般允許清單。地區還能依中國電信、中國聯通或中國移動篩選；只有連接的 CIDR 位址資料庫提供電信業者資料時，該篩選才可使用。
 
 手動記錄適合長期可信任、來源穩定的網路；行動網路、臨時 Wi-Fi 及未知的 NAT 出口不應設為永久。地區允許清單會允許所選地區的大量公網位址，風險明顯高於固定 CIDR。
 
-CNAME 會依系統解析結果更新實際放行範圍；只應使用由自己控制、解析結果可預期的網域。地區與電信業者 CIDR Group 依賴 IP 地理位置資料，適合做粗粒度限縮，不適合作為唯一的高精度身分判斷。電信業者篩選需要 CIDR 位址資料庫 `0.1.3` 或以上版本；舊版 Service 仍可用於一般地區及自訂 CIDR。
+CNAME 會依系統解析結果更新實際放行範圍；只應使用由自己控制、解析結果可預期的網域。地區與電信業者 CIDR Group 依賴 IP 地理位置資料，適合做粗粒度限縮，不適合作為唯一的高精度身分判斷。CIDR 位址資料庫未提供電信業者資料時，仍可使用一般地區及自訂 CIDR。
 
 清單會顯示 Target、解析出的 IP、來源、狀態、到期時間、建立時間及備註。網域記錄可執行「立即更新」，備註也能直接修改。刪除記錄或地區 Group 後，如果沒有其他有效記錄涵蓋相同來源，直連防火牆中對應的放行規則就會失效。
 

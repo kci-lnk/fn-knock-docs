@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b30a4ea3b731fd599a6cb1285c2621724c522edb11a31d1172cc22036afe5956
+translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -170,6 +170,7 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 
 一覧で利用できる操作は次のとおりです。
 
+- `複数選択`：選択モードに入り、現在の検索結果、1 つのグループ、または任意のサービス Host を選択できます。グループ移動、有効化、無効化、同じ日次公開時間帯の適用、削除を一括実行できます。認証サービスは選択対象外です。検索条件または表示を変更すると選択は解除され、一括削除は元に戻せません。
 - `アイコンとタイトルを更新`：アップストリームのメタデータを再取得します。
 - `到達不能なサービスを整理`：先に `HEAD`、失敗した場合は `GET` で HTTP / HTTPS アップストリームを確認し、管理者の確認後に到達不能なマッピングを削除します。
 - `ブックマークとしてエクスポート`：サービス用 Host をエクスポートし、認証サービスは含めません。

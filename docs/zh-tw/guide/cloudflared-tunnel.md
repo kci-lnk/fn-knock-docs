@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Cloudflare Tunnel（cloudflared）設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e67dbb1d5b3ddbd00b5e8cb8121d43a27750d4fd67efc97ddb31678eee923b00
+translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,7 +56,7 @@ Token 必須能讀取根網域所在的有效 Zone。根網域可以是 Zone 本
 
 展開 `API 連線`，貼上 API Token 並連接。連接成功後會顯示識別到的 Zone；後續讀取 API 不會傳回 Token 明文。
 
-若連線失敗，請檢查 Zone 狀態與 Token 資源範圍。只能讀取 Zone、但沒有 DNS 編輯權限的 Token，可能連接成功，卻在預檢或套用時失敗。
+若連線失敗，請依錯誤檢查 Zone 狀態與 Token 資源範圍。驗證錯誤表示已儲存的 API Token 本身無效，應在 `API 連線` 中更換 Cloudflare API Token；不要填入 Tunnel Token。只能讀取 Zone、但沒有 DNS 編輯權限的 Token，可能連接成功，卻在預檢或套用時失敗，此時頁面會另行提示缺少的權限。
 
 ### 2. 選擇 Tunnel
 
@@ -65,7 +65,7 @@ Token 必須能讀取根網域所在的有效 Zone。根網域可以是 Zone 本
 - `專用 Tunnel`：建議使用。fn-knock 會建立帶有 Instance 識別碼的 Tunnel，並只管理自己的設定。
 - `既有 Tunnel`：重複使用 Cloudflare 中由遠端管理的 Cloudflared Tunnel。fn-knock 會保留其他 Ingress 及其順序，並將自己的 Wildcard 規則放在終止規則之前。
 
-按下 `預檢` 後，頁面會列出即將建立、更新或保留的 Tunnel、Ingress、DNS 與優選資源。預檢計畫有效期為 10 分鐘；套用前若遠端設定已變更，必須重新預檢。遇到同名但不屬於 fn-knock 的資源時，頁面會回報衝突，只有逐項確認接管後才會修改。
+按下 `預檢` 後，頁面會列出即將建立、更新或保留的 Tunnel、Ingress、DNS 與優選資源。預檢計畫有效期為 10 分鐘；套用前若遠端設定已變更，必須重新預檢。遇到同名但不屬於目前 Instance 的資源時，頁面會回報衝突，只有明確標示為可接管並逐項確認後才會修改。若本機託管設定曾被重建，但已儲存的多個資源標記仍一致指向同一根網域與 Instance，程式會恢復原託管身分；證據不足或混有其他 Instance 時不會自動認領。
 
 預檢指紋會忽略 Cloudflare 回傳順序、更新時間與驗證狀態等正常變化，但會保留 DNS 內容、Proxy 狀態、資源歸屬與 Ingress 等安全相關欄位。套用前這些欄位若發生變更，舊計畫會失效並要求重新預檢，不會沿用過時的接管確認。Custom Hostname 所需的所有權或憑證驗證 TXT 會依「名稱 + 內容」分別維護；同名但內容不同的第三方 TXT 不會只因名稱相同而被覆寫。一個名稱下存在多筆無法安全判斷歸屬的 CNAME / A / AAAA 時，應先在 Cloudflare 手動整理，再重新預檢。
 
@@ -139,7 +139,7 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 
 ### 方案與安全邊界
 
-優選依賴 Cloudflare for SaaS Custom Hostname。可用數量以目前 Zone 的實際方案與配額為準；超出配額的服務網域會使用標準 Tunnel。Custom Hostname 與憑證未同時啟用前，程式不會發布精確 CNAME。
+優選依賴 Cloudflare for SaaS Custom Hostname。可用數量以目前 Zone 的實際方案與配額為準；超出配額的服務網域會使用標準 Tunnel。Cloudflare 的 Orange-to-Orange 啟用過程中，程式可能暫時發布一筆指向標準 Tunnel Origin 的精確 CNAME，以完成 Custom Hostname 與憑證驗證；兩者同時啟用前不會將服務網域切換至優選邊緣。處於標準 Tunnel 回退時，驗證完成後會移除這筆暫時精確 Record，讓 Request 繼續匹配 Wildcard Tunnel。
 
 不要手動將代理狀態的服務 A Record 直接指向 Cloudflare 邊緣 IP，這可能觸發 Cloudflare Error 1000。fn-knock 使用 Custom Hostname、專用 Origin 網域與 DNS-only 優選入口，能力探測失敗時則保留 Wildcard Tunnel。
 
@@ -174,6 +174,7 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 | 症狀 | 優先檢查 |
 | --- | --- |
 | 找不到 Zone 或 Zone 未啟用 | 根網域是否屬於 Token 可存取的有效 Zone；Token 是否限制到錯誤 Account／Zone |
+| API Token 驗證失敗 | 在 `API 連線` 中更換有效的 Cloudflare API Token；確認沒有誤填 Tunnel Token，並允許目前 Account 與 Zone |
 | 提示需要 DNS Edit | Token 是否對目標 Zone 具備 `Zone / DNS / Edit` |
 | DNS tag 配額為 0 | 更新至支援只使用 comment 標記的版本後重新預檢；不要手動建立重複 Record |
 | 預檢後套用回傳 409 | 遠端狀態或本機根網域已變更，重新執行預檢 |

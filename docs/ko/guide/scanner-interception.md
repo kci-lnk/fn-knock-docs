@@ -3,7 +3,7 @@ lang: ko-KR
 title: "자동 스캔 차단"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be47f0d92d
+translationSourceHash: 5b99c573555da5f0849b7f5ce3e928cdba8186d75607de8662f63ecb8057031b
 ---
 
 # 자동 스캔 차단
@@ -25,7 +25,7 @@ translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be4
 
 ## 예외 범위
 
-신뢰할 수 있는 지역이나 CIDR을 예외로 설정할 수 있습니다. 선택한 지역은 저장할 때 최종 CIDR로 변환됩니다. 사용자 지정 CIDR은 한 줄에 하나씩 입력하며 IPv4와 IPv6를 지원합니다. 형식이 잘못되면 페이지에서 저장을 막습니다. 지역 조건에서 China Telecom, China Unicom 또는 China Mobile별로 CIDR을 필터링할 수도 있으며, 이 기능에는 CIDR 주소 데이터베이스 `0.1.3` 이상이 필요합니다.
+신뢰할 수 있는 지역이나 CIDR을 예외로 설정할 수 있습니다. 선택한 지역은 저장할 때 최종 CIDR로 변환됩니다. 사용자 지정 CIDR은 한 줄에 하나씩 입력하며 IPv4와 IPv6를 지원합니다. 형식이 잘못되면 페이지에서 저장을 막습니다. 연결된 CIDR 주소 데이터베이스가 통신사 데이터를 제공하면 지역 조건에서 China Telecom, China Unicom 또는 China Mobile별로 CIDR을 필터링할 수도 있습니다.
 
 `자주 접속한 지역 면제`는 최근 로그인에 성공한 기록으로 파악한 자주 접속한 지역을 사용합니다. `지역 허용 목록 면제`와 `CIDR 허용 목록 면제`는 관리자가 고정해서 설정합니다. 어느 예외에든 해당하는 출발지는 스캐너 차단 목록에서 차단되지 않고 비정상 경로 요청도 누적되지 않습니다. 예외는 오탐을 줄이지만 해당 출발지에 대한 스캔 방어도 약화합니다. 직접 확인할 수 있는 사내망, VPN 또는 서비스 제공자 네트워크 대역만 추가합니다.
 

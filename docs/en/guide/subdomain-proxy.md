@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b30a4ea3b731fd599a6cb1285c2621724c522edb11a31d1172cc22036afe5956
+translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -170,6 +170,7 @@ See [Service Discovery and Bulk Onboarding](/en/guide/service-discovery) for sca
 
 List actions include:
 
+- `Multi-select`: Enter selection mode to select the current search results, one group, or arbitrary application Hosts. You can move them to a group, enable or disable them, apply the same daily open window, or delete them in a batch. The auth service is excluded. Changing the search or view clears the selection, and bulk deletion cannot be undone.
 - `Refresh icons and titles`: Fetch upstream metadata again.
 - `Clean stale services`: Check HTTP / HTTPS upstreams with `HEAD`, then `GET` on failure, and let an administrator confirm before removing unreachable mappings.
 - `Export as bookmarks`: Export application Hosts without the auth service.

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "IP 지리 정보"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ddc818b63ebec820784d4b213445ecc55bd9dc42a601e70222b910c06bb22566
+translationSourceHash: c7b106ccf83e900b8bc5bbb4d9389bd9fc91eef0ca21ff98d7fa18321312e084
 ---
 
 # IP 지리 정보
@@ -54,7 +54,7 @@ Docker에서 `127.0.0.1`은 fn-knock 컨테이너 자체를 가리킵니다. 자
 
 두 테스트가 모두 통과한 뒤 저장합니다. 테스트 성공은 API와 응답 형식을 사용할 수 있다는 뜻일 뿐 모든 주소와 지역 데이터가 완전하다는 보장은 아닙니다.
 
-지역 선택에서 China Telecom, China Unicom 또는 China Mobile 통신사별 CIDR을 필터링할 수 있습니다. 자체 호스팅 CIDR 데이터베이스에서 통신사 필터를 사용하려면 `0.1.3` 이상이 필요합니다. 이전 버전에서는 연결 테스트 시 업그레이드 안내가 나오지만 일반 광역·기초 지역 조회는 계속 사용할 수 있습니다.
+지역 선택에서 China Telecom, China Unicom 또는 China Mobile 통신사별 CIDR을 필터링할 수 있습니다. 자체 호스팅 CIDR 데이터베이스에서 이 필터를 사용하려면 통신사 데이터가 필요합니다. 지원하지 않으면 연결 테스트에서 데이터베이스 업데이트를 안내하지만 일반 광역·기초 지역 조회는 계속 사용할 수 있습니다.
 
 ## 페이지에 데이터가 표시되는 과정
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "SSH のセキュリティ強化"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
+translationSourceHash: 93a607a9d11e1588b4637de6ea0e44937e87295d8779d52c70672b17d05ed542
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -35,7 +35,7 @@ SSH セキュリティは、ホストのログイン記録、失敗回数、地�
 | SSH アクセスを許可する地域 | デフォルトは空 | 空の場合は地域を制限せず、指定した場合は選択地域、カスタム CIDR、組み込みのローカル送信元だけを許可 |
 | カスタム CIDR | デフォルトは空、1 行に 1 件 | 標準外 VPN、オフィスのグローバル IP、その他の固定 IPv4 / IPv6 ネットワークを追加 |
 
-地域は省、市、通信事業者単位で選択できます。China Telecom、China Unicom、China Mobile ごとに CIDR を絞り込むには、CIDR アドレスデータベース `0.1.3` 以降が必要です。地域一覧を読み込めない場合は、未確認の制限範囲を送信せず、先に固定 CIDR だけを使用してください。
+地域は省、市、通信事業者単位で選択できます。接続先の CIDR アドレスデータベースに通信事業者データがある場合は、China Telecom、China Unicom、China Mobile ごとに CIDR を絞り込めます。地域一覧を読み込めない場合は、未確認の制限範囲を送信せず、先に固定 CIDR だけを使用してください。
 
 組み込みのローカル送信元には、loopback、RFC 1918 プライベートネットワーク、IPv4 リンクローカル、Tailscale の `100.64.0.0/10`、IPv6 ULA／リンクローカルが含まれます。これらには地域制限と失敗回数によるブロックが適用されないため、Tailscale アクセスは引き続き Tailnet ACL で制御してください。Headscale、WireGuard、ZeroTier などが別のアドレスプールを使用する場合は、実際の送信元ネットワークをカスタム CIDR に追加します。
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Passkeys"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c7c357cf
+translationSourceHash: 86ea645fe3edf31535747fe19df3f2209f795644a3a67551074668a50c648e15
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ A Passkey lets a bound device complete sign-in with system biometrics or device 
 - Make sure the authentication Host, Cookie domain, and Passkey RP configuration match your domain plan.
 - Use a browser and operating system that support WebAuthn.
 
-Version 2.2.1 improves compatibility with Windows Passkey providers, Android / Google Password Manager, and credential formats returned by different browsers. Upgrading does not change the RP binding of existing Passkeys. If an older credential still fails, sign in with TOTP and bind a test credential again on the same final domain; do not delete your only recovery method first.
+The current implementation supports Windows Passkey providers, Android / Google Password Manager, and credential formats returned by different browsers. Updating the application does not change the RP binding of existing Passkeys. If an existing credential still fails, sign in with TOTP and bind a test credential again on the same final domain; do not delete your only recovery method first.
 
 For a subdomain setup, you can bind Passkeys to the authentication Host or use the product's parent-domain RP option. Changing the RP configuration affects whether existing Passkeys work, so retain a working TOTP before switching.
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "パスキー"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c7c357cf
+translationSourceHash: 86ea645fe3edf31535747fe19df3f2209f795644a3a67551074668a50c648e15
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c
 - 認証 Host、Cookie ドメイン、パスキーの RP 設定がドメイン構成と一致していること。
 - ブラウザまたはシステムが WebAuthn に対応していること。
 
-2.2.1 では、Windows のパスキープロバイダー、Android / Google Password Manager、ブラウザーごとの認証情報形式への互換性が改善されました。アップグレードしても既存パスキーの RP 関連付けは変わりません。古い認証情報が使えない場合は TOTP でログインし、同じ最終ドメインでテスト用パスキーを再登録してください。唯一の復旧手段を先に削除しないでください。
+現在の実装は、Windows のパスキープロバイダー、Android / Google Password Manager、ブラウザーごとの認証情報形式に対応しています。アプリを更新しても既存パスキーの RP 関連付けは変わりません。既存の認証情報が使えない場合は TOTP でログインし、同じ最終ドメインでテスト用パスキーを再登録してください。唯一の復旧手段を先に削除しないでください。
 
 サブドメイン構成では、パスキーを認証 Host へ紐付けるか、製品の設定に従って親ドメインを使用できます。RP 設定を変更すると、既存のパスキーが利用できなくなる場合があります。切り替える前に、利用可能な TOTP を残しておいてください。
 

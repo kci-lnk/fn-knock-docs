@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Synology DSM 7 (x86_64 / ARM)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f3284b1a1cc6cd51015285966a0774a7cfc69c197dec084db44679c9f993cf53
+translationSourceHash: b9283ba31b6fe311560cf621e1db02527e13499f003ce717f25fb977b1f4c178
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,7 +13,7 @@ translationSourceHash: f3284b1a1cc6cd51015285966a0774a7cfc69c197dec084db44679c9f
 `fn-knock` provides native SPK packages for Synology DSM 7 in the `x86_64`, `armv8`, and `armv7` package architecture families. Each SPK contains native binaries for one architecture only, so select the file that matches the NAS. An FPK built for fnOS cannot be used as a DSM package.
 
 > [!IMPORTANT]
-> `2.2.5` fixed a package startup failure on some DSM systems, and `2.2.6` further hardens readiness synchronization between the management service and Go gateway during cold boot. If an older installation cannot start reliably, do not uninstall it or clear the data directory first. Download a `2.2.6` or newer SPK for the same package architecture and install it over the existing package from Package Center. A normal in-place upgrade preserves `/var/packages/fn-knock-synology/var`.
+> The current package hardens readiness synchronization between the management service and Go gateway during DSM cold boot. If an existing installation cannot start reliably, do not uninstall it or clear the data directory first. Download the latest SPK for the same package architecture from the current release channel and install it over the existing package from Package Center. A normal in-place upgrade preserves `/var/packages/fn-knock-synology/var`.
 
 The package runs under the DSM-created `fn-knock-synology` package account and does not require a persistent root process. This preserves DSM's package privilege boundary, but it also means that features requiring direct control of the host are unavailable.
 
@@ -110,9 +110,9 @@ An application `.knock` archive makes configuration migration easier, while a DS
 
 The native DSM package does not use the in-app FPK update flow. After downloading a new SPK, choose it under **Package Center → Manual Install** to upgrade. The service briefly restarts during installation. After the upgrade, reopen the admin interface from the DSM main menu and verify the gateway, authentication, and one configured application mapping.
 
-The `2.2.6` startup sequence waits for the Go gateway control plane and retries transient connection refusals, timeouts, or `502 / 503 / 504` responses within a bounded total startup period. The app reports ready only after memory settings and the complete Host-rule set have been applied. The DSM lifecycle script passes its startup timeout into the application so the script cannot declare failure while background initialization keeps running. Permanent errors such as `400` responses or invalid Host rules are not retried indefinitely; inspect the earliest startup synchronization error in `fn-knock.log` and correct the configuration.
+The startup sequence waits for the Go gateway control plane and retries transient connection refusals, timeouts, or `500 / 502 / 503 / 504` responses at gradually increasing, bounded intervals within a bounded total startup period. The app reports ready only after memory settings and the complete Host-rule set have been applied. The DSM lifecycle script passes its startup timeout into the application so the script cannot declare failure while background initialization keeps running. Permanent errors such as `400` responses or invalid Host rules are not retried indefinitely; inspect the earliest startup synchronization error in `fn-knock.log` and correct the configuration.
 
-The newer lifecycle script terminates fn-knock's complete isolated process group during stop or restart and also checks the management-backend and Go-gateway PIDs, preventing child processes from retaining ports after the parent exits. If Package Center reports that the package is stopped but an old process still owns `7998` or `7999`, upgrade to `2.2.5` or newer before starting it again. Do not repeatedly install SPKs for different architectures or delete PID files to make the package appear stopped.
+The lifecycle script terminates fn-knock's complete isolated process group during stop or restart and also checks the management-backend and Go-gateway PIDs, preventing child processes from retaining ports after the parent exits. If Package Center reports that the package is stopped but an old process still owns `7998` or `7999`, install the latest SPK for the same architecture over it before starting it again. Do not repeatedly install SPKs for different architectures or delete PID files to make the package appear stopped.
 
 Continue reading:
 

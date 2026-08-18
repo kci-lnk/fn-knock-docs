@@ -46,7 +46,7 @@ Token 需要能够读取根域所在的有效 Zone。根域可以是 Zone 本身
 
 展开 `API 连接`，粘贴 API Token 并连接。连接成功后页面会显示识别到的 Zone；Token 明文不会在后续读取接口中返回。
 
-若连接失败，先根据错误检查 Zone 状态和 Token 的资源范围。仅能读取 Zone、但没有 DNS 编辑权限的 Token，可能在连接时成功，却会在预检或应用时失败。
+若连接失败，先根据错误检查 Zone 状态和 Token 的资源范围。认证错误表示已保存的 API Token 本身无效，应在 `API 连接` 中更换 Cloudflare API Token；不要填 Tunnel Token。仅能读取 Zone、但没有 DNS 编辑权限的 Token，可能在连接时成功，却会在预检或应用时失败，此时页面会按缺失权限提示处理。
 
 ### 2. 选择 Tunnel
 
@@ -55,7 +55,7 @@ Token 需要能够读取根域所在的有效 Zone。根域可以是 Zone 本身
 - `专用 Tunnel`：推荐。fn-knock 创建一个带实例标识的 Tunnel，并只管理自己的配置。
 - `已有 Tunnel`：用于复用 Cloudflare 中现有的远程托管 Cloudflared Tunnel。fn-knock 会保留其他 Ingress 及其顺序，把自己的通配规则放在终止规则之前。
 
-点击 `预检` 后，页面会列出将创建、更新或保留的 Tunnel、Ingress、DNS 和优选资源。预检计划有效期为 10 分钟；应用前如果远端配置已变化，需要重新预检。遇到同名但不属于 fn-knock 的资源时，页面会报告冲突，只有逐项确认接管后才会修改。
+点击 `预检` 后，页面会列出将创建、更新或保留的 Tunnel、Ingress、DNS 和优选资源。预检计划有效期为 10 分钟；应用前如果远端配置已变化，需要重新预检。遇到同名但不属于当前实例的资源时，页面会报告冲突，只有明确标记为可接管并逐项确认后才会修改。若本地托管配置曾被重建，但已保存的多个资源标记仍一致指向同一根域和实例，程序会恢复原托管身份；证据不足或混有其他实例时不会自动认领。
 
 预检指纹会忽略 Cloudflare 返回顺序、更新时间和验证状态等正常变化，但会保留 DNS 内容、代理状态、资源归属和 Ingress 等安全相关字段。应用前这些字段发生变化时，旧计划会失效并要求重新预检，不会沿用过时的接管确认。Custom Hostname 所需的所有权或证书验证 TXT 会按“名称 + 内容”分别维护；同名但内容不同的第三方 TXT 不会仅因名称相同而被覆盖。一个名称下存在多条无法安全判断归属的 CNAME / A / AAAA 时，应先在 Cloudflare 手工整理，再重新预检。
 
@@ -129,7 +129,7 @@ https://nas.example.com/
 
 ### 套餐与安全边界
 
-优选依赖 Cloudflare for SaaS Custom Hostname。可用数量以当前 Zone 的实际套餐和配额为准；超过配额的业务域会显示为标准 Tunnel 回退。Custom Hostname 和证书未同时激活前，程序不会发布精确 CNAME。
+优选依赖 Cloudflare for SaaS Custom Hostname。可用数量以当前 Zone 的实际套餐和配额为准；超过配额的业务域会显示为标准 Tunnel 回退。Cloudflare 的 Orange-to-Orange 激活过程中，程序可能暂时发布一条指向标准 Tunnel 源站的精确 CNAME，以完成 Custom Hostname 和证书验证；两者同时激活前不会把业务域切到优选边缘。处于标准 Tunnel 回退时，验证完成后会移除这条临时精确记录，让请求继续匹配通配 Tunnel。
 
 不要手工把代理状态的业务 A 记录直接指向 Cloudflare 边缘 IP，这可能触发 Cloudflare Error 1000。fn-knock 使用 Custom Hostname、专用源站域和 DNS-only 优选入口组合，并在能力探测失败时保持通配 Tunnel。
 
@@ -164,6 +164,7 @@ https://nas.example.com/
 | 症状 | 优先检查 |
 | --- | --- |
 | Zone 未找到或未激活 | 根域是否属于 Token 可访问的有效 Zone；Token 是否限制到错误 Account / Zone |
+| API Token 认证失败 | 在 `API 连接` 中更换有效的 Cloudflare API Token；确认没有误填 Tunnel Token，并允许当前 Account 与 Zone |
 | 提示缺少 DNS Edit | Token 是否具有 `Zone / DNS / Edit`，并允许目标 Zone |
 | DNS tag 配额为 0 | 更新到已支持 comment-only 标记的版本后重新预检；不要手工创建重复记录 |
 | 预检后应用返回 409 | 远端配置或本地根域已变化，重新执行预检 |

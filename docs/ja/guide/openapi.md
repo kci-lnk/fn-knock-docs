@@ -3,7 +3,7 @@ lang: ja-JP
 title: "OpenAPI：管理 API の公開と AI Agent"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 73ac2ba908f907a1d52a4eb5d88b113b07f6a7e2e2e6de7ef839df741165488b
+translationSourceHash: 1f07d795513a4d82ca764b91f61813af77e76c83f9d1481da4b0f4b50bbdc86d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -57,7 +57,7 @@ fn-knock の Rust 管理バックエンドは OpenAPI 3.1 ドキュメントを�
 
 Swagger UI のスクリプト、スタイル、アイコンは fn-knock に同梱され、`/docs/assets/` からローカル配信されます。jsDelivr、unpkg、その他の公開 CDN には依存しません。管理バックエンドと `/docs/json` にアクセスできれば、オフライン環境やフロントエンド CDN を利用できない環境でもドキュメント全体を開けます。不明なアセットパスには `404` が返ります。
 
-`2.3.0` 以降、OpenAPI 契約ではすべての管理操作に、簡体字中国語のカテゴリ説明、操作概要、動作上の境界、レスポンス説明が追加されています。一部の複雑な操作には、リクエスト例、レスポンス例、Schema フィールドの説明も含まれます。同じ内容が Swagger UI と `/docs/json` の両方に入るため、コードジェネレーターや AI Agent も読み取れます。パス、メソッド、フィールド名はコード内の元の形式のままです。
+OpenAPI 契約ではすべての管理操作に、簡体字中国語のカテゴリ説明、操作概要、動作上の境界、レスポンス説明が用意されています。一部の複雑な操作には、リクエスト例、レスポンス例、Schema フィールドの説明も含まれます。同じ内容が Swagger UI と `/docs/json` の両方に入るため、コードジェネレーターや AI Agent も読み取れます。パス、メソッド、フィールド名はコード内の元の形式のままです。
 
 契約の説明文は管理画面の言語に連動せず、現在は簡体字中国語で提供されます。書き込み操作の副作用を名前だけから推測せず、呼び出し前に操作説明と Schema の両方を確認してください。
 

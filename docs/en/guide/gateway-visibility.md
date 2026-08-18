@@ -3,7 +3,7 @@ lang: en-US
 title: "Gateway Visibility"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 29b7af25136e6b2510d8b90dc7ffa5c966720cb15bdcfed66dbc144f5727aa90
+translationSourceHash: 2880c3aae15d392fe8c633b10f8499530e10b970ec3482000861f876c3a7efcb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,7 +30,7 @@ Configure the global rule under `System settings → Gateway → Visibility`:
 3. Add fixed VPN networks, office egress addresses, or other trusted ranges under `Custom CIDRs`.
 4. Select `Save and sync` to push the rule to the gateway.
 
-Region selections are resolved to final CIDRs when saved. Enter one custom CIDR per line; both IPv4 and IPv6 are supported, and the configuration cannot be saved while any entry has an invalid format. Filtering a region by China Telecom, China Unicom, or China Mobile requires CIDR database version `0.1.3` or later. If that capability is unavailable, you can still use regular regions and custom CIDRs.
+Region selections are resolved to final CIDRs when saved. Enter one custom CIDR per line; both IPv4 and IPv6 are supported, and the configuration cannot be saved while any entry has an invalid format. A region can be filtered by China Telecom, China Unicom, or China Mobile when the connected CIDR database provides carrier data. If that capability is unavailable, you can still use regular regions and custom CIDRs.
 
 Add one CIDR that you know will work—such as your own VPN or office egress—before enabling the restriction. Region databases, mobile networks, and proxy egress locations can all be imprecise. If you restrict access only by region, travel, roaming, and corporate networks can easily be blocked by mistake.
 

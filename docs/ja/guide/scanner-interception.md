@@ -3,7 +3,7 @@ lang: ja-JP
 title: "自動スキャンの遮断"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be47f0d92d
+translationSourceHash: 5b99c573555da5f0849b7f5ce3e928cdba8186d75607de8662f63ecb8057031b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be4
 
 ## 除外範囲
 
-既知の地域または CIDR を除外対象に設定できます。選択した地域は保存時に最終的な CIDR へ解決されます。カスタム CIDR は 1 行に 1 件入力し、IPv4 と IPv6 の両方を使用できます。形式に誤りがある場合、画面上で保存がブロックされます。地域条件は China Telecom、China Unicom、China Mobile で CIDR を絞り込むこともできます。この絞り込みには CIDR データベース `0.1.3` 以降が必要です。
+既知の地域または CIDR を除外対象に設定できます。選択した地域は保存時に最終的な CIDR へ解決されます。カスタム CIDR は 1 行に 1 件入力し、IPv4 と IPv6 の両方を使用できます。形式に誤りがある場合、画面上で保存がブロックされます。接続先の CIDR データベースに通信事業者データがある場合は、地域条件を China Telecom、China Unicom、China Mobile で絞り込むこともできます。
 
 `よく使う地域を除外` は、最近のログイン成功履歴から作られた、よく使う地域を使用します。`除外する地域` と `除外する CIDR` は、管理者が固定で設定します。いずれかの除外条件に一致する送信元はスキャナーのブラックリストでブロックされず、通常とは異なるパスへのアクセス回数も加算されません。除外によって誤検知は減りますが、その送信元に対するスキャン保護も弱くなります。確認できるオフィスネットワーク、VPN、サービスプロバイダーのネットワーク範囲だけを追加してください。
 

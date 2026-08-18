@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b3b2da3b
+translationSourceHash: 12ec0714b62341ef746ea4281a15daf4dc9005053f4e0deeb2221449ec50d7e8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -76,7 +76,7 @@ translationSourceHash: 4feb7bd86d793fd899521040bbd80ddb9caf89d7d69dd01c8a506af1b
 
 ## 執行模式切換與智慧連線回退
 
-切換執行模式會先儲存候選設定，再依序同步智慧連線、閘道路由與平台 Runtime 狀態。`2.2.6` 修復了此流程中可能發生的互相等待。切換期間不要關閉頁面，完成後依結果訊息驗證新的入口路徑。
+切換執行模式會先儲存候選設定，再依序同步智慧連線、閘道路由與平台 Runtime 狀態，並避免各同步步驟互相等待。切換期間不要關閉頁面，完成後依結果訊息驗證新的入口路徑。
 
 在支援智慧連線的飛牛標準 FPK 上，若切換模式時本機 IP 或 `dnsmasq` 同步失敗，fn-knock 仍會完成模式切換，但自動關閉智慧連線並顯示警告，避免 DNS Split-horizon 失敗阻塞整個操作。請先檢查本機 IP、根網域與 `dnsmasq` 寫入權限，再從 `系統設定 → 功能` 重新啟用智慧連線。若閘道路由或防火牆套用本身失敗，系統仍會嘗試回復原設定；應保留 LAN 或 Console 入口並查看錯誤，不要連續切換多種模式。
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: f5c4d7358cda482e5837b48086c3f502bffc7540759ff37c8810799164797f5c
+translationSourceHash: 5eb652b6816df5e9b524e175a14813ebacb680ae128349c765910f595871d838
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -49,7 +49,7 @@ The same port can have separate TCP and UDP rules, such as `53/tcp` and `53/udp`
 
 An external port cannot forward to the same port on the local device. For example, `TCP :3306 -> 127.0.0.1:3306` creates a local forwarding loop and is rejected during save and enable. Validation includes `localhost`, loopback and unspecified addresses, and current local interface addresses. Change either the external or target port.
 
-A same-port local-loop rule left by an older version can automatically disable Protocol mappings. Keep the feature disabled, delete or correct the invalid rule on this page, then enable it again under `System settings → Features`. Repeatedly synchronizing an invalid configuration will not repair it.
+An existing same-port local-loop rule can automatically disable Protocol mappings. Keep the feature disabled, delete or correct the invalid rule on this page, then enable it again under `System settings → Features`. Repeatedly synchronizing an invalid configuration will not repair it.
 
 The Target must be reachable from the fn-knock runtime environment. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a host or LAN target.
 
@@ -57,13 +57,21 @@ The list search matches protocol, External port, Comment, Target address, servic
 
 ## Service Detection and Strict Protocol Validation
 
-Starting with `2.3.0`, a new Protocol mapping initially saves only its port and Target and remains disabled. After saving, open the rule's actions menu and select `Probe`. The system actively connects to the Target. It enables the mapping and changes its validation mode to `Strict protocol validation` only when the result identifies a strictly validatable service with high confidence. The rule remains disabled if probing fails, the result is ambiguous, or the identified service does not support the selected transport.
+A newly saved Protocol mapping remains enabled and initially shows `Strict validation off`. After saving, open the rule's actions menu and select `Probe`. The system actively connects to the Target. When the result identifies a strictly validatable service with high confidence, it records the service profile and enables `Strict protocol validation`. When the result can identify only the service type, it records that profile but leaves strict validation off. If probing fails or is inconclusive, the mapping remains enabled with strict validation off.
 
-Upstream authentication can make an HTTP probe see only `401`, preventing it from reliably distinguishing ordinary HTTP from a service such as WebDAV. In that case, select `Specify service type` from the actions menu, verify what is actually running at the Target, and choose `Confirm and enable validation`. Selecting the wrong type rejects legitimate connections as a protocol mismatch. Clearing a manually specified service type also turns off strict validation and disables the mapping.
+Upstream authentication can make an HTTP probe see only `401`, preventing it from reliably distinguishing ordinary HTTP from a service such as WebDAV. In that case, select `Specify service type` from the actions menu and verify what is actually running at the Target. If that service supports strict validation, you can choose `Confirm and enable validation`; an identification-only service can still be recorded while strict validation remains off. Selecting the wrong strict type rejects legitimate connections as a protocol mismatch. Clearing a manually specified service type turns off strict validation but does not disable the mapping.
 
-Changing a rule's Target invalidates its previous service profile and automatically disables the rule. Probe the new Target or specify its service type before using it. An already verified service profile is preserved only when the transport, External port, and Target remain unchanged and you edit a field such as the Comment or login requirement. Changing the transport or port creates a new rule identity and likewise requires another probe or manual service selection.
+Changing a rule's transport, External port, or Target invalidates its previous service profile and turns off strict validation, but the mapping remains enabled. Probe the new Target or specify its service type before relying on strict protocol filtering. An already verified service profile is preserved only when these three fields remain unchanged and you edit a field such as the Comment or login requirement.
 
-Rules created before the upgrade may appear as legacy or as not using strict validation. An upgrade alone does not assign a service type to them. Verify each Target and run `Probe`. Before that verification is complete, do not edit the Target merely to test a service, because a Target change follows the new behavior and disables the mapping.
+Existing rules may appear as legacy or as not using strict validation. Updating the application does not assign a service type to them automatically. Verify each Target and run `Probe`; until then, the mapping can continue forwarding with strict validation off.
+
+## Traffic Details and Active IPs
+
+The `Traffic` column aggregates each mapping separately by `TCP/UDP + external port`. Open the details panel to see real-time inbound and outbound rates, active connections, total traffic, and historical traffic for the last 15 minutes, 1 hour, 6 hours, 1 day, or 7 days.
+
+The same panel lists recently active source IPs. You can blacklist an IP, remove it from the blacklist, or mark it as local without leaving the mapping page. These actions use the global blacklist and local-IP rules; review [General Blacklist](/en/guide/general-blacklist) before changing a shared rule.
+
+Traffic history reflects bytes observed by the protocol gateway and is intended for operations and troubleshooting, not billing. A UDP source is treated as recently active for a short window even though UDP has no connection state. A process restart or cleanup policy may shorten the available history.
 
 ## Authentication Checks Source IP and Credential Scope
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "備份、還原與資料清理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d112f5cea88027b537b4e2f13578a5c7584014266dd773261af4949b9f470e5f
+translationSourceHash: 9056a8ac97b6f3f055a74b5e5193e86eabfd4c8e2946ad7ff177721f2677822e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -83,7 +83,7 @@ translationSourceHash: d112f5cea88027b537b4e2f13578a5c7584014266dd773261af4949b9
 - 使用 `.knock` 附檔名；
 - 大小不超過 `128 MiB`；
 - 使用目前支援的備份 Schema，目前為 Schema `1`；
-- 封存檔中的應用程式版本不得低於目前程式碼定義的最低相容版本（目前為 `1.4.0`）；
+- 封存檔中的應用程式版本符合目前程式碼定義的最低相容要求；
 - 封存檔中的應用程式版本不得高於正在執行的 fn-knock 版本。
 
 因此，由新版本匯出的備份無法直接還原至舊版本。請先將目標環境升級至相同或更高版本，再執行匯入；實際支援範圍以失敗訊息中顯示的版本區間為準。
@@ -130,7 +130,7 @@ Schema、版本、項目格式、重複 Key、設定 Migration 或 Cloudflared �
 | 檔案附檔名不正確 | 選擇原始 `.knock` 檔，不要只修改一般 ZIP 或 JSON 的附檔名 |
 | 不支援 Schema 或版本 | 將目標環境升級至提示的支援範圍內；不要手動竄改封存檔的版本欄位 |
 | 封存檔過大 | 確認檔案未損毀或遭取代；單一封存檔上限為 `128 MiB` |
-| 無法讀取封存檔 | 檢查檔案完整性、封存密碼、內部 `fn-knock-backup.json` 與磁碟空間；自 2.2.1 起由程式直接讀取 ZIP，不再依賴系統 `unzip` 指令 |
+| 無法讀取封存檔 | 檢查檔案完整性、封存密碼、內部 `fn-knock-backup.json` 與磁碟空間；fn-knock 會直接讀取 ZIP，不依賴系統 `unzip` 指令 |
 | 匯入失敗並提示已回復 | 目前設定通常已從匯入前 Snapshot 還原；若同時提示儲存或 Runtime Rollback 失敗，請停止重複匯入、保留完整錯誤，並從平台入口檢查執行個體 |
 | 分享資料夾無法使用 | 檢查平台是否提供分享根目錄、目錄是否仍已掛載，以及處理程序是否具備讀寫權限；也可改用本機下載與上傳 |
 | 匯入成功但出現警告 | 不要重複匯入；先檢查警告所對應的執行模式、WAF、SSL 或閘道同步，再視需要手動儲存相關設定 |

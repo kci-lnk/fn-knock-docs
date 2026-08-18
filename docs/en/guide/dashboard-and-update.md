@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 080dda8f392548154e9345a0699cd4b09328038ec8e4bf5c5f7bce95903b5871
+translationSourceHash: 7965bdcd45c2fc36faa2f7c126e79f742a0610507fc422736623e1a64a70bd57
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -66,7 +66,7 @@ The admin console and gateway are briefly unavailable during the update. Export 
 
 ### SQLite Protection During an Update
 
-Starting with `2.3.0`, an in-app installation on the standard fnOS FPK first checkpoints the SQLite WAL, runs a quick integrity check, and creates a verified, consistent `fn-knock.sqlite3.pre-update.bak` snapshot in the data directory. After this preflight succeeds, subsequent writes temporarily use stricter synchronization. A failure at any step aborts installation before the program version is switched.
+An in-app installation on the standard fnOS FPK first checkpoints the SQLite WAL, runs a quick integrity check, and creates a verified, consistent `fn-knock.sqlite3.pre-update.bak` snapshot in the data directory. After this preflight succeeds, subsequent writes temporarily use stricter synchronization. A failure at any step aborts installation before the program files are switched.
 
 A normal service stop also waits for background work to finish and checkpoints the WAL again. Package scripts on fnOS, OpenWrt, and Synology allow SQLite to complete its graceful shutdown. If the process cannot stop, upgrade or uninstall exits with an error instead of replacing files while the old process is still writing.
 
@@ -129,7 +129,7 @@ After reviewing the version and release notes under `Version and updates`, downl
 
 Export an app backup first. Package data is stored in `/var/packages/fn-knock-synology/var`. After the upgrade, reopen the package from the DSM desktop and check that the version, authentication settings, and gateway access have recovered.
 
-`2.2.5` fixes an urgent Synology package startup problem, and `2.2.6` further hardens gateway readiness and configuration synchronization during cold boot. Even if an affected or unstable instance cannot currently start, install a `2.2.6` or newer SPK for the same architecture directly over it in Package Center. Do not uninstall the package or remove its data directory just to restore startup.
+The Synology package hardens gateway readiness and configuration synchronization during cold boot. Even if an unstable instance cannot currently start, install the latest SPK for the same architecture from the current release channel directly over it in Package Center. Do not uninstall the package or remove its data directory just to restore startup.
 
 ## Update Windows x86_64
 

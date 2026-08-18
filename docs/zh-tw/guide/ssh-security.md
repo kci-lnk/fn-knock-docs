@@ -3,7 +3,7 @@ lang: zh-TW
 title: "SSH 安全強化"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c60e89cc319d987e94fcda2cd314bba196adf15df89f1c8d67696dd0cbda9558
+translationSourceHash: 93a607a9d11e1588b4637de6ea0e44937e87295d8779d52c70672b17d05ed542
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -35,7 +35,7 @@ SSH 安全性會依 Host 登入記錄、失敗次數、地區與 CIDR 規則維�
 | 允許存取 SSH 的地區 | 預設空白 | 空白時不限制地區；非空白時只允許所選地區、自訂 CIDR 與內建本機來源 |
 | 自訂 CIDR | 預設空白，每行一筆 | 補上非標準 VPN、辦公室公網出口或其他固定 IPv4／IPv6 網段 |
 
-地區可依省、市與電信業者選擇。依中國電信、聯通或移動細分 CIDR，需要 CIDR 位址資料庫 `0.1.3` 或更新版本。無法載入地區清單時，不要送出未經核對的限制範圍，可先只使用固定 CIDR。
+地區可依省、市與電信業者選擇。只有連接的 CIDR 位址資料庫提供電信業者資料時，才能依中國電信、聯通或移動細分 CIDR。無法載入地區清單時，不要送出未經核對的限制範圍，可先只使用固定 CIDR。
 
 內建本機來源包括 loopback、RFC 1918 私有網路、IPv4 鏈路本機、Tailscale 使用的 `100.64.0.0/10`，以及 IPv6 ULA／鏈路本機位址。這些來源不受地區或失敗次數封鎖，因此 Tailscale 存取仍應由 Tailnet ACL 控制。Headscale、WireGuard、ZeroTier 等若使用其他位址池，需將實際來源網段加入自訂 CIDR。
 

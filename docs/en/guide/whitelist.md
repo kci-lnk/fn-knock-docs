@@ -3,7 +3,7 @@ lang: en-US
 title: "IP Allowlist"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3e4d5b939af2271dc32b087278a8abf085d5876a7a5dc9ff8956fe42e5b5a53b
+translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af486ad36dc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -34,11 +34,11 @@ Click `Add target` under `IP Allowlist` to configure:
 | Validity | 1 hour, 24 hours, 7 days, or a custom number of hours; entries can also be permanent |
 | Comment | Records the purpose, owner, or review date |
 
-A regional CIDR selection is saved as a separate region allowlist group rather than expanding every address range into the standard allowlist table. Regions can also be filtered by Telecom, Unicom, or Mobile. Carrier filtering requires CIDR database version `0.1.3` or later.
+A regional CIDR selection is saved as a separate region allowlist group rather than expanding every address range into the standard allowlist table. Regions can also be filtered by Telecom, Unicom, or Mobile when the connected CIDR database provides carrier data.
 
 Manual entries are appropriate for long-term trusted networks with stable source addresses. Do not make mobile data, temporary Wi-Fi, or unknown egress points permanent. A regional allowlist permits a large number of public addresses in the selected region and is substantially riskier than a fixed CIDR.
 
-A CNAME updates its effective allowed range from the system's resolution results. Use only domains you control whose results are predictable. Regional and carrier CIDR groups depend on IP geolocation data. They are useful for coarse restriction, not as the sole high-precision identity check. Carrier filtering requires CIDR database version `0.1.3` or later; older services still support standard region and custom-CIDR selection.
+A CNAME updates its effective allowed range from the system's resolution results. Use only domains you control whose results are predictable. Regional and carrier CIDR groups depend on IP geolocation data. They are useful for coarse restriction, not as the sole high-precision identity check. If the CIDR database does not provide carrier data, standard region and custom-CIDR selection remain available.
 
 The list shows the target, resolved IPs, source, status, expiration, creation time, and comment. Domain entries support `Refresh now`, and comments can be edited directly. After an entry or region group is deleted, the corresponding Direct-mode firewall allowance stops working if no other valid entry covers the same source.
 

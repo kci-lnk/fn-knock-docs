@@ -3,7 +3,7 @@ lang: ko-KR
 title: "cloudflared 기반 Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e67dbb1d5b3ddbd00b5e8cb8121d43a27750d4fd67efc97ddb31678eee923b00
+translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
 ---
 
 # cloudflared 기반 Cloudflare Tunnel
@@ -54,7 +54,7 @@ Token은 루트 도메인이 속한 활성 Zone을 읽을 수 있어야 합니�
 
 `API 연결`을 펼치고 API Token을 붙여넣은 뒤 연결합니다. 성공하면 검색한 Zone이 표시됩니다. 이후 읽기 API에서는 평문 Token을 반환하지 않습니다.
 
-연결에 실패하면 Zone 상태와 Token의 리소스 범위를 확인합니다. Zone 읽기만 가능하고 DNS 편집 권한이 없는 Token은 연결에 성공하더라도 미리 보기 또는 적용 단계에서 실패할 수 있습니다.
+연결에 실패하면 오류에 따라 Zone 상태와 Token의 리소스 범위를 확인합니다. 인증 오류는 저장된 API Token 자체가 유효하지 않다는 뜻입니다. `API 연결`에서 Cloudflare API Token을 교체하고 Tunnel Token을 입력하지 않습니다. Zone 읽기만 가능하고 DNS 편집 권한이 없는 Token은 연결에 성공하더라도 미리 보기 또는 적용 단계에서 실패할 수 있으며, 이 경우 페이지가 부족한 권한을 별도로 안내합니다.
 
 ### 2. Tunnel 선택
 
@@ -63,7 +63,7 @@ Token은 루트 도메인이 속한 활성 Zone을 읽을 수 있어야 합니�
 - `전용 Tunnel`: 권장 옵션입니다. fn-knock가 인스턴스 식별자가 있는 Tunnel을 만들고 자체 구성만 관리합니다.
 - `기존 Tunnel`: Cloudflare에서 원격 관리 중인 Cloudflared Tunnel을 재사용합니다. 다른 Ingress와 순서를 유지하고 fn-knock 와일드카드 규칙을 종료 규칙 앞에 배치합니다.
 
-`미리 보기`를 실행하면 생성, 업데이트 또는 유지할 Tunnel, Ingress, DNS 및 최적화 리소스를 확인할 수 있습니다. 계획은 10분 동안 유효합니다. 적용 전에 원격 상태가 변경되면 다시 미리 봅니다. 이름이 같지만 fn-knock 소유가 아닌 리소스는 충돌로 표시되고, 항목별 인계를 명시적으로 승인한 경우에만 변경합니다.
+`미리 보기`를 실행하면 생성, 업데이트 또는 유지할 Tunnel, Ingress, DNS 및 최적화 리소스를 확인할 수 있습니다. 계획은 10분 동안 유효합니다. 적용 전에 원격 상태가 변경되면 다시 미리 봅니다. 이름이 같지만 현재 인스턴스 소유가 아닌 리소스는 충돌로 표시되고, 인계 가능하다고 명시된 항목을 개별 승인한 경우에만 변경합니다. 로컬 관리 구성을 다시 만들었더라도 저장된 여러 리소스 표시가 같은 루트 도메인과 인스턴스를 일관되게 가리키면 기존 관리 ID를 복구합니다. 증거가 부족하거나 다른 인스턴스의 표시가 섞여 있으면 자동으로 소유권을 주장하지 않습니다.
 
 미리 보기 지문은 Cloudflare 응답 순서, 업데이트 시간 및 검증 상태 같은 일반적인 변동은 무시하지만 DNS 내용, 프록시 상태, 리소스 소유권 및 Ingress처럼 보안과 관련된 필드는 유지합니다. 적용 전에 이 필드가 바뀌면 이전 계획이 무효화되고 새 미리 보기가 필요하며 오래된 인계 승인은 재사용되지 않습니다. Custom Hostname의 소유권 또는 인증서 검증 TXT는 ‘이름 + 내용’별로 관리하므로 이름이 같더라도 값이 다른 타사 TXT를 덮어쓰지 않습니다. 한 이름에 소유권을 안전하게 판단할 수 없는 CNAME / A / AAAA가 여러 개 있으면 Cloudflare에서 직접 정리한 뒤 다시 미리 봅니다.
 
@@ -137,7 +137,7 @@ IP 등록 기관 또는 GeoIP에 “미국”이라고 표시되어도 요청이
 
 ### 요금제 및 안전 경계
 
-최적화는 Cloudflare for SaaS Custom Hostname을 사용합니다. 사용 가능 여부와 수량은 Zone의 실제 요금제와 할당량을 따릅니다. 할당량을 초과한 서비스 도메인은 표준 Tunnel을 사용합니다. Custom Hostname과 인증서가 모두 활성 상태가 되기 전에는 정확한 CNAME을 게시하지 않습니다.
+최적화는 Cloudflare for SaaS Custom Hostname을 사용합니다. 사용 가능 여부와 수량은 Zone의 실제 요금제와 할당량을 따릅니다. 할당량을 초과한 서비스 도메인은 표준 Tunnel을 사용합니다. Cloudflare Orange-to-Orange 활성화 과정에서는 Custom Hostname과 인증서 검증을 마치기 위해 표준 Tunnel 오리진을 가리키는 정확한 CNAME을 임시로 게시할 수 있습니다. 두 항목이 모두 활성 상태가 되기 전에는 서비스 도메인을 최적화 엣지로 전환하지 않습니다. 표준 Tunnel로 폴백할 때는 검증 후 이 임시 정확 레코드를 제거하여 요청이 계속 와일드카드 Tunnel과 일치하게 합니다.
 
 프록시 상태의 서비스 A 레코드를 Cloudflare 엣지 IP로 직접 지정하지 않습니다. Cloudflare Error 1000이 발생할 수 있습니다. fn-knock는 Custom Hostname, 전용 오리진 호스트 이름 및 DNS-only 최적화 진입점을 조합하며, 기능 프로브가 실패하면 와일드카드 Tunnel을 유지합니다.
 
@@ -172,6 +172,7 @@ API Token을 삭제하면 이후 원격 관리만 중지되며 Cloudflare 리소
 | 증상 | 우선 확인 항목 |
 | --- | --- |
 | Zone을 찾지 못했거나 비활성 상태 | 루트가 Token의 Account/Zone 범위에 있는 활성 Zone에 속하는지 확인 |
+| API Token 인증 실패 | `API 연결`에서 유효한 Cloudflare API Token으로 교체하고 Tunnel Token을 잘못 입력하지 않았는지, 현재 Account와 Zone을 허용하는지 확인 |
 | DNS Edit 권한이 필요함 | 대상 Zone에 `Zone / DNS / Edit`가 있는지 확인 |
 | DNS tag 할당량이 0 | comment-only 소유 표시를 지원하는 버전으로 업데이트하고 다시 미리 보기. 중복 레코드를 직접 만들지 않음 |
 | 미리 보기 후 적용이 409 | 원격 상태 또는 로컬 루트가 변경되었으므로 다시 미리 보기 |

@@ -3,7 +3,7 @@ lang: en-US
 title: "Automated Scan Blocking"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 77ddfaa8104217162692707e02b85d87096a3b330eb1d3c05ceb93be47f0d92d
+translationSourceHash: 5b99c573555da5f0849b7f5ce3e928cdba8186d75607de8662f63ecb8057031b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -27,7 +27,7 @@ Deleting a Scanner blacklist record immediately removes this layer's block, but 
 
 ## Exemptions
 
-You can exempt known regions or CIDRs. Region selections are resolved to final CIDRs when saved. Enter one custom CIDR per line; IPv4 and IPv6 are supported, and the page prevents saving when any entry has an invalid format. Region conditions can also filter CIDRs by China Telecom, China Unicom, or China Mobile; this requires CIDR database version `0.1.3` or later.
+You can exempt known regions or CIDRs. Region selections are resolved to final CIDRs when saved. Enter one custom CIDR per line; IPv4 and IPv6 are supported, and the page prevents saving when any entry has an invalid format. Region conditions can also filter CIDRs by China Telecom, China Unicom, or China Mobile when the connected CIDR database provides carrier data.
 
 `Common location exemption` uses common locations learned from recent successful sign-ins. `Region allowlist exemptions` and `CIDR allowlist exemptions` are fixed by an administrator. A source that matches any exemption is neither blocked by the Scanner blacklist nor counted toward uncommon-path hits. Exemptions reduce false positives, but also reduce scan protection for those sources. Add only office networks, VPNs, or service-provider ranges that you can verify.
 

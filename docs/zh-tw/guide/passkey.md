@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Passkey"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b831abe94d092aedd5dc580f64f72212998ca9a98f810c1248b78160c7c357cf
+translationSourceHash: 86ea645fe3edf31535747fe19df3f2209f795644a3a67551074668a50c648e15
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,7 +19,7 @@ Passkey 可讓已綁定的裝置透過系統生物辨識或裝置解鎖完成登
 - 身分驗證 Host、Cookie Domain 與 Passkey RP 設定符合網域規劃。
 - 瀏覽器或作業系統支援 WebAuthn。
 
-2.2.1 改善了 Windows Passkey Provider、Android / Google Password Manager，以及不同瀏覽器回傳格式的相容性。升級不會改變既有 Passkey 的 RP 綁定；若舊憑據仍無法使用，請先透過 TOTP 登入，在同一個最終網域重新綁定測試，不要先刪除唯一復原方式。
+目前實作相容於 Windows Passkey Provider、Android / Google Password Manager，以及不同瀏覽器回傳的憑據格式。更新程式不會改變既有 Passkey 的 RP 綁定；若既有憑據仍無法使用，請先透過 TOTP 登入，在同一個最終網域重新綁定測試，不要先刪除唯一復原方式。
 
 子網域情境可選擇將 Passkey 綁定至身分驗證 Host，或依產品設定使用父網域。修改 RP 設定會影響既有 Passkey 的可用性，切換前應先保留可用的 TOTP。
 

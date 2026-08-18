@@ -3,7 +3,7 @@ lang: ja-JP
 title: "cloudflared による Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e67dbb1d5b3ddbd00b5e8cb8121d43a27750d4fd67efc97ddb31678eee923b00
+translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,7 +56,7 @@ Token はルートドメインを含む有効な Zone を読み取れる必要�
 
 `API 接続` を展開し、API Token を貼り付けて接続します。成功すると検出した Zone が表示されます。その後の読み取り API から平文 Token が返ることはありません。
 
-接続できない場合は、Zone の状態と Token のリソース範囲を確認します。Zone は読めても DNS 編集権限がない Token は、接続に成功してもプレビューまたは適用で失敗することがあります。
+接続できない場合は、エラーに従って Zone の状態と Token のリソース範囲を確認します。認証エラーは、保存済み API Token 自体が無効であることを示します。`API 接続` で Cloudflare API Token を置き換え、Tunnel Token は入力しないでください。Zone は読めても DNS 編集権限がない Token は、接続に成功してもプレビューまたは適用で失敗し、その場合は不足する権限が別途表示されます。
 
 ### 2. Tunnel を選ぶ
 
@@ -65,7 +65,7 @@ Token はルートドメインを含む有効な Zone を読み取れる必要�
 - `専用 Tunnel`：推奨。fn-knock がインスタンス識別子付きの Tunnel を作成し、自分の設定だけを管理します。
 - `既存 Tunnel`：Cloudflare にあるリモート管理の Cloudflared Tunnel を再利用します。他の Ingress とその順序を維持し、fn-knock のワイルドカードルールを終端ルールの直前に配置します。
 
-`プレビュー` を実行すると、作成、更新、維持される Tunnel、Ingress、DNS、最適化リソースが表示されます。プレビューの有効時間は 10 分です。適用前にリモート設定が変化した場合は、もう一度プレビューしてください。同名で fn-knock 所有ではないリソースは競合として表示され、個別に引き継ぎを承認した場合だけ変更されます。
+`プレビュー` を実行すると、作成、更新、維持される Tunnel、Ingress、DNS、最適化リソースが表示されます。プレビューの有効時間は 10 分です。適用前にリモート設定が変化した場合は、もう一度プレビューしてください。同名で現在のインスタンス所有ではないリソースは競合として表示され、引き継ぎ可能と明示され、個別に承認した場合だけ変更されます。ローカル管理設定が再作成されていても、保存済みの複数のリソースマーカーが同じルートドメインとインスタンスを一貫して示す場合は、元の管理 ID を復元します。証拠が不足している場合や別インスタンスの情報が混在する場合は、自動的に所有権を主張しません。
 
 プレビューのフィンガープリントは、Cloudflare のレスポンス順序、更新時刻、検証状態など通常の変動を無視しますが、DNS 内容、Proxy 状態、リソース所有者、Ingress などセキュリティに関わる項目は保持します。適用前にこれらが変わると古いプランは無効になり、再プレビューが必要です。古い引き継ぎ承認が再利用されることはありません。Custom Hostname の所有権または証明書検証用 TXT は「名前 + 内容」ごとに管理されるため、同名でも値が異なる第三者 TXT は上書きされません。同じ名前に所有者を安全に判断できない CNAME / A / AAAA が複数ある場合は、Cloudflare で手動整理してから再プレビューしてください。
 
@@ -139,7 +139,7 @@ IP レジストリや GeoIP に「米国」と表示されても、通信が米�
 
 ### プランと安全上の境界
 
-最適化には Cloudflare for SaaS Custom Hostname が必要です。利用可否と数量は Zone の実際のプランとクォータに従います。超過したサービスドメインは標準 Tunnel を使います。Custom Hostname と証明書の両方が Active になるまで完全一致 CNAME は公開されません。
+最適化には Cloudflare for SaaS Custom Hostname が必要です。利用可否と数量は Zone の実際のプランとクォータに従います。超過したサービスドメインは標準 Tunnel を使います。Cloudflare の Orange-to-Orange 有効化中は、Custom Hostname と証明書の検証を完了するため、標準 Tunnel のオリジンを指す完全一致 CNAME を一時的に公開することがあります。両方が Active になるまでサービスドメインを最適化エッジへ切り替えません。標準 Tunnel へフォールバックする場合は、検証後にこの一時レコードを削除し、リクエストが引き続きワイルドカード Tunnel に一致するようにします。
 
 プロキシ状態のサービス A レコードを Cloudflare エッジ IP へ直接向けないでください。Cloudflare Error 1000 の原因になります。fn-knock は Custom Hostname、専用オリジンホスト、DNS-only の最適化入口を組み合わせ、機能プローブに失敗した場合はワイルドカード Tunnel を維持します。
 
@@ -174,6 +174,7 @@ API Token を削除しても、今後のリモート管理が止まるだけで 
 | 症状 | 最初に確認する項目 |
 | --- | --- |
 | Zone が見つからない、または無効 | Token の Account／Zone 範囲にルートを含む有効な Zone があるか |
+| API Token の認証に失敗する | `API 接続` で有効な Cloudflare API Token に置き換える。Tunnel Token を誤入力していないことと、現在の Account／Zone が許可されていることを確認する |
 | DNS Edit が必要と表示される | 対象 Zone に `Zone / DNS / Edit` があるか |
 | DNS tag クォータが 0 | comment のみの所有情報に対応した版へ更新して再プレビューし、重複レコードを手作業で作らない |
 | プレビュー後の適用が 409 | リモート状態またはローカルのルートが変化したため再プレビューする |

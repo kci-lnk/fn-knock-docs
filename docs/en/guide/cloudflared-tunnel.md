@@ -3,7 +3,7 @@ lang: en-US
 title: "Cloudflare Tunnel with cloudflared"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e67dbb1d5b3ddbd00b5e8cb8121d43a27750d4fd67efc97ddb31678eee923b00
+translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -56,7 +56,7 @@ Open `Tunnels → Cloudflared`. Every section can be collapsed; runtime status a
 
 Expand `API connection`, paste the API Token, and connect. The detected Zone appears after a successful connection. Later read APIs never return the plaintext Token.
 
-If connection fails, check the Zone status and the Token's resource scope. A Token that can read the Zone but cannot edit DNS may connect successfully and then fail during preview or apply.
+If connection fails, check the Zone status and the Token's resource scope according to the error. An authentication error means that the saved API Token itself is invalid; replace the Cloudflare API Token under `API connection`, and do not enter a Tunnel Token. A Token that can read the Zone but cannot edit DNS may connect successfully and then fail during preview or apply, where the page reports the missing permission separately.
 
 ### 2. Select a Tunnel
 
@@ -65,7 +65,7 @@ Expand `Tunnel and domain sync`:
 - `Dedicated Tunnel` is recommended. fn-knock creates a Tunnel with an instance identifier and manages only its own configuration.
 - `Existing Tunnel` reuses a remotely managed Cloudflared Tunnel. fn-knock preserves unrelated Ingress rules and their order, placing its wildcard rule before the terminal rule.
 
-Select `Preview` to see the Tunnel, Ingress, DNS, and optimization resources that will be created, updated, or kept. A preview is valid for 10 minutes. If the remote configuration changes before apply, generate a new preview. A resource with the same name but different ownership is reported as a conflict and is modified only after you explicitly approve takeover.
+Select `Preview` to see the Tunnel, Ingress, DNS, and optimization resources that will be created, updated, or kept. A preview is valid for 10 minutes. If the remote configuration changes before apply, generate a new preview. A same-name resource that does not belong to the current instance is reported as a conflict and is modified only when it is explicitly marked as eligible for takeover and you approve it. If the local managed configuration was rebuilt but multiple saved resource markers still consistently identify the same root domain and instance, fn-knock recovers the managed identity; it does not automatically claim resources when evidence is incomplete or mixed with another instance.
 
 The preview fingerprint ignores ordinary Cloudflare churn such as response ordering, update timestamps, and validation status, while retaining security-relevant fields such as DNS content, proxy state, resource ownership, and Ingress. If any of those fields changes before apply, the old plan expires and a new preview is required; stale takeover approval is never reused. Ownership or certificate-validation TXT records required by a Custom Hostname are managed by both name and content, so an unrelated TXT with the same name but a different value is not overwritten. If one name has multiple CNAME / A / AAAA records whose ownership cannot be determined safely, clean them up in Cloudflare before previewing again.
 
@@ -139,7 +139,7 @@ After repeated failure, fn-knock prefers an already verified candidate. If none 
 
 ### Plan and safety boundaries
 
-Optimization depends on Cloudflare for SaaS Custom Hostnames. Availability and quota come from the Zone's actual plan. Application domains beyond the quota remain on the standard Tunnel. fn-knock does not publish an exact CNAME until both the Custom Hostname and certificate are active.
+Optimization depends on Cloudflare for SaaS Custom Hostnames. Availability and quota come from the Zone's actual plan. Application domains beyond the quota remain on the standard Tunnel. During Cloudflare Orange-to-Orange activation, fn-knock may temporarily publish an exact CNAME pointing to the standard Tunnel origin so Cloudflare can validate the Custom Hostname and certificate; it does not switch the application domain to the optimized edge until both are active. When falling back to the standard Tunnel, it removes this temporary exact record after validation so requests continue to match the wildcard Tunnel.
 
 Do not manually point a proxied application A record directly to a Cloudflare edge IP; that can trigger Cloudflare Error 1000. fn-knock uses Custom Hostnames, a dedicated origin hostname, and a DNS-only optimized entry, and keeps the wildcard Tunnel when its capability probe fails.
 
@@ -174,6 +174,7 @@ Deleting the API Token only stops future remote management; it does not delete C
 | Symptom | Check first |
 | --- | --- |
 | Zone was not found or is inactive | The root belongs to an active Zone in the Token's Account and Zone scope |
+| API Token authentication failed | Replace it with a valid Cloudflare API Token under `API connection`; confirm that it is not a Tunnel Token and allows the current Account and Zone |
 | DNS Edit is required | The Token has `Zone / DNS / Edit` for the target Zone |
 | DNS tag quota is 0 | Upgrade to a version that supports comment-only ownership, then preview again; do not create a duplicate record manually |
 | Apply returns 409 after preview | Remote state or the local root changed; create a new preview |
