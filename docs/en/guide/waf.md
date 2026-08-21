@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4db3f6b804a08ba4362063d304e051074821ff170f48030a8670ef2330fad212
+translationSourceHash: 4202983724ef87f7ee2166c4a67a1e5e99963cd32b52e4937182ed6becd88b21
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -47,6 +47,10 @@ Common locations are derived from recent sign-in locations. Once the exemption i
 
 Scanner blocking has its own independent common-location exemption. Changing the WAF switch does not alter scanner settings.
 
+### LAN Exemption Boundary
+
+The disabled-by-default LAN exemption skips all WAF checks for private, loopback, link-local, and carrier-grade NAT client addresses. Enable it only when those networks are trusted, and first verify the real client IP in request logs: a front proxy that makes public visitors appear private would bypass WAF. This setting is independent of login local exemptions, common-location exemptions, and per-Host WAF controls.
+
 ## System Rules
 
 The System rules section shows the remote manifest time, local synchronization time, and whether an update is available. It supports:
@@ -59,7 +63,7 @@ The System rules section shows the remote manifest time, local synchronization t
 
 Enabling the global WAF first attempts to update system rules and skips rule files that the project has identified as frequent sources of false positives. Manually enabling every rule can reintroduce many false positives, so test it in an environment with a known recovery path.
 
-`Recommended only` restores system rules to the enabled state recommended by the current version. It does not modify custom rules or enable the global WAF automatically. If WAF is enabled, rule changes load directly into the gateway. If WAF is disabled, the configuration is retained and applied the next time it is enabled.
+`Recommended only` restores system rules to the program's recommended enabled state. It does not modify custom rules or enable the global WAF automatically. If WAF is enabled, rule changes load directly into the gateway. If WAF is disabled, the configuration is retained and applied the next time it is enabled.
 
 ## Custom Rules
 

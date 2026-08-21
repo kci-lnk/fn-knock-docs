@@ -3,7 +3,7 @@ lang: zh-TW
 title: "WAF"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4db3f6b804a08ba4362063d304e051074821ff170f48030a8670ef2330fad212
+translationSourceHash: 4202983724ef87f7ee2166c4a67a1e5e99963cd32b52e4937182ed6becd88b21
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -47,6 +47,10 @@ fn-knock 使用 Coraza 載入系統規則與自訂規則。全域開關、防護
 
 Scanner 攔截也有獨立的常用地豁免開關；變更 WAF 開關不會連動 Scanner 設定。
 
+### 區域網路豁免的邊界
+
+預設關閉的區域網路豁免會讓私有、迴環、鏈路本地與電信級 NAT 客戶端位址略過全部 WAF 檢查。只有這些網路可信時才開啟，並先在請求記錄確認真實客戶端 IP；若前置代理把公網訪客錯認為私網，就會繞過 WAF。此設定獨立於登入本地豁免、常用地豁免與單一 Host WAF 開關。
+
 ## 系統規則
 
 系統規則區會顯示 Remote Manifest 時間、本機同步時間及是否有更新，並支援：
@@ -59,7 +63,7 @@ Scanner 攔截也有獨立的常用地豁免開關；變更 WAF 開關不會連�
 
 啟用全域 WAF 時，系統會先嘗試更新系統規則，並略過專案預設的高頻誤報規則檔。手動啟用所有規則可能再次引入大量誤報，應先在可 Rollback 的環境中驗證。
 
-「僅開啟推薦」會將系統規則還原為目前版本建議的啟用狀態，不會修改自訂規則，也不會自動開啟全域 WAF。若 WAF 已啟用，規則變更會直接載入閘道；若 WAF 已關閉，設定會保留到下次啟用時套用。
+「僅開啟推薦」會將系統規則還原為程式建議的啟用狀態，不會修改自訂規則，也不會自動開啟全域 WAF。若 WAF 已啟用，規則變更會直接載入閘道；若 WAF 已關閉，設定會保留到下次啟用時套用。
 
 ## 自訂規則
 
@@ -84,7 +88,7 @@ Scanner 攔截也有獨立的常用地豁免開關；變更 WAF 開關不會連�
 
 啟用接入不等同於已阻斷攻擊：全域 WAF 與對應規則也必須啟用。狀態區會區分已保護、僅偵測、WAF 未啟用或降級，並顯示實際 fnOS Port、入口狀態與最近同步錯誤。系統約每 `5` 秒核對一次規則，並會跟隨 fnOS HTTP Port 變更。
 
-目前版本不接管已開啟 fnOS `強制 HTTPS` 的明文 FN Connect 連線路徑；偵測到該設定時不會啟用重新導向。若 Port 無法連線、規則寫入失敗或本機 WAF 入口異常，系統採用 Fail-open：清理重新導向並停止對應入口，優先避免 FN Connect 整體中斷。此時應依狀態錯誤修復環境，不可將「遠端仍可存取」誤認為 WAF 仍在生效。
+fnOS 已開啟 `強制 HTTPS` 時，程式不接管明文 FN Connect 連線路徑；偵測到該設定時不會啟用重新導向。若 Port 無法連線、規則寫入失敗或本機 WAF 入口異常，系統採用 Fail-open：清理重新導向並停止對應入口，優先避免 FN Connect 整體中斷。此時應依狀態錯誤修復環境，不可將「遠端仍可存取」誤認為 WAF 仍在生效。
 
 此能力只在官網標準版 FPK 提供，且需要 Host Network 權限；`敲門 knock Lite`、Docker、OpenWrt、一般 Linux、Synology 與 Windows 均不顯示。切換前請保留 fnOS 桌面或區域網路管理入口，再透過 FN Connect 發出一筆可辨識的 Request，並在 Request Log 與 WAF Log 中確認路由類型和規則動作。
 

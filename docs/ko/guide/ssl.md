@@ -3,7 +3,7 @@ lang: ko-KR
 title: "TLS 인증서 및 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dfc34f5be70cf1a410521b76bc46afb6f09bd6a6e5340a1fa89b5ae0adad66d2
+translationSourceHash: cddb69852f11453dc5b08108ba213d554c21116f5bc38075becf1cb2b341bb86
 ---
 
 # TLS 인증서 및 HTTPS
@@ -93,7 +93,13 @@ fn-knock에 현재 인증서가 하나도 없으면 외부 엔드포인트에서
 
 엔드포인트 하나는 고정 인증서 슬롯 하나와 독립 Token 하나를 가집니다. 서로 관계없는 인증서를 같은 엔드포인트로 보내면 나중 푸시가 이전 인증서를 교체합니다. 여러 fn-knock 인스턴스도 Token을 공유하지 말고 각 인스턴스에 엔드포인트를 만듭니다.
 
-### `BACKEND_PORT`, 루프백 및 역방향 프록시
+### 공용, LAN 또는 루프백 엔드포인트 선택
+
+푸시 엔드포인트는 HTTPS 인증 Host를 통한 공용 URL, 명시적으로 허용한 RFC1918 주소와 게이트웨이 포트를 쓰는 LAN HTTPS, 같은 호스트 도구용 루프백 호환 URL을 제공합니다. 다른 장치나 클라우드는 관리 포트를 열지 않는 `/__certificates__/<BINDING_ID>` 공용 경로를 권장합니다. LAN은 비루프백 리스너와 기본 인증서가 필요하며 최대 16개 IPv4를 허용합니다. IP와 기본 인증서 이름이 다를 때의 `-k`는 선택한 LAN에만 사용하고 공용 경로에는 사용하지 마세요.
+
+모든 엔드포인트는 같은 바인딩 Token과 검증을 사용합니다. Token은 임의 SAN을 배포하고 같은 SAN의 기존 인증서를 인수할 수 있으므로 인증서 관리자 자격 증명으로 취급하고 노출 시 즉시 교체하세요.
+
+### 루프백 호환 엔드포인트와 `BACKEND_PORT`
 
 생성되는 기본 URL은 다음과 같습니다.
 
@@ -103,28 +109,7 @@ http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
 
 포트는 fn-knock 런타임의 `BACKEND_PORT`에서 가져오며 `7998`은 기본값일 뿐입니다. 관리 백엔드는 기본적으로 `127.0.0.1`과 `::1`에서만 수신하므로 인증서 도구와 fn-knock이 같은 호스트 또는 네트워크 네임스페이스에 있을 때만 이 주소를 직접 사용할 수 있습니다.
 
-| 배포 위치 | 주소 처리 |
-| --- | --- |
-| Certd/ACME 클라이언트와 fn-knock이 같은 호스트 | 생성된 `127.0.0.1:${BACKEND_PORT}` 주소를 그대로 사용 |
-| Certd는 호스트에 있고 fn-knock은 격리 컨테이너에 있음 | 역방향 프록시가 컨테이너 내부 `BACKEND_PORT`에 접근하도록 구성합니다. 호스트의 `127.0.0.1`은 컨테이너 내부 루프백을 자동으로 가리키지 않음 |
-| Certd 또는 ACME 클라이언트가 다른 컴퓨터에 있음 | fn-knock의 `127.0.0.1:${BACKEND_PORT}`를 해당 컴퓨터가 접근할 수 있는 HTTP 또는 HTTPS 주소로 역방향 프록시한 뒤 생성 URL의 호스트와 포트를 교체 |
-
-역방향 프록시에는 `/api/integrations/certificates/` 경로만 공개하고 관리 백엔드 전체를 네트워크에 직접 노출하지 않습니다. 프록시는 `PUT` 방식, `Authorization` Header 및 원본 JSON Body를 유지해야 합니다. 다음 Nginx 예시는 기본 포트를 사용합니다.
-
-```nginx
-location ^~ /api/integrations/certificates/ {
-    proxy_pass http://127.0.0.1:7998;
-    proxy_set_header Authorization $http_authorization;
-    proxy_pass_request_headers on;
-    client_max_body_size 1m;
-}
-
-location / {
-    return 404;
-}
-```
-
-역방향 프록시 엔드포인트는 HTTP 또는 HTTPS를 사용할 수 있으며 fn-knock은 특정 프로토콜을 강제하지 않습니다. 신뢰할 수 있는 내부 네트워크에서는 HTTP를 사용할 수 있습니다. 인터넷을 거치면 역방향 프록시에서 전송을 보호하고 출발지 주소를 제한합니다. Token을 URL, Query String, 프록시 Access Log 또는 스크립트 디버그 출력에 기록하지 않습니다.
+이 호환 URL은 같은 호스트나 네트워크 네임스페이스에서만 사용합니다. 호스트 루프백은 격리 컨테이너 내부를 가리키지 않습니다. 다른 장치에서는 공용 인증 Host 또는 명시적으로 켠 LAN 엔드포인트를 사용하고 `BACKEND_PORT`를 공개하지 마세요. Token을 URL, Query String, Access Log 또는 디버그 출력에 기록하지 마세요.
 
 ### Certd Webhook 설정
 
@@ -138,7 +123,7 @@ Certd 엔드포인트를 만든 뒤 fn-knock에 표시된 필드를 해당 Certd
 | Certd 필드 | 값 | 설명 |
 | --- | --- | --- |
 | 작업 이름 | `fn-knock으로 인증서 푸시` | 대상 노드 이름을 포함할 수 있음 |
-| Webhook URL | fn-knock에 표시된 푸시 URL | 같은 호스트에서는 `127.0.0.1:${BACKEND_PORT}`, 다른 호스트에서는 역방향 프록시 URL 사용 |
+| Webhook URL | fn-knock에 표시된 푸시 URL | 도구 위치에 따라 공용 HTTPS, LAN HTTPS 또는 루프백 선택 |
 | 요청 방식 | `PUT` | POST로 변경하지 않음 |
 | ContentType | `application/json` | Certd가 JSON으로 전송하도록 설정 |
 | Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | Certd의 이 입력란은 `key=value` 형식이며 전체 Token은 fn-knock에서 복사 |

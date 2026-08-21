@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
+translationSourceHash: 2bd2a289e3877ccca299da9cf661aafa735468e2bdf33e360c23496814474279
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -177,6 +177,8 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 - `清空所有設定`：經過兩次確認後刪除驗證服務及所有 Host 映射，保留 Root Domain 等模式設定。
 
 單一 Host 的流量詳細資料可查看即時流量與有效 IP，並將異常來源加入[通用封鎖清單](/zh-tw/guide/general-blacklist)。
+
+`同步到導覽面板` 可將已啟用的應用 Host 發佈到 Sun-Panel、OneNav 或 Van-Nav，但不匯出內部 Target。預覽、資源所有權、清理與自動同步邊界見[導覽面板同步](/zh-tw/guide/panel-sync)。
 
 ### 深度監控
 

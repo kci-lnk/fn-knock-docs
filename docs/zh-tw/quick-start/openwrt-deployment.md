@@ -3,7 +3,7 @@ lang: zh-TW
 title: "OpenWrt 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
+translationSourceHash: b0262d7159450ec265777aa9dbe71330637425391c37bd7b443934b0845d705f
 ---
 
 # OpenWrt 部署
@@ -103,6 +103,10 @@ logread -e fn-knock
 ```
 
 能開啟管理後台，只能證明本機服務已啟動。設定映射後，請使用行動網路等真正的外部連線驗證 `7999` 與網域名稱，不要將 LAN 測試結果當成公網身分驗證結果。
+
+### 自動開放閘道連接埠
+
+LuCI 可維護一條由 fn-knock 擁有、從 `wan` 到目前 TCP 閘道連接埠且同時適用 IPv4 / IPv6 的 firewall4 規則。全新安裝可預設啟用；舊安裝升級不會自行擴大公開範圍，需明確開啟。規則會跟隨重載與連接埠變更，停用、停止或解除安裝時移除。它不開放管理或內部連接埠，也不設定 NAT、DNS、TLS 或驗證；同名非自有規則會顯示衝突而不覆寫。自訂 zone 或集中管理防火牆時請關閉。
 
 ## 資料與升級
 

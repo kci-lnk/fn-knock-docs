@@ -404,11 +404,11 @@ export const PAGE_TITLES = {
     ko: '게이트웨이 포털',
   },
   'guide/gateway-proxy-headers': {
-    root: '向上游传递代理头',
-    'zh-tw': '向上游傳遞反向代理標頭',
-    en: 'Forward Proxy Headers Upstream',
-    ja: '上流へプロキシヘッダーを転送',
-    ko: '업스트림으로 프록시 헤더 전달',
+    root: '入站 PROXY Protocol 与上游代理头',
+    'zh-tw': '入站 PROXY Protocol 與上游代理標頭',
+    en: 'Inbound PROXY Protocol and Upstream Headers',
+    ja: '受信 PROXY Protocol と上流プロキシヘッダー',
+    ko: '인바운드 PROXY Protocol과 업스트림 헤더',
   },
   'guide/gateway-visibility': {
     root: '网关可见性',
@@ -444,6 +444,13 @@ export const PAGE_TITLES = {
     en: 'OpenAPI: Management API Access and AI Agents',
     ja: 'OpenAPI：管理 API の公開と AI Agent',
     ko: 'OpenAPI: 관리 API 공개와 AI Agent',
+  },
+  'guide/panel-sync': {
+    root: '导航面板同步',
+    'zh-tw': '導覽面板同步',
+    en: 'Navigation Panel Sync',
+    ja: 'ナビゲーションパネル同期',
+    ko: '내비게이션 패널 동기화',
   },
   'guide/passkey': {
     root: 'Passkey',
@@ -849,6 +856,7 @@ const SIDEBAR_SECTIONS = [
         collapsed: false,
         items: [
           'guide/subdomain-proxy',
+          'guide/panel-sync',
           'guide/service-discovery',
           'guide/advanced-auth',
           'guide/reverse-proxy',

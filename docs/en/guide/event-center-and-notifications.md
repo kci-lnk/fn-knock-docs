@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 828f49d3eae30a49bacb356eeb20561eac29e5cd1042afc2b162e9b604c6d284
+translationSourceHash: 0d5dea54c5cd45e0c7bb4d8ce0857d02b19bee57f84a92b912c0ee21aa58b2a0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -49,6 +49,8 @@ The page lets you:
 `Clear events` deletes every event stored in the Event Center. The count shown in parentheses describes how many events match the current view; it does not mean that only filtered results will be cleared. This operation cannot be undone, but it does not clear notification rules or delivery records.
 
 Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, WOL target and delivery source, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, tunnel logs, or device online status.
+
+Panel-sync failure and recovery and remote-device SSH shutdown are also recorded; avoid relying on a fixed event-type count. Authentication and security events reuse the IP-location cache. An uncached address may be stored first and enriched asynchronously, and notifications use enriched fields when available.
 
 ## Core Service Status and Diagnostics
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Cloudflare Tunnel（cloudflared）設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
+translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,6 +20,10 @@ Cloudflared 會從內部網路主動連上 Cloudflare Tunnel，將公網 Request
 2. 在 `系統設定 → 模式` 選擇 `內網穿透 → 子網域映射`。
 3. 在 `子網域映射` 中儲存根網域、驗證服務與至少一筆服務映射。
 4. 建立一個限制於目標 Account 與 Zone 的 Cloudflare Account API Token。
+
+### 資源更新
+
+在 `系統設定 → Cloudflared` 更新過期資源。程式會驗證下載摘要；替換後無法啟動時，會還原舊執行檔與安裝資訊。執行中的 Tunnel 會短暫暫停，完成後確認程序與公網存取。
 
 ### 建議：建立 Account API Token
 

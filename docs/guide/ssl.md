@@ -85,38 +85,23 @@ HTTPS 是 Passkey、OIDC 回调和多数公网服务的基础。证书要覆盖�
 
 一个入口对应一个固定证书槽位和一个独立 Token。不要让多个不相关证书共用同一入口，否则后一次推送会替换前一次推送的证书。多台 fn-knock 实例也不要共用 Token；应在每台实例分别创建入口。
 
-### `BACKEND_PORT`、本机地址与反向代理
+### 选择公网、局域网或本机入口
 
-页面生成的默认推送地址类似：
+创建绑定后，`推送入口` 会按可用性显示三类地址：
 
-```text
-http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
-```
+| 证书工具位置 | 推荐入口 | 条件与边界 |
+| --- | --- | --- |
+| 其他设备或云端 | `公网 HTTPS` | 鉴权 Host 已配置 HTTPS；请求只进入网关保留路径，无需开放管理端口 |
+| 同一可信局域网 | `局域网 HTTPS` | 管理员显式启用允许的 RFC1918 IPv4，网关不是仅回环监听，且已有默认证书 |
+| 与 fn-knock 同机 | `本机兼容地址` | 使用管理后端回环地址；只适合同一主机或同一网络命名空间 |
 
-其中端口来自 fn-knock 运行时的 `BACKEND_PORT`，`7998` 只是默认值。管理后端默认只监听 `127.0.0.1` 和 `::1`，因此这个地址只适用于证书工具与 fn-knock 位于同一台主机或同一网络命名空间的情况。
+公网地址形如 `https://auth.example.com/__certificates__/<BINDING_ID>`。只有配置中的 HTTPS 鉴权 Host 才接受这条保留路径；它不建立管理会话，也不会暴露其他管理 API。跨设备部署优先使用这一入口，并确保鉴权 Host 的证书和外部解析正常。
 
-| 部署位置 | 地址处理 |
-| --- | --- |
-| Certd / ACME 客户端与 fn-knock 同机 | 直接使用页面生成的 `127.0.0.1:${BACKEND_PORT}` 地址 |
-| Certd 在宿主机，fn-knock 在隔离容器中 | 需要让反向代理能够访问容器内的 `BACKEND_PORT`；宿主机的 `127.0.0.1` 不自动等于容器内部回环地址 |
-| Certd 或 ACME 客户端位于另一台机器 | 先把 fn-knock 的 `127.0.0.1:${BACKEND_PORT}` 反向代理到该机器可访问的 HTTP 或 HTTPS 地址，再替换生成地址中的主机和端口 |
+局域网入口在 `接收外部证书 → 局域网设置` 中启用。每行填写一个实际属于本机的 RFC1918 IPv4，最多 16 个；Docker 宿主机地址可以手工添加。入口复用当前网关端口和默认证书，不新增监听端口，也不签发 IP 专用证书。通过 IP 访问通常会发生证书名称不匹配，只有页面为所选 LAN 入口生成的脚本才可按管理员选择使用 `curl -k` 或 Certd 的忽略 TLS 校验；不要把该配置复制到公网入口。
 
-反向代理只需要公开 `/api/integrations/certificates/` 路径，不应把整个管理后端直接暴露到网络。代理必须保留 `PUT` 方法、`Authorization` Header 和原始 JSON 请求体。以下 Nginx 片段以默认端口为例：
+本机兼容地址仍使用 `http://127.0.0.1:${BACKEND_PORT}/api/integrations/certificates/<BINDING_ID>`。管理后端默认只监听回环，因此宿主机的 `127.0.0.1` 不等于隔离容器内部回环地址。不要为了远程推送而公开整个 `BACKEND_PORT`；使用公网鉴权 Host 或受控 LAN 入口。
 
-```nginx
-location ^~ /api/integrations/certificates/ {
-    proxy_pass http://127.0.0.1:7998;
-    proxy_set_header Authorization $http_authorization;
-    proxy_pass_request_headers on;
-    client_max_body_size 1m;
-}
-
-location / {
-    return 404;
-}
-```
-
-反向代理入口可以使用 HTTP 或 HTTPS，fn-knock 不强制协议。应根据网络边界决定：可信内网可直接使用 HTTP；跨公网时应由反向代理提供传输保护，并限制来源地址。不要把 Token 写入 URL、查询参数、代理访问日志或脚本调试输出。
+三类入口使用相同的绑定 Token、请求格式、大小限制、证书校验、幂等与回滚逻辑。Token 不限制证书 SAN，可以推送任意域名证书并接管证书库中相同 SAN 的已有证书，属于证书管理员凭据；不要写入 URL、查询参数、代理日志或脚本调试输出，泄露后立即轮换或停用绑定。
 
 ### 在 Certd 中配置 Webhook
 
@@ -130,12 +115,12 @@ location / {
 | Certd 字段 | 填写值 | 说明 |
 | --- | --- | --- |
 | 任务名称 | `推送证书到 fn-knock` | 可按目标节点命名 |
-| Webhook 地址 | fn-knock 显示的推送地址 | 同机使用 `127.0.0.1:${BACKEND_PORT}`；异机使用反向代理地址 |
+| Webhook 地址 | fn-knock 显示的推送地址 | 按工具位置选择公网 HTTPS、局域网 HTTPS 或本机兼容地址 |
 | 请求方式 | `PUT` | 不要改成 POST |
 | ContentType | `application/json` | 保证 Certd 按 JSON 发送 |
 | Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | Certd 此处使用 `key=value` 格式；完整 Token 只应从 fn-knock 页面复制 |
 | 消息 body 模板 | `{"cert":"${crt}","key":"${key}"}` | `${crt}` 是完整证书内容，`${key}` 是私钥 |
-| 忽略证书校验 | 通常关闭 | 使用 HTTP 时没有 TLS 证书需要校验；使用 HTTPS 反代时应优先修复反代证书链 |
+| 忽略证书校验 | 通常关闭 | 只在页面所选 LAN IP 入口复用默认证书并发生名称不匹配时开启；公网 HTTPS 必须保持校验 |
 | 成功判定 | `"success":true` | 响应同时必须是 2xx；非 2xx 应视为失败 |
 
 ![Certd Webhook 部署证书到 fn-knock 的字段配置](/images/ssl/certd-webhook-deployment.png)
@@ -226,7 +211,7 @@ openssl s_client \
 - `保存名称`：只改变入口显示名称，不改变证书槽位、URL、Token 或已保存证书。
 - `删除入口`：撤销该部署地址和 Token，但默认保留已经导入的证书，避免删除入口时中断正在使用的 HTTPS。需要清理证书时再到证书库操作。
 
-Token 只授予向单个绑定证书槽位部署证书的权限，不能调用 `/api/admin/ssl/*` 管理接口，也不能操作其他绑定。不要把管理会话 Cookie 用于自动部署。
+Token 不能调用 `/api/admin/ssl/*` 管理接口，也不能操作其他绑定，但能向自己的绑定推送任意 SAN，并接管证书库中相同 SAN 的已有证书。不要把管理会话 Cookie 用于自动部署，也不要把绑定 Token 当作普通 Webhook 密钥低权限保存。
 
 ### 多台 fn-knock 实例
 
@@ -253,7 +238,7 @@ Certd 集中向多台 VPS 或 NAS 分发时，应在每台 fn-knock 上分别创
 | `500 Internal Server Error` | 保存配置或部署状态失败 | 查看 fn-knock 运行日志和磁盘 / 配置存储状态，外部工具应保留失败并重试 |
 | `502 Bad Gateway` | 证书已校验，但同步网关失败；响应会说明是否确认恢复旧配置 | 先确认当前公网证书是否仍为旧证书，再检查网关状态和 fn-knock 日志后重试 |
 
-如果 Certd 显示申请成功但 fn-knock 一直显示“等待首次推送”，说明流水线没有执行部署步骤、Webhook 无法连接，或部署步骤选择了错误的前置证书输出。先从 Certd 任务日志确认请求确实发出，再检查同机 `127.0.0.1:${BACKEND_PORT}` 或异机反向代理链路。
+如果 Certd 显示申请成功但 fn-knock 一直显示“等待首次推送”，说明流水线没有执行部署步骤、推送入口无法连接，或部署步骤选择了错误的前置证书输出。先从 Certd 任务日志确认请求确实发出，再按所选入口检查鉴权 Host HTTPS、LAN 地址允许列表和网关监听，或本机回环链路。
 
 ## 自签根 CA
 

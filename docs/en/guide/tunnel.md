@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal and Tunnels"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
+translationSourceHash: baec212f5c1e0405344d0502a1b06be59dedf2e1896a33f26cc5cca99344b96d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -68,6 +68,8 @@ The page offers two editing methods:
 Back up the original text before switching editing methods on an existing custom configuration.
 
 ## Cloudflared
+
+When the resource page reports an update, fn-knock downloads to a temporary file, verifies the pinned digest, pauses a running managed process, backs up the executable and metadata, then resumes it after replacement. If the new binary cannot start, it restores the previous files and attempts to restart the old process. Expect a brief tunnel interruption and verify external access afterward.
 
 First download the resource under `System settings → Cloudflared`, then enter the recommended Cloudflare Account API Token under `Tunnels → Cloudflared`. Choose the dedicated Tunnel, preview, and apply. fn-knock creates or attaches to the Tunnel, maintains wildcard DNS and Ingress, retrieves the Tunnel Token, and starts the process. Manual Tunnel Token mode remains available under the advanced section.
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dfc34f5be70cf1a410521b76bc46afb6f09bd6a6e5340a1fa89b5ae0adad66d2
+translationSourceHash: cddb69852f11453dc5b08108ba213d554c21116f5bc38075becf1cb2b341bb86
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -95,7 +95,13 @@ When fn-knock has no current certificate, the first certificate successfully rec
 
 Each endpoint owns one stable certificate slot and one independent Token. Do not send unrelated certificates through the same endpoint: the later push replaces the earlier certificate. Do not share a Token among fn-knock instances either; create an endpoint on every instance.
 
-### `BACKEND_PORT`, loopback, and reverse proxying
+### Choose a Public, LAN, or Loopback Endpoint
+
+The endpoint tab offers public HTTPS through the configured authentication Host, LAN HTTPS through explicitly enabled RFC1918 addresses on the gateway port, and a loopback compatibility URL for tools on the same host. Prefer public HTTPS for another device or cloud service; it uses `/__certificates__/<BINDING_ID>` without exposing the management port. LAN deployment requires a non-loopback listener and a default certificate, supports up to 16 approved IPv4 addresses, and may need `-k` only because the default certificate usually does not match the IP. Never reuse that insecure option for the public endpoint.
+
+All endpoints share the same binding Token and validation. The Token can deploy any SAN and take over an existing same-SAN certificate, so treat it as a certificate-administrator credential and rotate it immediately if exposed.
+
+### Loopback Compatibility and `BACKEND_PORT`
 
 The generated URL looks like this:
 
@@ -105,28 +111,7 @@ http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
 
 The port comes from fn-knock's runtime `BACKEND_PORT`; `7998` is only the default. The administration backend listens on `127.0.0.1` and `::1` by default, so this URL works only when the certificate tool and fn-knock share the same host or network namespace.
 
-| Tool location | URL handling |
-| --- | --- |
-| Certd / ACME client and fn-knock on the same host | Use the generated `127.0.0.1:${BACKEND_PORT}` URL directly |
-| Certd on the host and fn-knock in an isolated container | Make the reverse proxy reach the container's `BACKEND_PORT`; host loopback does not automatically refer to container loopback |
-| Certd or the ACME client on another machine | Reverse proxy fn-knock's `127.0.0.1:${BACKEND_PORT}` to an HTTP or HTTPS address reachable by that machine, then replace the generated host and port |
-
-Only publish `/api/integrations/certificates/` through the reverse proxy. Do not expose the entire administration backend. The proxy must preserve the `PUT` method, `Authorization` Header, and original JSON body. This Nginx example uses the default port:
-
-```nginx
-location ^~ /api/integrations/certificates/ {
-    proxy_pass http://127.0.0.1:7998;
-    proxy_set_header Authorization $http_authorization;
-    proxy_pass_request_headers on;
-    client_max_body_size 1m;
-}
-
-location / {
-    return 404;
-}
-```
-
-The reverse-proxy endpoint may use HTTP or HTTPS; fn-knock does not require either protocol. Choose based on the network boundary. HTTP can be sufficient on a trusted internal network. Across the public Internet, the reverse proxy should protect the transport and restrict source addresses. Never put the Token in a URL, query string, reverse-proxy access log, or script debug output.
+Use this compatibility URL only on the same host or network namespace. Host loopback does not refer to an isolated container's loopback. For another device, use the public authentication-Host endpoint or an explicitly enabled LAN endpoint instead of exposing `BACKEND_PORT`. Never put the Token in a URL, query string, access log, or script debug output.
 
 ### Configuring the Certd Webhook
 
@@ -140,7 +125,7 @@ After creating a Certd endpoint, copy the fields shown by fn-knock into the corr
 | Certd field | Value | Notes |
 | --- | --- | --- |
 | Task name | `Push certificate to fn-knock` | It can include the target node name |
-| Webhook URL | Push URL shown by fn-knock | Use `127.0.0.1:${BACKEND_PORT}` on the same host or the reverse-proxy URL across hosts |
+| Webhook URL | Push URL shown by fn-knock | Choose public HTTPS, LAN HTTPS, or loopback according to the tool location |
 | Request method | `PUT` | Do not change it to POST |
 | ContentType | `application/json` | Makes Certd send JSON |
 | Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | This Certd input uses `key=value`; copy the complete Token from fn-knock |

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TLS 憑證與 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dfc34f5be70cf1a410521b76bc46afb6f09bd6a6e5340a1fa89b5ae0adad66d2
+translationSourceHash: cddb69852f11453dc5b08108ba213d554c21116f5bc38075becf1cb2b341bb86
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -95,7 +95,13 @@ HTTPS 是 Passkey、OIDC Callback 與大多數公網服務的基礎。憑證必�
 
 一個入口對應一個固定憑證槽位與一個獨立 Token。不要讓多張不相關憑證共用同一入口，否則後一次推送會取代前一次憑證。多台 fn-knock 執行個體也不應共用 Token；請在每台執行個體分別建立入口。
 
-### `BACKEND_PORT`、本機位址與反向代理
+### 選擇公網、區域網路或本機入口
+
+推送入口提供：經 HTTPS 驗證 Host 的公網位址、經明確允許 RFC1918 位址和閘道連接埠的區域網路 HTTPS，以及同機工具使用的回環相容位址。異機或雲端優先使用 `/__certificates__/<BINDING_ID>` 公網入口，不必公開管理連接埠。LAN 入口需要非回環監聽與默認憑證，最多允許 16 個 IPv4；IP 與默認憑證名稱不符時，只能對所選 LAN 設定使用 `-k`，不能套用到公網。
+
+所有入口共用綁定 Token 與驗證。Token 可推送任意 SAN 並接管相同 SAN 的既有憑證，應視為憑證管理員憑證，外洩後立即輪換。
+
+### 本機相容入口與 `BACKEND_PORT`
 
 頁面產生的預設推送位址如下：
 
@@ -105,28 +111,7 @@ http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
 
 連接埠來自 fn-knock Runtime 的 `BACKEND_PORT`，`7998` 只是預設值。管理後端預設只監聽 `127.0.0.1` 與 `::1`，因此此位址只適用於憑證工具與 fn-knock 位於同一台主機或同一 Network Namespace 的情況。
 
-| 部署位置 | 位址處理 |
-| --- | --- |
-| Certd／ACME Client 與 fn-knock 同機 | 直接使用頁面產生的 `127.0.0.1:${BACKEND_PORT}` 位址 |
-| Certd 在宿主機，fn-knock 在隔離 Container | 必須讓反向代理能存取 Container 內的 `BACKEND_PORT`；宿主機的 `127.0.0.1` 不會自動指向 Container 內部 Loopback |
-| Certd 或 ACME Client 位於另一台機器 | 先將 fn-knock 的 `127.0.0.1:${BACKEND_PORT}` 反向代理至該機器可存取的 HTTP 或 HTTPS 位址，再取代產生位址中的主機與連接埠 |
-
-反向代理只需公開 `/api/integrations/certificates/` 路徑，不應把整個管理後端直接暴露至網路。代理必須保留 `PUT` 方法、`Authorization` Header 與原始 JSON Request Body。以下 Nginx 片段使用預設連接埠：
-
-```nginx
-location ^~ /api/integrations/certificates/ {
-    proxy_pass http://127.0.0.1:7998;
-    proxy_set_header Authorization $http_authorization;
-    proxy_pass_request_headers on;
-    client_max_body_size 1m;
-}
-
-location / {
-    return 404;
-}
-```
-
-反向代理入口可以使用 HTTP 或 HTTPS，fn-knock 不強制通訊協定。應依網路邊界決定：受信任內網可直接使用 HTTP；跨公網時應由反向代理保護傳輸並限制來源位址。不要把 Token 寫入 URL、Query String、代理 Access Log 或 Script Debug 輸出。
+此相容位址只供同一主機或 Network Namespace 使用；宿主機 Loopback 不會指向隔離 Container。其他裝置請使用公網驗證 Host 或明確啟用的 LAN 入口，不要公開 `BACKEND_PORT`。Token 不得寫入 URL、Query String、Access Log 或 Script Debug 輸出。
 
 ### 在 Certd 中設定 Webhook
 
@@ -140,7 +125,7 @@ location / {
 | Certd 欄位 | 填寫值 | 說明 |
 | --- | --- | --- |
 | 工作名稱 | `推送憑證到 fn-knock` | 可加入目標節點名稱 |
-| Webhook 位址 | fn-knock 顯示的推送位址 | 同機使用 `127.0.0.1:${BACKEND_PORT}`；異機使用反向代理位址 |
+| Webhook 位址 | fn-knock 顯示的推送位址 | 依工具位置選擇公網 HTTPS、LAN HTTPS 或本機回環入口 |
 | 請求方式 | `PUT` | 不要改成 POST |
 | ContentType | `application/json` | 確保 Certd 以 JSON 傳送 |
 | Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | Certd 此欄位使用 `key=value` 格式；完整 Token 只能從 fn-knock 頁面複製 |

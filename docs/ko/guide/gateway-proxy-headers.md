@@ -1,12 +1,26 @@
 ---
 lang: ko-KR
-title: "업스트림으로 프록시 헤더 전달"
+title: "인바운드 PROXY Protocol과 업스트림 헤더"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9827693dded1cee8ddfdade27e9b43fb9fdd9b929f9327980103ed08f0dbf5eb
+translationSourceHash: 84149bddf09f75e1eda90eb3fbce8aead310d88afeb751741c8ce841d0db9a69
 ---
 
-# 업스트림으로 프록시 헤더 전달
+# 인바운드 PROXY Protocol과 업스트림 헤더
+
+게이트웨이는 방향이 반대인 두 종류의 프록시 정보를 처리합니다. 앞단 로드 밸런서는 PROXY Protocol로 실제 연결 주소를 fn-knock에 전달하고, fn-knock는 `X-Forwarded-*` 헤더를 앱 업스트림에 보냅니다. 두 설정과 신뢰 경계는 별개입니다.
+
+## 인바운드 PROXY Protocol 수신
+
+HAProxy, Nginx stream 등의 L4 로드 밸런서를 사용할 때 `시스템 설정 → 게이트웨이 → PROXY Protocol`에서 v1 / v2를 켜고 전송을 허용할 프록시 IP 또는 CIDR을 입력합니다. 방문자 IP가 아니라 TCP 피어 프록시 주소를 입력해야 합니다.
+
+활성화하려면 신뢰 소스가 하나 이상 필요합니다. IP와 CIDR만 허용하며 호스트 이름과 IPv4/IPv6 전체 범위는 거부합니다. 목록의 socket 피어만 PROXY 헤더를 보낼 수 있고, 다른 연결의 위조된 `X-Forwarded-For` 또는 `X-Real-IP`는 PROXY 주소를 덮어쓸 수 없습니다.
+
+PROXY Protocol에는 인증이 없습니다. 클라이언트 허용 목록이나 넓은 공인 대역을 재사용하지 말고 고정 사설 프록시 주소와 네트워크 제한을 사용하세요. 관리형 FRP는 필요한 설정을 자동으로 활성화합니다.
+
+저장 시 게이트웨이 설정을 검증하고 트랜잭션으로 적용합니다. 변경 후 외부 경로에서 요청을 보내 요청 로그의 socket 피어와 클라이언트 IP를 확인하세요.
+
+## HTTP 프록시 헤더를 업스트림으로 전달
 
 fn-knock를 통해 요청을 전달할 때 업스트림 서비스에는 원래 프로토콜, 접속 Host 또는 클라이언트 주소가 필요할 수 있습니다. `시스템 설정 → 게이트웨이 → 프록시 헤더`에서는 서비스 Host별로 게이트웨이가 업스트림에 `X-Forwarded-*` 같은 프록시 헤더를 보낼지 설정합니다. 이 항목은 Host 라우트를 사용하는 서브도메인 모드에서만 편집할 수 있습니다. 공인 IP로 직접 연결하는 `서브도메인 모드`와 `리버스 프록시 모드 → 서브도메인 매핑`이 여기에 해당하며 경로 모드와 직접 연결 모드에는 이 항목이 없습니다.
 

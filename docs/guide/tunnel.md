@@ -61,6 +61,8 @@ PROXY Protocol v2 用于把公网客户端地址继续传给网关。frps、转�
 
 先在 `系统设置 → Cloudflared` 下载资源，再到 `内网穿透 → Cloudflared` 填写推荐的 Cloudflare 账号 API Token。推荐选择专用 Tunnel，执行预检并应用；fn-knock 会自动创建或接入 Tunnel、维护通配 DNS 与 Ingress、取得 Tunnel Token 并启动进程。也可在高级区域保留手动 Tunnel Token 模式。
 
+资源页检测到内置 Cloudflared 需要更新时，可直接执行安全更新。程序会下载到临时位置并校验固定摘要；若托管进程正在运行，会短暂停止、备份旧可执行文件和安装信息、替换后恢复运行。新文件无法启动时会恢复旧文件并尝试重新拉起原进程。更新期间 Tunnel 可能短暂中断，应避开关键操作并在完成后检查进程与外部访问状态。
+
 托管流程、Token 权限、标准 HTTPS 端口、优选 Beta 和故障回退见 [Cloudflared 隧道配置](/guide/cloudflared-tunnel)。
 
 ## 访问策略与真实客户端 IP

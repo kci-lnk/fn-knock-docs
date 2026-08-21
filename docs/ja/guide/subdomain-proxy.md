@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
+translationSourceHash: 2bd2a289e3877ccca299da9cf661aafa735468e2bdf33e360c23496814474279
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -177,6 +177,8 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 - `すべての設定をクリア`：2 回の確認後に認証サービスとすべての Host マッピングを削除し、ルートドメインなどのモード設定は維持します。
 
 各 Host のトラフィック詳細では、リアルタイムトラフィックとアクティブ IP を確認し、不審な送信元を[グローバルブロックリスト](/ja/guide/general-blacklist)へ追加できます。
+
+`ナビゲーションパネルへ同期` は、有効なアプリ Host を Sun-Panel、OneNav、Van-Nav へ公開し、内部 Target は送信しません。プレビュー、所有権、クリーンアップ、自動同期の境界は[ナビゲーションパネル同期](/ja/guide/panel-sync)を参照してください。
 
 ### 詳細モニタリング
 

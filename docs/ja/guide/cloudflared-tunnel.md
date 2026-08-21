@@ -3,7 +3,7 @@ lang: ja-JP
 title: "cloudflared による Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
+translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,6 +20,10 @@ cloudflared は LAN 内から Cloudflare Tunnel へ接続し、外部リクエ�
 2. `システム設定 → モード` で `トンネル → サブドメインマッピング` を選びます。
 3. ルートドメイン、認証サービス、1 件以上のサービスマッピングを保存します。
 4. 対象の Account と Zone に限定した Cloudflare Account API Token を作成します。
+
+### リソース更新
+
+`システム設定 → Cloudflared` で古い管理対象リソースを更新します。ダウンロードのダイジェストを検証し、置換後に起動できなければ旧実行ファイルとインストール情報を復元します。実行中の Tunnel は短時間停止するため、完了後にプロセスと公開アクセスを確認します。
 
 ### 推奨：Account API Token を作成する
 

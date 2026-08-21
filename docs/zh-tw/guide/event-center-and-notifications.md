@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 828f49d3eae30a49bacb356eeb20561eac29e5cd1042afc2b162e9b604c6d284
+translationSourceHash: 0d5dea54c5cd45e0c7bb4d8ce0857d02b19bee57f84a92b912c0ee21aa58b2a0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,7 +26,7 @@ translationSourceHash: 828f49d3eae30a49bacb356eeb20561eac29e5cd1042afc2b162e9b60
 
 ## 事件頁面
 
-事件頁面目前可識別下列 28 類系統事件：
+事件頁面可識別的系統事件包括：
 
 - 身分驗證：登入成功、登出、登入失敗、工作階段 IP 漂移；
 - 安全性：掃描器攔截、閘道 Rate Limit 封鎖、閘道可見性攔截、WAF 阻擋；
@@ -49,6 +49,8 @@ translationSourceHash: 828f49d3eae30a49bacb356eeb20561eac29e5cd1042afc2b162e9b60
 「清除事件」會刪除事件中心保存的所有事件；括號中的數量只代表目前 View 符合的筆數，並不表示只清除目前的篩選結果。此操作無法復原，但不會清除通知規則與投遞記錄。
 
 事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、WOL 目標與投遞來源、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log、Tunnel Log 或裝置上線狀態交叉比對。
+
+事件也會記錄導覽面板同步失敗／恢復與遠端裝置 SSH 關機，不應依賴固定的事件類型數量。驗證和安全事件會共用 IP 屬地快取；首次遇到未快取位址時可先儲存，再非同步補齊，通知會在可用時使用補齊欄位。
 
 ## 核心服務狀態與診斷
 

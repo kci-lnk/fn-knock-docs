@@ -3,7 +3,7 @@ lang: ko-KR
 title: "NAT 통과 및 터널"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
+translationSourceHash: baec212f5c1e0405344d0502a1b06be59dedf2e1896a33f26cc5cca99344b96d
 ---
 
 # NAT 통과 및 터널
@@ -66,6 +66,8 @@ PROXY Protocol v2는 인터넷 클라이언트 주소를 게이트웨이까지 �
 기존 사용자 지정 설정이 있다면 원문을 먼저 백업한 뒤 편집 방식을 전환합니다.
 
 ## Cloudflared
+
+리소스 업데이트는 임시 파일로 다운로드해 고정 다이제스트를 검증하고 실행 중인 관리 프로세스를 잠시 멈춘 뒤 실행 파일과 설치 정보를 백업하여 교체하고 재개합니다. 새 파일이 시작되지 않으면 이전 파일을 복원하고 기존 프로세스 재시작을 시도합니다. 잠깐의 Tunnel 중단 후 외부 접속을 확인하세요.
 
 먼저 `시스템 설정 → Cloudflared`에서 리소스를 다운로드한 뒤 `터널 → Cloudflared`에서 권장 Cloudflare Account API Token을 입력합니다. 전용 Tunnel을 선택하고 미리 보기 후 적용하면 fn-knock가 Tunnel 생성 또는 연결, 와일드카드 DNS와 Ingress, Tunnel Token 가져오기 및 프로세스 시작을 처리합니다. 고급 영역에는 수동 Tunnel Token 모드도 남아 있습니다.
 

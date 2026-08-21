@@ -3,7 +3,7 @@ lang: ja-JP
 title: "TLS 証明書と HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: dfc34f5be70cf1a410521b76bc46afb6f09bd6a6e5340a1fa89b5ae0adad66d2
+translationSourceHash: cddb69852f11453dc5b08108ba213d554c21116f5bc38075becf1cb2b341bb86
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -95,7 +95,13 @@ fn-knock に現在の証明書が 1 枚もない場合、外部受信先から�
 
 1 つの受信先には 1 つの固定証明書スロットと独立した Token があります。無関係な複数の証明書を同じ受信先へ送ると、後のプッシュが前の証明書を置き換えます。複数の fn-knock インスタンス間でも Token を共有せず、各インスタンスで受信先を作成してください。
 
-### `BACKEND_PORT`、ループバック、リバースプロキシ
+### 公開、LAN、ループバック入口を選ぶ
+
+プッシュ入口には、HTTPS 認証 Host 経由の公開 URL、明示的に許可した RFC1918 アドレスとゲートウェイポートを使う LAN HTTPS、同一ホスト用のループバック互換 URL があります。別端末やクラウドでは、管理ポートを公開せずに使える `/__certificates__/<BINDING_ID>` を推奨します。LAN は非ループバック監視と既定証明書が必要で、最大 16 IPv4 を許可できます。IP と証明書名が一致しない場合の `-k` は選択した LAN だけで使い、公開入口では使用しません。
+
+すべての入口は同じ Token と検証を共有します。Token は任意 SAN を展開し、同じ SAN の既存証明書を引き継げるため、証明書管理者資格情報として扱い、漏えい時は直ちにローテーションしてください。
+
+### ループバック互換入口と `BACKEND_PORT`
 
 生成される URL は次の形式です。
 
@@ -105,28 +111,7 @@ http://127.0.0.1:7998/api/integrations/certificates/<BINDING_ID>
 
 ポートは fn-knock の実行時 `BACKEND_PORT` から取得され、`7998` はデフォルト値にすぎません。管理バックエンドはデフォルトで `127.0.0.1` と `::1` だけをリッスンします。この URL を直接使用できるのは、証明書ツールと fn-knock が同じホストまたは同じネットワーク名前空間にある場合だけです。
 
-| 配置 | URL の扱い |
-| --- | --- |
-| Certd／ACME クライアントと fn-knock が同一ホスト | 生成された `127.0.0.1:${BACKEND_PORT}` をそのまま使用 |
-| Certd がホスト、fn-knock が隔離コンテナ | リバースプロキシからコンテナ内の `BACKEND_PORT` へ到達できるようにする。ホストの `127.0.0.1` はコンテナ内ループバックを自動的には指さない |
-| Certd または ACME クライアントが別のマシン | fn-knock の `127.0.0.1:${BACKEND_PORT}` を、そのマシンから到達可能な HTTP または HTTPS URL へリバースプロキシし、生成 URL のホストとポートを置き換える |
-
-リバースプロキシで公開するのは `/api/integrations/certificates/` だけにし、管理バックエンド全体をネットワークへ公開しないでください。プロキシは `PUT` メソッド、`Authorization` Header、元の JSON Body を保持する必要があります。次の Nginx 例はデフォルトポートを使用します。
-
-```nginx
-location ^~ /api/integrations/certificates/ {
-    proxy_pass http://127.0.0.1:7998;
-    proxy_set_header Authorization $http_authorization;
-    proxy_pass_request_headers on;
-    client_max_body_size 1m;
-}
-
-location / {
-    return 404;
-}
-```
-
-リバースプロキシ URL は HTTP と HTTPS のどちらでも使用でき、fn-knock は特定のプロトコルを強制しません。信頼できる内部ネットワークでは HTTP を使用できます。インターネットを経由する場合は、リバースプロキシで通信を保護し、接続元を制限してください。Token を URL、Query String、プロキシの Access Log、スクリプトのデバッグ出力に記録しないでください。
+この互換 URL は同一ホストまたはネットワーク名前空間だけで使用します。ホストのループバックは隔離コンテナ内を指しません。別端末では公開認証 Host 入口か明示的に有効化した LAN 入口を使い、`BACKEND_PORT` を公開しないでください。Token を URL、Query String、Access Log、デバッグ出力に記録しないでください。
 
 ### Certd Webhook を設定する
 
@@ -140,7 +125,7 @@ Certd 用の受信先を作成した後、fn-knock に表示された値を対�
 | Certd の項目 | 値 | 説明 |
 | --- | --- | --- |
 | タスク名 | `fn-knock へ証明書をプッシュ` | 対象ノード名を含めても構いません |
-| Webhook URL | fn-knock に表示されたプッシュ URL | 同一ホストでは `127.0.0.1:${BACKEND_PORT}`、別ホストではリバースプロキシ URL を使用 |
+| Webhook URL | fn-knock に表示されたプッシュ URL | ツールの位置に応じて公開 HTTPS、LAN HTTPS、ループバックを選択 |
 | リクエスト方式 | `PUT` | POST に変更しない |
 | ContentType | `application/json` | Certd が JSON として送信するために必要 |
 | Headers | `Authorization=Bearer fnk_cert_<YOUR_TOKEN>` | この Certd 欄は `key=value` 形式。完全な Token を fn-knock からコピーする |

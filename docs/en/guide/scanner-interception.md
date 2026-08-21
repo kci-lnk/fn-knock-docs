@@ -3,7 +3,7 @@ lang: en-US
 title: "Automated Scan Blocking"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5b99c573555da5f0849b7f5ce3e928cdba8186d75607de8662f63ecb8057031b
+translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d385cac4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,6 +30,10 @@ Deleting a Scanner blacklist record immediately removes this layer's block, but 
 You can exempt known regions or CIDRs. Region selections are resolved to final CIDRs when saved. Enter one custom CIDR per line; IPv4 and IPv6 are supported, and the page prevents saving when any entry has an invalid format. Region conditions can also filter CIDRs by China Telecom, China Unicom, or China Mobile when the connected CIDR database provides carrier data.
 
 `Common location exemption` uses common locations learned from recent successful sign-ins. `Region allowlist exemptions` and `CIDR allowlist exemptions` are fixed by an administrator. A source that matches any exemption is neither blocked by the Scanner blacklist nor counted toward uncommon-path hits. Exemptions reduce false positives, but also reduce scan protection for those sources. Add only office networks, VPNs, or service-provider ranges that you can verify.
+
+## Path Allowlist and False Positives
+
+`System settings → Blocking → Path allowlist` excludes known-safe exact paths from scanner hit counts. Entries must start with `/`; query strings, fragments, and redundant trailing slashes are normalized and duplicates removed. Matching is exact, not by prefix or regular expression, and other gateway controls still apply. From a Scanner blacklist IP detail, the false-positive action adds the selected path and unblocks that IP atomically.
 
 ## Relationship to Other Rules
 

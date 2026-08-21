@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
+translationSourceHash: 2bd2a289e3877ccca299da9cf661aafa735468e2bdf33e360c23496814474279
 ---
 
 # 서브도메인 라우팅
@@ -175,6 +175,8 @@ fn-knock 계정을 만들거나 `auth.example.com` 로그인을 대신하지 않
 - `모든 설정 지우기`: 두 번 확인한 뒤 인증 서비스와 모든 Host 매핑을 삭제하고 루트 도메인 등의 모드 설정은 유지합니다.
 
 Host별 트래픽 세부 정보에서 실시간 트래픽과 활성 IP를 확인하고 비정상 출발지를 [일반 차단 목록](/ko/guide/general-blacklist)에 추가할 수 있습니다.
+
+`내비게이션 패널로 동기화`는 활성 앱 Host를 Sun-Panel, OneNav 또는 Van-Nav에 게시하지만 내부 Target은 내보내지 않습니다. 미리보기, 소유권, 정리, 자동 동기화 경계는 [내비게이션 패널 동기화](/ko/guide/panel-sync)를 참고하세요.
 
 ### 심층 모니터링
 

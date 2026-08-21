@@ -3,7 +3,7 @@ lang: ko-KR
 title: "cloudflared 기반 Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
+translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
 ---
 
 # cloudflared 기반 Cloudflare Tunnel
@@ -18,6 +18,10 @@ cloudflared는 내부 네트워크에서 Cloudflare Tunnel로 연결하고 외�
 2. `시스템 설정 → 모드`에서 `터널 → 서브도메인 매핑`을 선택합니다.
 3. 루트 도메인, 인증 서비스 및 하나 이상의 서비스 매핑을 저장합니다.
 4. 대상 Account와 Zone으로 제한한 Cloudflare Account API Token을 만듭니다.
+
+### 리소스 업데이트
+
+`시스템 설정 → Cloudflared`에서 오래된 관리 리소스를 업데이트합니다. 다운로드 다이제스트를 확인하며 교체 파일이 시작되지 않으면 이전 실행 파일과 설치 정보를 복원합니다. 실행 중인 Tunnel이 잠시 중단되므로 완료 후 프로세스와 공인 접속을 확인하세요.
 
 ### 권장: Account API Token 만들기
 

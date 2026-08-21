@@ -3,7 +3,7 @@ lang: ja-JP
 title: "NAT 越えとトンネル"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
+translationSourceHash: baec212f5c1e0405344d0502a1b06be59dedf2e1896a33f26cc5cca99344b96d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -68,6 +68,8 @@ PROXY Protocol v2 は、インターネット側のクライアントアドレ�
 既存のカスタム設定がある場合は、編集方法を切り替える前に元の内容をバックアップしてください。
 
 ## Cloudflared
+
+リソース更新では、一時ファイルへダウンロードして固定ダイジェストを検証し、実行中の管理対象プロセスを一時停止して実行ファイルとメタデータをバックアップしてから置換・再開します。新しいファイルが起動しない場合は旧ファイルへ戻して再起動を試みます。短時間の Tunnel 中断後、外部アクセスを確認してください。
 
 先に `システム設定 → Cloudflared` でリソースをダウンロードし、`トンネル → Cloudflared` で推奨の Cloudflare Account API Token を入力します。専用 Tunnel を選び、プレビューして適用すると、fn-knock が Tunnel の作成または接続、ワイルドカード DNS と Ingress、Tunnel Token 取得、プロセス起動を行います。詳細設定には手動 Tunnel Token モードも残っています。
 

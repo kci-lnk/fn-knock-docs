@@ -1,14 +1,28 @@
 ---
 lang: ja-JP
-title: "上流へプロキシヘッダーを転送"
+title: "受信 PROXY Protocol と上流プロキシヘッダー"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9827693dded1cee8ddfdade27e9b43fb9fdd9b929f9327980103ed08f0dbf5eb
+translationSourceHash: 84149bddf09f75e1eda90eb3fbce8aead310d88afeb751741c8ce841d0db9a69
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
-# 上流へプロキシヘッダーを転送
+# 受信 PROXY Protocol と上流プロキシヘッダー
+
+ゲートウェイは逆方向の二種類のプロキシ情報を扱います。前段ロードバランサーは PROXY Protocol で実際の接続元を fn-knock に伝え、fn-knock は `X-Forwarded-*` などをアプリ上流へ送ります。信頼境界と設定は別です。
+
+## 受信 PROXY Protocol
+
+HAProxy、Nginx stream などの L4 ロードバランサーを使う場合、`システム設定 → ゲートウェイ → PROXY Protocol` で v1 / v2 を有効にし、送信を許可するプロキシの IP / CIDR を指定します。訪問者ではなく TCP 接続元のプロキシアドレスを入力します。
+
+有効化には一つ以上の信頼元が必要です。IP / CIDR のみを受け付け、ホスト名と IPv4 / IPv6 全体のネットワークは拒否します。登録した socket peer だけが PROXY ヘッダーを送信でき、それ以外の接続では偽装した `X-Forwarded-For` や `X-Real-IP` で上書きできません。
+
+PROXY Protocol に認証はありません。クライアント許可リストや広い公開範囲を流用せず、固定プライベートアドレスとネットワーク制限を使ってください。管理対象 FRP は必要な設定を自動的に有効化します。
+
+保存時はゲートウェイ設定を検証してトランザクションとして適用します。変更後、外部経路からアクセスし、リクエストログで socket peer とクライアント IP を確認してください。
+
+## HTTP プロキシヘッダーを上流へ転送
 
 fn-knock を経由してリクエストを転送する際、アップストリームサービスが元のプロトコル、アクセス先 Host、クライアントアドレスを必要とすることがあります。`システム設定 → ゲートウェイ → プロキシヘッダー` では、ゲートウェイからアップストリームへ `X-Forwarded-*` などのプロキシヘッダーを送信するかどうかを、サービス用 Host ごとに設定できます。この項目は、Host ルーティングを使うサブドメインモードでのみ編集できます。これには、グローバル IP から直接公開する `サブドメインモード` と、`トンネル → サブドメインマッピング` が含まれます。パスモードと直接接続モードでは利用できません。
 

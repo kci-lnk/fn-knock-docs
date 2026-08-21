@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 224501413d2eac62c7bf5f3a1fa0728f464c00c7e32fa15ba66e6e735e00a215
+translationSourceHash: 2bd2a289e3877ccca299da9cf661aafa735468e2bdf33e360c23496814474279
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -177,6 +177,8 @@ List actions include:
 - `Clear all configuration`: After two confirmations, remove the auth service and all Host mappings while preserving the root domain and other mode settings.
 
 Traffic details for an individual Host show live traffic and active IPs, and let you add suspicious sources to the [Global Blocklist](/en/guide/general-blacklist).
+
+The `Sync to navigation panel` action publishes enabled application Hosts to Sun-Panel, OneNav, or Van-Nav without exporting internal Targets. See [Navigation Panel Sync](/en/guide/panel-sync) for preview, ownership, cleanup, and automatic-sync boundaries.
 
 ### Deep Monitor
 

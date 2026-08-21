@@ -3,7 +3,7 @@ lang: ja-JP
 title: "OpenWrt へデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
+translationSourceHash: b0262d7159450ec265777aa9dbe71330637425391c37bd7b443934b0845d705f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -105,6 +105,10 @@ logread -e fn-knock
 ```
 
 管理画面へアクセスできても、ルーター上のサービスが起動したことしか確認できません。マッピングを設定した後は、モバイル回線など実際の外部ネットワークから `7999` とドメインを検証し、LAN 内の結果をインターネット経由の認証結果と取り違えないでください。
+
+### ゲートウェイポートを自動開放する
+
+LuCI は、`wan` から現在の TCP ゲートウェイポートへ向けた IPv4 / IPv6 共通の firewall4 ルールを一つだけ所有・管理できます。新規インストールでは既定で有効にできますが、旧環境からのアップグレードでは明示的に選ぶまで無効です。再読み込みやポート変更に追従し、無効化、停止、削除時に取り除きます。管理・内部ポートや NAT、DNS、TLS、認証は設定しません。同名の非所有ルールは上書きせず競合を表示します。独自 zone や集中管理ルールでは無効にしてください。
 
 ## データとアップグレード
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "OpenWrt 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
+translationSourceHash: b0262d7159450ec265777aa9dbe71330637425391c37bd7b443934b0845d705f
 ---
 
 # OpenWrt 배포
@@ -103,6 +103,10 @@ logread -e fn-knock
 ```
 
 관리 패널이 열린다는 사실은 로컬 서비스가 시작되었다는 것만 뜻합니다. 매핑을 구성한 뒤에는 모바일 데이터 같은 실제 외부 네트워크에서 `7999`와 도메인을 검증합니다. LAN 테스트 결과로 인터넷 인증 결과를 판단하면 안 됩니다.
+
+### 게이트웨이 포트 자동 개방
+
+LuCI는 `wan`에서 현재 TCP 게이트웨이 포트로 향하는 IPv4/IPv6 firewall4 규칙 하나를 fn-knock 소유로 관리할 수 있습니다. 새 설치에서는 기본 활성화할 수 있지만 이전 설치 업그레이드는 명시적으로 켤 때까지 비활성입니다. 재로드와 포트 변경을 따라가며 비활성화, 중지, 제거 시 규칙을 삭제합니다. 관리·내부 포트나 NAT, DNS, TLS, 인증은 설정하지 않습니다. 같은 이름의 비소유 규칙은 덮어쓰지 않고 충돌로 표시합니다. 사용자 지정 zone이나 중앙 방화벽 규칙을 쓰면 끄세요.
 
 ## 데이터 및 업그레이드
 

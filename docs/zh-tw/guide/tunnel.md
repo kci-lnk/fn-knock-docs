@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透與隧道"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5b877b2d14348fbfd850a88d00e72c79f8b57115d12d5da988a389569a9a3559
+translationSourceHash: baec212f5c1e0405344d0502a1b06be59dedf2e1896a33f26cc5cca99344b96d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -68,6 +68,8 @@ PROXY Protocol v2 用來將公網 Client 位址一路傳遞到閘道。如果 fr
 如果已有自訂設定，請先備份原始內容，再切換編輯方式。
 
 ## Cloudflared
+
+資源頁提示更新時，fn-knock 會下載到暫存位置、驗證固定摘要，暫停正在執行的託管程序，備份執行檔與安裝資訊後替換並恢復。新檔案無法啟動時會還原舊檔並嘗試重啟。更新期間 Tunnel 會短暫中斷，完成後應確認程序和外部存取。
 
 先到 `系統設定 → Cloudflared` 下載資源，再到 `內網穿透 → Cloudflared` 填入建議的 Cloudflare Account API Token。選擇專用 Tunnel，執行預檢並套用；fn-knock 會建立或接入 Tunnel、維護 Wildcard DNS 與 Ingress、取得 Tunnel Token 並啟動 Process。進階區域仍保留手動 Tunnel Token 模式。
 

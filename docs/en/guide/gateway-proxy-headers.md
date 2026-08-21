@@ -1,14 +1,28 @@
 ---
 lang: en-US
-title: "Forward Proxy Headers Upstream"
+title: "Inbound PROXY Protocol and Upstream Headers"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9827693dded1cee8ddfdade27e9b43fb9fdd9b929f9327980103ed08f0dbf5eb
+translationSourceHash: 84149bddf09f75e1eda90eb3fbce8aead310d88afeb751741c8ce841d0db9a69
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
-# Forward Proxy Headers Upstream
+# Inbound PROXY Protocol and Upstream Headers
+
+The gateway handles two opposite directions of proxy metadata. A front-end load balancer can use PROXY Protocol to tell fn-knock the real connection address, while fn-knock can send `X-Forwarded-*` headers to the application upstream. Their trust boundaries and settings are separate.
+
+## Accept Inbound PROXY Protocol
+
+For HAProxy, Nginx stream, or another layer-4 load balancer, enable v1/v2 under `System settings → Gateway → PROXY Protocol` and list the proxy IPs or CIDRs allowed to send it. Enter the TCP peer address of the proxy, not the visitor address.
+
+At least one trusted source is required. Only IPs and CIDRs are accepted; hostnames and all-address IPv4 or IPv6 networks are rejected. Only listed socket peers may supply a PROXY header. Other peers can still make ordinary connections, but spoofed `X-Forwarded-For` or `X-Real-IP` cannot override the PROXY address.
+
+PROXY Protocol provides no authentication. Do not copy a client allowlist or trust broad public networks. Use fixed private proxy addresses and network-layer restrictions. Managed FRP enables its required effective PROXY Protocol setting automatically, so do not add FRP visitor addresses to this list.
+
+Saving validates and applies the gateway configuration transactionally. After changes, send a request through the external path and compare the socket peer and client IP in request logs.
+
+## Forward HTTP Proxy Headers Upstream
 
 When fn-knock forwards a request, the upstream service might need to know the original scheme, requested Host, or client address. `System settings → Gateway → Proxy headers` controls, by application Host, whether the gateway sends proxy headers such as `X-Forwarded-*` upstream. It is editable only for Host-based routing in subdomain mapping mode, including direct public `Subdomain mode` and `Reverse proxy mode → Subdomain mapping`. Path mode and Direct mode do not provide this setting.
 

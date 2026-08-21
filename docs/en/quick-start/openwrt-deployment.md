@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on OpenWrt"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3076fc36bb7bde20f2fdd8c9dc1605cd0b20b836051ae4538814070f74f1b816
+translationSourceHash: b0262d7159450ec265777aa9dbe71330637425391c37bd7b443934b0845d705f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -105,6 +105,10 @@ logread -e fn-knock
 ```
 
 A reachable admin panel proves only that the local service has started. After configuring a mapping, test `7999` and the domain over a real external connection such as cellular data. Do not treat a LAN result as proof that internet-facing authentication works.
+
+### Automatically Open the Gateway Port
+
+LuCI can manage one owned firewall4 rule from `wan` to the current TCP gateway port for IPv4 and IPv6. Fresh installs may enable it by default; upgrades from older installs keep it disabled until explicitly selected. The rule follows reloads and port changes and is removed when disabled, stopped, or uninstalled. It never opens management or internal ports and does not configure NAT, DNS, TLS, or authentication. A same-name unowned rule causes a visible conflict instead of being overwritten. Disable this option when using custom zones or centrally managed firewall rules.
 
 ## Data and upgrades
 

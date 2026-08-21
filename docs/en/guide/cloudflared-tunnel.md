@@ -3,7 +3,7 @@ lang: en-US
 title: "Cloudflare Tunnel with cloudflared"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d9d0b1d90e7753159d602c6bdf16cd42c62e4cbfcd75c9c4cc60223cac986fe8
+translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,6 +20,10 @@ Use `Tunnels → Subdomain mapping` for new deployments. Cloudflare preserves th
 2. Select `Tunnels → Subdomain mapping` under `System settings → Mode`.
 3. Save a root domain, an authentication service, and at least one application mapping.
 4. Create a Cloudflare Account API Token scoped to the target Account and Zone.
+
+### Resource Updates
+
+Update an outdated managed Cloudflared resource from `System settings → Cloudflared`. The update verifies the downloaded digest and rolls back the executable and install metadata if the replacement cannot start. A running tunnel pauses briefly; confirm process state and public access when it completes.
 
 ### Recommended: create an Account API Token
 
