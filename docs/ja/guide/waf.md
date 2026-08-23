@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Web Application Firewall（WAF）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4202983724ef87f7ee2166c4a67a1e5e99963cd32b52e4937182ed6becd88b21
+translationSourceHash: 73c9ec75d653eab22b76b9575a96ed9878fffa0b966fb51fddba4078ef8db01a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,6 +89,8 @@ Host ごとの設定は、独立した WAF インスタンスではありませ�
 入口を有効にするだけでは攻撃をブロックできません。グローバル WAF と対象ルールも有効にする必要があります。状態欄は、保護中、検出のみ、WAF 無効、デグレードを区別し、検出した fnOS ポート、入口状態、直近の同期エラーを表示します。システムは約 `5` 秒ごとにルールを再確認し、fnOS HTTP ポートの変更にも追従します。
 
 fnOS の `HTTPS を強制` が有効な場合、プログラムは平文の FN Connect 経路を引き継ぎません。この設定を検出するとリダイレクトを有効にしません。ポートへ到達できない、ルールを書き込めない、ローカル WAF 入口が異常な場合は Fail-open としてリダイレクトを削除し、対応する入口を停止して FN Connect 全体の停止を避けます。リモートアクセスできることを WAF が動作中である証拠とせず、表示されたエラーを修正してください。
+
+ファイアウォール処理は従来の iptables と iptables-nft／ネイティブ nftables バックエンドを判別し、fn-knock が命名・所有するチェーンだけを検査、更新、削除します。共有ルールセット全体を列挙・書き換えて状態を判断せず、無関係な第三者チェーンも削除しません。所有チェーンの状態を判断できない場合はエラーを表示して現状を維持し、後続の再調整を待ちます。`FNK_FNC_*` のチェーン名を手動で再利用しないでください。
 
 この機能は公式サイトの標準 FPK だけで利用でき、ホストネットワーク権限が必要です。`Knock Lite`、Docker、OpenWrt、一般的な Linux、Synology、Windows では表示されません。有効にする前に fnOS デスクトップまたは LAN の管理経路を確保し、FN Connect から識別可能なリクエストを送って、リクエストログと WAF ログでルート種別とルール動作を確認してください。
 

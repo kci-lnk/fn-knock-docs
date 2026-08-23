@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2bd2a289e3877ccca299da9cf661aafa735468e2bdf33e360c23496814474279
+translationSourceHash: 28a5ea18db8093418eb8567c825e7f6990b4e1c1e8a87c1ff3a4d97be83a1594
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -125,7 +125,9 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 編輯一般服務 Host 時，開啟 `應用程式圖示` 可預覽目前來源、重新擷取上游圖示，或上傳自訂圖片。支援 PNG、JPG、WebP、AVIF、SVG 與 ICO，原始檔案不可超過 5 MB；瀏覽器會移除 SVG 中的外部內容，伺服器也會拒絕包含不安全 `DOCTYPE` 或 Entity Declaration 的 SVG，再將圖片完整縮放到方形畫布並轉換為不超過 128 KiB 的內嵌圖示。
 
-自訂圖示會優先顯示在子網域清單與傳送門中，匯出瀏覽器書籤時也會一併寫入。按一下 `還原自動擷取` 會清除自訂覆寫並重新讀取 Target；若 Target 未回傳圖示，頁面會顯示尚未擷取。身分驗證服務不支援自訂圖示。圖示會包含在設定與 `.knock` 備份中；請勿將敏感的內部圖形當作一般疑難排解附件分享。
+自訂圖示會優先顯示在子網域清單與傳送門中；瀏覽器書籤匯出、導覽面板同步和閘道圖示入口也使用相同內容。設定中儲存的圖示必須是受支援圖片類型的 Base64 `data:image/...;base64,...`。外部 URL、非 Base64 Data URL、無法解碼或超出限制的舊圖示不會下發閘道或匯出。一般上傳與自動擷取會完成轉換；從舊備份或外部設定匯入後圖示消失時，請重新擷取或上傳。
+
+按一下 `還原自動擷取` 會清除自訂覆寫並重新讀取 Target；若 Target 未回傳受支援圖示，頁面會顯示尚未擷取。身分驗證服務不支援自訂圖示。圖示會包含在設定與 `.knock` 備份中；請勿將敏感的內部圖形當作一般疑難排解附件分享。
 
 ### 單一 Host 的可見性與 WAF
 

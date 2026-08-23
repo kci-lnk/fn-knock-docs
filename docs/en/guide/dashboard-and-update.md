@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7965bdcd45c2fc36faa2f7c126e79f742a0610507fc422736623e1a64a70bd57
+translationSourceHash: 37bd259a84c594893daf0ccbf92b49487cb84632c526fce9a67910c9ad4dbbfb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -62,7 +62,15 @@ Do not try to install an FPK from the update page on Docker, OpenWrt, or Synolog
 
 Check for a new version under `Version and updates`. When an update is available, the page downloads the FPK for the device architecture, verifies the file, and then installs it through fnOS App Center before restarting the app. The page shows progress during download, verification, and installation; do not close it during the installation stage.
 
-The admin console and gateway are briefly unavailable during the update. Export a configuration backup before starting. After the update completes, reopen the app from the fnOS desktop and confirm that the version, authentication settings, and gateway entry points are all working.
+The admin console and gateway are briefly unavailable during the update. The page waits until the new backend reports that it is ready, then loads the new frontend through a cache-isolated URL. If the browser still requests an old code chunk that has been replaced, the console performs at most one guarded automatic refresh, avoiding both a blank page and a reload loop. If automatic reconnection times out, the installation has not necessarily failed; reopen the app from the fnOS desktop and inspect its runtime state.
+
+Export a configuration backup before starting. After completion, verify the running application, authentication settings, and gateway entry points. If menus or styling still clearly match the previous frontend, reopen the app from the fnOS desktop first. Clear only this site's browser cache if the problem remains; do not remove the application data directory.
+
+## Session Recovery When Accessing the Console Through the Gateway
+
+When the admin console is exposed as a protected subdomain mapping, its gateway session can expire while the page remains open. If an API request then has no response, the console performs a no-cache authentication probe. Only a confirmed unauthenticated state redirects to the authentication page, with the current console page preserved as the return target. This does not require exposing the raw management port publicly.
+
+A normal network outage, gateway restart, or unreachable upstream is not treated as an expired session based on one failed request. If no redirect occurs or access still fails after signing in, check network and gateway health before reviewing the authentication Host, cookie scope, and return URL. Repeated refreshes do not fix an actual connectivity failure.
 
 ### SQLite Protection During an Update
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5eb652b6816df5e9b524e175a14813ebacb680ae128349c765910f595871d838
+translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998e0b80ab
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -49,7 +49,9 @@ The same port can have separate TCP and UDP rules, such as `53/tcp` and `53/udp`
 
 An external port cannot forward to the same port on the local device. For example, `TCP :3306 -> 127.0.0.1:3306` creates a local forwarding loop and is rejected during save and enable. Validation includes `localhost`, loopback and unspecified addresses, and current local interface addresses. Change either the external or target port.
 
-An existing same-port local-loop rule can automatically disable Protocol mappings. Keep the feature disabled, delete or correct the invalid rule on this page, then enable it again under `System settings → Features`. Repeatedly synchronizing an invalid configuration will not repair it.
+At service startup, a same-port local loop, an external port already used by another process, or another unsafe runtime error automatically disables the entire Protocol mappings feature. This prevents one bad rule from blocking the admin console and other gateway functions. Saved rules remain intact, the sidebar entry stays visible, and the page shows any identified protocol, port, Target, and original error.
+
+Correct or delete the affected rule before enabling the feature again under `System settings → Features`. For a port conflict, identify the process listening on that port. If no exact rule is identified, review the most recently changed mappings one by one. Repeated gateway synchronization or service restarts do not repair an unresolved error.
 
 The Target must be reachable from the fn-knock runtime environment. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a host or LAN target.
 
@@ -141,6 +143,6 @@ Regardless of automatic firewall support, the router's port forwarding, cloud se
 4. Check container port publishing, the host firewall, router forwarding, and cloud security group.
 5. With authentication enabled, confirm that the browser sign-in and protocol client use the same public egress IP, post-login IP authorization is enabled, and a custom credential includes the current protocol and external port.
 6. Confirm that server time is inside the global open window. During a schedule-closed period, a port may still appear in a scan but does not forward new traffic.
-7. If the listener is still absent after saving, select `Sync gateway`, then review status and logs.
+7. If the page says startup failed and the feature was automatically disabled, fix the rule or release the occupied port before re-enabling it. Use `Sync gateway` and inspect logs only when there is no recorded startup issue and the listener is still absent after saving.
 
 See [System Settings and Maintenance](/en/guide/system) for the related feature switch.

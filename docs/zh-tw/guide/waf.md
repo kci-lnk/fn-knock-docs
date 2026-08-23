@@ -3,7 +3,7 @@ lang: zh-TW
 title: "WAF"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4202983724ef87f7ee2166c4a67a1e5e99963cd32b52e4937182ed6becd88b21
+translationSourceHash: 73c9ec75d653eab22b76b9575a96ed9878fffa0b966fb51fddba4078ef8db01a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,6 +89,8 @@ Scanner 攔截也有獨立的常用地豁免開關；變更 WAF 開關不會連�
 啟用接入不等同於已阻斷攻擊：全域 WAF 與對應規則也必須啟用。狀態區會區分已保護、僅偵測、WAF 未啟用或降級，並顯示實際 fnOS Port、入口狀態與最近同步錯誤。系統約每 `5` 秒核對一次規則，並會跟隨 fnOS HTTP Port 變更。
 
 fnOS 已開啟 `強制 HTTPS` 時，程式不接管明文 FN Connect 連線路徑；偵測到該設定時不會啟用重新導向。若 Port 無法連線、規則寫入失敗或本機 WAF 入口異常，系統採用 Fail-open：清理重新導向並停止對應入口，優先避免 FN Connect 整體中斷。此時應依狀態錯誤修復環境，不可將「遠端仍可存取」誤認為 WAF 仍在生效。
+
+防火牆處理會識別傳統 iptables 與 iptables-nft／原生 nftables 後端，只檢查、更新或清理由 fn-knock 命名並擁有的鏈。它不會列舉及重寫整張共用規則表，也不會刪除無關的第三方鏈。無法確定自有鏈狀態時會回報錯誤並保留現況，等待後續對帳。請勿手動重複使用 `FNK_FNC_*` 鏈名稱。
 
 此能力只在官網標準版 FPK 提供，且需要 Host Network 權限；`敲門 knock Lite`、Docker、OpenWrt、一般 Linux、Synology 與 Windows 均不顯示。切換前請保留 fnOS 桌面或區域網路管理入口，再透過 FN Connect 發出一筆可辨識的 Request，並在 Request Log 與 WAF Log 中確認路由類型和規則動作。
 

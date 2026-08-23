@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5eb652b6816df5e9b524e175a14813ebacb680ae128349c765910f595871d838
+translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998e0b80ab
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -49,7 +49,9 @@ UDP :53   -> 127.0.0.1:53
 
 對外連接埠不能轉送至本機相同連接埠。例如 `TCP :3306 -> 127.0.0.1:3306` 會形成本機轉送迴圈，因此儲存與啟用時都會遭拒。檢查範圍包括 `localhost`、Loopback、未指定 Address，以及 fn-knock 裝置目前的本機 Interface Address；請修改對外或 Target 連接埠。
 
-既有設定中的同連接埠本機迴圈規則，可能讓通訊協定映射自動停用。請保持停用，在此頁刪除或修正無效規則，再回到 `系統設定 → 功能` 重新啟用；反覆同步無效設定不會修復問題。
+服務啟動時若發現同連接埠本機迴圈、對外連接埠已被其他程序佔用，或既有映射無法安全套用，系統會自動停用整項通訊協定映射，避免單一錯誤規則阻擋管理後台與其他閘道功能。已儲存規則不會刪除，側邊欄入口也會保留；頁面會顯示可辨識的通訊協定、連接埠、Target 與原始錯誤。
+
+請先刪除或修正問題規則，再回到 `系統設定 → 功能` 重新啟用。連接埠衝突時，找出正在監聽的程序；無法定位規則時，逐一檢查最近變更的映射。問題未解決前，反覆同步閘道或重新啟動不會修復它。
 
 Target 必須能從 fn-knock 所在環境連線。在 Docker 中，`127.0.0.1` 代表 Container 本身；Host 或區域網路 Target 必須使用 Container 可連線的 IP。
 
@@ -141,6 +143,6 @@ SSH、MySQL、Redis 等用戶端不會開啟 fn-knock 登入頁面。啟用 `要
 4. 檢查 Container Port Publishing、Host 防火牆、路由器轉送與 Cloud Security Group。
 5. 啟用驗證時，確認瀏覽器登入與通訊協定用戶端使用相同的公網出口 IP、登入後 IP 授權未停用，且自訂憑據已選取目前通訊協定與對外連接埠。
 6. 確認目前伺服器時間位於全域開放時間窗；定時關閉時連接埠仍可能被掃描到，但不會轉送新流量。
-7. 儲存後仍未 Listen 時，按下 `同步閘道`，再查看狀態與 Log。
+7. 若頁面提示啟動失敗並已自動停用，請先修正規則或釋放連接埠後再啟用；沒有啟動錯誤且儲存後仍未監聽時，才執行 `同步閘道` 並查看狀態與 Log。
 
 相關功能開關請參閱[系統設定](/zh-tw/guide/system)。

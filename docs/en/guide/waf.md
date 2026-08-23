@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4202983724ef87f7ee2166c4a67a1e5e99963cd32b52e4937182ed6becd88b21
+translationSourceHash: 73c9ec75d653eab22b76b9575a96ed9878fffa0b966fb51fddba4078ef8db01a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -88,7 +88,9 @@ On the standard fnOS FPK, `System settings → fnOS → Route FN Connect traffic
 
 Enabling ingress does not by itself block attacks: the global WAF and relevant rules must also be enabled. The status area distinguishes Protected, Detection only, WAF inactive, and Degraded, and reports the detected fnOS port, ingress status, and last synchronization error. The system reconciles the rules about every `5` seconds and follows changes to the fnOS HTTP port.
 
-The current release does not intercept the plaintext FN Connect path when fnOS `Force HTTPS` is enabled; redirection remains disabled when that setting is detected. If the port is unreachable, firewall rules cannot be installed, or the local WAF ingress fails, fn-knock fails open by removing redirection and stopping the corresponding ingress, prioritizing FN Connect availability. Fix the reported error rather than assuming that continued remote access means WAF is still active.
+When fnOS `Force HTTPS` is enabled, fn-knock does not intercept its plaintext FN Connect path; redirection remains disabled when that setting is detected. If the port is unreachable, firewall rules cannot be installed, or the local WAF ingress fails, fn-knock fails open by removing redirection and stopping the corresponding ingress, prioritizing FN Connect availability. Fix the reported error rather than assuming that continued remote access means WAF is still active.
+
+Firewall handling detects legacy iptables and iptables-nft / native nftables backends, and inspects, updates, or removes only chains named and owned by fn-knock. It does not determine state by enumerating and rewriting an entire shared ruleset, and it does not remove unrelated third-party chains. If ownership state cannot be determined, it reports the error and preserves the current state for a later reconciliation. Do not manually reuse `FNK_FNC_*` chain names.
 
 This feature is available only in the standard FPK from the official website and requires host network permissions. It is hidden in `Knock Lite`, Docker, OpenWrt, generic Linux, Synology, and Windows. Keep an fnOS desktop or LAN admin path before enabling it, then make an identifiable request over FN Connect and confirm the route type and rule action in request and WAF logs.
 

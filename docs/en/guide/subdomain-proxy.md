@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2bd2a289e3877ccca299da9cf661aafa735468e2bdf33e360c23496814474279
+translationSourceHash: 28a5ea18db8093418eb8567c825e7f6990b4e1c1e8a87c1ff3a4d97be83a1594
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -125,7 +125,9 @@ Both the username and password are required, and the username cannot contain a c
 
 When editing a regular application Host, open `App icon` to preview the current source, recollect the upstream icon, or upload a custom image. PNG, JPG, WebP, AVIF, SVG, and ICO are supported, with a 5 MB source-file limit. The browser removes external SVG content, and the server rejects SVG files with unsafe `DOCTYPE` or entity declarations. The image is then fitted inside a square canvas without cropping and converted into an embedded icon no larger than 128 KiB.
 
-A custom icon takes priority in the subdomain list and portal, and is embedded when browser bookmarks are exported. `Restore automatic collection` removes the custom override and reads the Target again. If the Target returns no icon, the page shows that none has been collected. The authentication service does not support a custom icon. Icons are included in the configuration and `.knock` backups; do not share sensitive internal artwork in routine troubleshooting attachments.
+A custom icon takes priority in the subdomain list and portal. Browser bookmark exports, navigation-panel sync, and gateway icon endpoints use the same content. The stored icon must be a supported image type encoded as a Base64 `data:image/...;base64,...` URL. External URLs, non-Base64 data URLs, undecodable values, and oversized legacy icons are not sent to the gateway or exported. Normal uploads and automatic collection perform the conversion; if an icon disappears after importing an old backup or external configuration, recollect or upload it again.
+
+`Restore automatic collection` removes the custom override and reads the Target again. If the Target returns no supported icon, the page shows that none has been collected. The authentication service does not support a custom icon. Icons are included in the configuration and `.knock` backups; do not share sensitive internal artwork in routine troubleshooting attachments.
 
 ### Per-Host Visibility and WAF
 
