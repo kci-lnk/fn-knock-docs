@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Runtime Mode"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 68e25b989a6064e569583a9ed66efda20b930bd16039d4fddd2d42836705a4cc
+translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,7 +16,7 @@ Host routing is the default for web services. Reserve Path mode for existing pat
 
 The in-app tunnel steps on this page apply only to deployments whose admin interface actually provides FRP or Cloudflared. On Windows, `7999` listens on all interfaces by default and can serve as the origin for direct public access or a self-managed tunnel. Windows does not include FRP, Cloudflared, Direct mode authorization, or dynamic host firewall management. External reachability still depends on the active Windows Firewall profile, router or NAT, IPv6 firewall, and ISP policy. See [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment).
 
-macOS includes built-in FRP / Cloudflared, but not Direct mode authorization, `iptables`, macOS host-firewall management, Smart Connect, the web terminal, or SSH security. Use `sudo knock update` for updates. See [Deploy on macOS](/en/quick-start/macos-deployment).
+macOS includes built-in FRP / Cloudflared and the remote-SSH Web Terminal, but not Direct mode authorization, `iptables`, macOS host-firewall management, Smart Connect, or SSH security. Use `sudo knock update` for updates. See [Deploy on macOS](/en/quick-start/macos-deployment).
 
 ## 1. Choose a network topology
 
@@ -102,8 +102,10 @@ When the gateway identifies a loopback, private, or link-local source, authentic
 - Both Subdomain mapping and Path mode under Reverse proxy mode can use FRP or Cloudflared. When leaving Reverse proxy mode, the system attempts to stop any running tunnels.
 - After leaving Subdomain mode with direct public ingress, TCP/UDP stream proxying is disabled and its listeners stop, but saved rules are preserved. Re-enter the mode and enable the feature to restore them.
 - Direct mode depends on the host firewall. It is unavailable on Docker, macOS, Synology DSM 7 SPK, Windows, and any deployment without host-management capability.
-- Docker does not write host firewall rules and does not support Smart Connect. OpenWrt likewise provides no fn-knock host-firewall management, Direct mode, or Smart Connect, and it also lacks SSH security, the web terminal, and in-app FPK updates. OpenWrt itself must manage port access and split-horizon LAN DNS.
-- Windows does not support Direct mode authorization, in-app host firewall management, Smart Connect, built-in FRP / Cloudflared, the web terminal, or SSH security. The web update page also cannot install Windows updates.
-- The Synology DSM 7 SPK includes FRP and Cloudflared, but does not support Direct mode authorization, host firewall management, Smart Connect, the web terminal, SSH security, or updates from the web UI.
+- Docker does not write host firewall rules and does not support Smart Connect. OpenWrt likewise provides no fn-knock host-firewall management, Direct mode, or Smart Connect, and it also lacks SSH security and in-app FPK updates. OpenWrt itself must manage port access and split-horizon LAN DNS.
+- Windows does not support Direct mode authorization, in-app host firewall management, Smart Connect, built-in FRP / Cloudflared, or SSH security. The web update page also cannot install Windows updates.
+- The Synology DSM 7 SPK includes FRP and Cloudflared, but does not support Direct mode authorization, host firewall management, Smart Connect, SSH security, or updates from the web UI.
+
+Web Terminal on every package connects only to configured remote SSH targets and does not expose a local shell.
 
 After switching modes, test from a real external network and verify the endpoint, Host, client IP, authorization type, and upstream target. Simply confirming that a page opens is not enough.

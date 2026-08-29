@@ -3,7 +3,7 @@ lang: ko-KR
 title: "실행 모드 선택"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 68e25b989a6064e569583a9ed66efda20b930bd16039d4fddd2d42836705a4cc
+translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
 ---
 
 # 실행 모드 선택
@@ -14,7 +14,7 @@ translationSourceHash: 68e25b989a6064e569583a9ed66efda20b930bd16039d4fddd2d42836
 
 이 문서의 내장 터널 절차는 관리 패널에서 실제로 FRP 또는 Cloudflared를 제공하는 배포에만 적용됩니다. Windows의 `7999`는 기본적으로 모든 인터페이스에서 수신하므로 공인 IP 직접 연결이나 별도로 관리하는 터널의 오리진으로 사용할 수 있습니다. 하지만 Windows 버전은 내장 FRP/Cloudflared, 직접 연결 접근 허용 및 동적 호스트 방화벽 관리를 제공하지 않습니다. 외부 접속 가능 여부는 Windows 방화벽 프로필, 라우터/NAT, IPv6 및 ISP 정책에 따라 달라집니다. 자세한 내용은 [Windows x86_64 배포](/ko/quick-start/windows-deployment)를 참고합니다.
 
-macOS는 내장 FRP/Cloudflared를 제공하지만 직접 연결 접근 허용, `iptables`, macOS 호스트 방화벽 관리, Smart Connect, 웹 터미널 또는 SSH 보안은 지원하지 않습니다. 업데이트는 `sudo knock update`를 사용합니다. [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
+macOS는 내장 FRP/Cloudflared와 원격 SSH 웹 터미널을 제공하지만 직접 연결 접근 허용, `iptables`, macOS 호스트 방화벽 관리, Smart Connect 또는 SSH 보안은 지원하지 않습니다. 업데이트는 `sudo knock update`를 사용합니다. [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
 
 ## 1. 네트워크 토폴로지 선택
 
@@ -100,8 +100,10 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - `리버스 프록시 모드`의 서브도메인 매핑과 경로 모드는 모두 FRP/Cloudflared를 사용할 수 있습니다. 리버스 프록시 모드에서 벗어나면 시스템이 실행 중인 터널을 중지하려고 시도합니다.
 - 공인 IP 직접 연결의 서브도메인 모드에서 벗어나면 프로토콜 매핑 기능과 수신 포트가 중지되지만 저장된 규칙은 유지됩니다. 이 모드로 돌아와 기능을 활성화하면 복원할 수 있습니다.
 - 직접 연결 모드는 호스트 방화벽에 의존합니다. Docker, macOS, Synology DSM 7 SPK, Windows 또는 호스트 관리 기능이 없는 배포에서는 선택할 수 없습니다.
-- Docker는 호스트 방화벽을 변경하지 않으며 Smart Connect도 지원하지 않습니다. OpenWrt도 fn-knock 호스트 방화벽 관리, 직접 연결 모드 또는 Smart Connect를 제공하지 않으며 SSH 보안, 웹 터미널, 웹 관리 패널 FPK 업데이트도 지원하지 않습니다. 포트 허용과 LAN 분할 DNS는 OpenWrt에서 직접 관리합니다.
-- Windows는 직접 연결 접근 허용, 내장 호스트 방화벽 관리, Smart Connect, 내장 FRP/Cloudflared, 웹 터미널, SSH 보안을 지원하지 않습니다. 웹 업데이트 페이지에서도 Windows 업데이트를 설치할 수 없습니다.
-- Synology DSM 7 SPK는 내장 FRP/Cloudflared를 지원하지만 직접 연결 접근 허용, 호스트 방화벽 관리, Smart Connect, 웹 터미널, SSH 보안, 웹 UI에서의 업데이트는 지원하지 않습니다.
+- Docker는 호스트 방화벽을 변경하지 않으며 Smart Connect도 지원하지 않습니다. OpenWrt도 fn-knock 호스트 방화벽 관리, 직접 연결 모드 또는 Smart Connect를 제공하지 않으며 SSH 보안과 웹 관리 패널 FPK 업데이트도 지원하지 않습니다. 포트 허용과 LAN 분할 DNS는 OpenWrt에서 직접 관리합니다.
+- Windows는 직접 연결 접근 허용, 내장 호스트 방화벽 관리, Smart Connect, 내장 FRP/Cloudflared, SSH 보안을 지원하지 않습니다. 웹 업데이트 페이지에서도 Windows 업데이트를 설치할 수 없습니다.
+- Synology DSM 7 SPK는 내장 FRP/Cloudflared를 지원하지만 직접 연결 접근 허용, 호스트 방화벽 관리, Smart Connect, SSH 보안, 웹 UI에서의 업데이트는 지원하지 않습니다.
+
+모든 배포 패키지의 웹 터미널은 설정된 원격 SSH 대상에만 연결하며 로컬 Shell은 제공하지 않습니다.
 
 전환 후에는 페이지가 열리는지만 확인하지 말고 실제 외부 네트워크에서 엔드포인트, Host, 클라이언트 IP, 접근 허용 유형, 업스트림 대상을 점검합니다.

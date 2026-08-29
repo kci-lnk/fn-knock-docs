@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 28a5ea18db8093418eb8567c825e7f6990b4e1c1e8a87c1ff3a4d97be83a1594
+translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79cf000c38
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -182,6 +182,12 @@ Traffic details for an individual Host show live traffic and active IPs, and let
 
 The `Sync to navigation panel` action publishes enabled application Hosts to Sun-Panel, OneNav, or Van-Nav without exporting internal Targets. See [Navigation Panel Sync](/en/guide/panel-sync) for preview, ownership, cleanup, and automatic-sync boundaries.
 
+### Optimize Target Addresses
+
+The maintenance menu provides `Optimize Target Addresses` for batch-rewriting Targets between loopback and detected host LAN addresses after a deployment change. Choosing a LAN address lists mappings that currently use `127.0.0.1`; choosing loopback lists mappings that use a detected local LAN address. The preview preserves the scheme, port, and path and changes only the host. Only selected mappings are saved.
+
+Detected candidates do not guarantee target reachability. Inside Docker, `127.0.0.1` refers only to the current container. Verify routing from the container to the host and the target port before applying changes, then test each application Host.
+
 ### Deep Monitor
 
 When normal request logs cannot explain an HTTP or WebSocket problem, start a time-limited capture from `More → Deep monitor` on the individual application Host. Monitoring accepts only an exact Host that is already configured. It runs for `30` minutes by default and at most `2` hours. The page shows live summaries and lets you download a ZIP containing request, response, upstream, and WebSocket payload information.
@@ -203,7 +209,7 @@ None of these features changes the fact that the Host is the primary routing key
 - Host routing works on fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows. Actual public reachability still depends on each platform's published ports and network path.
 - Automatic host-firewall changes and Smart Connect are provided only by the standard fnOS FPK runtime with the matching capabilities. Docker, OpenWrt, Linux, macOS, Synology, and Windows do not provide them.
 - Protocol mappings appear only in direct-public `Subdomain mode`. Even if extra ports are published for a Docker container, fn-knock does not manage the host firewall.
-- OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, or Smart Connect there, nor does it provide SSH Security, Web Terminal, or in-app FPK updates.
+- OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, Smart Connect, SSH Security, or in-app FPK updates there. Web Terminal can still connect to an administrator-configured remote SSH target, but it does not open a local OpenWrt shell.
 - fn-knock does not automatically close an upstream service's existing public listener and cannot replace upstream updates, backups, or least-privilege configuration.
 
 ## Verification and Troubleshooting

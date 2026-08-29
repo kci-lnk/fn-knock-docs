@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 73c9ec75d653eab22b76b9575a96ed9878fffa0b966fb51fddba4078ef8db01a
+translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443e4e4632
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,6 +29,7 @@ Configure the following under `System settings → WAF`:
 | --- | --- | --- |
 | `Enable WAF` | Disabled by default | When enabled, system rules are checked and synchronized first, then loaded into the gateway at the current level; when disabled, WAF checks stop immediately |
 | `Automatic rule updates` | Enabled by default | The backend maintains system rules automatically and retries failed updates in later cycles |
+| `Block response` | Show block page / Reset connection | Returns a security notice with a Trace ID, or returns no page and terminates the connection or request stream |
 | `Common-location exemption` | Disabled by default | Requests from recently used sign-in regions skip WAF checks |
 | `Protection level` | Levels 1–4; Level 1 by default | Changes are reapplied to the gateway immediately |
 
@@ -40,6 +41,12 @@ The protection levels are:
 - `Level 4 — Maximum protection`: Intended mainly for short-term troubleshooting; do not leave it enabled long-term without validation.
 
 A higher level is not a substitute for fixing vulnerabilities. It enables stricter detection and is also more likely to classify legitimate requests as suspicious.
+
+### Block Response
+
+`Show block page` gives a legitimate visitor a Trace ID that an administrator can look up, while explicitly revealing that fn-knock blocked the request. `Reset connection` returns no block page: HTTP/1 connections are reset, while HTTP/2 terminates only the current request stream, so clients usually report a network error.
+
+This setting changes only the blocked response, not the rules, detection records, or attack decision. Before using connection resets, confirm that monitoring, API clients, and upstream proxies can distinguish the reset from an origin outage. Use the WAF log Trace ID for false-positive investigation.
 
 ### Boundaries of the Common-Location Exemption
 

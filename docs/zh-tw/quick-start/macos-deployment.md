@@ -3,7 +3,7 @@ lang: zh-TW
 title: "macOS 部署（Intel / Apple Silicon）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0912ae4a2d36e245cbe4770888063c9d343483a9a8a72e20b7573ef7a8a48ac9
+translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
 ---
 
 # macOS 部署（Intel / Apple Silicon）
@@ -118,7 +118,7 @@ macOS 支援 Host / Path Reverse Proxy、身分驗證、憑證與 ACME、WAF、�
 
 - `iptables` 或 macOS 主機防火牆管理。
 - 直連授權與智慧連線。
-- SSH 安全管理、Web Terminal、fnOS 憑證庫同步或 fnOS 專屬網路最佳化。
+- SSH 安全管理、fnOS 憑證庫同步或 fnOS 專屬網路最佳化。
 - Web UI 安裝更新；請使用 `sudo knock update`。
 
 macOS 的白名單仍參與閘道存取規則，但不能用來開啟主機原始連接埠。

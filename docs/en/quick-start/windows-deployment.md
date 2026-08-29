@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Windows (x86_64)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d5c6f6c5ebe2b4db1d7e8a3862b2d8d4cc4339c9e029f3861fb0d874d536dae1
+translationSourceHash: 65578d7ceca924bab60159d1c521692e2a9f144696ad04b44f51c09667d1a8bf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,7 +89,8 @@ Plan both an application `.knock` archive and a backup of `%ProgramData%\FnKnock
 | Subdomain or path mappings | Configurable through the local admin panel |
 | External gateway entry point | `7999` listens on all interfaces by default; the inbound path is determined jointly by the static Windows rule, network, and routing configuration |
 | Direct mode authorization and host firewall management | Not supported; firewall rules are not rewritten dynamically according to sign-in state |
-| Smart Connect, Web terminal, and SSH Security | Not supported |
+| Smart Connect and SSH Security | Not supported |
+| Web terminal | Connects to administrator-configured remote SSH targets after host-fingerprint confirmation; it does not open a local Windows shell |
 | Built-in FRP and Cloudflared | Not supported; you may manage a separate process on the same host |
 | ACME certificates | Built-in DNS-01 is supported; see [TLS Certificates and HTTPS](/en/guide/ssl) |
 | Update installation | Handled by the Windows Manager |

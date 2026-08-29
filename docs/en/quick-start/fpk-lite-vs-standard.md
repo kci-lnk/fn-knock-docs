@@ -3,7 +3,7 @@ lang: en-US
 title: "fnOS App Store Lite vs. the Standard FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
+translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,7 +29,7 @@ Choose the standard FPK from the official website when you explicitly need any o
 - Direct mode, which opens original device ports dynamically after sign-in;
 - automatic host-firewall management;
 - Smart Connect, SSH security, system clock synchronization, or fnOS network tuning;
-- Web Terminal or fnOS certificate-store synchronization;
+- fnOS certificate-store synchronization;
 - FN Connect traffic routed through the WAF;
 - in-app updates;
 - standard-port public ingress and automatic HTTPS when public ports `80 / 443` are reachable.
@@ -52,7 +52,7 @@ Choose the standard FPK from the official website when you explicitly need any o
 | Automatic HTTPS | Not supported | Supported | A standard-port public-ingress helper used when public `80 / 443` are reachable; this does not mean Lite lacks HTTPS |
 | fnOS certificate-store synchronization | Not supported | Supported | Certificates in Lite are not written automatically to fnOS certificate records |
 | fnOS network tuning | Not supported | Supported | BBR and TCP MTU probing require changes to host `sysctl` settings |
-| Web Terminal | Not supported | Supported | Lite does not expose a host shell or tmux session |
+| Web Terminal | Supported | Supported | Both editions connect only to administrator-configured remote SSH targets and do not expose a host shell |
 | FN Connect traffic through WAF | Not supported | Supported | This ingress path requires host network and firewall permissions |
 | In-app updates | Not supported | Supported | Lite updates through the App Store or manual package installation; the standard FPK can update from the admin panel |
 

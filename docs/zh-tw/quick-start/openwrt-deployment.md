@@ -3,7 +3,7 @@ lang: zh-TW
 title: "OpenWrt 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b0262d7159450ec265777aa9dbe71330637425391c37bd7b443934b0845d705f
+translationSourceHash: 65f4b972fd2f3eca7a0c48ed574481f22047d74e369bd36a2848fb64248c277f
 ---
 
 # OpenWrt 部署
@@ -104,9 +104,11 @@ logread -e fn-knock
 
 能開啟管理後台，只能證明本機服務已啟動。設定映射後，請使用行動網路等真正的外部連線驗證 `7999` 與網域名稱，不要將 LAN 測試結果當成公網身分驗證結果。
 
-### 自動開放閘道連接埠
+### 手動開放閘道連接埠
 
-LuCI 可維護一條由 fn-knock 擁有、從 `wan` 到目前 TCP 閘道連接埠且同時適用 IPv4 / IPv6 的 firewall4 規則。全新安裝可預設啟用；舊安裝升級不會自行擴大公開範圍，需明確開啟。規則會跟隨重載與連接埠變更，停用、停止或解除安裝時移除。它不開放管理或內部連接埠，也不設定 NAT、DNS、TLS 或驗證；同名非自有規則會顯示衝突而不覆寫。自訂 zone 或集中管理防火牆時請關閉。
+需要公網直達時，請在 `網路 → 防火牆 → 通訊規則` 手動新增只允許 TCP 從 `wan` 到目前閘道連接埠的規則，並依需要限制 IP 版本與來源。若入口是上級路由器、VPN、Cloudflare Tunnel 或其他服務，可能不需直接開放 WAN。
+
+fn-knock 服務啟停、連接埠變更、套件升級或解除安裝都不會同步修改此規則。變更連接埠後須更新或刪除舊規則，解除安裝時也要清除不再需要的放行。不得開放管理與內部連接埠；請在防火牆頁面確認實際範圍，並從外部網路驗證。
 
 ## 資料與升級
 
@@ -156,7 +158,7 @@ fn-knock-reset-panel-password
 | 直連模式、主機防火牆管理 | 不支援；使用 OpenWrt 自身防火牆、VPN 或上級閘道控制原始連接埠 |
 | 智慧連線 | 不支援；需要分流時在 OpenWrt 的 `dnsmasq`、DHCP 或其他本機 DNS 中自行設定 |
 | SSH 安全性 | 不支援；請使用 OpenWrt 本身的 SSH 記錄、防火牆或安全性外掛套件 |
-| Web Terminal | 不支援 |
+| Web Terminal | 支援連線至管理員設定並確認主機指紋的遠端 SSH 目標；不會開啟 OpenWrt 本機 Shell |
 | 自動 HTTPS | 目前的 OpenWrt 軟體套件不支援 |
 
 `fn-knock` 無法取代 OpenWrt 韌體更新、路由器備份與防火牆最小曝露原則。

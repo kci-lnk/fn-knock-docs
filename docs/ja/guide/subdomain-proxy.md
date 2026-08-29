@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 28a5ea18db8093418eb8567c825e7f6990b4e1c1e8a87c1ff3a4d97be83a1594
+translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79cf000c38
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -182,6 +182,12 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 
 `ナビゲーションパネルへ同期` は、有効なアプリ Host を Sun-Panel、OneNav、Van-Nav へ公開し、内部 Target は送信しません。プレビュー、所有権、クリーンアップ、自動同期の境界は[ナビゲーションパネル同期](/ja/guide/panel-sync)を参照してください。
 
+### Target アドレスの最適化
+
+一覧のメンテナンスメニューにある `Target アドレスの最適化` は、ループバックと検出済みホスト LAN アドレスの間で Target を一括変更します。LAN アドレスを選ぶと現在 `127.0.0.1` のマッピングだけを、ループバックを選ぶと検出済み LAN アドレスのマッピングだけを表示します。プレビューはスキーム、ポート、パスを維持してホストだけを変え、選択した項目だけを保存します。
+
+候補の検出は Target への到達性を保証しません。Docker 内の `127.0.0.1` は現在のコンテナだけを指します。適用前にコンテナからホストへの経路と Target ポートを確認し、保存後に各サービス Host を検証してください。
+
 ### 詳細モニタリング
 
 通常のリクエストログだけでは HTTP または WebSocket の問題を特定できない場合、対象サービス Host の `その他 → 詳細モニタリング` から時間制限付きキャプチャを開始できます。すでに設定された完全一致の Host だけが対象で、デフォルトは `30` 分、最大 `2` 時間です。画面にはリアルタイムの要約が表示され、リクエスト、レスポンス、アップストリーム、WebSocket のペイロード情報を含む ZIP をダウンロードできます。
@@ -203,7 +209,7 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 - Host ルーティングは、FNOS FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK、Windows で使用できます。インターネットから実際に到達できるかどうかは、各プラットフォームのポート公開とネットワーク経路によって決まります。
 - ホストファイアウォールへの自動書き込みとスマート接続は、対応する標準 FNOS FPK だけが提供します。Docker、OpenWrt、Linux、macOS、Synology、Windows では利用できません。
 - プロトコルマッピングは、インターネット直結のサブドメインモードでのみ表示されます。Docker で追加ポートを公開しても、fn-knock がホストのファイアウォールを管理することはありません。
-- OpenWrt のポート許可と LAN のスプリット DNS は OpenWrt 自身で管理します。fn-knock は直接接続、ホストファイアウォール管理、スマート接続、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新を提供しません。
+- OpenWrt のポート許可と LAN のスプリット DNS は OpenWrt 自身で管理します。fn-knock は直接接続、ホストファイアウォール管理、スマート接続、SSH セキュリティ、アプリ内 FPK 更新を提供しません。Web ターミナルは管理者が設定したリモート SSH ターゲットへ接続できますが、OpenWrt のローカル Shell は開きません。
 - fn-knock はアップストリームサービスの既存の公開リッスン状態を自動的に停止せず、アップストリームの更新、バックアップ、最小権限設定にも代わりません。
 
 ## 検証とトラブルシューティング

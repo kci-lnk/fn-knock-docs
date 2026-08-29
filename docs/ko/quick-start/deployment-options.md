@@ -3,7 +3,7 @@ lang: ko-KR
 title: "배포 및 접근 방식 선택"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 26293c364e63399f0fc92b735b069246feb7d6d52a341fbf58d6de1e9f23bfe9
+translationSourceHash: 442bfa970135a6bed02b970bbe424fdd37a2b2fc87beaffe313a113198820aab
 ---
 
 # 배포 및 접근 방식 선택
@@ -17,16 +17,16 @@ fn-knock는 외부 엔드포인트를 한곳으로 모으고 서비스 앞단에
 | 배포 방식 | 관리 엔드포인트 | 기본 게이트웨이 엔드포인트 | 적합한 환경 | 주요 제한 |
 | --- | --- | --- | --- | --- |
 | fnOS 네이티브 FPK | fnOS 바탕화면의 `Knock` 아이콘(로컬 CGI가 백엔드 `7998`로 전달) | `7999` | 호스트 기능을 온전히 사용하려는 fnOS 기기 | `7998`은 관리 백엔드이며 인터넷 공개 또는 브라우저용 관리 엔드포인트가 아님 |
-| Docker Compose | `7991` | `7999` | NAS, 홈랩 서버 또는 일반 Docker 호스트 | 직접 연결 모드, 호스트 방화벽 관리, 자동 HTTPS, SSH 보안, Smart Connect, 웹 터미널 미지원 |
-| OpenWrt 패키지 | `서비스 → Knock`; 기본 포트 `7991` | `7999` | 메인 라우터, x86 소프트 라우터 또는 보조 게이트웨이 | 직접 연결, 호스트 방화벽 관리, Smart Connect, 자동 HTTPS, SSH 보안, 웹 터미널, 웹 관리 패널 FPK 업데이트 미지원 |
+| Docker Compose | `7991` | `7999` | NAS, 홈랩 서버 또는 일반 Docker 호스트 | 직접 연결 모드, 호스트 방화벽 관리, 자동 HTTPS, SSH 보안, Smart Connect 미지원 |
+| OpenWrt 패키지 | `서비스 → Knock`; 기본 포트 `7991` | `7999` | 메인 라우터, x86 소프트 라우터 또는 보조 게이트웨이 | 직접 연결, 호스트 방화벽 관리, Smart Connect, 자동 HTTPS, SSH 보안, 웹 관리 패널 FPK 업데이트 미지원 |
 | [Linux(systemd / OpenRC)](/ko/quick-start/linux-deployment) | `7991` | `7999` | 일반 Linux 서버, VPS 또는 직접 관리하는 호스트 | root 권한과 실행 중인 systemd 또는 OpenRC가 필요하며, 호스트 방화벽은 관리자가 직접 관리 |
-| [macOS 13+(Intel / Apple Silicon)](/ko/quick-start/macos-deployment) | 로컬 `127.0.0.1:7991` | `7999` | Intel 또는 Apple Silicon Mac | 서명 및 공증 없음. 직접 연결, `iptables`, 호스트 방화벽 관리, Smart Connect, SSH 보안, 웹 터미널 미지원 |
-| [Synology DSM 7 x86_64 / ARM SPK](/ko/quick-start/synology-deployment) | DSM 바탕화면의 패키지 엔드포인트 | `7999` | Intel/AMD/ARM CPU를 사용하는 DSM 7 NAS | 직접 연결, 호스트 방화벽 관리, Smart Connect, 웹 터미널, SSH 보안 미지원. 패키지 센터에서 업데이트 |
-| [Windows x86_64](/ko/quick-start/windows-deployment) | 관리 프로그램이 로컬 `127.0.0.1:7991`을 엶 | `7999`, 기본적으로 모든 인터페이스에서 수신 | Windows 서비스와 로컬 트레이 관리 프로그램이 필요한 환경 | 방화벽과 NAT를 별도로 구성해야 함. 직접 연결 접근 허용, 내장 FRP/Cloudflared, Smart Connect, 웹 터미널, SSH 보안 미지원 |
+| [macOS 13+(Intel / Apple Silicon)](/ko/quick-start/macos-deployment) | 로컬 `127.0.0.1:7991` | `7999` | Intel 또는 Apple Silicon Mac | 서명 및 공증 없음. 직접 연결, `iptables`, 호스트 방화벽 관리, Smart Connect, SSH 보안 미지원 |
+| [Synology DSM 7 x86_64 / ARM SPK](/ko/quick-start/synology-deployment) | DSM 바탕화면의 패키지 엔드포인트 | `7999` | Intel/AMD/ARM CPU를 사용하는 DSM 7 NAS | 직접 연결, 호스트 방화벽 관리, Smart Connect, SSH 보안 미지원. 패키지 센터에서 업데이트 |
+| [Windows x86_64](/ko/quick-start/windows-deployment) | 관리 프로그램이 로컬 `127.0.0.1:7991`을 엶 | `7999`, 기본적으로 모든 인터페이스에서 수신 | Windows 서비스와 로컬 트레이 관리 프로그램이 필요한 환경 | 방화벽과 NAT를 별도로 구성해야 함. 직접 연결 접근 허용, 내장 FRP/Cloudflared, Smart Connect, SSH 보안 미지원 |
 
 Docker, OpenWrt, Linux, macOS, Windows의 관리 엔드포인트에는 별도의 패널 비밀번호를 설정합니다. 이 비밀번호는 관리 패널을 보호하며, 게이트웨이 엔드포인트에서 사용하는 TOTP, 사용자 이름과 비밀번호 또는 패스키와는 별개의 자격 증명입니다.
 
-fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네이티브 비 root 경량 패키지이며 표의 표준 FPK가 가진 완전한 호스트 권한은 없습니다. Lite는 Host 프록시, 인증, DDNS, 인증서, WAF, 내장 FRP / Cloudflared 및 모니터링을 지원합니다. 직접 연결과 호스트 방화벽, Smart Connect, 시스템 시간 동기화, 자동 HTTPS, fnOS 인증서 저장소 동기화, 웹 터미널, FN Connect WAF 연결 또는 앱 내 업데이트는 지원하지 않습니다. 여기서 “자동 HTTPS”는 ISP와 인바운드 경로가 TCP `80 / 443`을 허용할 때 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 인증서나 HTTPS를 지원하지 않는다는 뜻이 아닙니다. 전체 범위와 마이그레이션 방법은 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
+fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네이티브 비 root 경량 패키지이며 표의 표준 FPK가 가진 완전한 호스트 권한은 없습니다. Lite는 Host 프록시, 인증, DDNS, 인증서, WAF, 내장 FRP / Cloudflared, 모니터링 및 원격 SSH 웹 터미널을 지원합니다. 직접 연결과 호스트 방화벽, Smart Connect, 시스템 시간 동기화, 자동 HTTPS, fnOS 인증서 저장소 동기화, FN Connect WAF 연결 또는 앱 내 업데이트는 지원하지 않습니다. 여기서 “자동 HTTPS”는 ISP와 인바운드 경로가 TCP `80 / 443`을 허용할 때 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 인증서나 HTTPS를 지원하지 않는다는 뜻이 아닙니다. 모든 배포 패키지의 웹 터미널은 관리자가 설정하고 호스트 지문을 확인한 원격 SSH 대상에만 연결하며 배포 호스트의 로컬 Shell은 열지 않습니다. 전체 범위와 마이그레이션 방법은 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
 
 설치 문서:
 

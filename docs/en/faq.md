@@ -3,7 +3,7 @@ lang: en-US
 title: "Frequently Asked Questions"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
+translationSourceHash: 5d34be501072badf106b0121c310ed0354757453673120a891fea111197af3ee
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -322,7 +322,7 @@ First confirm the current deployment capabilities:
 | ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported | Supported; built-in client fixed to Let's Encrypt |
 | Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
 | SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Web Terminal | Supported | Not supported | Not supported | Supported; requires `tmux` | Not supported | Not supported | Not supported |
+| Web Terminal | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets |
 | Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Supported | Not supported |
 | Update installation | Update in the web UI | Pull a new image | Install an IPK / APK | `sudo knock update` | `sudo knock update` | DSM Package Center / SPK | Handled by Windows Manager |
 

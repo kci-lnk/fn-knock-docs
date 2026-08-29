@@ -3,7 +3,7 @@ lang: ja-JP
 title: "リクエスト分析"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f2ed3259
+translationSourceHash: 26cb5a510d1fe9539494314b64cc0f333f30a8e8f575a0f3f2ba224d50483953
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -59,6 +59,14 @@ translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f
 3. クライアント IP を照合し、プロキシのアドレスを利用者の IP として誤認していないか確認します。
 4. 認証状態とアクセスポリシーを確認します。
 5. その後で、アップストリームの転送先、ステータスコード、アプリ自身のログを確認します。
+
+### Trace ID でチェーン全体を確認する
+
+リクエストログ、WAF ログ、システムイベント、通知配信は共通の Trace ID で関連付けられます。`リクエスト分析` または `イベントセンター` の `Trace ID 検索`、あるいは記録内の Trace ID からフルチェーントレースを開けます。
+
+トレース画面はリクエスト、WAF、システムイベント、通知トリガーと配信を時系列で表示し、各データソースを検出済み、未検出、一時利用不可として示します。一部が失敗しても取得済みデータは表示されます。未検出は、収集が無効、保持期限切れ、古い記録に統一 Trace ID がない場合もあります。
+
+Trace ID はレスポンスヘッダー、ブロックページ、通知にも表示されることがあります。共有前に Host、パス、送信元 IP、アップストリーム、通知内容を確認してください。Trace ID は関連付けキーであり、匿名化済みの公開情報ではありません。
 
 ログにリクエストがまったくない場合は、まずテストトラフィックが `127.0.0.1` から来たか、ループバックログが有効だったかを確認します。ローカルトラフィックを除外した後は、通常、DNS、CDN、トンネル、ルーター、ポート公開のいずれかに問題があります。最初にマッピングルールを変更しないでください。
 

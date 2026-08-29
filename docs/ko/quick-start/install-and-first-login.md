@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fnOS 네이티브 FPK 설치 및 초기 설정"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561bf5aa442
+translationSourceHash: 67d700a6ffb0691e5f7518b6b297368d8939e5b518361df88dbc52bae0b654d2
 ---
 
 # fnOS 네이티브 FPK 설치 및 초기 설정
@@ -21,7 +21,7 @@ translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561b
 
 > **공식 웹사이트의 네이티브 FPK 권장**
 >
-> 공식 웹사이트의 표준 fnOS FPK는 fn-knock에서 기능이 가장 완전한 버전입니다. 설치된 앱 이름이 `Knock Lite`라면 Docker 버전이 아니라 네이티브 비 root 경량 패키지입니다. 리버스 프록시, 인증, DDNS, 인증서, WAF, 내장 터널 및 모니터링을 지원하지만 직접 연결과 호스트 방화벽, 네트워크 최적화, fnOS 인증서 저장소 동기화, 웹 터미널, FN Connect WAF 연결 또는 앱 내 업데이트는 제공하지 않습니다. Lite에서도 인증서와 HTTPS를 사용할 수 있습니다. Lite에 없는 “자동 HTTPS”는 공인 TCP `80 / 443`에 접근 가능한 경우 사용하는 표준 포트 직접 연결 보조 기능입니다. 마이그레이션하려면 Lite에서 `.knock` 백업을 내보내고 Lite를 중지하거나 제거한 뒤 기기 아키텍처에 맞는 표준 FPK를 설치하고 가져옵니다. 포트가 충돌할 수 있으므로 두 버전을 동시에 실행하지 않습니다. 전체 비교는 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
+> 공식 웹사이트의 표준 fnOS FPK는 fn-knock에서 기능이 가장 완전한 패키지입니다. 설치된 앱 이름이 `Knock Lite`라면 Docker 버전이 아니라 네이티브 비 root 경량 패키지입니다. 리버스 프록시, 인증, DDNS, 인증서, WAF, 내장 터널, 모니터링 및 원격 SSH 웹 터미널을 지원하지만 직접 연결과 호스트 방화벽, 네트워크 최적화, fnOS 인증서 저장소 동기화, FN Connect WAF 연결 또는 앱 내 업데이트는 제공하지 않습니다. 웹 터미널은 관리자가 설정하고 호스트 지문을 확인한 원격 SSH 대상에만 연결하며 Lite 호스트의 로컬 Shell은 열지 않습니다. Lite에서도 인증서와 HTTPS를 사용할 수 있습니다. Lite에 없는 “자동 HTTPS”는 공인 TCP `80 / 443`에 접근 가능한 경우 사용하는 표준 포트 직접 연결 보조 기능입니다. 마이그레이션하려면 Lite에서 `.knock` 백업을 내보내고 Lite를 중지하거나 제거한 뒤 기기 아키텍처에 맞는 표준 FPK를 설치하고 가져옵니다. 포트가 충돌할 수 있으므로 두 패키지를 동시에 실행하지 않습니다. 전체 비교는 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
 
 ARM64 패키지를 32비트 ARM 기기에 설치하거나, 다른 배포 방식의 패키지를 네이티브 FPK로 설치하지 않습니다. 설치 마법사에서 포트 네 개를 설정합니다. 충돌이 없다면 기본값을 그대로 사용하면 됩니다. 네 값은 모두 `1`–`65535` 범위 안의 서로 다른 값으로 설정합니다.
 

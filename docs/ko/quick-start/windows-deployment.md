@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Windows 배포(x86_64)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d5c6f6c5ebe2b4db1d7e8a3862b2d8d4cc4339c9e029f3861fb0d874d536dae1
+translationSourceHash: 65578d7ceca924bab60159d1c521692e2a9f144696ad04b44f51c09667d1a8bf
 ---
 
 # Windows 배포(x86_64)
@@ -87,7 +87,8 @@ Windows 버전은 네이티브로 개발되어 WebView 또는 WebView2에 의존
 | 서브도메인 또는 경로 매핑 설정 | 로컬 관리 패널에서 설정 가능 |
 | 게이트웨이 외부 엔드포인트 | `7999`는 기본적으로 모든 인터페이스에서 수신. 인바운드 경로는 정적 Windows 규칙, 네트워크 및 라우팅 설정으로 결정 |
 | 직접 연결 접근 허용, 호스트 방화벽 관리 | 미지원. 로그인 상태에 따라 방화벽 규칙을 동적으로 작성하지 않음 |
-| Smart Connect, 웹 터미널, SSH 보안 | 미지원 |
+| Smart Connect, SSH 보안 | 미지원 |
+| 웹 터미널 | 관리자가 설정하고 지문을 확인한 원격 SSH 대상에 연결 가능. Windows 로컬 Shell은 열지 않음 |
 | 내장 FRP, Cloudflared | 미지원. 같은 호스트에서 별도 프로세스로 직접 운영 가능 |
 | ACME 인증서 | 내장 DNS-01 지원. [인증서와 HTTPS](/ko/guide/ssl) 참고 |
 | 업데이트 설치 | Windows 관리 프로그램에서 처리 |

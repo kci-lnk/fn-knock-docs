@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 28a5ea18db8093418eb8567c825e7f6990b4e1c1e8a87c1ff3a4d97be83a1594
+translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79cf000c38
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -182,6 +182,12 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 `同步到導覽面板` 可將已啟用的應用 Host 發佈到 Sun-Panel、OneNav 或 Van-Nav，但不匯出內部 Target。預覽、資源所有權、清理與自動同步邊界見[導覽面板同步](/zh-tw/guide/panel-sync)。
 
+### 最佳化 Target 位址
+
+清單維護選單中的 `最佳化 Target 位址` 可在 Loopback 與偵測到的主機區域網路位址之間批次改寫 Target。選擇區域網路位址時，只列出目前使用 `127.0.0.1` 的映射；選擇 Loopback 時，只列出目前使用已偵測本機位址的映射。預覽只替換 Host，保留協定、連接埠與路徑，並只儲存勾選項目。
+
+候選位址不保證 Target 可達。Docker 內的 `127.0.0.1` 只指向目前 Container；套用前須確認 Container 到 Host 的路由與目標連接埠，儲存後逐一驗證服務 Host。
+
 ### 深度監控
 
 一般 Request Log 無法解釋 HTTP 或 WebSocket 問題時，可從單一服務 Host 的 `更多 → 深度監控` 啟動限時擷取。監控只接受已設定的精確 Host，預設持續 `30` 分鐘，最長 `2` 小時；頁面會顯示即時摘要，並可下載包含 Request、Response、Upstream 與 WebSocket Payload 資訊的 ZIP。
@@ -203,7 +209,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 - Host 路由可在飛牛 FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK 及 Windows 上使用；實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
 - 自動寫入 Host 防火牆及智慧連線，只由具備對應 Runtime 能力的飛牛標準 FPK 提供；Docker、OpenWrt、Linux、macOS、Synology 與 Windows 均不提供。
 - 協定映射只會顯示在公網直連子網域模式中。即使 Docker 額外 Publish Port，也不會由 fn-knock 管理 Host 防火牆。
-- OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理或智慧連線，也不提供 SSH 安全性、Web 終端機或應用程式內 FPK 更新。
+- OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理、智慧連線、SSH 安全性或應用程式內 FPK 更新。Web 終端機仍可連線管理員設定的遠端 SSH 目標，但不會開啟 OpenWrt 本機 Shell。
 - fn-knock 不會自動關閉 Upstream Service 原有的公網監聽，也無法取代 Upstream 更新、備份及最小權限設定。
 
 ## 驗證與疑難排解

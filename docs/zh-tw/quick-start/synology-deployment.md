@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Synology DSM 7 部署（x86_64 / ARM）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b9283ba31b6fe311560cf621e1db02527e13499f003ce717f25fb977b1f4c178
+translationSourceHash: 89dc3d90c041e843cad6b3488d283f9f17075ea2731e2c267e24149f6c97ef0a
 ---
 
 # Synology DSM 7 部署（x86_64 / ARM）
@@ -85,7 +85,8 @@ SPK 會將 `7999/tcp` 宣告為套件的公開閘道連接埠，讓 DSM 能在�
 | 內建 FRP、Cloudflared | 支援，可作為閘道的外部入口方案 |
 | 直連授權、主機防火牆管理、智慧連線 | 不支援 |
 | fnOS 憑證庫同步、系統時鐘同步 | 不支援 |
-| Web Terminal、SSH 安全性 | 不支援 |
+| Web Terminal | 支援連線至管理員設定並確認主機指紋的遠端 SSH 目標；不會開啟 DSM 本機 Shell |
+| SSH 安全性 | 不支援 |
 | 應用程式內自動更新 | 不支援；請使用 DSM 套件中心安裝 SPK 更新 |
 
 缺少「主機防火牆管理」不影響在 DSM 中手動設定防火牆規則；這只代表 fn-knock 不會依登入狀態動態改寫 DSM 防火牆。若需要原始連接埠的直連授權，應改用支援此功能的部署方式。

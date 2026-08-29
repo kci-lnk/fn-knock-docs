@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f2ed3259
+translationSourceHash: 26cb5a510d1fe9539494314b64cc0f333f30a8e8f575a0f3f2ba224d50483953
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -59,6 +59,14 @@ Request Logs can contain access paths, Query parameters, source IPs, User-Agent 
 3. Compare the client IP and confirm that a proxy address was not mistaken for the visitor.
 4. Check the authentication result and access policy.
 5. Then inspect the upstream target, status code, and the application's own logs.
+
+### Follow the Full Chain by Trace ID
+
+Request logs, WAF logs, system events, and notification deliveries use a common Trace ID to associate related records. Select `Trace ID lookup` in Request Analysis or Event Center, or click a Trace ID in a record, to open `Full-chain trace`.
+
+The trace page orders found requests, WAF events, system events, notification triggers, and deliveries on one timeline. Each source is marked found, not found, or temporarily unavailable; available content remains visible if one source fails. No result can mean collection was disabled, retention expired, or an older record had no unified Trace ID—not necessarily that the request never occurred.
+
+A Trace ID may also appear in a gateway response header, block page, or notification. Before sharing a trace, inspect its Host, path, source IP, upstream address, and notification content. The ID is a correlation key, not a sanitized public credential.
 
 If no request appears at all, first check whether the test traffic came from `127.0.0.1` and whether loopback logging was enabled. After excluding local traffic, the problem is usually earlier in the path—DNS, CDN, tunnel, router, or port exposure. Do not start by changing mapping rules.
 

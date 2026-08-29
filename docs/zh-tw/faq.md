@@ -3,7 +3,7 @@ lang: zh-TW
 title: "常見問題"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
+translationSourceHash: 5d34be501072badf106b0121c310ed0354757453673120a891fea111197af3ee
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -322,7 +322,7 @@ OpenWrt 支援符合架構的 `.ipk` 與 `.apk` Package。安裝後入口為 `�
 | ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援；內建 Client，固定使用 Let's Encrypt |
 | 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
 | SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| Web 終端機 | 支援 | 不支援 | 不支援 | 支援；依賴 `tmux` | 不支援 | 不支援 | 不支援 |
+| Web 終端機 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 |
 | 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |
 | 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝 IPK / APK | `sudo knock update` | `sudo knock update` | DSM 套件中心 / SPK | 由 Windows 管理程式處理 |
 

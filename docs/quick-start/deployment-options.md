@@ -9,16 +9,18 @@ fn-knock 用于收敛入口和前置认证，不能替代系统更新、备份�
 | 部署方式 | 管理入口 | 默认网关入口 | 适用情况 | 主要限制 |
 | --- | --- | --- | --- | --- |
 | 飞牛应用 FPK | 飞牛桌面的“敲门 knock”图标（本机 CGI 转至后端 `7998`） | `7999` | fnOS 主机，希望使用完整的宿主机能力 | `7998` 是管理后端，不是对外或浏览器管理入口 |
-| Docker Compose | `7991` | `7999` | NAS、家庭服务器或普通 Docker 主机 | 不支持直连模式、宿主机防火墙管理、自动 HTTPS、SSH 安全、智能连接和 Web 终端 |
-| OpenWrt 软件包 | `服务 → 敲门 Knock`；默认端口为 `7991` | `7999` | 主路由、软路由或旁路由 | 不支持直连、宿主机防火墙管理、智能连接、自动 HTTPS、SSH 安全、Web 终端和应用内 FPK 更新 |
+| Docker Compose | `7991` | `7999` | NAS、家庭服务器或普通 Docker 主机 | 不支持直连模式、宿主机防火墙管理、自动 HTTPS、SSH 安全和智能连接 |
+| OpenWrt 软件包 | `服务 → 敲门 Knock`；默认端口为 `7991` | `7999` | 主路由、软路由或旁路由 | 不支持直连、宿主机防火墙管理、智能连接、自动 HTTPS、SSH 安全和应用内 FPK 更新 |
 | [Linux（systemd / OpenRC）](/quick-start/linux-deployment) | `7991` | `7999` | 普通 Linux 服务器、VPS 或自管主机 | 需要 root 及正在运行的 systemd 或 OpenRC；主机防火墙由管理员自行管理 |
-| [macOS 13+（Intel / Apple Silicon）](/quick-start/macos-deployment) | 本机 `127.0.0.1:7991` | `7999` | Intel 或 Apple Silicon Mac | 未签名且未公证；不支持直连、`iptables`、主机防火墙管理、智能连接、SSH 安全和 Web 终端 |
-| [群晖 DSM 7 x86_64 / ARM SPK](/quick-start/synology-deployment) | DSM 桌面中的套件入口 | `7999` | DSM 7 的 Intel / AMD / ARM NAS | 不支持直连、宿主机防火墙管理、智能连接、Web 终端和 SSH 安全；通过套件中心升级 |
-| [Windows x86_64](/quick-start/windows-deployment) | 管理程序打开本机 `127.0.0.1:7991` | `7999`，默认监听全部接口 | 需要 Windows 服务与本机托盘管理程序 | 仍须配置防火墙和 NAT；不支持直连授权、内置 FRP / Cloudflared、智能连接、Web 终端和 SSH 安全 |
+| [macOS 13+（Intel / Apple Silicon）](/quick-start/macos-deployment) | 本机 `127.0.0.1:7991` | `7999` | Intel 或 Apple Silicon Mac | 未签名且未公证；不支持直连、`iptables`、主机防火墙管理、智能连接和 SSH 安全 |
+| [群晖 DSM 7 x86_64 / ARM SPK](/quick-start/synology-deployment) | DSM 桌面中的套件入口 | `7999` | DSM 7 的 Intel / AMD / ARM NAS | 不支持直连、宿主机防火墙管理、智能连接和 SSH 安全；通过套件中心升级 |
+| [Windows x86_64](/quick-start/windows-deployment) | 管理程序打开本机 `127.0.0.1:7991` | `7999`，默认监听全部接口 | 需要 Windows 服务与本机托盘管理程序 | 仍须配置防火墙和 NAT；不支持直连授权、内置 FRP / Cloudflared、智能连接和 SSH 安全 |
 
 Docker、OpenWrt、Linux、macOS 与 Windows 的管理入口需要单独设置面板密码。这个密码保护管理面板，与网关入口使用的 TOTP、账号密码或 Passkey 不是同一套凭据。
 
-飞牛设备中若应用名称为 `敲门 knock Lite`，它是原生非 root 精简包，不是 Docker 部署，也不具备表中标准 FPK 的完整宿主机权限。Lite 支持 Host 反代、认证、DDNS、证书、WAF、内置 FRP / Cloudflared 和监控；不支持直连与宿主机防火墙、智能连接、系统时钟同步、自动 HTTPS、飞牛证书库同步、Web 终端、FN Connect WAF 接入或应用内更新。这里的“自动 HTTPS”特指运营商和入站链路允许 TCP `80 / 443` 时的标准端口直达辅助能力，不代表 Lite 不能使用证书和 HTTPS。完整边界与迁移方法见[应用商店 Lite 与官网标准 FPK 的区别](/quick-start/fpk-lite-vs-standard)。
+飞牛设备中若应用名称为 `敲门 knock Lite`，它是原生非 root 精简包，不是 Docker 部署，也不具备表中标准 FPK 的完整宿主机权限。Lite 支持 Host 反代、认证、DDNS、证书、WAF、内置 FRP / Cloudflared、监控和远程 SSH Web 终端；不支持直连与宿主机防火墙、智能连接、系统时钟同步、自动 HTTPS、飞牛证书库同步、FN Connect WAF 接入或应用内更新。这里的“自动 HTTPS”特指运营商和入站链路允许 TCP `80 / 443` 时的标准端口直达辅助能力，不代表 Lite 不能使用证书和 HTTPS。完整边界与迁移方法见[应用商店 Lite 与官网标准 FPK 的区别](/quick-start/fpk-lite-vs-standard)。
+
+各发行平台的 Web 终端都连接管理员配置并确认主机指纹的远程 SSH 目标，不打开部署主机的本机 Shell。
 
 安装说明：
 

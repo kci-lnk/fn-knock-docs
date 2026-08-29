@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Windows 部署（x86_64）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d5c6f6c5ebe2b4db1d7e8a3862b2d8d4cc4339c9e029f3861fb0d874d536dae1
+translationSourceHash: 65578d7ceca924bab60159d1c521692e2a9f144696ad04b44f51c09667d1a8bf
 ---
 
 # Windows 部署（x86_64）
@@ -87,7 +87,8 @@ Windows 版本採用原生開發，不依賴 WebView 或 WebView2，也不會在
 | 子網域或路徑映射設定 | 可從本機管理後台設定 |
 | 閘道外部入口 | `7999` 預設監聽所有介面；入站路徑由靜態 Windows 規則、網路與路由設定共同決定 |
 | 直連授權、主機防火牆管理 | 不支援；不會依登入狀態動態寫入防火牆規則 |
-| 智慧連線、Web Terminal、SSH 安全性 | 不支援 |
+| 智慧連線、SSH 安全性 | 不支援 |
+| Web Terminal | 支援連線至管理員設定並確認主機指紋的遠端 SSH 目標；不會開啟 Windows 本機 Shell |
 | 內建 FRP、Cloudflared | 不支援；可自行管理同一台主機上的外部 Process |
 | ACME 憑證 | 支援內建 DNS-01；詳情請參閱[憑證與 HTTPS](/zh-tw/guide/ssl) |
 | 更新安裝 | 由 Windows 管理程式處理 |

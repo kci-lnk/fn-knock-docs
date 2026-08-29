@@ -3,7 +3,7 @@ lang: en-US
 title: "Static Path Responses"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7a3dd9fcebcc2f25c1b353c79143910804695115e4ab1463f74404a067c7bd21
+translationSourceHash: 0407fea9e22abbed4c38713a7746bc42010e8f8772cda77ddbb90810e910e0e6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -38,15 +38,18 @@ Each Host can have only one rule for the same match mode and path.
 | --- | --- | --- |
 | `Match` | Exact / Prefix match | Matches only the complete path, or that prefix and its subpaths |
 | `Action` | Reverse proxy / Fixed response | Forwards to another upstream, or lets the gateway respond directly |
+| `Authentication behavior` | Inherit Host / Public access | Applies the Host authentication policy or skips sign-in only for this path rule |
 | `Target` | HTTP / HTTPS URL | Used only for a reverse-proxy action |
 | `Strip matched path` | On / Off | Sends `/api/users` as `/users`, or keeps the original path |
 | `Rewrite HTML paths` | On / Off | Adds the path prefix to page assets; a pure API usually does not need this |
 
 For a fixed response, you can set a status code from `100` to `599`, `Content-Type`, a body, and custom response headers. Transport-level headers such as `Connection`, `Content-Length`, `Content-Type`, `Transfer-Encoding`, and `Upgrade` cannot be overridden through custom headers; use the dedicated field for the content type.
 
-## Inherit the Host Access Policy
+## Path Authentication Behavior
 
-Path responses inherit the current Host's `Require sign-in` setting and existing strict-allowlist rules. They are not a bypass around access control.
+Rules use `Inherit Host` by default and apply the current Host's `Require sign-in` setting and existing strict-allowlist rules. With `Public access`, only requests matching this path rule skip sign-in; other paths on the same Host keep the Host policy.
+
+Use a public path for a health check, webhook callback, or deliberately anonymous fixed content. The choice covers the rule's entire exact or prefix match: making `/api` public also makes its matched subpaths public. Keep the match narrow and verify that the upstream still enforces its own permissions where required.
 
 A reverse-proxy action injects the Host's `Skip Basic Auth` credentials into requests sent to its actual Target, allowing it to pass that target service's own Basic Auth. These are not fn-knock visitor credentials. Proxy headers and Host preservation follow the shared runtime rules for this actual Target, which may differ from the settings for the Host's default Target. A fixed response has no upstream and therefore sends no Basic Auth credentials, proxy headers, or Host-preservation-related request headers.
 

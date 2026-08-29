@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 28a5ea18db8093418eb8567c825e7f6990b4e1c1e8a87c1ff3a4d97be83a1594
+translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79cf000c38
 ---
 
 # 서브도메인 라우팅
@@ -180,6 +180,12 @@ Host별 트래픽 세부 정보에서 실시간 트래픽과 활성 IP를 확인
 
 `내비게이션 패널로 동기화`는 활성 앱 Host를 Sun-Panel, OneNav 또는 Van-Nav에 게시하지만 내부 Target은 내보내지 않습니다. 미리보기, 소유권, 정리, 자동 동기화 경계는 [내비게이션 패널 동기화](/ko/guide/panel-sync)를 참고하세요.
 
+### 대상 주소 최적화
+
+목록 유지 관리 메뉴의 `대상 주소 최적화`는 루프백과 감지된 호스트 LAN 주소 사이에서 Target을 일괄 변경합니다. LAN 주소를 선택하면 현재 `127.0.0.1`을 사용하는 매핑만, 루프백을 선택하면 감지된 로컬 LAN 주소를 사용하는 매핑만 표시합니다. 미리보기는 스킴, 포트와 경로를 유지하고 호스트만 바꾸며 선택한 매핑만 저장합니다.
+
+후보 주소 감지는 대상 접근 가능성을 보장하지 않습니다. Docker 안의 `127.0.0.1`은 현재 컨테이너만 가리킵니다. 적용 전에 컨테이너에서 호스트로 가는 경로와 대상 포트를 확인하고 저장 후 각 서비스 Host를 검증합니다.
+
 ### 심층 모니터링
 
 일반 요청 로그만으로 HTTP 또는 WebSocket 문제를 설명할 수 없다면 개별 서비스 Host의 `더보기 → 심층 모니터링`에서 시간 제한 캡처를 시작합니다. 이미 설정된 정확한 Host만 대상으로 하며 기본 `30`분, 최대 `2`시간 동안 실행합니다. 페이지에는 실시간 요약이 표시되고 요청, 응답, 업스트림 및 WebSocket 페이로드 정보가 포함된 ZIP을 다운로드할 수 있습니다.
@@ -201,7 +207,7 @@ Host별 트래픽 세부 정보에서 실시간 트래픽과 활성 IP를 확인
 - Host 라우트는 fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK 및 Windows에서 사용할 수 있습니다. 실제 인터넷 접근 가능 여부는 각 플랫폼의 포트 공개와 네트워크 경로에 달려 있습니다.
 - 호스트 방화벽 자동 규칙 추가와 Smart Connect는 해당 런타임 기능을 갖춘 표준 fnOS FPK에서만 제공합니다. Docker, OpenWrt, Linux, macOS, Synology 및 Windows에서는 제공하지 않습니다.
 - 프로토콜 매핑은 공인 IP 직접 연결 서브도메인 모드에서만 표시됩니다. Docker에서 추가 포트를 공개해도 fn-knock가 호스트 방화벽을 관리하지 않습니다.
-- OpenWrt의 포트 허용과 LAN 분할 DNS는 OpenWrt 자체에서 관리합니다. fn-knock는 직접 연결, 호스트 방화벽 관리, Smart Connect, SSH 보안, 웹 터미널 또는 웹 관리 패널 FPK 업데이트를 제공하지 않습니다.
+- OpenWrt의 포트 허용과 LAN 분할 DNS는 OpenWrt 자체에서 관리합니다. fn-knock는 직접 연결, 호스트 방화벽 관리, Smart Connect, SSH 보안 또는 웹 관리 패널 FPK 업데이트를 제공하지 않습니다. 웹 터미널은 관리자가 설정한 원격 SSH 대상에 연결할 수 있지만 OpenWrt 로컬 Shell은 열지 않습니다.
 - fn-knock는 업스트림 서비스의 기존 공인 수신 포트를 자동으로 닫지 않으며 업스트림 업데이트, 백업 및 최소 권한 설정을 대신하지도 않습니다.
 
 ## 확인 및 문제 해결

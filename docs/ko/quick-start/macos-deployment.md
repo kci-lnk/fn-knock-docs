@@ -3,7 +3,7 @@ lang: ko-KR
 title: "macOS 배포(Intel / Apple Silicon)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0912ae4a2d36e245cbe4770888063c9d343483a9a8a72e20b7573ef7a8a48ac9
+translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
 ---
 
 # macOS 배포(Intel / Apple Silicon)
@@ -118,7 +118,7 @@ macOS는 Host/경로 리버스 프록시, 인증, 인증서와 ACME, WAF, 모니
 
 - `iptables` 또는 macOS 호스트 방화벽 관리.
 - 직접 연결 모드 접근 허용 및 Smart Connect.
-- SSH 보안 관리, 웹 터미널, fnOS 인증서 저장소 동기화, fnOS 전용 네트워크 조정.
+- SSH 보안 관리, fnOS 인증서 저장소 동기화, fnOS 전용 네트워크 조정.
 - 웹에서 업데이트 설치. `sudo knock update`를 사용합니다.
 
 macOS에서도 화이트리스트는 게이트웨이 접근 정책에 적용되지만 호스트의 원본 포트를 열 수는 없습니다.

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "連接埠、入口與 URL 路徑"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2c2bb6d85e26ff46bef2299c61913894ee9279c23a43099da9cfa6bbf8822d0e
+translationSourceHash: 0338720ed05a1f70e8321d06a0538ca91bf0c7b489993027169f3055e7cc154d
 ---
 
 # 連接埠、入口與 URL 路徑
@@ -64,10 +64,12 @@ TCP / UDP 通訊協定映射會額外監聽各自的對外連接埠，不經過 
 
 - Docker 可執行 Host／路徑閘道，但不會代替主機寫入防火牆規則，也不支援直連模式與智慧連線。
 - fnOS 原生 FPK 可管理主機防火牆，並提供直連模式與智慧連線。
-- OpenWrt 可執行 Host／路徑閘道、通訊協定映射及內建 Tunnel，但 fn-knock 不管理 OpenWrt 防火牆，也不提供直連模式或智慧連線；連接埠放行與區域網路 DNS 分流應在 OpenWrt 中自行設定。它同樣不提供 SSH 安全性、Web Terminal 或應用程式內 FPK 更新。
-- Synology DSM 7 SPK 會將 `7999` 以公開閘道連接埠註冊至 DSM 防火牆介面，但套件無法自行修改主機防火牆；不支援直連模式、智慧連線、Web Terminal 或 SSH 安全性。
-- macOS 管理面板強制使用本機回環，`7999` 可作為服務入口；它不呼叫 `iptables`、不管理 macOS 防火牆，也不支援直連、智慧連線、Web Terminal 或 SSH 安全性。協定映射連接埠需手動放行。
-- Windows 的 `7999` 預設監聽所有介面；安裝程式建立的 `FnKnock Gateway` 靜態程式規則只套用於「網域／私人」Network Profile。此版本仍不支援直連模式、應用程式內主機防火牆管理、智慧連線、內建 Tunnel、Web Terminal 或 SSH 安全性。開放公網存取前，務必檢查路由器／NAT、IPv6、ISP 與第三方安全軟體。
+- OpenWrt 可執行 Host／路徑閘道、通訊協定映射及內建 Tunnel，但 fn-knock 不管理 OpenWrt 防火牆，也不提供直連模式或智慧連線；連接埠放行與區域網路 DNS 分流應在 OpenWrt 中自行設定。它同樣不提供 SSH 安全性或應用程式內 FPK 更新。
+- Synology DSM 7 SPK 會將 `7999` 以公開閘道連接埠註冊至 DSM 防火牆介面，但套件無法自行修改主機防火牆；不支援直連模式、智慧連線或 SSH 安全性。
+- macOS 管理面板強制使用本機回環，`7999` 可作為服務入口；它不呼叫 `iptables`、不管理 macOS 防火牆，也不支援直連、智慧連線或 SSH 安全性。協定映射連接埠需手動放行。
+- Windows 的 `7999` 預設監聽所有介面；安裝程式建立的 `FnKnock Gateway` 靜態程式規則只套用於「網域／私人」Network Profile。此版本仍不支援直連模式、應用程式內主機防火牆管理、智慧連線、內建 Tunnel 或 SSH 安全性。開放公網存取前，務必檢查路由器／NAT、IPv6、ISP 與第三方安全軟體。
+
+上述平台都支援 Web 終端機，但只連線管理員設定並確認主機指紋的遠端 SSH 目標，不會開啟 fn-knock 主機的本機 Shell。
 
 對 Host 或路徑路由而言，`fn-knock` 只能保護確實通過閘道的請求。若上游服務仍監聽公網或區域網路可達的位址，使用者依然可能繞過閘道直接連線。直連授權是例外：它仰賴受支援的主機防火牆，只有登入後的來源 IP 取得授權時，才暫時放行原始連接埠；請勿另外加入過度寬鬆的公網放行規則。
 

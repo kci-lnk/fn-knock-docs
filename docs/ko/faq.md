@@ -3,7 +3,7 @@ lang: ko-KR
 title: "자주 묻는 질문"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
+translationSourceHash: 5d34be501072badf106b0121c310ed0354757453673120a891fea111197af3ee
 ---
 
 # 자주 묻는 질문
@@ -320,7 +320,7 @@ Windows 프로그램을 제거한 뒤에도 복구를 위해 `%ProgramData%\FnKn
 | ACME DNS-01 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원 | 지원, Let's Encrypt로 고정된 내장 클라이언트 사용 |
 | Smart Connect | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
 | SSH 보안 | 지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 | 미지원 |
-| 웹 터미널 | 지원 | 미지원 | 미지원 | 지원, `tmux` 필요 | 미지원 | 미지원 | 미지원 |
+| 웹 터미널 | 원격 SSH 대상 | 원격 SSH 대상 | 원격 SSH 대상 | 원격 SSH 대상 | 원격 SSH 대상 | 원격 SSH 대상 | 원격 SSH 대상 |
 | 내장 FRP / Cloudflared | 지원 | 지원 | 지원 | 지원 | 지원 | 지원 | 미지원 |
 | 업데이트 설치 | 웹 페이지에서 업데이트 | 새 이미지 가져오기 | IPK / APK 설치 | `sudo knock update` | `sudo knock update` | DSM 패키지 센터 / SPK | Windows 관리 프로그램에서 처리 |
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "実行モードを選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 68e25b989a6064e569583a9ed66efda20b930bd16039d4fddd2d42836705a4cc
+translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,7 +16,7 @@ Web サービスには Host ルーティングを基本とします。パスモ�
 
 このページにあるアプリ内トンネルの手順は、管理画面から実際に FRP または Cloudflared を利用できるデプロイ方式だけが対象です。Windows の `7999` はデフォルトで全インターフェースを待ち受けるため、グローバル IP からの直接公開や自前で管理するトンネルのオリジンにできます。ただし、FRP、Cloudflared、直接接続の IP 許可、ホストファイアウォールの動的管理は内蔵していません。外部から到達できるかどうかは、Windows ファイアウォールのプロファイル、ルーター / NAT、IPv6、ISP のポリシーにも依存します。詳しくは [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)を参照してください。
 
-macOS は内蔵 FRP / Cloudflared を提供しますが、直接接続の許可、`iptables`、macOS ホストファイアウォール管理、スマート接続、Web ターミナル、SSH セキュリティには対応しません。更新には `sudo knock update` を使用します。[macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
+macOS は内蔵 FRP / Cloudflared とリモート SSH Web ターミナルを提供しますが、直接接続の許可、`iptables`、macOS ホストファイアウォール管理、スマート接続、SSH セキュリティには対応しません。更新には `sudo knock update` を使用します。[macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
 
 ## 1. ネットワーク構成を選ぶ
 
@@ -102,8 +102,10 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - リバースプロキシモードのサブドメインマッピングとパスモードは、どちらも FRP / Cloudflared を利用できます。リバースプロキシモードから切り替えると、実行中のトンネルを停止しようとします。
 - グローバル IP から直接公開するサブドメインモードを終了すると、プロトコルマッピング機能が無効になりリスナーも停止しますが、保存済みのルールは保持されます。このモードへ戻って機能を有効にすると復元できます。
 - 直接接続モードはホストのファイアウォールに依存します。Docker、macOS、Synology DSM 7 SPK、Windows、ホストを管理できないデプロイ方式では選択できません。
-- Docker はホストのファイアウォールを書き換えず、スマート接続にも対応しません。OpenWrt も fn-knock によるホストファイアウォール管理、直接接続モード、スマート接続に対応せず、SSH セキュリティ、Web ターミナル、アプリ内 FPK 更新も提供しません。ポート許可と LAN のスプリット DNS は OpenWrt 側で管理します。
-- Windows は、直接接続の IP 許可、アプリ内からのホストファイアウォール管理、スマート接続、内蔵 FRP / Cloudflared、Web ターミナル、SSH セキュリティに対応していません。Web の更新画面から Windows 版を更新することもできません。
-- Synology DSM 7 SPK は内蔵 FRP / Cloudflared に対応しますが、直接接続の IP 許可、ホストのファイアウォール管理、スマート接続、Web ターミナル、SSH セキュリティ、Web 画面からの更新には対応していません。
+- Docker はホストのファイアウォールを書き換えず、スマート接続にも対応しません。OpenWrt も fn-knock によるホストファイアウォール管理、直接接続モード、スマート接続に対応せず、SSH セキュリティ、アプリ内 FPK 更新も提供しません。ポート許可と LAN のスプリット DNS は OpenWrt 側で管理します。
+- Windows は、直接接続の IP 許可、アプリ内からのホストファイアウォール管理、スマート接続、内蔵 FRP / Cloudflared、SSH セキュリティに対応していません。Web の更新画面から Windows 版を更新することもできません。
+- Synology DSM 7 SPK は内蔵 FRP / Cloudflared に対応しますが、直接接続の IP 許可、ホストのファイアウォール管理、スマート接続、SSH セキュリティ、Web 画面からの更新には対応していません。
+
+すべての配布パッケージの Web ターミナルは、設定済みリモート SSH ターゲットだけへ接続し、ローカル Shell は公開しません。
 
 切り替え後は、画面が開くかどうかだけで済ませず、実際の外部ネットワークから入口、Host、クライアント IP、許可の種類、上流の転送先を確認してください。

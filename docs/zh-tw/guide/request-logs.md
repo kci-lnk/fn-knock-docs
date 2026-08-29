@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求分析"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f2ed3259
+translationSourceHash: 26cb5a510d1fe9539494314b64cc0f333f30a8e8f575a0f3f2ba224d50483953
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -59,6 +59,14 @@ translationSourceHash: 2fbdb3f92c3e5f60f11cd16c817934b9bb9bde3c9e3c53eb560c3ed1f
 3. 比對用戶端 IP，確認沒有將 Proxy IP 誤認為訪客。
 4. 檢查驗證狀態與存取原則。
 5. 再檢查上游 Target、Status Code 與應用程式本身的 Log。
+
+### 依 Trace ID 查看完整鏈路
+
+Request Log、WAF Log、系統事件與通知投遞使用統一 Trace ID 關聯記錄。可在 `Request 分析` 或 `事件中心` 選擇 `Trace ID 查詢`，或直接點選記錄中的 Trace ID，開啟完整鏈路追蹤。
+
+追蹤頁依時間排列 Request、WAF 事件、系統事件、通知觸發與投遞，並標示每個資料來源為已找到、未找到或暫時無法使用。單一來源失敗時，其他內容仍會顯示。查無結果也可能是未啟用收集、記錄已過期，或舊記錄沒有統一 Trace ID。
+
+Trace ID 也可能出現在閘道 Response Header、攔截頁或通知中。分享前仍須檢查 Host、路徑、來源 IP、Upstream 位址與通知內容；Trace ID 是關聯鍵，不是已去識別化的公開憑據。
 
 如果記錄中完全找不到請求，請先確認測試流量是否來自 `127.0.0.1`，以及回環記錄開關是否已開啟。排除本機請求後，問題通常發生在 DNS、CDN、Tunnel、路由器或連接埠發布等更前端的環節；不要一開始就修改映射規則。
 

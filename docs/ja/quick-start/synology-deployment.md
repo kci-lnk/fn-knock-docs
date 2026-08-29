@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Synology DSM 7 へデプロイ（x86_64 / ARM）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b9283ba31b6fe311560cf621e1db02527e13499f003ce717f25fb977b1f4c178
+translationSourceHash: 89dc3d90c041e843cad6b3488d283f9f17075ea2731e2c267e24149f6c97ef0a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -87,7 +87,8 @@ SPK は `7999/tcp` をパッケージの公開ゲートウェイポートとし�
 | 内蔵 FRP、Cloudflared | 対応。ゲートウェイの外部向け入口として利用可能 |
 | 直接接続の IP 許可、ホストのファイアウォール管理、スマート接続 | 非対応 |
 | fnOS 証明書ライブラリとの同期、システム時刻の同期 | 非対応 |
-| Web ターミナル、SSH セキュリティ | 非対応 |
+| Web ターミナル | 管理者が設定し指紋を確認したリモート SSH ターゲットへ接続可能。DSM のローカル Shell は開きません |
+| SSH セキュリティ | 非対応 |
 | アプリ内の自動更新 | 非対応。DSM パッケージセンターから SPK を更新します |
 
 「ホストのファイアウォール管理」がないことは、DSM でファイアウォールルールを手動設定できないという意味ではありません。fn-knock がログイン状態に応じて DSM ファイアウォールを動的に書き換えない、という意味です。サービス本来のポートをログイン後に動的許可したい場合は、この機能に対応するデプロイ方式を選んでください。

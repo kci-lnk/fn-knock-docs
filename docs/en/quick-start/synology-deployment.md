@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Synology DSM 7 (x86_64 / ARM)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b9283ba31b6fe311560cf621e1db02527e13499f003ce717f25fb977b1f4c178
+translationSourceHash: 89dc3d90c041e843cad6b3488d283f9f17075ea2731e2c267e24149f6c97ef0a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -87,7 +87,8 @@ Keep the admin entry point inside the DSM desktop; do not expose `7998` for conv
 | Built-in FRP and Cloudflared | Supported; either can provide external ingress for the gateway |
 | Direct mode authorization, host firewall management, and Smart Connect | Not supported |
 | fnOS certificate-library sync and system-clock sync | Not supported |
-| Web terminal and SSH Security | Not supported |
+| Web terminal | Connects to administrator-configured remote SSH targets after host-fingerprint confirmation; it does not open a local DSM shell |
+| SSH Security | Not supported |
 | In-app self-update | Not supported; install SPK updates through DSM Package Center |
 
 The absence of host firewall management does not prevent you from configuring firewall rules manually in DSM. It means fn-knock does not rewrite the DSM firewall dynamically according to sign-in state. If you need Direct mode authorization for original ports, use a deployment that supports that capability.

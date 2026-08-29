@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 應用程式商店 Lite 與官網標準 FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
+translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,7 +29,7 @@ translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a0
 - 登入後動態開放裝置原始連接埠的直連模式；
 - fn-knock 自動維護主機防火牆；
 - 智慧連線、SSH 安全、系統時間同步或 fnOS 網路最佳化；
-- Web 終端機、fnOS SSL 憑證庫同步；
+- fnOS SSL 憑證庫同步；
 - FN Connect 流量接入 WAF；
 - 應用程式內更新；
 - 公網 `80 / 443` 可連線時使用標準連接埠直連與自動 HTTPS。
@@ -52,7 +52,7 @@ translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a0
 | 自動 HTTPS | 不支援 | 支援 | 指公網 `80 / 443` 可連線時的標準連接埠直連輔助能力，不代表 Lite 不支援 HTTPS |
 | fnOS SSL 憑證庫同步 | 不支援 | 支援 | Lite 內的憑證不會自動寫入 fnOS 系統憑證記錄 |
 | fnOS 網路最佳化 | 不支援 | 支援 | BBR、TCP MTU 探測等設定需要修改主機 `sysctl` |
-| Web 終端機 | 不支援 | 支援 | Lite 不提供主機 Shell / tmux 工作階段 |
+| Web 終端機 | 支援 | 支援 | 兩者都只連線管理員設定並確認主機指紋的遠端 SSH 目標，不提供主機 Shell |
 | FN Connect 流量接入 WAF | 不支援 | 支援 | 此入口需要主機網路與防火牆權限 |
 | 應用程式內更新 | 不支援 | 支援 | Lite 透過應用程式商店或手動安裝新套件；標準 FPK 可從管理後台更新 |
 

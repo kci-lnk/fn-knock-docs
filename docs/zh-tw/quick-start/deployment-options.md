@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇部署與存取方案"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 26293c364e63399f0fc92b735b069246feb7d6d52a341fbf58d6de1e9f23bfe9
+translationSourceHash: 442bfa970135a6bed02b970bbe424fdd37a2b2fc87beaffe313a113198820aab
 ---
 
 # 選擇部署與存取方案
@@ -17,16 +17,16 @@ fn-knock 用於收斂入口並提供前置身分驗證，不能取代系統更�
 | 部署方式 | 管理入口 | 預設閘道入口 | 適用情境 | 主要限制 |
 | --- | --- | --- | --- | --- |
 | fnOS 原生 FPK | fnOS 桌面的「敲門 knock」圖示（本機 CGI 轉送至後端 `7998`） | `7999` | fnOS 主機，且希望使用完整的主機功能 | `7998` 是管理後端，不是對外或瀏覽器管理入口 |
-| Docker Compose | `7991` | `7999` | NAS、Home Server 或一般 Docker 主機 | 不支援直連模式、主機防火牆管理、自動 HTTPS、SSH 安全性、智慧連線與 Web Terminal |
-| OpenWrt 軟體套件 | `服務 → 敲門 Knock`；預設連接埠為 `7991` | `7999` | 主路由器、軟路由或旁路由 | 不支援直連、Host 防火牆管理、智慧連線、自動 HTTPS、SSH 安全性、Web Terminal 與應用程式內 FPK 更新 |
+| Docker Compose | `7991` | `7999` | NAS、Home Server 或一般 Docker 主機 | 不支援直連模式、主機防火牆管理、自動 HTTPS、SSH 安全性與智慧連線 |
+| OpenWrt 軟體套件 | `服務 → 敲門 Knock`；預設連接埠為 `7991` | `7999` | 主路由器、軟路由或旁路由 | 不支援直連、Host 防火牆管理、智慧連線、自動 HTTPS、SSH 安全性與應用程式內 FPK 更新 |
 | [Linux（systemd / OpenRC）](/zh-tw/quick-start/linux-deployment) | `7991` | `7999` | 一般 Linux Server、VPS 或自管主機 | 需要 root 權限及正在執行的 systemd 或 OpenRC；主機防火牆由管理員自行維護 |
-| [macOS 13+（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment) | 本機 `127.0.0.1:7991` | `7999` | Intel 或 Apple Silicon Mac | 未簽章且未公證；不支援直連、`iptables`、主機防火牆管理、智慧連線、SSH 安全性與 Web Terminal |
-| [Synology DSM 7 x86_64 / ARM SPK](/zh-tw/quick-start/synology-deployment) | DSM 桌面上的套件入口 | `7999` | 搭載 Intel / AMD / ARM 處理器的 DSM 7 NAS | 不支援直連、主機防火牆管理、智慧連線、Web Terminal 與 SSH 安全性；透過套件中心升級 |
-| [Windows x86_64](/zh-tw/quick-start/windows-deployment) | 管理程式開啟本機 `127.0.0.1:7991` | `7999`，預設監聽所有介面 | 需要 Windows Service 與本機系統匣管理程式 | 仍須設定防火牆與 NAT；不支援直連授權、內建 FRP / Cloudflared、智慧連線、Web Terminal 與 SSH 安全性 |
+| [macOS 13+（Intel / Apple Silicon）](/zh-tw/quick-start/macos-deployment) | 本機 `127.0.0.1:7991` | `7999` | Intel 或 Apple Silicon Mac | 未簽章且未公證；不支援直連、`iptables`、主機防火牆管理、智慧連線與 SSH 安全性 |
+| [Synology DSM 7 x86_64 / ARM SPK](/zh-tw/quick-start/synology-deployment) | DSM 桌面上的套件入口 | `7999` | 搭載 Intel / AMD / ARM 處理器的 DSM 7 NAS | 不支援直連、主機防火牆管理、智慧連線與 SSH 安全性；透過套件中心升級 |
+| [Windows x86_64](/zh-tw/quick-start/windows-deployment) | 管理程式開啟本機 `127.0.0.1:7991` | `7999`，預設監聽所有介面 | 需要 Windows Service 與本機系統匣管理程式 | 仍須設定防火牆與 NAT；不支援直連授權、內建 FRP / Cloudflared、智慧連線與 SSH 安全性 |
 
 Docker、OpenWrt、Linux、macOS 與 Windows 的管理入口需要另行設定面板密碼。這組密碼只保護管理面板，與閘道入口使用的 TOTP、帳號密碼或 Passkey 並不是同一套憑證。
 
-fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 部署，也不具備表中標準 FPK 的完整 Host 權限。Lite 支援 Host 反代、驗證、DDNS、憑證、WAF、內建 FRP / Cloudflared 與監控；不支援直連與 Host 防火牆、智慧連線、系統時間同步、自動 HTTPS、fnOS 憑證庫同步、Web 終端機、FN Connect WAF 接入或應用程式內更新。這裡的「自動 HTTPS」特指 ISP 與入站路徑允許 TCP `80 / 443` 時的標準連接埠直連輔助能力，不代表 Lite 無法使用憑證和 HTTPS。完整邊界與移轉方式請參閱[應用程式商店 Lite 與官網標準 FPK 的差異](/zh-tw/quick-start/fpk-lite-vs-standard)。
+fnOS 裝置中若應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不是 Docker 部署，也不具備表中標準 FPK 的完整 Host 權限。Lite 支援 Host 反代、驗證、DDNS、憑證、WAF、內建 FRP / Cloudflared、監控與遠端 SSH Web 終端機；不支援直連與 Host 防火牆、智慧連線、系統時間同步、自動 HTTPS、fnOS 憑證庫同步、FN Connect WAF 接入或應用程式內更新。這裡的「自動 HTTPS」特指 ISP 與入站路徑允許 TCP `80 / 443` 時的標準連接埠直連輔助能力，不代表 Lite 無法使用憑證和 HTTPS。各發行平台的 Web 終端機都只連線管理員設定並確認主機指紋的遠端 SSH 目標，不會開啟部署主機的本機 Shell。完整邊界與移轉方式請參閱[應用程式商店 Lite 與官網標準 FPK 的差異](/zh-tw/quick-start/fpk-lite-vs-standard)。
 
 安裝說明：
 

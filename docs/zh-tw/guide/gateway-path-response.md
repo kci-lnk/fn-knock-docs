@@ -3,7 +3,7 @@ lang: zh-TW
 title: "路徑回應"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7a3dd9fcebcc2f25c1b353c79143910804695115e4ab1463f74404a067c7bd21
+translationSourceHash: 0407fea9e22abbed4c38713a7746bc42010e8f8772cda77ddbb90810e910e0e6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -38,15 +38,18 @@ api.example.com/其他路徑 -> Host 預設 Target
 | --- | --- | --- |
 | `比對方式` | 完全符合／Prefix | 只比對完整路徑，或比對該 Prefix 及其子路徑 |
 | `動作` | 反向 Proxy／固定回應 | 轉送至另一個上游，或直接由閘道回應 |
+| `驗證行為` | 繼承 Host／公開存取 | 沿用 Host 驗證原則，或只讓此路徑規則免登入 |
 | `Target URL` | HTTP / HTTPS URL | 只供反向 Proxy 動作使用 |
 | `移除比對路徑` | 開／關 | 將 `/api/users` 以 `/users` 送出，或保留原始路徑 |
 | `Rewrite HTML 路徑` | 開／關 | 替頁面資源補上 Path Prefix；純 API 通常不需要 |
 
 固定回應可設定 `100` 至 `599` 的 Status Code、`Content-Type`、Response Body 與自訂 Response Header。`Connection`、`Content-Length`、`Content-Type`、`Transfer-Encoding`、`Upgrade` 等 Transport-level Header 無法在自訂 Header 中覆寫；Content Type 請使用專用欄位設定。
 
-## 繼承 Host 的存取原則
+## 路徑驗證行為
 
-路徑回應會繼承目前 Host 的 `要求登入` 與既有嚴格允許清單規則，並不是繞過存取控制的入口。
+規則預設使用 `繼承 Host`，沿用目前 Host 的 `要求登入` 與既有嚴格允許清單。選擇 `公開存取` 後，只有命中此路徑規則的請求略過登入；同一 Host 的其他路徑仍使用 Host 原則。
+
+公開路徑適合 Health Check、Webhook Callback 或確實需要匿名存取的固定內容。此選項涵蓋整個完全符合或 Prefix 範圍；將 `/api` Prefix 設為公開，也會公開其命中的子路徑。請縮小比對範圍，並確認 Upstream 仍執行必要的權限檢查。
 
 反向 Proxy 動作會將 Host 的 `略過 Basic Auth` 憑據注入送往實際 Target 的請求，用來通過 Target Service 本身的 Basic Auth；這不是 fn-knock 的訪客登入憑據。Proxy Header 與 Host 保留會依該實際 Target 共用的 Runtime 規則決定，可能與 Host 預設 Target 的設定不同。固定回應沒有上游，因此不會傳送 Basic Auth、Proxy Header 或與 Host 保留相關的 Request Header。
 

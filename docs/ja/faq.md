@@ -3,7 +3,7 @@ lang: ja-JP
 title: "よくある質問"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4016f3081b5149c951c136fc6980972ae9bbf17439aad2cea009dd8d0cc0d54e
+translationSourceHash: 5d34be501072badf106b0121c310ed0354757453673120a891fea111197af3ee
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -322,7 +322,7 @@ Windows アプリをアンインストールしても、復元できるよう `%
 | ACME DNS-01 | 対応 | 対応 | 対応 | 対応 | 対応 | 対応 | 対応。内蔵クライアントを使用し、Let's Encrypt に固定 |
 | スマート接続 | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
 | SSH セキュリティ | 対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 | 非対応 |
-| Web ターミナル | 対応 | 非対応 | 非対応 | 対応。`tmux` が必要 | 非対応 | 非対応 | 非対応 |
+| Web ターミナル | リモート SSH ターゲット | リモート SSH ターゲット | リモート SSH ターゲット | リモート SSH ターゲット | リモート SSH ターゲット | リモート SSH ターゲット | リモート SSH ターゲット |
 | 内蔵 FRP／Cloudflared | 対応 | 対応 | 対応 | 対応 | 対応 | 対応 | 非対応 |
 | アップデートのインストール | Web 画面から更新 | 新しいイメージを取得 | IPK／APK をインストール | `sudo knock update` | `sudo knock update` | DSM パッケージセンター／SPK | Windows 管理アプリで実行 |
 

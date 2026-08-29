@@ -3,7 +3,7 @@ lang: zh-TW
 title: "WAF"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 73c9ec75d653eab22b76b9575a96ed9878fffa0b966fb51fddba4078ef8db01a
+translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443e4e4632
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,6 +29,7 @@ fn-knock 使用 Coraza 載入系統規則與自訂規則。全域開關、防護
 | --- | --- | --- |
 | 啟用 WAF | 預設關閉 | 啟用時會先檢查並同步系統規則，再依目前強度載入閘道；關閉後會立即略過 WAF 檢查 |
 | 規則自動更新 | 預設啟用 | 後端會自動維護系統規則；更新失敗時，會在後續週期繼續嘗試 |
+| 攔截回應 | 顯示攔截頁／中斷連線 | 回傳含 Trace ID 的安全提示，或不回傳頁面並中止連線或目前 Request Stream |
 | 常用地豁免 | 預設關閉 | 來自最近登入常用地區的 Request 會略過 WAF 檢查 |
 | 防護強度 | 1～4 級，預設 1 級 | 修改後會立即重新套用至閘道 |
 
@@ -40,6 +41,12 @@ fn-knock 使用 Coraza 載入系統規則與自訂規則。全域開關、防護
 - `4 級 · 最高防護`：主要用於短時間排查，不建議在未驗證的情況下長期使用。
 
 較高等級不能取代漏洞修補。它會啟用更嚴格的偵測範圍，也更容易把合法 Request 判定為異常。
+
+### 攔截回應
+
+`顯示攔截頁` 會提供可查詢完整鏈路的 Trace ID，便於正常訪客回報，但也會表明請求遭 fn-knock 攔截。`中斷連線` 不回傳攔截頁；HTTP/1 會重設連線，HTTP/2 只中止目前 Request Stream，用戶端通常只看到網路錯誤。
+
+此選項只改變阻擋時的回應，不改變規則、偵測記錄或判定。啟用中斷連線前，確認監控、API Client 與前置 Proxy 能區分連線中止與 Origin 故障；誤攔排查可使用 WAF Log 的 Trace ID。
 
 ### 常用地豁免的邊界
 

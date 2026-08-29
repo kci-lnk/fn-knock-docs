@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Synology DSM 7 배포(x86_64 / ARM)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b9283ba31b6fe311560cf621e1db02527e13499f003ce717f25fb977b1f4c178
+translationSourceHash: 89dc3d90c041e843cad6b3488d283f9f17075ea2731e2c267e24149f6c97ef0a
 ---
 
 # Synology DSM 7 배포(x86_64 / ARM)
@@ -85,7 +85,8 @@ SPK는 `7999/tcp`를 패키지의 공개 게이트웨이 포트로 선언하므�
 | 내장 FRP, Cloudflared | 지원. 게이트웨이의 외부 엔드포인트로 사용 가능 |
 | 직접 연결 접근 허용, 호스트 방화벽 관리, Smart Connect | 미지원 |
 | fnOS 인증서 저장소 동기화, 시스템 시계 동기화 | 미지원 |
-| 웹 터미널, SSH 보안 | 미지원 |
+| 웹 터미널 | 관리자가 설정하고 지문을 확인한 원격 SSH 대상에 연결 가능. DSM 로컬 Shell은 열지 않음 |
+| SSH 보안 | 미지원 |
 | 웹 관리 패널 자동 업데이트 | 미지원. DSM 패키지 센터에서 SPK 업데이트 설치 |
 
 '호스트 방화벽 관리' 기능이 없더라도 DSM에서 방화벽 규칙을 직접 설정할 수는 있습니다. 여기서 미지원이란 fn-knock가 로그인 상태에 따라 DSM 방화벽을 동적으로 변경하지 않는다는 뜻입니다. 원본 포트에 대한 직접 연결 접근 허용이 필요하다면 이 기능을 지원하는 배포 방식을 사용합니다.

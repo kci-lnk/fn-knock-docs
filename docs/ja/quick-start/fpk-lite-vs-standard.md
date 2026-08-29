@@ -3,7 +3,7 @@ lang: ja-JP
 title: "fnOS アプリストア Lite と標準 FPK の違い"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
+translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,7 +29,7 @@ translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a0
 - ログイン後に機器の元ポートを動的に開放するダイレクトモード。
 - ホストファイアウォールの自動管理。
 - スマート接続、SSH セキュリティ、システム時刻同期、fnOS ネットワーク最適化。
-- Web ターミナル、fnOS 証明書ストア同期。
+- fnOS 証明書ストア同期。
 - FN Connect トラフィックの WAF 経由化。
 - アプリ内更新。
 - 公開ポート `80 / 443` に到達できる環境での標準ポート直結と自動 HTTPS。
@@ -52,7 +52,7 @@ translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a0
 | 自動 HTTPS | 非対応 | 対応 | 公開 `80 / 443` に到達できる場合の標準ポート直結支援です。Lite が HTTPS 非対応という意味ではありません |
 | fnOS 証明書ストア同期 | 非対応 | 対応 | Lite 内の証明書は fnOS の証明書レコードへ自動反映されません |
 | fnOS ネットワーク最適化 | 非対応 | 対応 | BBR や TCP MTU プロービングにはホストの `sysctl` 変更が必要です |
-| Web ターミナル | 非対応 | 対応 | Lite はホストのシェルや tmux セッションを提供しません |
+| Web ターミナル | 対応 | 対応 | どちらも確認済みリモート SSH ターゲットだけへ接続し、ホスト Shell は提供しません |
 | FN Connect トラフィックの WAF 接続 | 非対応 | 対応 | この入口にはホストネットワークとファイアウォールの権限が必要です |
 | アプリ内更新 | 非対応 | 対応 | Lite はアプリストアまたはパッケージの手動インストールで更新し、標準 FPK は管理画面から更新できます |
 

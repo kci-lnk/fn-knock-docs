@@ -3,7 +3,7 @@ lang: ja-JP
 title: "fnOS ネイティブ FPK のインストールと初期設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561bf5aa442
+translationSourceHash: 67d700a6ffb0691e5f7518b6b297368d8939e5b518361df88dbc52bae0b654d2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -23,7 +23,7 @@ translationSourceHash: b0a501deb406c215c9e3e1212689ad108e2972de089407873e940561b
 
 > **公式サイトのネイティブ FPK を推奨**
 >
-> 公式サイトの標準 fnOS FPK は、fn-knock の最も機能が充実したバージョンです。インストール済みアプリの名前が `Knock Lite` の場合、それは Docker 版ではなく、ネイティブの非 root 簡易パッケージです。リバースプロキシ、認証、DDNS、証明書、WAF、組み込みトンネル、監視には対応しますが、ダイレクトモードとホストのファイアウォール、ネットワーク最適化、fnOS 証明書ストア同期、Web ターミナル、FN Connect WAF 接続、アプリ内更新には対応しません。Lite でも証明書と HTTPS は利用できます。Lite にない「自動 HTTPS」は、公開 TCP `80 / 443` に到達できる場合の標準ポート直結支援機能です。移行するには、Lite から `.knock` をエクスポートして Lite を停止またはアンインストールし、機器のアーキテクチャに合う標準 FPK をインストールしてからインポートします。ポートが競合するため、両方を同時に実行しないでください。完全な比較は[アプリストア Lite と標準 FPK の違い](/ja/quick-start/fpk-lite-vs-standard)を参照してください。
+> 公式サイトの標準 fnOS FPK は、fn-knock の最も機能が充実したパッケージです。インストール済みアプリの名前が `Knock Lite` の場合、それは Docker 版ではなく、ネイティブの非 root 簡易パッケージです。リバースプロキシ、認証、DDNS、証明書、WAF、組み込みトンネル、監視、リモート SSH Web ターミナルには対応しますが、ダイレクトモードとホストのファイアウォール、ネットワーク最適化、fnOS 証明書ストア同期、FN Connect WAF 接続、アプリ内更新には対応しません。Web ターミナルは管理者が設定してホスト鍵指紋を確認したリモート SSH ターゲットにだけ接続し、Lite ホストのローカル Shell は開きません。Lite でも証明書と HTTPS は利用できます。Lite にない「自動 HTTPS」は、公開 TCP `80 / 443` に到達できる場合の標準ポート直結支援機能です。移行するには、Lite から `.knock` をエクスポートして Lite を停止またはアンインストールし、機器のアーキテクチャに合う標準 FPK をインストールしてからインポートします。ポートが競合するため、両方を同時に実行しないでください。完全な比較は[アプリストア Lite と標準 FPK の違い](/ja/quick-start/fpk-lite-vs-standard)を参照してください。
 
 ARM64 パッケージは 32 ビット ARM 機器にはインストールできません。また、他のデプロイ方式向けパッケージをネイティブ FPK としてインストールしないでください。セットアップウィザードでは 4 つのポートを指定します。競合がなければデフォルト値のままで構いません。4 つの値はいずれも `1`～`65535` の範囲で、互いに異なる番号にする必要があります。
 

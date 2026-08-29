@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0d5dea54c5cd45e0c7bb4d8ce0857d02b19bee57f84a92b912c0ee21aa58b2a0
+translationSourceHash: e60924f514c60d465735ddf93c5df9047f2c35992b4828b340c75c1f04297d8c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -26,13 +26,14 @@ Deleting events does not delete delivery records that have already been created.
 
 ## Events
 
-The Events page currently recognizes 28 system event types:
+The Events page recognizes system events including:
 
 - Authentication: `Login success`, `Logout`, `Login failure`, and `Session IP drift`;
 - Security: `Scanner blocked`, `Gateway throttle blocked`, `Gateway visibility blocked`, and `WAF blocked`;
 - SSH: `SSH login success`, `SSH login failure`, and `SSH IP blocked`;
 - Network: `DDNS updated`, FRP connected/disconnected, and Cloudflared connected/disconnected;
 - Wake-on-LAN: WOL broadcast completed from an administrator, the portal, Blinker, or Bemfa;
+- Terminal: SSH target changes, host-fingerprint confirmation, connection tests, and session creation or termination;
 - System: `App update available`, CPU alert/recovered, and memory alert/recovered;
 - Runtime: component started, stopped, restarted, health check failed, recovered, and exited abnormally.
 
@@ -49,6 +50,8 @@ The page lets you:
 `Clear events` deletes every event stored in the Event Center. The count shown in parentheses describes how many events match the current view; it does not mean that only filtered results will be cleared. This operation cannot be undone, but it does not clear notification rules or delivery records.
 
 Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, WOL target and delivery source, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, tunnel logs, or device online status.
+
+Use `Trace ID lookup` at the top of the page with a complete ID from a response header, block page, request log, or notification. Full-chain trace associates the request with WAF, system events, notification triggers, and deliveries. Older events or disabled collection can produce a partial chain.
 
 Panel-sync failure and recovery and remote-device SSH shutdown are also recorded; avoid relying on a fixed event-type count. Authentication and security events reuse the IP-location cache. An uncached address may be stored first and enriched asynchronously, and notifications use enriched fields when available.
 

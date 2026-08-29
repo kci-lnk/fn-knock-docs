@@ -3,7 +3,7 @@ lang: ja-JP
 title: "macOS へデプロイ（Intel / Apple Silicon）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0912ae4a2d36e245cbe4770888063c9d343483a9a8a72e20b7573ef7a8a48ac9
+translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
 ---
 
 # macOS へデプロイ（Intel / Apple Silicon）
@@ -118,7 +118,7 @@ macOS は Host / パスのリバースプロキシ、認証、証明書と ACME�
 
 - `iptables` または macOS ホストファイアウォールの管理。
 - ダイレクトモード許可とスマート接続。
-- SSH セキュリティ管理、Web ターミナル、fnOS 証明書ストア同期、fnOS 固有のネットワーク調整。
+- SSH セキュリティ管理、fnOS 証明書ストア同期、fnOS 固有のネットワーク調整。
 - Web 画面からの更新導入。`sudo knock update` を使用します。
 
 macOS でもホワイトリストはゲートウェイのアクセスポリシーに使われますが、ホストの元ポートを開放することはできません。

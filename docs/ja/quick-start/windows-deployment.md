@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Windows へデプロイ（x86_64）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d5c6f6c5ebe2b4db1d7e8a3862b2d8d4cc4339c9e029f3861fb0d874d536dae1
+translationSourceHash: 65578d7ceca924bab60159d1c521692e2a9f144696ad04b44f51c09667d1a8bf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -89,7 +89,8 @@ Windows 版はネイティブ実装で、WebView や WebView2 に依存せず、
 | サブドメインまたはパスマッピング | ローカル管理画面から設定可能 |
 | ゲートウェイの外部向け入口 | `7999` はデフォルトで全インターフェースを待ち受けます。着信経路は、Windows の静的ルール、ネットワーク、ルーティング設定の組み合わせで決まります |
 | 直接接続の IP 許可、ホストのファイアウォール管理 | 非対応。ログイン状態に応じてファイアウォールルールを動的に書き込みません |
-| スマート接続、Web ターミナル、SSH セキュリティ | 非対応 |
+| スマート接続、SSH セキュリティ | 非対応 |
+| Web ターミナル | 管理者が設定し指紋を確認したリモート SSH ターゲットへ接続可能。Windows のローカル Shell は開きません |
 | 内蔵 FRP、Cloudflared | 非対応。同じホスト上で別プロセスとして管理することは可能 |
 | ACME 証明書 | 内蔵 DNS-01 に対応。詳しくは [TLS 証明書と HTTPS](/ja/guide/ssl)を参照 |
 | 更新のインストール | Windows 管理アプリで実行 |

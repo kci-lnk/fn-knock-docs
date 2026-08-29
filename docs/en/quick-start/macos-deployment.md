@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on macOS (Intel / Apple Silicon)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0912ae4a2d36e245cbe4770888063c9d343483a9a8a72e20b7573ef7a8a48ac9
+translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
 ---
 
 # Deploy on macOS (Intel / Apple Silicon)
@@ -134,10 +134,12 @@ macOS supports Host and path reverse proxying, authentication, certificates and 
 
 - `iptables` or macOS host-firewall management.
 - Direct mode authorization or Smart Connect.
-- SSH security management, web terminal, fnOS certificate-store sync, or fnOS-specific network tuning.
+- SSH security management, fnOS certificate-store sync, or fnOS-specific network tuning.
 - Web-based update installation; use `sudo knock update`.
 
 A feature hidden or rejected by the backend is an intentional platform boundary. Whitelist entries still participate in gateway access policy, but cannot open original host ports on macOS.
+
+Web Terminal can connect to administrator-configured remote SSH targets after host-fingerprint confirmation, but it never opens a local shell on this Mac.
 
 ## Uninstall
 

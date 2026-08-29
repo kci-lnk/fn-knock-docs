@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on OpenWrt"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: b0262d7159450ec265777aa9dbe71330637425391c37bd7b443934b0845d705f
+translationSourceHash: 65f4b972fd2f3eca7a0c48ed574481f22047d74e369bd36a2848fb64248c277f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -106,9 +106,11 @@ logread -e fn-knock
 
 A reachable admin panel proves only that the local service has started. After configuring a mapping, test `7999` and the domain over a real external connection such as cellular data. Do not treat a LAN result as proof that internet-facing authentication works.
 
-### Automatically Open the Gateway Port
+### Open the Gateway Port Manually
 
-LuCI can manage one owned firewall4 rule from `wan` to the current TCP gateway port for IPv4 and IPv6. Fresh installs may enable it by default; upgrades from older installs keep it disabled until explicitly selected. The rule follows reloads and port changes and is removed when disabled, stopped, or uninstalled. It never opens management or internal ports and does not configure NAT, DNS, TLS, or authentication. A same-name unowned rule causes a visible conflict instead of being overwritten. Disable this option when using custom zones or centrally managed firewall rules.
+For direct public access, manually create a traffic rule under `Network → Firewall` that allows TCP from `wan` only to the current gateway port, restricting address families and source ranges as needed. An upstream router, VPN, Cloudflare Tunnel, or another ingress may mean that no direct WAN rule is needed.
+
+fn-knock does not update this rule when its service starts or stops, the gateway port changes, or the package is upgraded or removed. Update or delete the old rule after a port change, and remove an unused allowance during uninstall. Never expose the admin or internal ports; verify the effective scope in the firewall UI and test from a real external network.
 
 ## Data and upgrades
 
@@ -158,7 +160,7 @@ Then return to the admin panel from LuCI and follow the prompt to set a new pass
 | Direct mode and host firewall management | Not supported; use OpenWrt's own firewall, a VPN, or an upstream gateway to control original ports |
 | Smart Connect | Not supported; configure split DNS yourself in OpenWrt's `dnsmasq`, DHCP settings, or another local resolver |
 | SSH security | Not supported; use OpenWrt's own SSH logs, firewall, or security packages |
-| Web terminal | Not supported |
+| Web terminal | Connects to administrator-configured remote SSH targets after host-fingerprint confirmation; it does not open a local OpenWrt shell |
 | Automatic HTTPS | Not supported by the current OpenWrt package |
 
 `fn-knock` does not replace OpenWrt firmware updates, router backups, or a minimal-exposure firewall policy.

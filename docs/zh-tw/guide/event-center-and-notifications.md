@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0d5dea54c5cd45e0c7bb4d8ce0857d02b19bee57f84a92b912c0ee21aa58b2a0
+translationSourceHash: e60924f514c60d465735ddf93c5df9047f2c35992b4828b340c75c1f04297d8c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -33,6 +33,7 @@ translationSourceHash: 0d5dea54c5cd45e0c7bb4d8ce0857d02b19bee57f84a92b912c0ee21a
 - SSH：登入成功、登入失敗、IP 封鎖；
 - 網路：DDNS 更新、FRP 連線／中斷、Cloudflared 連線／中斷；
 - 遠端喚醒：WOL 廣播完成（管理員、傳送門、點燈科技或巴法雲）；
+- 終端機：SSH 目標變更、主機指紋確認、連線測試、工作階段建立與結束；
 - 系統：應用程式更新提示、CPU 告警／恢復、記憶體告警／恢復；
 - Runtime：元件啟動、停止、重新啟動、健康檢查失敗、恢復與異常結束。
 
@@ -49,6 +50,8 @@ translationSourceHash: 0d5dea54c5cd45e0c7bb4d8ce0857d02b19bee57f84a92b912c0ee21a
 「清除事件」會刪除事件中心保存的所有事件；括號中的數量只代表目前 View 符合的筆數，並不表示只清除目前的篩選結果。此操作無法復原，但不會清除通知規則與投遞記錄。
 
 事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、WOL 目標與投遞來源、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log、Tunnel Log 或裝置上線狀態交叉比對。
+
+頁面頂端的 `Trace ID 查詢` 可貼上 Response Header、攔截頁、Request Log 或通知中的完整 ID。完整鏈路追蹤會關聯同一 Request 的 WAF、系統事件、通知觸發與投遞；舊事件或未啟用對應收集時可能只有部分鏈路。
 
 事件也會記錄導覽面板同步失敗／恢復與遠端裝置 SSH 關機，不應依賴固定的事件類型數量。驗證和安全事件會共用 IP 屬地快取；首次遇到未快取位址時可先儲存，再非同步補齊，通知會在可用時使用補齊欄位。
 

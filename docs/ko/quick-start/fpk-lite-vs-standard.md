@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fnOS 앱 스토어 Lite와 표준 FPK 비교"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a021a45db
+translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -29,7 +29,7 @@ translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a0
 - 로그인 후 장치의 원본 포트를 동적으로 여는 직접 연결 모드.
 - fn-knock의 호스트 방화벽 자동 관리.
 - Smart Connect, SSH 보안, 시스템 시간 동기화 또는 fnOS 네트워크 튜닝.
-- 웹 터미널 또는 fnOS 인증서 저장소 동기화.
+- fnOS 인증서 저장소 동기화.
 - FN Connect 트래픽을 WAF로 전달하는 기능.
 - 앱 내 업데이트.
 - 공인 `80 / 443` 포트에 접근 가능한 환경에서 표준 포트 직접 연결과 자동 HTTPS 사용.
@@ -52,7 +52,7 @@ translationSourceHash: fca97cc95aaf2bcc6232cd745e089bc048e5b93a2ac2a90be8d04b2a0
 | 자동 HTTPS | 미지원 | 지원 | 공인 `80 / 443`에 접근 가능한 경우 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 HTTPS를 지원하지 않는다는 뜻이 아닙니다 |
 | fnOS 인증서 저장소 동기화 | 미지원 | 지원 | Lite의 인증서는 fnOS 시스템 인증서 레코드에 자동으로 기록되지 않습니다 |
 | fnOS 네트워크 튜닝 | 미지원 | 지원 | BBR 및 TCP MTU 탐색은 호스트 `sysctl` 변경이 필요합니다 |
-| 웹 터미널 | 미지원 | 지원 | Lite는 호스트 Shell 또는 tmux 세션을 제공하지 않습니다 |
+| 웹 터미널 | 지원 | 지원 | 두 버전 모두 지문을 확인한 원격 SSH 대상에만 연결하며 호스트 Shell은 제공하지 않습니다 |
 | FN Connect 트래픽의 WAF 연결 | 미지원 | 지원 | 이 엔드포인트는 호스트 네트워크와 방화벽 권한이 필요합니다 |
 | 앱 내 업데이트 | 미지원 | 지원 | Lite는 앱 스토어 또는 수동 패키지 설치로 업데이트하고, 표준 FPK는 관리 패널에서 업데이트할 수 있습니다 |
 
