@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79cf000c38
+translationSourceHash: ab5b86cc9e4721620aa52f26f1dcca452db55894ec984baf72a39d585fea9a82
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,7 +20,7 @@ translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79c
 ## 請求流程
 
 ```text
-瀏覽器 -> 公網直連或 Tunnel -> fn-knock 閘道 -> 依 Host 比對 -> 本機 Target
+瀏覽器 -> 公網直連或 Tunnel -> fn-knock 閘道 -> 依 Host 比對 -> 反向代理 Target 或靜態回應
                                   |
                                   +-> 公開 / 要求登入 / 進階驗證臨時憑據
 ```
@@ -33,7 +33,7 @@ translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79c
 2. 在 `子網域映射` 中儲存根網域，例如 `example.com`。
 3. 按下 `新增身分驗證服務`，建立 `auth.example.com`。
 4. 設定公網 DNS、路由器轉送或 Tunnel Public Hostname，讓相關 Host 都進入同一個閘道。
-5. 新增服務 Host，並決定每筆映射是否啟用 `要求登入`。
+5. 新增服務 Host，選擇反向代理、單一檔案或目錄回應，並決定是否啟用 `要求登入`。
 6. 需要依來源或請求特徵放行時，從映射右側選單進入 `進階驗證設定`。
 7. 使用行動網路驗證登入重新導向、返回 URL，以及請求記錄中的用戶端 IP。
 
@@ -69,18 +69,22 @@ Edge 平台負責外部 `80 / 443` 時，Origin 仍應指向 fn-knock 的實際�
 
 ## Host 映射
 
-一筆映射至少包含 Host 與 Target：
+一筆映射包含 Host 與回應類型。反向代理使用 Target，靜態回應使用伺服器檔案路徑：
 
 ```text
 nas.example.com   -> http://127.0.0.1:5666
 alist.example.com -> http://127.0.0.1:5244
 photos.example.com -> http://127.0.0.1:5666/photos/
+download.example.com -> 單一檔案 /srv/downloads/manual.pdf
+docs.example.com -> 目錄 /srv/docs
 ```
 
 | 欄位 | 行為 |
 | --- | --- |
 | `Host／子網域名稱` | 比對請求的 Host；已儲存根網域時可只填 `nas` |
-| `Target` | HTTP、HTTPS、WS 或 WSS 上游 URL，可包含 Base Path，且必須能從 fn-knock 所在環境連線 |
+| `回應類型` | 選擇反向代理、單一檔案或目錄；驗證服務固定使用反向代理 |
+| `Target` | 僅供反向代理使用；HTTP、HTTPS、WS 或 WSS 上游 URL，可包含 Base Path，且必須能從 fn-knock 所在環境連線 |
+| `伺服器路徑` | 僅供靜態回應使用；填入 fn-knock Runtime 環境可讀取的檔案或目錄絕對路徑 |
 | `目標路徑用法` | Target 含非根路徑時選擇 `僅作為入口` 或 `固定前綴`；驗證服務固定使用入口模式 |
 | `要求登入` | 尚未登入時導向身分驗證 Host，完成後返回原始 URL |
 | `停用`／`排程啟用或停用` | 手動下線，或依伺服器本機時間每天控制開放時段 |
@@ -92,11 +96,13 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 | `閘道可見性` | 繼承全域規則、使用目前 Host 規則覆寫，或只關閉目前 Host 的可見性限制 |
 | `啟用 WAF` | 服務 Host 預設啟用；關閉後，目前 Host 會略過全域 WAF |
 
-直接編輯已儲存映射的 Host／子網域會視為重新命名，並保留該映射的登入策略、可見性、進階驗證與 Basic Auth 憑據注入。不要用新增相同 Target 的別名來取代重新命名；別名是獨立映射，不會繼承原 Host 的受保護設定。
+直接編輯已儲存映射的 Host／子網域會視為重新命名，並保留該映射的登入策略、可見性與進階驗證；反向代理映射還會保留 Basic Auth 憑據注入。不要用新增相同 Target 或伺服器路徑的別名來取代重新命名；別名是獨立映射，不會繼承原 Host 的受保護設定。
 
-服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
+反向代理的服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
 
-Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
+靜態回應不需要上游服務。單一檔案只會在 Host 根路徑回傳指定檔案；目錄回應支援預設文件、目錄列表與安全轉譯 README。伺服器路徑、安全邊界與 Docker 唯讀掛載請參閱[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)。
+
+反向代理 Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 - `僅作為入口（相容模式）`：預設值。只有訪客存取網域根路徑時才使用 Target 內的路徑，其他 Request Path 保持不變。例如 Target 路徑為 `/login` 時，`/` 會進入上游 `/login`，但 `/assets/app.js` 仍進入上游 `/assets/app.js`。適合入口頁位於子路徑、但靜態資源或登入 Callback 仍位於上游根目錄的應用程式。
 - `固定前綴（目錄掛載）`：將 Target 路徑加到每個上游 Request 前。例如 Target 路徑為 `/webdav` 時，訪客 `/floccus/a` 會轉送到上游 `/webdav/floccus/a`。適合 WebDAV 或明確支援目錄掛載的服務。
@@ -113,7 +119,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 群組只會改變導覽與管理順序，不會修改驗證、可見性、WAF 或 Target。身分驗證服務永遠位於群組之外，憑據的 Host 服務範圍仍依實際存取權限判斷。
 
-### Basic Auth 是上游憑據注入
+### Basic Auth 是反向代理的上游憑據注入
 
 `略過 Basic Auth` 儲存的是 Target Service 本身的 Basic Auth 憑據。閘道在轉送請求、擷取頁面標題與 Favicon 時，會將憑據傳給上游，避免瀏覽器再次跳出 Basic Auth 對話框。
 
@@ -127,7 +133,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 自訂圖示會優先顯示在子網域清單與傳送門中；瀏覽器書籤匯出、導覽面板同步和閘道圖示入口也使用相同內容。設定中儲存的圖示必須是受支援圖片類型的 Base64 `data:image/...;base64,...`。外部 URL、非 Base64 Data URL、無法解碼或超出限制的舊圖示不會下發閘道或匯出。一般上傳與自動擷取會完成轉換；從舊備份或外部設定匯入後圖示消失時，請重新擷取或上傳。
 
-按一下 `還原自動擷取` 會清除自訂覆寫並重新讀取 Target；若 Target 未回傳受支援圖示，頁面會顯示尚未擷取。身分驗證服務不支援自訂圖示。圖示會包含在設定與 `.knock` 備份中；請勿將敏感的內部圖形當作一般疑難排解附件分享。
+按一下 `還原自動擷取` 會清除自訂覆寫並重新讀取反向代理 Target；若 Target 未回傳受支援圖示，頁面會顯示尚未擷取。靜態映射不會自動讀取檔案標題或圖示，請手動填入標題並上傳自訂圖示。身分驗證服務不支援自訂圖示。圖示會包含在設定與 `.knock` 備份中；請勿將敏感的內部圖形當作一般疑難排解附件分享。
 
 ### 單一 Host 的可見性與 WAF
 
@@ -173,8 +179,8 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 清單操作包括：
 
 - `多選`：進入選擇模式後，可選取目前搜尋結果、單一群組或任意服務 Host，批次移動群組、啟用、停用、套用相同每日開放時間窗或刪除；驗證服務不參與批次選擇。搜尋條件或檢視變更會清除目前選擇，批次刪除無法復原。
-- `重新整理圖示與標題`：重新擷取 Upstream Metadata。
-- `清理過期服務`：先以 `HEAD`、失敗後改用 `GET` 檢查 HTTP / HTTPS Upstream，由管理員確認後刪除無法連線的映射。
+- `重新整理圖示與標題`：重新擷取反向代理 Upstream Metadata；靜態映射會略過。
+- `清理過期服務`：先以 `HEAD`、失敗後改用 `GET` 檢查 HTTP / HTTPS Upstream，由管理員確認後刪除無法連線的映射；靜態映射不會納入。
 - `匯出為書籤`：匯出服務 Host，不包含驗證服務。
 - `清空所有設定`：經過兩次確認後刪除驗證服務及所有 Host 映射，保留 Root Domain 等模式設定。
 
@@ -184,9 +190,9 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 ### 最佳化 Target 位址
 
-清單維護選單中的 `最佳化 Target 位址` 可在 Loopback 與偵測到的主機區域網路位址之間批次改寫 Target。選擇區域網路位址時，只列出目前使用 `127.0.0.1` 的映射；選擇 Loopback 時，只列出目前使用已偵測本機位址的映射。預覽只替換 Host，保留協定、連接埠與路徑，並只儲存勾選項目。
+清單維護選單中的 `最佳化 Target 位址` 只會處理反向代理映射，可在 Loopback 與偵測到的主機區域網路位址之間批次改寫 Target，適合在部署方式變更後統一修正回源位址。選擇區域網路位址時，只列出目前使用 `127.0.0.1` 的映射；選擇 Loopback 時，只列出目前使用已偵測本機位址的映射。預覽只替換 Host，保留協定、連接埠與路徑，並只儲存勾選項目；靜態檔案與目錄映射不會出現在預覽中。
 
-候選位址不保證 Target 可達。Docker 內的 `127.0.0.1` 只指向目前 Container；套用前須確認 Container 到 Host 的路由與目標連接埠，儲存後逐一驗證服務 Host。
+候選位址來自 fn-knock 所在環境的網路探測，不保證 Target 可達。Docker 內的 `127.0.0.1` 只指向目前 Container；套用前須確認 Container 到 Host 的路由與目標連接埠，儲存後逐一驗證服務 Host。
 
 ### 深度監控
 
@@ -199,6 +205,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 ## Host 路由的延伸能力
 
 - [Path 回應](/zh-tw/guide/gateway-path-response)只為某個 Host 加入少量特殊 Path；未命中時仍會返回該 Host 的預設 Target。
+- [靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)讓整個服務 Host 直接讀取本機檔案，不需要反向代理上游。
 - [協定映射](/zh-tw/guide/stream-mappings)為公網直連子網域模式補充 TCP / UDP 連接埠，不適用於內網穿透的子網域映射。
 - [飛牛分享直通](/zh-tw/guide/fnos-share-bypass)只會 Bypass 合法的飛牛 `/s/...` 分享路徑，不會公開整個網站。
 
@@ -206,7 +213,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 
 ## 平台限制
 
-- Host 路由可在飛牛 FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK 及 Windows 上使用；實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
+- Host 路由與靜態回應可在飛牛 FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK 及 Windows 上使用；靜態路徑必須能從閘道處理程序所在的檔案系統讀取，實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
 - 自動寫入 Host 防火牆及智慧連線，只由具備對應 Runtime 能力的飛牛標準 FPK 提供；Docker、OpenWrt、Linux、macOS、Synology 與 Windows 均不提供。
 - 協定映射只會顯示在公網直連子網域模式中。即使 Docker 額外 Publish Port，也不會由 fn-knock 管理 Host 防火牆。
 - OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理、智慧連線、SSH 安全性或應用程式內 FPK 更新。Web 終端機仍可連線管理員設定的遠端 SSH 目標，但不會開啟 OpenWrt 本機 Shell。
@@ -220,7 +227,7 @@ Target 含非根路徑時，編輯器會顯示 `目標路徑用法`：
 2. 請求記錄中的 Host 與用戶端 IP 是否正確。
 3. 身分驗證服務是否存在，且未啟用要求登入或 Basic Auth。
 4. 服務映射是否啟用，目前時間是否位於開放時段內。
-5. Target 是否能從 fn-knock Runtime 環境連線。
+5. 反向代理 Target 是否能從 fn-knock Runtime 環境連線；靜態映射則重新檢查伺服器路徑、類型、權限與掛載。
 6. 登入憑據是否允許目前 Host；若啟用進階驗證，再確認規則組、條件與臨時憑據狀態。
 7. 若存在舊版嚴格允許清單規則，檢查目前公網來源是否已獲准放行。
 8. HTTPS 憑證是否涵蓋目前 Host，前置平台是否允許 WebSocket，且未快取身分驗證回應。

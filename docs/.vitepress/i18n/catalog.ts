@@ -550,6 +550,13 @@ export const PAGE_TITLES = {
     ja: 'サブドメインルーティング',
     ko: '서브도메인 라우팅',
   },
+  'guide/static-host-mapping': {
+    root: '静态文件与目录响应',
+    'zh-tw': '靜態檔案與目錄回應',
+    en: 'Static File and Directory Responses',
+    ja: '静的ファイルとディレクトリのレスポンス',
+    ko: '정적 파일 및 디렉터리 응답',
+  },
   'guide/system': {
     root: '系统设置与维护',
     'zh-tw': '系統設定與維護',
@@ -856,6 +863,7 @@ const SIDEBAR_SECTIONS = [
         collapsed: false,
         items: [
           'guide/subdomain-proxy',
+          'guide/static-host-mapping',
           'guide/panel-sync',
           'guide/service-discovery',
           'guide/advanced-auth',

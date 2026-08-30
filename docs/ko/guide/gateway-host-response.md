@@ -3,14 +3,14 @@ lang: ko-KR
 title: "업스트림 Host 헤더 유지"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04cb6c11e4
+translationSourceHash: 054076de00aa8614a761482002a7cc8f0dde11c105d05268349d68abffd46603
 ---
 
 # 업스트림 Host 헤더 유지
 
 리버스 프록시는 기본적으로 방문자 요청의 `Host`를 업스트림에 그대로 전달합니다. 예를 들어 `https://nas.example.com`에 접속하면 업스트림에도 `Host: nas.example.com`이 표시됩니다. 애플리케이션은 이 값을 바탕으로 외부 링크를 만들고, 쿠키 도메인을 설정하고, 가상 호스트를 선택하거나 콜백 주소를 검증할 수 있습니다.
 
-`시스템 설정 → 게이트웨이 → Host 응답`은 Host 라우트를 사용하는 서브도메인 모드에서만 편집할 수 있습니다. 공인 IP로 직접 연결하는 서브도메인 모드와 `리버스 프록시 모드 → 서브도메인 매핑`이 여기에 해당합니다. 경로 모드와 직접 연결 모드에는 이 항목이 없으며 인증 서비스 Host도 편집 목록에 포함되지 않습니다.
+`시스템 설정 → 게이트웨이 → Host 응답`은 Host 라우트를 사용하는 서브도메인 모드에서만 편집할 수 있습니다. 공인 IP로 직접 연결하는 서브도메인 모드와 `리버스 프록시 모드 → 서브도메인 매핑`이 여기에 해당합니다. 경로 모드와 직접 연결 모드에는 이 항목이 없으며 인증 서비스 Host와 [정적 파일 또는 디렉터리 Host](/ko/guide/static-host-mapping)도 편집 목록에 포함되지 않습니다. 정적 응답에는 유지할 업스트림 Host가 없습니다.
 
 ## 비활성화해야 하는 경우
 

@@ -3,14 +3,14 @@ lang: ko-KR
 title: "내비게이션 패널 동기화"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e67d59ca
+translationSourceHash: fe68b0e3ae622d5f1bf7cfe78234e2143bccbb77994895ee6d5baa79a48ef632
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # 내비게이션 패널 동기화
 
-`서브도메인 라우팅 → 내비게이션 패널로 동기화`는 활성화된 fn-knock 앱 항목을 Sun-Panel, OneNav 또는 Van-Nav에 단방향으로 게시합니다. 표시 제목, 공개 URL, 공개 아이콘, 선택적 그룹만 보내며 내부 Target, 인증 자격 증명, fn-knock 관리 권한은 내보내지 않습니다.
+`서브도메인 라우팅 → 내비게이션 패널로 동기화`는 활성화된 fn-knock 앱 항목을 Sun-Panel, OneNav 또는 Van-Nav에 단방향으로 게시합니다. 표시 제목, 공개 URL, 공개 아이콘, 선택적 그룹만 보내며 내부 Target, 정적 서버 경로, 인증 자격 증명, fn-knock 관리 권한은 내보내지 않습니다.
 
 ## 연결
 
@@ -25,7 +25,7 @@ translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e
 
 적용 전에는 항상 미리보기가 필요합니다. 생성, 갱신, 삭제, 변경 없음, 잔여 항목, 충돌을 표시하며 잠시 후 만료됩니다. 적용 시 원본 설정, 원격 상태, 계획 요약을 다시 확인하므로 변경이 있으면 새 미리보기가 필요합니다. 충돌이 있으면 적용하지 않습니다.
 
-활성화된 일반 앱 Host만 포함하며 인증 서비스, 비활성 매핑, 내부 Target은 제외합니다. 공개 URL은 현재 도메인, 터널, 외부 포트 설정을 따릅니다. 패널에서 열어도 기존 인증, 가시성, WAF 정책이 계속 적용됩니다.
+활성화된 일반 앱 Host만 포함하며 리버스 프록시와 정적 파일 또는 디렉터리 응답을 모두 지원합니다. 인증 서비스와 비활성 매핑은 제외합니다. 공개 URL은 현재 도메인, 터널, 외부 포트 설정을 따릅니다. 패널에서 열어도 기존 인증, 가시성, WAF 정책이 계속 적용됩니다. 정적 매핑의 로컬 경로는 미리보기, 원격 패널 또는 동기화 기록에 포함되지 않습니다.
 
 fn-knock는 이 연결이 등록한 원격 그룹과 링크만 변경하거나 삭제합니다. 이름이 같은 제3자 항목은 인수하지 않습니다. 등록된 항목을 패널에서 수동 변경하면 다음 동기화가 덮어쓸 수 있습니다.
 

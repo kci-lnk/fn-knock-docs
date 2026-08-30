@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求分析"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 26cb5a510d1fe9539494314b64cc0f333f30a8e8f575a0f3f2ba224d50483953
+translationSourceHash: a4033658a3d18e821bbd8998d179009cb19a780c5b076eba52b255f5f73767e5
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -45,12 +45,14 @@ translationSourceHash: 26cb5a510d1fe9539494314b64cc0f333f30a8e8f575a0f3f2ba224d5
 | --- | --- |
 | 用戶端 IP／連線來源 IP | 比對真實訪客與閘道實際 TCP Peer，排查 CDN、反向 Proxy 與 Docker 連線路徑 |
 | 方法、Host、路徑 | 判斷請求命中哪個服務 |
-| 路由類型、上游 Target | 判斷 Host／路徑規則是否命中正確目標 |
+| 路由類型、上游 Target | 判斷 Host／路徑規則是否命中正確目標；靜態回應會顯示「靜態檔案」或「靜態目錄」，且沒有上游位址 |
 | 驗證狀態 | 判斷結果來自工作階段、允許清單、本地豁免、進階驗證臨時憑據，或未授權 |
 | 子網域規則組 ID／臨時憑據狀態 | 進階驗證命中時，確認實際規則組，以及目前為單次放行、已簽發、已續期或已重複使用 |
 | Status Code、處理時間 | 區分閘道拒絕、上游錯誤與回應緩慢 |
 
 請求記錄可能包含存取路徑、Query、來源 IP、User-Agent、驗證結果與上游 URL，應視為敏感維運資料處理。分享疑難排解片段前，請移除 Token、Query Parameter、內部 URL 與可識別個人的資訊。
+
+靜態檔案與目錄回應由閘道直接讀取檔案系統，因此記錄中的上游 Target 為空。路由 Key 仍是服務 Host，Trace ID、驗證結果、WAF 動作、Status Code 與處理時間都會照常記錄；伺服器絕對路徑不會寫入請求記錄或 WAF 事件。設定與疑難排解請參閱[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)。
 
 ### 建議的疑難排解順序
 

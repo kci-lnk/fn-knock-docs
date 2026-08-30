@@ -3,14 +3,14 @@ lang: ja-JP
 title: "ナビゲーションパネル同期"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e67d59ca
+translationSourceHash: fe68b0e3ae622d5f1bf7cfe78234e2143bccbb77994895ee6d5baa79a48ef632
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # ナビゲーションパネル同期
 
-`サブドメインルーティング → ナビゲーションパネルへ同期` は、有効な fn-knock アプリ入口を Sun-Panel、OneNav、Van-Nav へ一方向に公開します。送信するのは表示名、公開 URL、公開アイコン、任意のグループだけで、内部 Target、認証情報、fn-knock の管理権限は送信しません。
+`サブドメインルーティング → ナビゲーションパネルへ同期` は、有効な fn-knock アプリ入口を Sun-Panel、OneNav、Van-Nav へ一方向に公開します。送信するのは表示名、公開 URL、公開アイコン、任意のグループだけで、内部 Target、静的ファイルのサーバーパス、認証情報、fn-knock の管理権限は送信しません。
 
 ## 接続
 
@@ -25,7 +25,7 @@ translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e
 
 適用前には必ずプレビューが必要です。作成、更新、削除、変更なし、残留、競合を表示し、短時間で失効します。適用時にも元設定、リモート状態、計画ダイジェストを再確認し、変化があれば再プレビューを要求します。競合がある計画は適用できません。
 
-対象は有効な通常アプリ Host だけです。認証サービス、無効なマッピング、内部 Target は除外されます。公開 URL は現在のドメイン、トンネル、外部ポート設定から生成され、パネルから開いても既存の認証、可視性、WAF ポリシーが適用されます。
+同期対象は、有効な通常アプリ Host のうち、リバースプロキシと静的ファイルまたはディレクトリのレスポンスです。認証サービスと無効なマッピングは除外されます。公開 URL は現在のドメイン、トンネル、外部ポート設定から生成され、パネルから開いても既存の認証、可視性、WAF ポリシーが適用されます。静的マッピングのローカルパスが、プレビュー、リモートパネル、同期履歴へ含まれることはありません。
 
 fn-knock は、この接続が登録したリモート項目だけを変更・削除します。同名の第三者項目は引き継ぎません。登録済み項目をパネル側で変更すると、次回同期で上書きされることがあります。
 

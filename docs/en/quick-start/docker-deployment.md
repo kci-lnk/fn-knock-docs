@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy with Docker Compose"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
+translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -93,6 +93,19 @@ A bridge can prevent DDNS from finding the host's interfaces or IPv6. After conf
 Then replace `docker-compose.yml` with:
 
 <!--@include: ../../_shared/docker-compose-bridge.inc-->
+
+#### Mount content read-only for static mappings
+
+[Static File and Directory Responses](/en/guide/static-host-mapping) use absolute paths inside the container and cannot read an unmounted host path. Prepare a separate minimal directory for each site and add a read-only mount under the `fn-knock` service's `volumes`:
+
+```yaml
+services:
+  fn-knock:
+    volumes:
+      - /srv/public-site:/srv/public-site:ro
+```
+
+Enter `/srv/public-site` as the `Server path` in the admin panel. After changing the Compose file, run `docker compose up -d` to recreate the container, then select `Check path` to verify the type and read permission. Do not mount the host root, `/etc`, the fn-knock data volume, or a directory containing keys or system configuration, and do not omit `:ro`.
 
 ### 05 Start and verify
 

@@ -84,6 +84,19 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 
 <!--@include: ../_shared/docker-compose-bridge.inc-->
 
+#### 为静态映射只读挂载内容目录
+
+[静态文件与目录响应](/guide/static-host-mapping)使用容器内绝对路径，不能直接读取未挂载的宿主机路径。为每个站点准备独立的最小目录，并在 `fn-knock` 服务的 `volumes` 中增加只读挂载：
+
+```yaml
+services:
+  fn-knock:
+    volumes:
+      - /srv/public-site:/srv/public-site:ro
+```
+
+管理后台中的 `服务器路径` 填写 `/srv/public-site`。修改 Compose 后运行 `docker compose up -d` 重新创建容器，再点击 `检查路径` 确认类型与读取权限。不要挂载宿主机 `/`、`/etc`、fn-knock 数据卷或包含密钥与系统配置的目录，也不要省略 `:ro`。
+
 ### 05 启动并检查状态
 
 ```bash

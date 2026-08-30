@@ -3,25 +3,27 @@ lang: zh-TW
 title: "子網域進階驗證"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7935017e44e4c972067b5e804299e41a1cebb8e63a45f920f08a0f0ab418a340
+translationSourceHash: ba7c0993dac5fc997c473049a16eabc9cd8a3dbc1de3db9cebb40661c90b1fb6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # 子網域進階驗證
 
-子網域進階驗證可為已開啟 `要求登入` 的 HTTP / HTTPS 服務 Host 加上條件式放行規則。請求第一次命中規則時，目前請求會先取得單次放行，系統並向支援 Cookie 的用戶端回傳短期能力探測；只有後續請求帶回探測值後，才會建立僅限目前 Host 的持久臨時憑據。若未命中，則仍依一般登入、工作階段與服務範圍處理。
+子網域進階驗證可為已開啟 `要求登入` 的服務 Host 加上條件式放行規則。它既可用於 HTTP / HTTPS 反向代理，也可用於[單一檔案或目錄回應](/zh-tw/guide/static-host-mapping)。請求第一次命中規則時，目前請求會先取得單次放行，系統並向支援 Cookie 的用戶端回傳短期能力探測；只有後續請求帶回探測值後，才會建立僅限目前 Host 的持久臨時憑據。若未命中，則仍依一般登入、工作階段與服務範圍處理。
 
 臨時憑據不等同於系統登入：它不會建立登入工作階段或 IP 授權、不會顯示傳送門，也無法存取其他 Host。進階驗證是一條獨立的放行路徑，並不是在既有登入規則上再疊加一道驗證。
 
 ## 適用條件
 
 - 映射項目是一般服務 Host，而不是身分驗證服務。
-- Target 使用 HTTP 或 HTTPS。
+- 映射使用 HTTP / HTTPS 反向代理、單一檔案或目錄回應；WebSocket 專用代理仍只會依 Handshake 請求處理。
 - 映射已開啟 `要求登入`。
 - 規則使用來源 IP 或地區時，閘道能正確識別真實用戶端 IP。
 
 請在 `子網域映射` 清單中開啟服務 Host 右側選單，選擇 `進階驗證設定`。身分驗證 Host、公開映射以及 TCP / UDP 映射不會顯示此選項。
+
+靜態回應只接受 `GET` 與 `HEAD`，因此針對其他 HTTP Method 的規則不會讓靜態 Host 支援寫入、上傳或刪除。進階驗證只會決定目前請求能否繼續，不會改變映射本身支援的方法與回應能力。
 
 ## 臨時憑據的範圍
 

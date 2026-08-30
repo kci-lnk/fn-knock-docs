@@ -3,14 +3,14 @@ lang: en-US
 title: "Static Path Responses"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0407fea9e22abbed4c38713a7746bc42010e8f8772cda77ddbb90810e910e0e6
+translationSourceHash: 4db611fe9787c0be17207bbc16ac5bccba30fa3ed5082b86ccd2b26fe3c8990f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Static Path Responses
 
-`System settings → Gateway → Path responses` adds a small number of path-level rules to an application Host. It is editable only for Host-based routing in subdomain mapping mode, including direct public `Subdomain mode` and `Reverse proxy mode → Subdomain mapping`. Path mode and Direct mode do not provide this setting. The Host remains the primary route; a request that matches no path rule falls back to that Host's default Target.
+`System settings → Gateway → Path responses` adds a small number of path-level rules to a reverse-proxy application Host. It is editable only for Host-based routing in subdomain mapping mode, including direct public `Subdomain mode` and `Reverse proxy mode → Subdomain mapping`. Path mode, Direct mode, and single-file or directory responses do not provide this setting. The Host remains the primary route; a request that matches no path rule falls back to that Host's default Target.
 
 This works well for health checks, fixed status responses, or sending a small API subtree on the same Host to another upstream. To organize many applications by path, use the compatibility-oriented [Path-based Reverse Proxy](/en/guide/reverse-proxy) instead of rebuilding a path gateway on top of Host routing.
 
@@ -22,7 +22,7 @@ api.example.com/v2/*      -> http://127.0.0.1:8080
 api.example.com/other-path -> Host's default Target
 ```
 
-First select an existing application Host. The authentication service Host does not appear in the selection list.
+First select an existing reverse-proxy application Host. The authentication service Host and [static file or directory Hosts](/en/guide/static-host-mapping) do not appear in the selection list.
 
 A path must start with `/`, but cannot be the root path `/`. The following paths are reserved for authentication, shares, or internal capabilities and cannot be configured:
 
@@ -84,9 +84,9 @@ Path responses work with Host-based subdomain routing on the native fnOS FPK, Do
 
 ## Troubleshooting
 
-1. Confirm that you are using Host-based routing and selected the correct application Host.
+1. Confirm that you are using Host-based routing, the application Host's response type is reverse proxy, and the correct Host is selected.
 2. Check the path format, reserved paths, and Exact / Prefix match mode.
-3. First determine whether the Host's sign-in or allowlist policy blocked the request.
+3. Check the rule's `Authentication behavior`. If it inherits the Host policy, then determine whether the Host's sign-in or allowlist policy blocked the request.
 4. Access the reverse-proxy Target from the fn-knock runtime environment.
 5. In [Request Logs](/en/guide/request-logs), verify the Host, path, route type, status code, and upstream target.
 

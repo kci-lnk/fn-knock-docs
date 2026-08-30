@@ -3,7 +3,7 @@ lang: en-US
 title: "Preserve the Host Header Upstream"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04cb6c11e4
+translationSourceHash: 054076de00aa8614a761482002a7cc8f0dde11c105d05268349d68abffd46603
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -12,7 +12,7 @@ translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04c
 
 By default, the reverse proxy preserves the visitor's `Host` header when forwarding upstream. For example, when a visitor opens `https://nas.example.com`, the upstream still sees `Host: nas.example.com`. Applications can use it to generate external links, set Cookie domains, select virtual hosts, or validate callback URLs.
 
-`System settings → Gateway → Host response` is editable only for Host-based routing in subdomain mapping mode. This includes `Subdomain mode` with direct public ingress and `Reverse proxy mode → Subdomain mapping`. Path mode and Direct mode do not provide this setting, and authentication service Hosts are not listed as editable entries.
+`System settings → Gateway → Host response` is editable only for Host-based routing in subdomain mapping mode. This includes `Subdomain mode` with direct public ingress and `Reverse proxy mode → Subdomain mapping`. Path mode and Direct mode do not provide this setting, and authentication service Hosts and [static file or directory Hosts](/en/guide/static-host-mapping) are not listed as editable entries; static responses have no upstream Host to preserve.
 
 ## When to Disable It
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
+translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -93,6 +93,19 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 さらに `docker-compose.yml` を次に置き換えます。
 
 <!--@include: ../../_shared/docker-compose-bridge.inc-->
+
+#### 静的マッピング用コンテンツディレクトリを読み取り専用でマウントする
+
+[静的ファイルとディレクトリのレスポンス](/ja/guide/static-host-mapping)ではコンテナ内の絶対パスを使用するため、マウントされていないホスト側パスを直接読み取ることはできません。サイトごとに独立した最小限のディレクトリを用意し、`fn-knock` サービスの `volumes` に読み取り専用マウントを追加します。
+
+```yaml
+services:
+  fn-knock:
+    volumes:
+      - /srv/public-site:/srv/public-site:ro
+```
+
+管理画面の `サーバーパス` には `/srv/public-site` を入力します。Compose を変更したら `docker compose up -d` でコンテナを再作成し、`パスを確認` をクリックして種類と読み取り権限を確認します。ホストの `/`、`/etc`、fn-knock のデータボリューム、秘密鍵やシステム設定を含むディレクトリはマウントせず、`:ro` も省略しないでください。
 
 ### 05 起動して状態を確認
 

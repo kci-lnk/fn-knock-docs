@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 26cb5a510d1fe9539494314b64cc0f333f30a8e8f575a0f3f2ba224d50483953
+translationSourceHash: a4033658a3d18e821bbd8998d179009cb19a780c5b076eba52b255f5f73767e5
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -45,12 +45,14 @@ Averages, P95, and error rates help reveal trends; they are not a replacement fo
 | --- | --- |
 | Client IP / Connection source IP | Compare the real visitor with the gateway's actual TCP peer when troubleshooting CDN, reverse-proxy, and Docker paths |
 | Method, Host, Path | Determine which service the request matched |
-| Route type, Upstream target | Determine whether a Host or path rule reached the intended target |
+| Route type, Upstream target | Determine whether a Host or path rule reached the intended target; static responses show `Static file` or `Static directory` and have no upstream address |
 | Auth result | Determine whether the result came from a session, allowlist, local exemption, advanced-authentication temporary grant, or lack of authorization |
 | Subdomain rule group ID / Temporary grant state | For an advanced-authentication match, identify the exact rule group and whether the request used one-request access or a grant was issued, renewed, or reused |
 | Status code, Duration | Distinguish a gateway rejection, upstream error, or slow response |
 
 Request Logs can contain access paths, Query parameters, source IPs, User-Agent values, authentication results, and upstream addresses. Treat them as sensitive operations data. Before sharing a troubleshooting excerpt, remove tokens, query parameters, internal addresses, and personally identifying information.
+
+Static file and directory responses read the filesystem directly at the gateway, so their upstream target is empty. The application Host remains the route key, while the Trace ID, authentication result, WAF action, status code, and duration are recorded normally. The absolute server path is not written to Request Logs or WAF events. See [Static File and Directory Responses](/en/guide/static-host-mapping) for configuration and troubleshooting.
 
 ### Recommended Troubleshooting Order
 

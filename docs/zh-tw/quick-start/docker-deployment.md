@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
+translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
 ---
 
 # Docker Compose 部署
@@ -91,6 +91,19 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 並將 `docker-compose.yml` 替換為：
 
 <!--@include: ../../_shared/docker-compose-bridge.inc-->
+
+#### 為靜態映射唯讀掛載內容目錄
+
+[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)使用 Container 內的絕對路徑，無法直接讀取尚未掛載的 Host 路徑。請為每個站台準備獨立的最小目錄，並在 `fn-knock` 服務的 `volumes` 中增加唯讀掛載：
+
+```yaml
+services:
+  fn-knock:
+    volumes:
+      - /srv/public-site:/srv/public-site:ro
+```
+
+管理後台的 `伺服器路徑` 請填入 `/srv/public-site`。修改 Compose 後執行 `docker compose up -d` 以重新建立 Container，再按下 `檢查路徑` 確認類型與讀取權限。請勿掛載 Host 的 `/`、`/etc`、fn-knock Data Volume，或包含金鑰與系統設定的目錄，也不要省略 `:ro`。
 
 ### 05 啟動並檢查狀態
 

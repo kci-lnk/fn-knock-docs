@@ -3,14 +3,14 @@ lang: ja-JP
 title: "サービス検出と一括登録"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
+translationSourceHash: c78ffb8ebafd3502ad9935569c58cd11e20729a9159a7881e3760ff7f4754bb3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # サービス検出と一括登録
 
-`サービスを検出` は、fn-knock から到達可能なローカル IPv4 ネットワーク内で HTTP サービスを探し、検出結果を確認待ちのサブドメインマッピングまたはパスマッピングへ変換する機能です。インターネットをスキャンすることはなく、開いているポートを検出してもサービスを自動公開しません。
+`サービスを検出` は、fn-knock から到達可能なローカル IPv4 ネットワーク内で HTTP サービスを探し、検出結果を確認待ちのリバースプロキシ用サブドメインマッピングまたはパスマッピングへ変換する機能です。インターネット、サーバー上のファイルやディレクトリをスキャンすることはなく、開いているポートを検出してもサービスを自動公開しません。[静的ファイルとディレクトリのレスポンス](/ja/guide/static-host-mapping)は手動で作成します。
 
 ## 入口と前提条件
 
@@ -30,7 +30,7 @@ translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb503
 | ローカルホスト | Docker 以外のデプロイでは `127.0.0.1/32` を使用 |
 | Docker ホスト | Docker デプロイでは、管理用エントリーポイントから到達可能なホストのネットワークを検出 |
 | ネットワークインターフェース | 現在の環境でスキャン可能なローカル IPv4 インターフェースのネットワーク |
-| 既存のマッピング | 既存のサブドメインまたはパスマッピングの Target から推定 |
+| 既存のマッピング | 既存のリバースプロキシ用サブドメインまたはパスマッピングの Target から推定。静的マッピングは対象外 |
 | カスタム | 管理者が手動で追加して保存した CIDR |
 | 保存済み | 以前に保存され、現在もスキャン範囲として使用されている CIDR |
 

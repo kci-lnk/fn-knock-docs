@@ -3,14 +3,14 @@ lang: zh-TW
 title: "服務探索與批次串接"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
+translationSourceHash: c78ffb8ebafd3502ad9935569c58cd11e20729a9159a7881e3760ff7f4754bb3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # 服務探索與批次串接
 
-`一鍵探索` 可在 fn-knock 能連線的本機 IPv4 網段中尋找 HTTP 服務，並將識別結果轉換為待確認的子網域映射或路徑映射。它不會掃描公網，也不會在找到開放連接埠後自動發布服務。
+`一鍵探索` 可在 fn-knock 能連線的本機 IPv4 網段中尋找 HTTP 服務，並將識別結果轉換為待確認的反向代理子網域映射或路徑映射。它不會掃描公網、伺服器檔案或目錄，也不會在找到開放連接埠後自動發布服務；[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)需要手動建立。
 
 ## 入口與使用條件
 
@@ -30,7 +30,7 @@ translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb503
 | Loopback | 非 Docker 部署使用 `127.0.0.1/32` |
 | Docker Host | Docker 部署會依管理入口識別可連線的 Host 網段 |
 | 網路介面 | 目前環境中允許掃描的本機 IPv4 介面網段 |
-| 既有映射 | 從現有子網域或路徑映射的 Target 推導 |
+| 既有映射 | 從現有反向代理子網域或路徑映射的 Target 推導；靜態映射不會納入 |
 | 自訂 | 由管理員手動新增並儲存的 CIDR |
 | 已儲存 | 先前儲存且目前仍列為掃描範圍的 CIDR |
 

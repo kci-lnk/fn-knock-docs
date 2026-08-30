@@ -3,14 +3,14 @@ lang: en-US
 title: "Navigation Panel Sync"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e67d59ca
+translationSourceHash: fe68b0e3ae622d5f1bf7cfe78234e2143bccbb77994895ee6d5baa79a48ef632
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Navigation Panel Sync
 
-`Subdomain mappings → Sync to navigation panel` publishes enabled fn-knock application entries one way to Sun-Panel, OneNav, or Van-Nav. It sends only the display title, public URL, public icon, and optional grouping. Internal targets, authentication credentials, and fn-knock administration access are never exported.
+`Subdomain mappings → Sync to navigation panel` publishes enabled fn-knock application entries one way to Sun-Panel, OneNav, or Van-Nav. It sends only the display title, public URL, public icon, and optional grouping. Internal targets, static server paths, authentication credentials, and fn-knock administration access are never exported.
 
 ## Connect a Panel
 
@@ -25,7 +25,7 @@ Credentials are encrypted and bound to this installation. Restoring a `.knock` b
 
 A preview is required before every apply. It lists creates, updates, deletes, unchanged items, residual items, and conflicts, and expires after a short period. Apply rechecks the source configuration, remote state, and plan digest. Any change requires a fresh preview, and conflicts block apply.
 
-Only enabled application hosts are included. Authentication services, disabled mappings, and internal targets are excluded. Public URLs follow the current domain, tunnel, and external-port settings; clicking an entry still passes through fn-knock authentication, visibility, and WAF policies.
+Only enabled application Hosts are included, covering reverse-proxy and static file or directory responses. Authentication services and disabled mappings are excluded. Public URLs follow the current domain, tunnel, and external-port settings; clicking an entry still passes through fn-knock authentication, visibility, and WAF policies. A static mapping's local path never appears in the preview, remote panel, or synchronization history.
 
 fn-knock modifies or deletes only remote groups and links registered to this connection. It never takes over unrelated same-name objects. Manual changes to registered objects can be overwritten by the next sync, so keep panel-managed entries outside the sync scope.
 

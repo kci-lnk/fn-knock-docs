@@ -3,7 +3,7 @@ lang: zh-TW
 title: "備份、還原與資料清理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9056a8ac97b6f3f055a74b5e5193e86eabfd4c8e2946ad7ff177721f2677822e
+translationSourceHash: 10e78f0f6e8b535550f99bf5a2231c4f05eecece2a69170bb14ef53fe92e92f8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,9 +19,10 @@ translationSourceHash: 9056a8ac97b6f3f055a74b5e5193e86eabfd4c8e2946ad7ff177721f2
 - 身分驗證帳號、TOTP、Passkey 與外部登入設定；
 - 子網域、路徑、閘道、WAF、工作階段原則等應用程式設定；
 - 憑證與私密金鑰、DDNS、通知及 Tunnel 設定；
+- 靜態 Host 的回應類型、伺服器路徑、預設文件與目錄列表設定；
 - 其他由 fn-knock 持久化，且可在新執行個體重新套用的物件。
 
-執行記錄、事件、工作階段、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、WOL 上線狀態、DDNS 最近一次位址，以及其他短期執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、WOL Relay PSK、點燈裝置金鑰與巴法雲私鑰、Host 防火牆狀態、外部 DNS Record 與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API、重新填入手動 Tunnel Token，並重新配對 WOL Relay 或填寫第三方平台憑據；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
+執行記錄、事件、工作階段、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、WOL 上線狀態、DDNS 最近一次位址，以及其他短期執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、WOL Relay PSK、點燈裝置金鑰與巴法雲私鑰、Host 防火牆狀態、外部 DNS Record、靜態映射的實際檔案與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API、重新填入手動 Tunnel Token，並重新配對 WOL Relay 或填寫第三方平台憑據；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
 
 因此，移轉整套環境時通常需要兩層備份：
 
@@ -76,7 +77,7 @@ translationSourceHash: 9056a8ac97b6f3f055a74b5e5193e86eabfd4c8e2946ad7ff177721f2
 2. 確認仍可透過區域網路、桌面入口或系統主控台重新進入管理後台。
 3. 確認封存檔來源可信，且未曾在不受信任的裝置上解壓縮或修改。
 4. 記錄目前版本、執行模式、身分驗證 Host、閘道連接埠，以及一筆關鍵服務映射。
-5. 跨平台移轉時，另外記錄防火牆、連接埠發布、分享資料夾與外部 DNS 狀態。
+5. 跨平台移轉時，另外記錄防火牆、連接埠發布、分享資料夾、靜態內容目錄或 Docker 唯讀掛載，以及外部 DNS 狀態。
 
 目前伺服器端接受的封存檔必須：
 
@@ -112,16 +113,16 @@ Schema、版本、項目格式、重複 Key、設定 Migration 或 Cloudflared �
 請依管理介面至公網連線路徑的順序檢查：
 
 1. 是否能重新進入管理後台，身分驗證帳號、TOTP、Passkey 或外部登入是否符合預期。
-2. 執行模式、根網域、身分驗證 Host、映射數量與關鍵 Target 是否正確。
+2. 執行模式、根網域、身分驗證 Host、映射數量、關鍵 Target 與靜態伺服器路徑是否正確。
 3. 閘道、WAF、憑證與請求記錄是否正常；若有警告，先檢查對應的同步步驟。
 4. FRP / Cloudflared 資源是否已安裝並重新執行；Cloudflare 託管模式需重新連線 API Token，手動模式需重新填入 Tunnel Token。
 5. DDNS、通知供應商與外部登入憑據是否能通過測試。
 6. 若使用遠端喚醒，重新配對 Relay、填寫點燈或巴法雲憑據，並驗證裝置 IP、廣播位址與上線偵測。
 7. 從行動網路存取身分驗證 Host，以及至少一個受保護的服務 Host。
 8. 確認請求記錄中的真實用戶端 IP、路由與上游狀態正確。
-9. 跨平台移轉時，重新設定連接埠發布、Host 防火牆、智慧連線與系統服務。
+9. 跨平台移轉時，重新設定連接埠發布、Host 防火牆、智慧連線、系統服務與靜態內容目錄；Docker 還需要重新建立唯讀掛載。
 
-還原的設定可能引用舊環境的 Loopback 位址、區域網路 IP、檔案路徑或網域。設定存在，不代表這些外部相依項目在新平台上也同樣存在。
+還原的設定可能引用舊環境的 Loopback 位址、區域網路 IP、檔案路徑或網域。設定存在，不代表這些外部相依項目在新平台上也同樣存在。還原靜態映射後，應逐筆執行 `檢查路徑`；`.knock` 只會還原路徑與選項，不會複製目錄中的檔案。完整邊界請參閱[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)。
 
 ## 常見失敗
 

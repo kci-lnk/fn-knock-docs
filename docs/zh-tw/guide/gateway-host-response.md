@@ -3,7 +3,7 @@ lang: zh-TW
 title: "轉送至上游時保留 Host 標頭"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04cb6c11e4
+translationSourceHash: 054076de00aa8614a761482002a7cc8f0dde11c105d05268349d68abffd46603
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -12,7 +12,7 @@ translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04c
 
 反向 Proxy 預設會將訪客請求中的 `Host` 原樣傳給上游。例如存取 `https://nas.example.com` 時，上游仍會看到 `Host: nas.example.com`。應用程式可據此產生外部連結、設定 Cookie Domain、選擇 Virtual Host，或驗證 Callback URL。
 
-`系統設定 → 閘道 → Host 回應` 只可在採用 Host 路由的子網域模式中編輯，包括公網直達的子網域模式與 `內網穿透 → 子網域映射`。路徑模式與直連模式不提供此選項，身分驗證服務 Host 也不會列入可編輯項目。
+`系統設定 → 閘道 → Host 回應` 只可在採用 Host 路由的子網域模式中編輯，包括公網直達的子網域模式與 `內網穿透 → 子網域映射`。路徑模式與直連模式不提供此選項，身分驗證服務 Host 與[靜態檔案或目錄 Host](/zh-tw/guide/static-host-mapping)也不會列入可編輯項目；靜態回應沒有可保留的上游 Host。
 
 ## 何時應停用
 

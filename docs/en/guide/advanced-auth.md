@@ -3,25 +3,27 @@ lang: en-US
 title: "Advanced Authentication for Subdomains"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 7935017e44e4c972067b5e804299e41a1cebb8e63a45f920f08a0f0ab418a340
+translationSourceHash: ba7c0993dac5fc997c473049a16eabc9cd8a3dbc1de3db9cebb40661c90b1fb6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Advanced Authentication for Subdomains
 
-Subdomain advanced authentication adds conditional allow rules to an HTTP or HTTPS application Host that has `Require sign-in` enabled. When a request first matches a rule, that request receives one-request access and a short-lived capability probe is returned to clients that support Cookies. The system creates a persistent temporary grant limited to the current Host only after a later request returns the probe. Requests that do not match continue through the normal sign-in, session, and service-scope flow.
+Subdomain advanced authentication adds conditional allow rules to an application Host that has `Require sign-in` enabled. It supports both HTTP / HTTPS reverse proxies and [single-file or directory responses](/en/guide/static-host-mapping). When a request first matches a rule, that request receives one-request access and a short-lived capability probe is returned to clients that support Cookies. The system creates a persistent temporary grant limited to the current Host only after a later request returns the probe. Requests that do not match continue through the normal sign-in, session, and service-scope flow.
 
 A temporary grant is not a system login: it does not create a login session or IP authorization, does not display the portal, and cannot access another Host. Advanced authentication is an independent allow path, not an additional check layered on top of the existing sign-in rules.
 
 ## Requirements
 
 - The mapping is a regular application Host, not the authentication service.
-- The Target uses HTTP or HTTPS.
+- The mapping uses an HTTP / HTTPS reverse proxy, a single-file response, or a directory response. A WebSocket-only proxy is still evaluated only at the handshake request.
 - The mapping has `Require sign-in` enabled.
 - If a rule uses source IP or region, the gateway can identify the real client IP.
 
 In the `Domains` list, open the menu on the right of the application Host and select `Advanced authentication`. This entry does not appear for the authentication Host, public mappings, or TCP / UDP mappings.
+
+Static responses accept only `GET` and `HEAD`, so rules for other HTTP methods do not give a static Host write, upload, or delete capabilities. Advanced authentication decides only whether the current request may continue; it does not change the methods or response capabilities supported by the mapping itself.
 
 ## Scope of a temporary grant
 

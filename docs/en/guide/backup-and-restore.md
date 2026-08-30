@@ -3,7 +3,7 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9056a8ac97b6f3f055a74b5e5193e86eabfd4c8e2946ad7ff177721f2677822e
+translationSourceHash: 10e78f0f6e8b535550f99bf5a2231c4f05eecece2a69170bb14ef53fe92e92f8
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -19,9 +19,10 @@ An export collects restorable configuration and credentials from the fn-knock ap
 - Authentication accounts, TOTP, Passkey, and external sign-in configuration.
 - Application settings for subdomains, paths, the gateway, WAF, session policies, and similar features.
 - Certificates and private keys, DDNS, notification, and tunnel configuration.
+- Response type, server path, index-file, and directory-listing settings for static Hosts.
 - Other objects persisted by fn-knock that can be reapplied on a new instance.
 
-Runtime logs, events, sessions, temporary authorizations, login backoff, locks, traffic statistics, WAF statistics, tunnel runtime state, WOL online status, the last DDNS address, and other short-lived runtime data are excluded. Downloaded FRP / Cloudflared / `acme.sh` files, Cloudflare API and Tunnel Tokens, WOL Relay PSKs, Blinker device keys, Bemfa private keys, host firewall state, external DNS records, and upstream application data are also outside the application backup. After restore, reconnect the Cloudflare API, enter the manual Tunnel Token again, and re-pair WOL Relays or re-enter third-party credentials. Importing a backup does not automatically delete or recreate remote Cloudflare resources.
+Runtime logs, events, sessions, temporary authorizations, login backoff, locks, traffic statistics, WAF statistics, tunnel runtime state, WOL online status, the last DDNS address, and other short-lived runtime data are excluded. Downloaded FRP / Cloudflared / `acme.sh` files, Cloudflare API and Tunnel Tokens, WOL Relay PSKs, Blinker device keys, Bemfa private keys, host firewall state, external DNS records, the actual files behind static mappings, and upstream application data are also outside the application backup. After restore, reconnect the Cloudflare API, enter the manual Tunnel Token again, and re-pair WOL Relays or re-enter third-party credentials. Importing a backup does not automatically delete or recreate remote Cloudflare resources.
 
 A full environment migration therefore normally requires two backup layers:
 
@@ -76,7 +77,7 @@ An import does not merge data; it replaces the current fn-knock application name
 2. Confirm that you can still reopen the admin panel from the LAN, desktop entry point, or system console.
 3. Confirm that the archive comes from a trusted source and was not extracted or modified on an untrusted device.
 4. Record the current version, run mode, authentication Host, gateway port, and one critical application mapping.
-5. For a cross-platform migration, also record firewall rules, published ports, shared directories, and external DNS state.
+5. For a cross-platform migration, also record firewall rules, published ports, shared directories, static-content directories or Docker read-only mounts, and external DNS state.
 
 The server currently accepts only an archive that:
 
@@ -112,16 +113,16 @@ A `Warning` in the import result means that configuration entries were imported 
 Check the system from the admin side through to the public request path:
 
 1. Confirm that you can reopen the admin panel and that authentication accounts, TOTP credentials, Passkeys, and external sign-in settings are as expected.
-2. Verify the run mode, root domain, authentication Host, mapping count, and critical Targets.
+2. Verify the run mode, root domain, authentication Host, mapping count, critical Targets, and static server paths.
 3. Check the gateway, WAF, certificates, and `Request Logs`. If the import reported a warning, inspect the corresponding synchronization step first.
 4. Confirm that FRP / Cloudflared resources are installed and running again. Managed Cloudflare mode requires reconnecting the API Token; manual mode requires entering the Tunnel Token again.
 5. Test DDNS, notification providers, and external sign-in credentials.
 6. If you use Wake-on-LAN, re-pair Relays, enter Blinker or Bemfa credentials, and verify device IPs, broadcast addresses, and online checks.
 7. Open the authentication Host and at least one protected application Host over cellular data.
 8. Confirm the real client IP, route, and upstream status in `Request Logs`.
-9. For a cross-platform migration, reconfigure published ports, the host firewall, Smart Connect, and system services.
+9. For a cross-platform migration, reconfigure published ports, the host firewall, Smart Connect, system services, and static-content directories. In Docker, also recreate the read-only mounts.
 
-Restored configuration may refer to loopback addresses, LAN IPs, file paths, or domains from the old environment. The presence of a configuration entry does not mean that its external dependency exists on the new platform.
+Restored configuration may refer to loopback addresses, LAN IPs, file paths, or domains from the old environment. The presence of a configuration entry does not mean that its external dependency exists on the new platform. Run `Check path` for every static mapping after restore; a `.knock` archive restores only the path and options, not the files in that directory. See [Static File and Directory Responses](/en/guide/static-host-mapping) for the full boundary.
 
 ## Common failures
 

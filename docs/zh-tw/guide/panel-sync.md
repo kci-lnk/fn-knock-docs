@@ -3,14 +3,14 @@ lang: zh-TW
 title: "導覽面板同步"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e67d59ca
+translationSourceHash: fe68b0e3ae622d5f1bf7cfe78234e2143bccbb77994895ee6d5baa79a48ef632
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # 導覽面板同步
 
-`子網域路由 → 同步到導覽面板` 可將 fn-knock 中已啟用的應用入口單向發佈到 Sun-Panel、OneNav 或 Van-Nav。同步內容只有顯示標題、公開 URL、公開圖示與選用的分組，不會匯出內部 Target、驗證憑證或 fn-knock 管理權限。
+`子網域映射 → 同步到導覽面板` 可將 fn-knock 中已啟用的應用入口單向發佈到 Sun-Panel、OneNav 或 Van-Nav。同步內容只有顯示標題、公開 URL、公開圖示與選用的分組，不會匯出內部 Target、靜態伺服器路徑、驗證憑證或 fn-knock 管理權限。
 
 ## 建立連線
 
@@ -25,13 +25,13 @@ translationSourceHash: 380d6b61eded81f661d2cd7e87c80ec6d1db0b46f3b7e2f3a116fbe5e
 
 每次套用前都必須產生預覽。預覽列出新增、更新、刪除、不變、殘留與衝突項目，並會在短時間後失效。套用時會重新核對來源設定、遠端狀態與計畫摘要；任何變更都需要重新預覽，衝突則會阻止套用。
 
-同步只包含已啟用的一般應用 Host，排除驗證服務、停用映射與內部 Target。公開 URL 依目前網域、隧道與外部連接埠設定產生；從面板開啟應用仍會執行 fn-knock 的登入、可見性與 WAF 策略。
+同步只包含已啟用的一般應用 Host，包括反向代理與靜態檔案或目錄回應；它會排除驗證服務與停用映射。公開 URL 依目前網域、隧道與外部連接埠設定產生；從面板開啟應用仍會執行 fn-knock 的登入、可見性與 WAF 策略。靜態映射的本機路徑不會進入預覽、遠端面板或同步歷程。
 
 fn-knock 只修改或刪除目前連線已登記的遠端分組與連結，不會接管同名的第三方項目。面板中手動修改已登記項目後，下次同步可能覆寫它；由面板長期維護的內容應放在同步範圍外。
 
 ## 自動同步與平台差異
 
-自動同步會回應子網域設定變更，並依設定的 5～1440 分鐘間隔校準遠端狀態。失敗與恢復會進入事件中心；歷程最多保留 20 次與 30 天。
+自動同步會回應子網域設定變更，並依設定的 5～1440 分鐘間隔校準遠端狀態。失敗與恢復會進入事件中心；歷程最多保留最近 20 次與 30 天，較早的記錄會自動清理。
 
 OneNav 與 Van-Nav 可清理過期的自有項目。Sun-Panel 缺少穩定的刪除與分類重新命名 API，因此殘留項目可能需要手動清理。刪除連線預設保留遠端內容；選用清理也只處理目前連線擁有的項目，Sun-Panel 則只能解除關聯。
 
@@ -41,7 +41,7 @@ OneNav 與 Van-Nav 可清理過期的自有項目。Sun-Panel 缺少穩定的刪
 - 測試成功但預覽失敗時，檢查 API 基礎路徑、權限與遠端同名衝突。
 - 計畫失效時重新預覽，不要重送舊計畫。
 - 從執行歷程和事件檢查網路、驗證、配額與殘留問題。
-- 刪除連線前先決定是否保留遠端入口。
+- 刪除連線前先決定是否保留遠端入口；遠端清理不能取代面板本身的備份。
 
-- [子網域路由](/zh-tw/guide/subdomain-proxy)
+- [子網域映射](/zh-tw/guide/subdomain-proxy)
 - [事件中心與通知](/zh-tw/guide/event-center-and-notifications)

@@ -3,14 +3,14 @@ lang: en-US
 title: "Service Discovery and Bulk Onboarding"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 80de507c4cd7deef31904c2bf2a22134d264b33e0f8c8ed10c67fb50382282b7
+translationSourceHash: c78ffb8ebafd3502ad9935569c58cd11e20729a9159a7881e3760ff7f4754bb3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # Service Discovery and Bulk Onboarding
 
-`Discover` searches for HTTP services on local IPv4 networks reachable from fn-knock and turns recognized results into draft subdomain or path mappings for you to review. It does not scan the public internet or automatically publish a service just because it finds an open port.
+`Discover` searches for HTTP services on local IPv4 networks reachable from fn-knock and turns recognized results into draft reverse-proxy subdomain or path mappings for you to review. It does not scan the public internet, server files, or directories, and it does not automatically publish a service just because it finds an open port. [Static file and directory responses](/en/guide/static-host-mapping) must be created manually.
 
 ## Entry Points and Prerequisites
 
@@ -30,7 +30,7 @@ After opening `Discover`, expand the scan-range settings. Default targets come f
 | Localhost | Uses `127.0.0.1/32` on non-Docker deployments |
 | Docker host | On Docker deployments, identifies a reachable host LAN network from the management entry point |
 | Interface | Local IPv4 interface networks that the current environment is allowed to scan |
-| Mapping | Derived from Targets in existing subdomain or path mappings |
+| Mapping | Derived from Targets in existing reverse-proxy subdomain or path mappings; static mappings are ignored |
 | Custom | A CIDR entered and saved manually by an administrator |
 | Saved | A previously saved CIDR that remains part of the scan range |
 

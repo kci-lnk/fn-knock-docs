@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0bf0c1872049db7cc96f9b86f659a39d28b5932b1479da8ff35a6b79cf000c38
+translationSourceHash: ab5b86cc9e4721620aa52f26f1dcca452db55894ec984baf72a39d585fea9a82
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,7 +20,7 @@ Both topologies use `auth.example.com` as the sign-in entry point and share one 
 ## Request Flow
 
 ```text
-Browser -> Direct public access or tunnel -> fn-knock gateway -> Match by Host -> Local Target
+Browser -> Direct public access or tunnel -> fn-knock gateway -> Match by Host -> Proxy Target or static response
                                                    |
                                                    +-> Public / Require sign-in / Advanced authentication temporary grant
 ```
@@ -33,7 +33,7 @@ With direct public access on the default port, the URL is usually `https://nas.e
 2. Under `Subdomain mapping`, save a root domain such as `example.com`.
 3. Click `Add auth service` to create `auth.example.com`.
 4. Configure public DNS, router forwarding, or Tunnel Public Hostnames so that all relevant Hosts reach the same gateway.
-5. Add application Hosts and decide whether to enable `Require sign-in` for each mapping.
+5. Add application Hosts, select reverse proxy, single-file, or directory response, and decide whether to enable `Require sign-in`.
 6. To grant access based on the source or request attributes, open `Advanced authentication` from the mapping's right-side menu.
 7. Test over a mobile network and verify the sign-in redirect, return URL, and client IP in request logs.
 
@@ -69,18 +69,22 @@ When the edge platform handles external ports `80 / 443`, its origin must still 
 
 ## Host Mappings
 
-A mapping contains at least a Host and a Target:
+A mapping contains a Host and a response type. Reverse proxies use a Target, while static responses use a server file path:
 
 ```text
 nas.example.com   -> http://127.0.0.1:5666
 alist.example.com -> http://127.0.0.1:5244
 photos.example.com -> http://127.0.0.1:5666/photos/
+download.example.com -> Single file /srv/downloads/manual.pdf
+docs.example.com -> Directory /srv/docs
 ```
 
 | Field | Behavior |
 | --- | --- |
 | `Host / subdomain` | Matches the request Host; after saving a root domain, you can enter only `nas` |
-| `Target` | HTTP, HTTPS, WS, or WSS upstream URL; it may include a base path and must be reachable from the fn-knock runtime |
+| `Response type` | Selects reverse proxy, single file, or directory; the authentication service always uses reverse proxy |
+| `Target` | Reverse proxy only; an HTTP, HTTPS, WS, or WSS upstream URL that may include a base path and must be reachable from the fn-knock runtime |
+| `Server path` | Static responses only; an absolute file or directory path readable from the fn-knock runtime environment |
 | `Target path usage` | When the Target has a non-root path, choose `Entry only` or `Fixed prefix`; the auth service always uses Entry mode |
 | `Require sign-in` | Redirects unsigned-in users to the auth Host, then returns them to the original URL |
 | `Disable` / `Schedule enable or disable` | Takes the mapping offline manually or controls its daily open window using server-local time |
@@ -92,11 +96,13 @@ photos.example.com -> http://127.0.0.1:5666/photos/
 | `Visibility` | Inherits the global rules, replaces them with rules for this Host, or disables visibility restrictions only for this Host |
 | `Enable WAF` | Enabled by default for application Hosts; when disabled, this Host skips the global WAF |
 
-Editing the Host / subdomain of a saved mapping is treated as a rename and preserves its sign-in policy, visibility, advanced authentication, and Basic Auth credential injection. Do not create another alias with the same Target as a substitute for renaming; an alias is an independent mapping and does not inherit the original Host's protected configuration.
+Editing the Host / subdomain of a saved mapping is treated as a rename and preserves its sign-in policy, visibility, and advanced authentication. A reverse-proxy mapping also preserves Basic Auth credential injection. Do not create another alias with the same Target or server path as a substitute for renaming; an alias is an independent mapping and does not inherit the original Host's protected configuration.
 
-Whenever possible, bind application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
+Whenever possible, bind reverse-proxied application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
 
-When a Target contains a non-root path, the editor shows `Target path usage`:
+Static responses need no upstream service. A single-file response serves the selected file only at the Host root; a directory response supports index files, directory listings, and safe README rendering. See [Static File and Directory Responses](/en/guide/static-host-mapping) for server paths, security boundaries, and read-only Docker mounts.
+
+When a reverse-proxy Target contains a non-root path, the editor shows `Target path usage`:
 
 - `Entry only (compatibility)` is the default. The Target path is used only when the visitor requests the Host root; other request paths are kept unchanged. For example, with a Target path of `/login`, `/` goes to upstream `/login`, while `/assets/app.js` still goes to upstream `/assets/app.js`. Use this for an app whose entry page is below a subpath but whose assets or sign-in callbacks remain at the upstream root.
 - `Fixed prefix (directory mount)` prepends the Target path to every upstream request. With a Target path of `/webdav`, visitor path `/floccus/a` becomes upstream `/webdav/floccus/a`. Use it for WebDAV or another service explicitly designed for directory mounting.
@@ -113,7 +119,7 @@ Group order and Host order synchronize to the signed-in portal and built-in `/__
 
 Grouping changes navigation and management order only. It does not change authentication, visibility, WAF, or the Target. The auth service always remains outside groups, and credential Host scopes still determine actual access.
 
-### Basic Auth Injects Upstream Credentials
+### Basic Auth Injects Reverse-Proxy Upstream Credentials
 
 `Skip Basic Auth` stores credentials for the target service's own Basic Auth challenge. The gateway sends them upstream when proxying requests and fetching the page title or favicon, preventing the browser from showing another Basic Auth dialog.
 
@@ -127,7 +133,7 @@ When editing a regular application Host, open `App icon` to preview the current 
 
 A custom icon takes priority in the subdomain list and portal. Browser bookmark exports, navigation-panel sync, and gateway icon endpoints use the same content. The stored icon must be a supported image type encoded as a Base64 `data:image/...;base64,...` URL. External URLs, non-Base64 data URLs, undecodable values, and oversized legacy icons are not sent to the gateway or exported. Normal uploads and automatic collection perform the conversion; if an icon disappears after importing an old backup or external configuration, recollect or upload it again.
 
-`Restore automatic collection` removes the custom override and reads the Target again. If the Target returns no supported icon, the page shows that none has been collected. The authentication service does not support a custom icon. Icons are included in the configuration and `.knock` backups; do not share sensitive internal artwork in routine troubleshooting attachments.
+`Restore automatic collection` removes the custom override and reads the reverse-proxy Target again. If the Target returns no supported icon, the page shows that none has been collected. Static mappings do not read file titles or icons automatically; set the title manually and upload a custom icon. The authentication service does not support a custom icon. Icons are included in the configuration and `.knock` backups; do not share sensitive internal artwork in routine troubleshooting attachments.
 
 ### Per-Host Visibility and WAF
 
@@ -173,8 +179,8 @@ See [Service Discovery and Bulk Onboarding](/en/guide/service-discovery) for sca
 List actions include:
 
 - `Multi-select`: Enter selection mode to select the current search results, one group, or arbitrary application Hosts. You can move them to a group, enable or disable them, apply the same daily open window, or delete them in a batch. The auth service is excluded. Changing the search or view clears the selection, and bulk deletion cannot be undone.
-- `Refresh icons and titles`: Fetch upstream metadata again.
-- `Clean stale services`: Check HTTP / HTTPS upstreams with `HEAD`, then `GET` on failure, and let an administrator confirm before removing unreachable mappings.
+- `Refresh icons and titles`: Fetch reverse-proxy upstream metadata again; static mappings are skipped.
+- `Clean stale services`: Check HTTP / HTTPS upstreams with `HEAD`, then `GET` on failure, and let an administrator confirm before removing unreachable mappings; static mappings are excluded.
 - `Export as bookmarks`: Export application Hosts without the auth service.
 - `Clear all configuration`: After two confirmations, remove the auth service and all Host mappings while preserving the root domain and other mode settings.
 
@@ -184,7 +190,7 @@ The `Sync to navigation panel` action publishes enabled application Hosts to Sun
 
 ### Optimize Target Addresses
 
-The maintenance menu provides `Optimize Target Addresses` for batch-rewriting Targets between loopback and detected host LAN addresses after a deployment change. Choosing a LAN address lists mappings that currently use `127.0.0.1`; choosing loopback lists mappings that use a detected local LAN address. The preview preserves the scheme, port, and path and changes only the host. Only selected mappings are saved.
+The maintenance menu provides `Optimize Target Addresses` for reverse-proxy mappings only. It batch-rewrites Targets between loopback and detected host LAN addresses after a deployment change; static file and directory mappings do not appear in the preview. Choosing a LAN address lists mappings that currently use `127.0.0.1`; choosing loopback lists mappings that use a detected local LAN address. The preview preserves the scheme, port, and path and changes only the host. Only selected mappings are saved.
 
 Detected candidates do not guarantee target reachability. Inside Docker, `127.0.0.1` refers only to the current container. Verify routing from the container to the host and the target port before applying changes, then test each application Host.
 
@@ -199,6 +205,7 @@ The live text area retains only the latest `1000` summary lines. If you see drop
 ## Additional Host-Routing Capabilities
 
 - [Static Path Responses](/en/guide/gateway-path-response) adds a small number of special paths to one Host. Requests that match none of them still use that Host's default Target.
+- [Static File and Directory Responses](/en/guide/static-host-mapping) lets an entire application Host read local files directly, without a reverse-proxy upstream.
 - [TCP/UDP Stream Proxying](/en/guide/stream-mappings) adds TCP / UDP ports to direct-public `Subdomain mode`; it is unavailable for reverse-proxy subdomain mapping.
 - [fnOS Share Bypass](/en/guide/fnos-share-bypass) bypasses the gateway only for valid fnOS `/s/...` share paths; it does not expose the entire site.
 
@@ -206,7 +213,7 @@ None of these features changes the fact that the Host is the primary routing key
 
 ## Platform Boundaries
 
-- Host routing works on fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows. Actual public reachability still depends on each platform's published ports and network path.
+- Host routing and static responses work on fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows. A static path must be readable from the gateway process's filesystem; actual public reachability still depends on each platform's published ports and network path.
 - Automatic host-firewall changes and Smart Connect are provided only by the standard fnOS FPK runtime with the matching capabilities. Docker, OpenWrt, Linux, macOS, Synology, and Windows do not provide them.
 - Protocol mappings appear only in direct-public `Subdomain mode`. Even if extra ports are published for a Docker container, fn-knock does not manage the host firewall.
 - OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, Smart Connect, SSH Security, or in-app FPK updates there. Web Terminal can still connect to an administrator-configured remote SSH target, but it does not open a local OpenWrt shell.
@@ -220,7 +227,7 @@ Check the request path in order:
 2. Verify the Host and client IP in request logs.
 3. Verify that the auth service exists and does not require sign-in or use Basic Auth.
 4. Verify that the application mapping is enabled and the current time is within its open window.
-5. Verify that the Target is reachable from the fn-knock runtime.
+5. For a reverse proxy, verify that the Target is reachable from the fn-knock runtime. For a static mapping, recheck the server path, expected type, permissions, and mount.
 6. Verify that the sign-in credential allows the current Host. If advanced authentication is enabled, also check its rule groups, conditions, and temporary-grant status.
 7. If a legacy strict-allowlist rule exists, check whether the current public source is authorized.
 8. Verify that the HTTPS certificate covers the current Host and that the platform in front allows WebSocket connections without caching authentication responses.

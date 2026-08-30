@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Docker Compose로 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 197badd5f61ad1cc9e1d12cd7b6b5846ba8ba64c40e029f5240c440e67713ba6
+translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
 ---
 
 # Docker Compose로 배포
@@ -91,6 +91,19 @@ docker pull hub.fnknock.cn/kcilnk/fn-knock:latest
 그리고 `docker-compose.yml`을 다음으로 교체합니다.
 
 <!--@include: ../../_shared/docker-compose-bridge.inc-->
+
+#### 정적 매핑 콘텐츠 디렉터리를 읽기 전용으로 마운트
+
+[정적 파일 및 디렉터리 응답](/ko/guide/static-host-mapping)은 컨테이너 내부 절대 경로를 사용하므로 마운트하지 않은 호스트 경로를 직접 읽을 수 없습니다. 사이트마다 독립된 최소 디렉터리를 준비하고 `fn-knock` 서비스의 `volumes`에 읽기 전용 마운트를 추가합니다.
+
+```yaml
+services:
+  fn-knock:
+    volumes:
+      - /srv/public-site:/srv/public-site:ro
+```
+
+관리 패널의 `서버 경로`에 `/srv/public-site`를 입력합니다. Compose를 수정한 뒤 `docker compose up -d`를 실행하여 컨테이너를 다시 만들고 `경로 확인`을 눌러 유형과 읽기 권한을 확인합니다. 호스트의 `/`, `/etc`, fn-knock 데이터 볼륨 또는 키와 시스템 설정이 포함된 디렉터리를 마운트하지 말고 `:ro`도 생략하지 마십시오.
 
 ### 05 시작 및 상태 확인
 

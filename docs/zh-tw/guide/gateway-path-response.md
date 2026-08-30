@@ -3,14 +3,14 @@ lang: zh-TW
 title: "路徑回應"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0407fea9e22abbed4c38713a7746bc42010e8f8772cda77ddbb90810e910e0e6
+translationSourceHash: 4db611fe9787c0be17207bbc16ac5bccba30fa3ed5082b86ccd2b26fe3c8990f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
 
 # 路徑回應
 
-`系統設定 → 閘道 → 路徑回應` 可替特定服務 Host 加上少量 Path-level 規則。它只可在採用 Host 路由的子網域模式中編輯，包括公網直達的 `子網域模式` 與 `內網穿透 → 子網域映射`；路徑模式和直連模式不提供此功能。Host 仍是主要路由；請求未命中路徑規則時，會回到該 Host 映射的預設 Target。
+`系統設定 → 閘道 → 路徑回應` 可替反向代理服務 Host 加上少量 Path-level 規則。它只可在採用 Host 路由的子網域模式中編輯，包括公網直達的 `子網域模式` 與 `內網穿透 → 子網域映射`；路徑模式、直連模式以及單一檔案或目錄回應不提供此功能。Host 仍是主要路由；請求未命中路徑規則時，會回到該 Host 映射的預設 Target。
 
 此功能適合 Health Check、固定狀態回應，或將同一 Host 下的一小段 API 轉送至另一個上游。若需要用大量路徑區分不同應用程式，請使用相容用途的[路徑映射](/zh-tw/guide/reverse-proxy)，不要在 Host 路由上重新打造一套 Path Gateway。
 
@@ -22,7 +22,7 @@ api.example.com/v2/*    -> http://127.0.0.1:8080
 api.example.com/其他路徑 -> Host 預設 Target
 ```
 
-請先選擇既有的服務 Host。身分驗證服務 Host 不會出現在可選清單中。
+請先選擇既有的反向代理服務 Host。身分驗證服務 Host 與[靜態檔案或目錄 Host](/zh-tw/guide/static-host-mapping)不會出現在可選清單中。
 
 路徑必須以 `/` 開頭，但不可為根路徑 `/`。下列路徑保留給身分驗證、分享或內部功能使用，無法設定：
 
@@ -84,9 +84,9 @@ Target      http://127.0.0.1:8080
 
 ## 疑難排解
 
-1. 確認目前使用 Host 路由，且已選取正確的服務 Host。
+1. 確認目前使用 Host 路由、服務 Host 的回應類型為反向代理，且已選取正確的 Host。
 2. 檢查路徑格式、保留路徑，以及完全符合／Prefix 的比對方式。
-3. 先判斷請求是否遭 Host 的登入或允許清單原則攔截。
+3. 核對規則的驗證行為；選擇繼承時，再判斷請求是否遭 Host 的登入或允許清單原則攔截。
 4. 從 fn-knock 的 Runtime 環境存取反向 Proxy Target。
 5. 在[請求記錄](/zh-tw/guide/request-logs)中核對 Host、路徑、路由類型、Status Code 與上游 Target。
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "アップストリームへの転送時に Host ヘッダーを維持"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04cb6c11e4
+translationSourceHash: 054076de00aa8614a761482002a7cc8f0dde11c105d05268349d68abffd46603
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -12,7 +12,7 @@ translationSourceHash: 2ca12f8a45486d4679a747a99818ce4460a68848c7135d050ccafb04c
 
 リバースプロキシはデフォルトで、アクセス元のリクエストに含まれる `Host` をアップストリームへ維持します。たとえば `https://nas.example.com` へアクセスすると、アップストリームでも `Host: nas.example.com` として認識されます。アプリはこの情報を使って、外部リンクの生成、Cookie ドメインの設定、仮想ホストの選択、コールバック URL の検証を行えます。
 
-`システム設定 → ゲートウェイ → Host ヘッダー` は、Host ルーティングを使うサブドメインモードでのみ編集できます。これには、グローバル IP から直接公開するサブドメインモードと、`トンネル → サブドメインマッピング` が含まれます。パスモードと直接接続モードでは利用できず、認証サービスの Host も編集対象には表示されません。
+`システム設定 → ゲートウェイ → Host ヘッダー` は、Host ルーティングを使うサブドメインモードでのみ編集できます。これには、グローバル IP から直接公開するサブドメインモードと、`トンネル → サブドメインマッピング` が含まれます。パスモードと直接接続モードでは利用できず、認証サービスの Host と[静的ファイルまたはディレクトリの Host](/ja/guide/static-host-mapping)も編集対象には表示されません。静的レスポンスには維持するアップストリーム Host がありません。
 
 ## 無効にする場合
 
