@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Deployment and Access Pattern"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 442bfa970135a6bed02b970bbe424fdd37a2b2fc87beaffe313a113198820aab
+translationSourceHash: 2545e789130b89c155985e30770af3836744343af92b484ec9e12a830ef9e64b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -30,7 +30,9 @@ Docker, OpenWrt, Linux, macOS, and Windows deployments require a separate panel 
 
 If the app on an fnOS device is named `Knock Lite`, it is a native non-root package, not a Docker deployment, and does not have the full host permissions of the standard FPK in the table. Lite supports Host proxying, authentication, DDNS, certificates, WAF, built-in FRP / Cloudflared, monitoring, and the remote-SSH Web Terminal. It does not support Direct mode and the host firewall, Smart Connect, system clock sync, automatic HTTPS, fnOS certificate-store sync, FN Connect WAF ingress, or in-app updates. Here, “automatic HTTPS” means the standard-port public-ingress helper used when the ISP and inbound path allow TCP `80 / 443`; it does not mean Lite lacks certificates or HTTPS. See [fnOS App Store Lite vs. the Standard FPK](/en/quick-start/fpk-lite-vs-standard) for the complete boundary and migration procedure.
 
-Web Terminal on every package connects to administrator-configured remote SSH targets after host-fingerprint confirmation and never opens a local shell on the deployment host.
+Web Terminal on every package can connect to administrator-configured remote SSH targets after host-fingerprint confirmation. The standard fnOS FPK, OpenWrt, Linux, and macOS can also expose an optional local PTY, disabled by default and running as the fn-knock service identity. Knock Lite, Docker, Synology, Windows, and development runtimes provide remote SSH only.
+
+The local PTY is not an SSH session to `localhost`. It directly inherits the effective UID and GID of the fn-knock service without dropping privileges or switching users. Before enabling it, acknowledge the risk and verify the displayed identity, shell, and initial directory; if the service is privileged, terminal commands have the same privilege. Closing the browser only detaches the page while the session continues. A service restart, shell exit, explicit session termination, or disabling the local terminal ends it. See [Web Terminal](/en/guide/web-terminal) for the complete boundary.
 
 Installation guides:
 

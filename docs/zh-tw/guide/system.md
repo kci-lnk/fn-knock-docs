@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: db96422dd023bf446af2b987ce9fad42923d765e90c8ac875a0778d99fde7550
+translationSourceHash: 0d751b10526e903270a261f16985d4b361ce8d8fec6e9c04eea7bb5f6357abaf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -14,23 +14,23 @@ translationSourceHash: db96422dd023bf446af2b987ce9fad42923d765e90c8ac875a0778d99
 
 ## 各部署方式的能力差異
 
-| 能力 | 原生飛牛 FPK | Docker | OpenWrt | Linux 服務 | Synology DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 直連模式與 Host 防火牆 | 支援，Process 必須具備主機權限 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| Web 終端機 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 | 遠端 SSH 目標 |
-| 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |
-| SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| 自動 HTTPS | 支援 | 不支援 | 不支援 | 支援，必須可使用 `80` 連接埠 | 不支援 | 支援，但仍須打通 Windows Inbound 流量 |
-| ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援，使用內建 Client |
-| 系統時間同步 | 支援 | 不支援 | 支援 | 不支援 | 不支援 | 不支援 |
-| 飛牛 SSL 憑證庫同步 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
-| 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝符合 Firmware 的 IPK／APK | 依安裝方式手動更新 | 從 DSM 套件中心安裝 SPK | Windows 管理程式 |
-| 獨立管理面板密碼 | 使用 fnOS/CGI 入口 | 支援 | 支援 | 支援 | 使用 DSM 桌面 CGI 入口 | 支援；管理入口僅限本機 `127.0.0.1` |
+| 能力 | 原生飛牛 FPK | Docker | OpenWrt | Linux 服務 | macOS | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 直連模式與 Host 防火牆 | 支援，Process 必須具備主機權限 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| 智慧連線 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| Web 終端機 | 遠端 SSH + 可選本機 PTY | 僅遠端 SSH | 遠端 SSH + 可選本機 PTY | 遠端 SSH + 可選本機 PTY | 遠端 SSH + 可選本機 PTY | 僅遠端 SSH | 僅遠端 SSH |
+| 內建 FRP / Cloudflared | 支援 | 支援 | 支援 | 支援 | 支援 | 支援 | 不支援 |
+| SSH 安全性 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| 自動 HTTPS | 支援 | 不支援 | 不支援 | 支援，必須可使用 `80` 連接埠 | 支援，需手動打通防火牆與 Inbound 流量 | 不支援 | 支援，但仍須打通 Windows Inbound 流量 |
+| ACME DNS-01 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援 | 支援，使用內建 Client |
+| 系統時間同步 | 支援 | 不支援 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| 飛牛 SSL 憑證庫同步 | 支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 | 不支援 |
+| 安裝更新 | 透過 Web UI 更新 | Pull 新 Image | 安裝符合 Firmware 的 IPK／APK | 依安裝方式手動更新 | `sudo knock update` | 從 DSM 套件中心安裝 SPK | Windows 管理程式 |
+| 獨立管理面板密碼 | 使用 fnOS/CGI 入口 | 支援 | 支援 | 支援 | 支援；管理入口僅限本機 `127.0.0.1` | 使用 DSM 桌面 CGI 入口 | 支援；管理入口僅限本機 `127.0.0.1` |
 
-上表以後端回報的 Runtime 能力為準。部分功能入口會顯示為無法使用並附上原因，另一些則會直接隱藏。OpenWrt 不再提供直連、Host 防火牆管理或智慧連線；仍可執行 Host 路由、通訊協定映射及內建 Tunnel，但連接埠放行由 OpenWrt 防火牆負責。Windows 不提供直連、內建 FRP / Cloudflared、智慧連線或 SSH 安全性；其閘道預設在所有 Interface 上監聽 `7999`，但外網是否能連入仍取決於防火牆規則、NAT 與網路政策。Synology DSM 7 SPK 同樣不提供直連、Host 防火牆、智慧連線或 SSH 安全性。各平台的 Web 終端機只連線管理員設定並確認指紋的遠端 SSH 目標，不開啟本機 Shell。
+上表以後端回報的 Runtime 能力為準。部分功能入口會顯示為無法使用並附上原因，另一些則會直接隱藏。OpenWrt 不再提供直連、Host 防火牆管理或智慧連線；仍可執行 Host 路由、通訊協定映射及內建 Tunnel，但連接埠放行由 OpenWrt 防火牆負責。Windows 不提供直連、內建 FRP / Cloudflared、智慧連線或 SSH 安全性；其閘道預設在所有 Interface 上監聽 `7999`，但外網是否能連入仍取決於防火牆規則、NAT 與網路政策。Synology DSM 7 SPK 同樣不提供直連、Host 防火牆、智慧連線或 SSH 安全性。完整標準 FPK、OpenWrt、Linux 服務與 macOS 的 Web 終端機可啟用本機 PTY，但預設關閉；Docker、Synology、Windows、Lite 與開發環境只提供遠端 SSH。
 
-若 fnOS 裝置上的應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不等同於上表的完整 FPK：支援 Host 反代、驗證、DDNS、憑證、WAF、內建 Tunnel、監控與遠端 SSH Web 終端機，但不提供直連與 Host 防火牆、網路最佳化、飛牛憑證庫同步或應用程式內更新。需要完整 Host 整合能力時，請先匯出 Lite 備份並停止 Lite，再安裝官網標準 FPK 後匯入；請勿讓兩個執行個體同時占用連接埠。
+若 fnOS 裝置上的應用程式名稱為 `敲門 knock Lite`，它是原生 Non-root 精簡套件，不等同於上表的完整 FPK：支援 Host 反代、驗證、DDNS、憑證、WAF、內建 Tunnel、監控與遠端 SSH Web 終端機，但不提供本機 PTY、直連與 Host 防火牆、網路最佳化、飛牛憑證庫同步或應用程式內更新。需要完整 Host 整合能力時，請先匯出 Lite 備份並停止 Lite，再安裝官網標準 FPK 後匯入；請勿讓兩個執行個體同時占用連接埠。
 
 ## 設定導覽
 
@@ -45,7 +45,7 @@ translationSourceHash: db96422dd023bf446af2b987ce9fad42923d765e90c8ac875a0778d99
 | `功能` | 日期時間顯示、首頁入口狀態、fnOS 控制台應用程式列、Passkey 綁定提示、自動 HTTPS、SSH 安全性、協定映射、遠端喚醒、側邊欄排序及智慧連線入口 | [遠端喚醒](/zh-tw/guide/wake-on-lan)及各功能文件 |
 | `閘道` | 驗證快取、反代節流、Crawler 攔截、Portal、可見性及 Host 層級轉送選項 | 請參考本頁後續章節 |
 | `WAF`、`Log` | HTTP 規則防護及結構化 Request Log | [WAF](/zh-tw/guide/waf)、[Request Log](/zh-tw/guide/request-logs) |
-| `終端機` | 所有發行平台顯示；管理遠端 SSH 目標與工作階段 | [Web 終端機](/zh-tw/guide/web-terminal) |
+| `終端機` | 所有發行平台顯示；管理遠端 SSH 目標與工作階段，並在支援的平台啟用本機 PTY | [Web 終端機](/zh-tw/guide/web-terminal) |
 | `工作階段` | 一般工作階段、記住我、登入後 IP 授權及 IP 漂移 | [工作階段與 IP 軌跡](/zh-tw/guide/session-management) |
 | `面板` | Docker、OpenWrt、Linux 與 Windows 顯示；修改或重設獨立管理面板密碼 | 請參考本頁後續章節 |
 | `Challenge` | 登入前使用 PoW 或 Cloudflare Turnstile | [Challenge](/zh-tw/guide/captcha) |

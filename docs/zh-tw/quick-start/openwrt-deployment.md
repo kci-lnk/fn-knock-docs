@@ -3,7 +3,7 @@ lang: zh-TW
 title: "OpenWrt 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65f4b972fd2f3eca7a0c48ed574481f22047d74e369bd36a2848fb64248c277f
+translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
 ---
 
 # OpenWrt 部署
@@ -158,8 +158,10 @@ fn-knock-reset-panel-password
 | 直連模式、主機防火牆管理 | 不支援；使用 OpenWrt 自身防火牆、VPN 或上級閘道控制原始連接埠 |
 | 智慧連線 | 不支援；需要分流時在 OpenWrt 的 `dnsmasq`、DHCP 或其他本機 DNS 中自行設定 |
 | SSH 安全性 | 不支援；請使用 OpenWrt 本身的 SSH 記錄、防火牆或安全性外掛套件 |
-| Web Terminal | 支援連線至管理員設定並確認主機指紋的遠端 SSH 目標；不會開啟 OpenWrt 本機 Shell |
+| Web Terminal | 支援遠端 SSH，以及預設關閉的 OpenWrt 本機 PTY |
 | 自動 HTTPS | 目前的 OpenWrt 軟體套件不支援 |
+
+本機 PTY 會直接繼承 fn-knock 服務的有效 UID / GID，不會降權、切換使用者或透過 `localhost` SSH 建立連線。啟用前必須核對頁面顯示的執行身分、Shell 與初始目錄並完成風險確認。關閉瀏覽器只會中斷頁面連線，服務仍在執行時工作階段會繼續；服務重新啟動、Shell 結束、主動結束工作階段或停用本機終端機會終止工作階段。完整說明請參閱 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 `fn-knock` 無法取代 OpenWrt 韌體更新、路由器備份與防火牆最小曝露原則。
 

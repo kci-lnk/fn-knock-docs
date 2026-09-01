@@ -3,7 +3,7 @@ lang: ko-KR
 title: "OpenWrt 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65f4b972fd2f3eca7a0c48ed574481f22047d74e369bd36a2848fb64248c277f
+translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
 ---
 
 # OpenWrt 배포
@@ -158,8 +158,10 @@ fn-knock-reset-panel-password
 | 직접 연결 모드, 호스트 방화벽 관리 | 미지원. OpenWrt 자체 방화벽, VPN 또는 상위 게이트웨이에서 원본 포트를 관리합니다. |
 | Smart Connect | 미지원. OpenWrt의 `dnsmasq`, DHCP 또는 다른 로컬 DNS에서 분할 DNS를 직접 구성합니다. |
 | SSH 보안 | 미지원. OpenWrt 자체 SSH 로그, 방화벽 또는 보안 플러그인을 사용합니다. |
-| 웹 터미널 | 관리자가 설정하고 호스트 지문을 확인한 원격 SSH 대상에 연결 가능. OpenWrt 로컬 Shell은 열지 않음 |
+| 웹 터미널 | 원격 SSH와 기본적으로 비활성화된 OpenWrt 로컬 PTY 지원 |
 | 자동 HTTPS | 현재 OpenWrt 패키지에서는 미지원 |
+
+로컬 PTY는 fn-knock 서비스의 유효 UID/GID를 직접 상속하며 권한을 낮추거나 사용자를 전환하거나 `localhost` SSH로 연결하지 않습니다. 활성화하기 전에 화면에 표시된 실행 계정, Shell 및 초기 디렉터리를 확인하고 위험을 승인해야 합니다. 브라우저를 닫으면 페이지 연결만 끊기고 서비스가 실행되는 동안 세션은 계속됩니다. 서비스 재시작, Shell 종료, 세션 직접 종료 또는 로컬 터미널 비활성화가 있어야 세션이 끝납니다. 자세한 내용은 [웹 터미널](/ko/guide/web-terminal)을 참고합니다.
 
 `fn-knock`는 OpenWrt 펌웨어 업데이트, 라우터 설정 백업, 방화벽의 최소 노출 원칙을 대신하지 않습니다.
 

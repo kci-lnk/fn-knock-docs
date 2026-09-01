@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Linux (systemd / OpenRC)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
+translationSourceHash: 5d878fefa5145ece7068c64abf63584a843bfa133357423e92d976958e5f9cd9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -95,6 +95,12 @@ On systemd, these commands read `journalctl`. On OpenRC, they read or follow `/v
 `sudo knock config` displays a numbered port table. Enter `1` through `5` to edit a port, `S` to validate and save, or `R` to restore the defaults. Keeping a port currently used by the running service is not incorrectly reported as a conflict.
 
 `sudo knock reset-panel-password` asks for confirmation. It clears the admin panel password, all panel sessions, and failed-login backoff records. The next visit to the actual admin address on `7991` returns to the first-time password setup.
+
+## Web Terminal
+
+The Linux package supports administrator-configured remote SSH targets with host-fingerprint confirmation and an optional local PTY that is disabled by default. The local PTY directly inherits the effective UID and GID of the fn-knock service; it neither drops privileges, switches users, nor connects through SSH to `localhost`. The default service commonly runs as root, but the identity shown on the enable page is authoritative.
+
+Before enabling the local terminal, verify the displayed identity, shell, and initial directory and acknowledge the risk. Closing the browser only detaches from the page while the session continues with the service. A service restart, shell exit, explicit session termination, or disabling the local terminal ends it. See [Web Terminal](/en/guide/web-terminal) for the complete workflow and security boundary.
 
 ## Update and roll back
 

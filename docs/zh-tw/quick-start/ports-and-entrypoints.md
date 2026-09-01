@@ -3,7 +3,7 @@ lang: zh-TW
 title: "連接埠、入口與 URL 路徑"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0338720ed05a1f70e8321d06a0538ca91bf0c7b489993027169f3055e7cc154d
+translationSourceHash: a3dd053ab9db2b2f8b062f4ea15e11fbb3e583821c3909f51aa4007cbbd413ba
 ---
 
 # 連接埠、入口與 URL 路徑
@@ -23,6 +23,8 @@ translationSourceHash: 0338720ed05a1f70e8321d06a0538ca91bf0c7b489993027169f3055e
 | `7999` | 閘道入口 | 接收 Web 業務流量，並執行身分驗證與路由 |
 
 連接埠可在安裝時修改。疑難排解時，請以實際部署設定及後台顯示的存取入口為準，不要假設所有安裝都使用預設值。
+
+在完整標準 FPK 中，桌面管理頁與 Web 終端機請求由 `index.cgi` 轉送至 `127.0.0.1` 上的 Rust 管理入口（預設使用 `7998`）。這條路徑不會經過 fnOS 統一閘道，也不經過 Go 閘道、gRPC 或 WebSocket；終端機互動會重複使用管理入口的 HTTP Long Polling。
 
 ## 各部署方式的對外連接埠
 
@@ -69,7 +71,7 @@ TCP / UDP 通訊協定映射會額外監聽各自的對外連接埠，不經過 
 - macOS 管理面板強制使用本機回環，`7999` 可作為服務入口；它不呼叫 `iptables`、不管理 macOS 防火牆，也不支援直連、智慧連線或 SSH 安全性。協定映射連接埠需手動放行。
 - Windows 的 `7999` 預設監聽所有介面；安裝程式建立的 `FnKnock Gateway` 靜態程式規則只套用於「網域／私人」Network Profile。此版本仍不支援直連模式、應用程式內主機防火牆管理、智慧連線、內建 Tunnel 或 SSH 安全性。開放公網存取前，務必檢查路由器／NAT、IPv6、ISP 與第三方安全軟體。
 
-上述平台都支援 Web 終端機，但只連線管理員設定並確認主機指紋的遠端 SSH 目標，不會開啟 fn-knock 主機的本機 Shell。
+各發行平台都可使用遠端 SSH Web 終端機。完整標準 FPK、Linux、macOS 與 OpenWrt 還支援預設關閉的本機 PTY；Lite、Docker、Synology、Windows 與開發環境僅提供遠端 SSH。本機 PTY 不會新增對外連接埠，也不透過 `localhost` SSH，而是由 Rust 管理服務以 fn-knock 服務的有效 UID / GID 直接啟動；啟用前應核對執行身分、Shell 與初始目錄並完成風險確認。工作階段生命週期與權限邊界請參閱 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 對 Host 或路徑路由而言，`fn-knock` 只能保護確實通過閘道的請求。若上游服務仍監聽公網或區域網路可達的位址，使用者依然可能繞過閘道直接連線。直連授權是例外：它仰賴受支援的主機防火牆，只有登入後的來源 IP 取得授權時，才暫時放行原始連接埠；請勿另外加入過度寬鬆的公網放行規則。
 

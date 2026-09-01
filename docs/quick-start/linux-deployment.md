@@ -98,6 +98,12 @@ sudo knock logs --follow
 sudo knock rollback
 ```
 
+## Web 终端
+
+Linux 主机版同时支持连接管理员配置并确认主机指纹的远程 SSH 目标，以及默认关闭的本机 PTY。本机 PTY 直接继承 fn-knock 服务的有效 UID / GID，不会降权、切换用户或通过 `localhost` SSH 建连；默认安装的服务通常以 root 运行，应以启用页面显示的实际执行身份为准。
+
+启用本机终端前，必须核对页面显示的执行身份、Shell 与初始目录并完成风险确认。关闭浏览器只会断开页面连接，服务仍在运行时会话会继续；服务重启、Shell 退出、主动结束会话或禁用本机终端会终止会话。完整操作与安全边界见 [Web 终端](/guide/web-terminal)。
+
 ## 数据与备份
 
 默认安装的主要路径为：

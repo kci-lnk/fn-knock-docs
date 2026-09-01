@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Linux へデプロイ（systemd / OpenRC）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
+translationSourceHash: 5d878fefa5145ece7068c64abf63584a843bfa133357423e92d976958e5f9cd9
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -107,6 +107,12 @@ systemd では `journalctl` を読み、OpenRC では `/var/log/fn-knock.log` �
 ```bash
 sudo knock rollback
 ```
+
+## Web ターミナル
+
+Linux ホスト版は、管理者が設定してホスト指紋を確認したリモート SSH ターゲットへの接続と、デフォルトでは無効なローカル PTY の両方に対応します。ローカル PTY は fn-knock サービスの実効 UID/GID をそのまま継承し、権限降格やユーザー切り替えを行わず、`localhost` SSH も使いません。デフォルトでインストールされるサービスは通常 root で動作しますが、有効化画面に表示される実際の実行ユーザーを基準に判断してください。
+
+ローカルターミナルを有効にする前に、画面に表示される実行ユーザー、Shell、初期ディレクトリを確認し、リスク確認を完了する必要があります。ブラウザーを閉じてもページとの接続が切れるだけで、サービスが動作している間はセッションが続行します。サービスの再起動、Shell の終了、セッションの明示的な終了、ローカルターミナルの無効化によってセッションが終了します。操作方法とセキュリティ境界については [Web ターミナル](/ja/guide/web-terminal)を参照してください。
 
 ## データとバックアップ
 

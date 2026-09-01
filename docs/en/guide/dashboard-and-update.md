@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 37bd259a84c594893daf0ccbf92b49487cb84632c526fce9a67910c9ad4dbbfb
+translationSourceHash: 6c4b7fc8cf627df111f7c2ca6ca81bc7c740574b2b668931c095651c8f55da9b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -62,7 +62,9 @@ Do not try to install an FPK from the update page on Docker, OpenWrt, or Synolog
 
 Check for a new version under `Version and updates`. When an update is available, the page downloads the FPK for the device architecture, verifies the file, and then installs it through fnOS App Center before restarting the app. The page shows progress during download, verification, and installation; do not close it during the installation stage.
 
-The admin console and gateway are briefly unavailable during the update. The page waits until the new backend reports that it is ready, then loads the new frontend through a cache-isolated URL. If the browser still requests an old code chunk that has been replaced, the console performs at most one guarded automatic refresh, avoiding both a blank page and a reload loop. If automatic reconnection times out, the installation has not necessarily failed; reopen the app from the fnOS desktop and inspect its runtime state.
+The admin console and gateway are briefly unavailable during the update. The page waits until the new backend reports that it is ready, then loads the new frontend through a cache-isolated URL. If the browser still requests an old JavaScript chunk that has been replaced, the console performs at most one guarded automatic refresh, avoiding both a blank page and a reload loop. Only if that automatic recovery fails does it ask you to reload manually. If automatic reconnection times out, the installation has not necessarily failed; reopen the app from the fnOS desktop and inspect its runtime state.
+
+Before switching packages, the installer validates and puts the new package's lifecycle entry points in place, then asks fnOS App Center to stop the old instance. After installation, it waits for App Center state changes and retries startup when needed. Shutdown uses a bounded check for managed FN Connect WAF rules: a temporarily unreadable firewall state is recorded as a warning and shutdown continues, while a confirmed managed rule that remains and cannot be removed aborts the update. This avoids false timeouts caused by App Center state lag or firewall lock contention without ignoring a genuine process-stop failure.
 
 Export a configuration backup before starting. After completion, verify the running application, authentication settings, and gateway entry points. If menus or styling still clearly match the previous frontend, reopen the app from the fnOS desktop first. Clear only this site's browser cache if the problem remains; do not remove the application data directory.
 

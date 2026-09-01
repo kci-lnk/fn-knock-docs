@@ -152,8 +152,10 @@ fn-knock-reset-panel-password
 | 直连模式、宿主机防火墙管理 | 不支持；网关 WAN 入站规则也需在 OpenWrt 防火墙、VPN 或上级网关中自行维护 |
 | 智能连接 | 不支持；需要分流时在 OpenWrt 的 `dnsmasq`、DHCP 或其他本地 DNS 中自行配置 |
 | SSH 安全 | 不支持；使用 OpenWrt 自身的 SSH 日志、防火墙或安全插件 |
-| Web 终端 | 支持连接管理员配置并确认主机指纹的远程 SSH 目标；不会打开 OpenWrt 本机 Shell |
+| Web 终端 | 支持远程 SSH，以及默认关闭的 OpenWrt 本机 PTY |
 | 自动 HTTPS | 当前 OpenWrt 软件包不支持 |
+
+本机 PTY 直接继承 fn-knock 服务的有效 UID / GID，不会降权、切换用户或通过 `localhost` SSH 建连。启用前必须核对页面显示的执行身份、Shell 与初始目录并完成风险确认。关闭浏览器只会断开页面连接，服务仍在运行时会话会继续；服务重启、Shell 退出、主动结束会话或禁用本机终端会终止会话。完整说明见 [Web 终端](/guide/web-terminal)。
 
 `fn-knock` 不能替代 OpenWrt 固件更新、路由器备份和防火墙最小暴露原则。
 

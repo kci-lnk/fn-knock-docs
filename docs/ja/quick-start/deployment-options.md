@@ -3,7 +3,7 @@ lang: ja-JP
 title: "デプロイ方法とアクセス構成を選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 442bfa970135a6bed02b970bbe424fdd37a2b2fc87beaffe313a113198820aab
+translationSourceHash: 2545e789130b89c155985e30770af3836744343af92b484ec9e12a830ef9e64b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -28,7 +28,11 @@ fn-knock は公開口の集約と前段認証を担うものです。OS やア�
 
 Docker、OpenWrt、Linux、macOS、Windows の管理画面には、専用のパネルパスワードを設定します。このパスワードは管理画面を保護するためのもので、ゲートウェイ入口で使う TOTP、ユーザー名とパスワード、パスキーとは別の認証情報です。
 
-fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプロイではなくネイティブの非 root 簡易パッケージで、表にある標準 FPK の完全なホスト権限を持ちません。Lite は Host プロキシ、認証、DDNS、証明書、WAF、組み込み FRP / Cloudflared、監視、リモート SSH Web ターミナルに対応します。ダイレクトモードとホストのファイアウォール、スマート接続、システム時刻同期、自動 HTTPS、fnOS 証明書ストア同期、FN Connect WAF 接続、アプリ内更新には対応しません。ここでいう「自動 HTTPS」は、ISP と受信経路が TCP `80 / 443` を許可している場合の標準ポート直結支援機能です。Lite が証明書や HTTPS を利用できないという意味ではありません。各配布パッケージの Web ターミナルは、管理者が設定してホスト鍵指紋を確認したリモート SSH ターゲットにだけ接続し、デプロイ先ホストのローカル Shell は開きません。完全な境界と移行方法は、[アプリストア Lite と標準 FPK の違い](/ja/quick-start/fpk-lite-vs-standard)を参照してください。
+fnOS 機器のアプリ名が `Knock Lite` の場合、それは Docker デプロイではなくネイティブの非 root 簡易パッケージで、表にある標準 FPK の完全なホスト権限を持ちません。Lite は Host プロキシ、認証、DDNS、証明書、WAF、組み込み FRP / Cloudflared、監視、リモート SSH Web ターミナルに対応します。ダイレクトモードとホストのファイアウォール、スマート接続、システム時刻同期、自動 HTTPS、fnOS 証明書ストア同期、FN Connect WAF 接続、アプリ内更新には対応しません。ここでいう「自動 HTTPS」は、ISP と受信経路が TCP `80 / 443` を許可している場合の標準ポート直結支援機能です。Lite が証明書や HTTPS を利用できないという意味ではありません。完全な境界と移行方法は、[アプリストア Lite と標準 FPK の違い](/ja/quick-start/fpk-lite-vs-standard)を参照してください。
+
+すべての配布プラットフォームでリモート SSH Web ターミナルを利用でき、管理者が設定してホスト指紋を確認した SSH ターゲットへ接続できます。完全な標準 FPK、Linux、macOS、OpenWrt はデプロイ先ホストのローカル PTY にも対応しますが、デフォルトでは無効です。Lite、Docker、Synology、Windows、開発環境はリモート SSH だけを提供し、ローカル Shell を開きません。
+
+ローカル PTY は `localhost` への SSH 接続ではなく、fn-knock サービスの実効 UID/GID をそのまま継承し、自動的な権限降格やユーザー切り替えを行いません。有効にする前にリスク確認を完了し、画面に表示される実行ユーザー、Shell、初期ディレクトリを確認してください。サービスが特権ユーザーで動作している場合、ターミナルのコマンドも同じ権限を持ちます。ブラウザーを閉じてもページとの接続が切れるだけで、セッションは続行します。サービスの再起動、Shell の終了、セッションの明示的な終了、ローカルターミナルの無効化によってセッションが終了します。詳しくは [Web ターミナル](/ja/guide/web-terminal)を参照してください。
 
 インストール手順：
 

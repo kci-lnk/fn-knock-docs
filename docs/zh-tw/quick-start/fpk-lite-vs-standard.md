@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 應用程式商店 Lite 與官網標準 FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
+translationSourceHash: a6f6ac360433f1a35d62d48dedde52243ef0b7d7121de043ce629698dfcd54e1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -32,6 +32,7 @@ translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c
 - fnOS SSL 憑證庫同步；
 - FN Connect 流量接入 WAF；
 - 應用程式內更新；
+- 需要在 Web 終端機中直接開啟 fnOS Host 的本機 PTY，並接受標準 FPK 服務身分對應的權限風險；
 - 公網 `80 / 443` 可連線時使用標準連接埠直連與自動 HTTPS。
 
 ## 功能比較
@@ -52,9 +53,11 @@ translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c
 | 自動 HTTPS | 不支援 | 支援 | 指公網 `80 / 443` 可連線時的標準連接埠直連輔助能力，不代表 Lite 不支援 HTTPS |
 | fnOS SSL 憑證庫同步 | 不支援 | 支援 | Lite 內的憑證不會自動寫入 fnOS 系統憑證記錄 |
 | fnOS 網路最佳化 | 不支援 | 支援 | BBR、TCP MTU 探測等設定需要修改主機 `sysctl` |
-| Web 終端機 | 支援 | 支援 | 兩者都只連線管理員設定並確認主機指紋的遠端 SSH 目標，不提供主機 Shell |
+| Web 終端機 | 僅遠端 SSH | 遠端 SSH + 可選本機 PTY | Lite 不提供 Host Shell；標準 FPK 的本機 PTY 預設關閉 |
 | FN Connect 流量接入 WAF | 不支援 | 支援 | 此入口需要主機網路與防火牆權限 |
 | 應用程式內更新 | 不支援 | 支援 | Lite 透過應用程式商店或手動安裝新套件；標準 FPK 可從管理後台更新 |
+
+標準 FPK 的本機 PTY 會直接繼承 fn-knock 服務的有效 UID / GID。標準 FPK 服務以 root 執行，因此本機 PTY 也具備 root 權限；它不會降權、切換使用者或透過 `localhost` SSH 建立連線。啟用前必須核對頁面顯示的執行身分、Shell 與初始目錄，並完成風險確認。關閉瀏覽器只會中斷頁面連線，工作階段仍會繼續；服務重新啟動、Shell 結束、主動結束工作階段或停用本機終端機會終止工作階段。詳見 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 ## 自動 HTTPS 不等於 HTTPS 支援
 

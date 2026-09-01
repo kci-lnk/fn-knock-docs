@@ -3,7 +3,7 @@ lang: ko-KR
 title: "실행 모드 선택"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
+translationSourceHash: 2e6c629a776a2fa656349a609134a99b200ba7f77869ec17794281bee8405ce7
 ---
 
 # 실행 모드 선택
@@ -14,7 +14,7 @@ translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a3
 
 이 문서의 내장 터널 절차는 관리 패널에서 실제로 FRP 또는 Cloudflared를 제공하는 배포에만 적용됩니다. Windows의 `7999`는 기본적으로 모든 인터페이스에서 수신하므로 공인 IP 직접 연결이나 별도로 관리하는 터널의 오리진으로 사용할 수 있습니다. 하지만 Windows 버전은 내장 FRP/Cloudflared, 직접 연결 접근 허용 및 동적 호스트 방화벽 관리를 제공하지 않습니다. 외부 접속 가능 여부는 Windows 방화벽 프로필, 라우터/NAT, IPv6 및 ISP 정책에 따라 달라집니다. 자세한 내용은 [Windows x86_64 배포](/ko/quick-start/windows-deployment)를 참고합니다.
 
-macOS는 내장 FRP/Cloudflared와 원격 SSH 웹 터미널을 제공하지만 직접 연결 접근 허용, `iptables`, macOS 호스트 방화벽 관리, Smart Connect 또는 SSH 보안은 지원하지 않습니다. 업데이트는 `sudo knock update`를 사용합니다. [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
+macOS는 내장 FRP/Cloudflared, 원격 SSH 웹 터미널 및 기본적으로 비활성화된 로컬 PTY를 제공하지만 직접 연결 접근 허용, `iptables`, macOS 호스트 방화벽 관리, Smart Connect 또는 SSH 보안은 지원하지 않습니다. 업데이트는 `sudo knock update`를 사용합니다. [macOS 배포](/ko/quick-start/macos-deployment)를 참고합니다.
 
 ## 1. 네트워크 토폴로지 선택
 
@@ -104,6 +104,6 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - Windows는 직접 연결 접근 허용, 내장 호스트 방화벽 관리, Smart Connect, 내장 FRP/Cloudflared, SSH 보안을 지원하지 않습니다. 웹 업데이트 페이지에서도 Windows 업데이트를 설치할 수 없습니다.
 - Synology DSM 7 SPK는 내장 FRP/Cloudflared를 지원하지만 직접 연결 접근 허용, 호스트 방화벽 관리, Smart Connect, SSH 보안, 웹 UI에서의 업데이트는 지원하지 않습니다.
 
-모든 배포 패키지의 웹 터미널은 설정된 원격 SSH 대상에만 연결하며 로컬 Shell은 제공하지 않습니다.
+모든 배포 플랫폼은 관리자가 설정하고 호스트 지문을 확인한 원격 SSH 대상에 연결할 수 있습니다. 정식 표준 FPK, Linux, macOS 및 OpenWrt에서는 기본적으로 비활성화된 로컬 PTY도 제공합니다. Lite, Docker, Synology, Windows 및 개발 환경은 원격 SSH만 지원합니다. 로컬 PTY는 fn-knock 서비스의 유효 UID/GID를 직접 상속하며 권한을 낮추거나 `localhost` SSH를 사용하지 않습니다. 활성화하기 전에 실행 계정, Shell 및 초기 디렉터리를 확인하고 위험을 승인해야 합니다. 브라우저를 닫아도 페이지 연결만 끊기며 서비스 재시작, Shell 종료, 세션 직접 종료 또는 로컬 터미널 비활성화가 있어야 세션이 끝납니다. 자세한 내용은 [웹 터미널](/ko/guide/web-terminal)을 참고합니다.
 
 전환 후에는 페이지가 열리는지만 확인하지 말고 실제 외부 네트워크에서 엔드포인트, Host, 클라이언트 IP, 접근 허용 유형, 업스트림 대상을 점검합니다.

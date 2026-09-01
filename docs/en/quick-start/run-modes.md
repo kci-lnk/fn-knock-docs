@@ -3,7 +3,7 @@ lang: en-US
 title: "Choose a Runtime Mode"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
+translationSourceHash: 2e6c629a776a2fa656349a609134a99b200ba7f77869ec17794281bee8405ce7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,7 +16,7 @@ Host routing is the default for web services. Reserve Path mode for existing pat
 
 The in-app tunnel steps on this page apply only to deployments whose admin interface actually provides FRP or Cloudflared. On Windows, `7999` listens on all interfaces by default and can serve as the origin for direct public access or a self-managed tunnel. Windows does not include FRP, Cloudflared, Direct mode authorization, or dynamic host firewall management. External reachability still depends on the active Windows Firewall profile, router or NAT, IPv6 firewall, and ISP policy. See [Deploy on Windows (x86_64)](/en/quick-start/windows-deployment).
 
-macOS includes built-in FRP / Cloudflared and the remote-SSH Web Terminal, but not Direct mode authorization, `iptables`, macOS host-firewall management, Smart Connect, or SSH security. Use `sudo knock update` for updates. See [Deploy on macOS](/en/quick-start/macos-deployment).
+macOS includes built-in FRP / Cloudflared, remote SSH targets, and an optional local PTY in Web Terminal. The local PTY is disabled by default and runs as the fn-knock LaunchDaemon identity. macOS does not provide Direct mode authorization, `iptables`, macOS host-firewall management, Smart Connect, or SSH security. Use `sudo knock update` for updates. See [Deploy on macOS](/en/quick-start/macos-deployment).
 
 ## 1. Choose a network topology
 
@@ -106,6 +106,6 @@ When the gateway identifies a loopback, private, or link-local source, authentic
 - Windows does not support Direct mode authorization, in-app host firewall management, Smart Connect, built-in FRP / Cloudflared, or SSH security. The web update page also cannot install Windows updates.
 - The Synology DSM 7 SPK includes FRP and Cloudflared, but does not support Direct mode authorization, host firewall management, Smart Connect, SSH security, or updates from the web UI.
 
-Web Terminal on every package connects only to configured remote SSH targets and does not expose a local shell.
+Web Terminal on every package can connect to configured remote SSH targets. The standard fnOS FPK, OpenWrt, Linux, and macOS also support a local PTY that is disabled by default; Knock Lite, Docker, Synology, Windows, and development runtimes remain remote-SSH only. A local PTY directly inherits the effective fn-knock service UID and GID without dropping privileges or using SSH to `localhost`. Verify the displayed identity, shell, and initial directory and acknowledge the risk before enabling it. Closing the browser only detaches; a service restart, shell exit, explicit session termination, or disabling the local terminal ends the session. See [Web Terminal](/en/guide/web-terminal).
 
 After switching modes, test from a real external network and verify the endpoint, Host, client IP, authorization type, and upstream target. Simply confirming that a page opens is not enough.

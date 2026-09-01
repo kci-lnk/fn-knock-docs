@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Docker Compose 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
+translationSourceHash: 04059e2be511cb497765b5a2ddb3cea0a2d56c77c942698fce2d958480940abf
 ---
 
 # Docker Compose 部署
@@ -103,7 +103,7 @@ services:
       - /srv/public-site:/srv/public-site:ro
 ```
 
-管理後台的 `伺服器路徑` 請填入 `/srv/public-site`。修改 Compose 後執行 `docker compose up -d` 以重新建立 Container，再按下 `檢查路徑` 確認類型與讀取權限。請勿掛載 Host 的 `/`、`/etc`、fn-knock Data Volume，或包含金鑰與系統設定的目錄，也不要省略 `:ro`。
+修改 Compose 後執行 `docker compose up -d` 重新建立 Container，再在管理後台的 `伺服器路徑` 旁按一下 `瀏覽`。路徑瀏覽器讀取的是 Container 檔案系統，只應看到已掛載到 Container 內的內容；進入 `/srv/public-site`，按一下 `使用目前資料夾`，再儲存映射。請勿掛載 Host 的 `/`、`/etc`、fn-knock Data Volume 或包含金鑰與系統設定的目錄，也不要省略 `:ro`。
 
 ### 05 啟動並檢查狀態
 

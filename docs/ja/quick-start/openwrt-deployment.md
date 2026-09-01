@@ -3,7 +3,7 @@ lang: ja-JP
 title: "OpenWrt へデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65f4b972fd2f3eca7a0c48ed574481f22047d74e369bd36a2848fb64248c277f
+translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -160,8 +160,10 @@ fn-knock-reset-panel-password
 | 直接接続モード、ホストのファイアウォール管理 | 非対応。OpenWrt 自身のファイアウォール、VPN、上位ゲートウェイで元のポートを管理します |
 | スマート接続 | 非対応。OpenWrt の `dnsmasq`、DHCP、または別のローカル DNS でスプリット DNS を設定します |
 | SSH セキュリティ | 非対応。OpenWrt 自体の SSH ログ、ファイアウォール、セキュリティ系パッケージを使用します |
-| Web ターミナル | 管理者が設定し指紋を確認したリモート SSH ターゲットへ接続可能。OpenWrt のローカル Shell は開きません |
+| Web ターミナル | リモート SSH と、デフォルトでは無効な OpenWrt のローカル PTY に対応 |
 | 自動 HTTPS | 現在の OpenWrt パッケージでは非対応 |
+
+ローカル PTY は fn-knock サービスの実効 UID/GID をそのまま継承し、権限降格やユーザー切り替えを行わず、`localhost` SSH も使いません。有効にする前に、画面に表示される実行ユーザー、Shell、初期ディレクトリを確認し、リスク確認を完了する必要があります。ブラウザーを閉じてもページとの接続が切れるだけで、サービスが動作している間はセッションが続行します。サービスの再起動、Shell の終了、セッションの明示的な終了、ローカルターミナルの無効化によってセッションが終了します。詳しくは [Web ターミナル](/ja/guide/web-terminal)を参照してください。
 
 `fn-knock` は、OpenWrt ファームウェアの更新、ルーター設定のバックアップ、ファイアウォールで公開範囲を最小限に抑える運用を置き換えるものではありません。
 

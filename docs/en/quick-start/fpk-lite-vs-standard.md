@@ -3,7 +3,7 @@ lang: en-US
 title: "fnOS App Store Lite vs. the Standard FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
+translationSourceHash: a6f6ac360433f1a35d62d48dedde52243ef0b7d7121de043ce629698dfcd54e1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -32,6 +32,7 @@ Choose the standard FPK from the official website when you explicitly need any o
 - fnOS certificate-store synchronization;
 - FN Connect traffic routed through the WAF;
 - in-app updates;
+- a local PTY for the fnOS host in Web Terminal, after accepting the privilege risk of the standard FPK service identity;
 - standard-port public ingress and automatic HTTPS when public ports `80 / 443` are reachable.
 
 ## Feature comparison
@@ -52,9 +53,11 @@ Choose the standard FPK from the official website when you explicitly need any o
 | Automatic HTTPS | Not supported | Supported | A standard-port public-ingress helper used when public `80 / 443` are reachable; this does not mean Lite lacks HTTPS |
 | fnOS certificate-store synchronization | Not supported | Supported | Certificates in Lite are not written automatically to fnOS certificate records |
 | fnOS network tuning | Not supported | Supported | BBR and TCP MTU probing require changes to host `sysctl` settings |
-| Web Terminal | Supported | Supported | Both editions connect only to administrator-configured remote SSH targets and do not expose a host shell |
+| Web Terminal | Remote SSH only | Remote SSH + optional local PTY | The standard package's local PTY is disabled by default and runs as its service identity; Lite never exposes a local shell |
 | FN Connect traffic through WAF | Not supported | Supported | This ingress path requires host network and firewall permissions |
 | In-app updates | Not supported | Supported | Lite updates through the App Store or manual package installation; the standard FPK can update from the admin panel |
+
+The standard FPK's local PTY directly inherits the effective UID and GID of the fn-knock service. Because the standard FPK service runs as root, its local PTY is also root; it neither drops privileges, switches users, nor connects through SSH to `localhost`. Before enabling it, verify the displayed identity, shell, and initial directory and acknowledge the risk. Closing the browser only detaches from a continuing session. A service restart, shell exit, explicit session termination, or disabling the local terminal ends it. See [Web Terminal](/en/guide/web-terminal).
 
 ## Automatic HTTPS is not the same as HTTPS support
 

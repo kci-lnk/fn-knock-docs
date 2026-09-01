@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ab5b86cc9e4721620aa52f26f1dcca452db55894ec984baf72a39d585fea9a82
+translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b09ae08e2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -84,7 +84,7 @@ docs.example.com -> Directory /srv/docs
 | `Host / subdomain` | Matches the request Host; after saving a root domain, you can enter only `nas` |
 | `Response type` | Selects reverse proxy, single file, or directory; the authentication service always uses reverse proxy |
 | `Target` | Reverse proxy only; an HTTP, HTTPS, WS, or WSS upstream URL that may include a base path and must be reachable from the fn-knock runtime |
-| `Server path` | Static responses only; an absolute file or directory path readable from the fn-knock runtime environment |
+| `Server path` | Static responses only; enter an absolute path manually or select a file or directory with `Browse` from the filesystem visible to the fn-knock gateway process, then save the mapping |
 | `Target path usage` | When the Target has a non-root path, choose `Entry only` or `Fixed prefix`; the auth service always uses Entry mode |
 | `Require sign-in` | Redirects unsigned-in users to the auth Host, then returns them to the original URL |
 | `Disable` / `Schedule enable or disable` | Takes the mapping offline manually or controls its daily open window using server-local time |
@@ -118,6 +118,10 @@ After enabling `Grouped view` above the list, use `Manage groups` to create, ren
 Group order and Host order synchronize to the signed-in portal and built-in `/__select__` page. Exported browser bookmarks also use matching group folders. Switching back to list view preserves group assignments, but the portal, selection page, and newly exported bookmarks use a flat order. Search shows only matching groups and Hosts and expands results temporarily; collapsed state is stored only in the current browser.
 
 Grouping changes navigation and management order only. It does not change authentication, visibility, WAF, or the Target. The auth service always remains outside groups, and credential Host scopes still determine actual access.
+
+On narrow screens, mappings are shown as cards instead of requiring horizontal scrolling across the desktop table. Each card retains its title, Host, response destination (reverse-proxy address or server path), state, live traffic, and action menu. Groups can still be collapsed or selected as a whole, and the handle on the left can reorder cards within or between groups. Multi-select can select individual groups, individual mappings, or all current results.
+
+When an input is focused while editing a mapping on a phone, the dialog adjusts to the area left by the soft keyboard and scrolls the active field into view. Footer actions such as cancel, save, and path selection remain reachable; after the keyboard closes, the dialog returns to its bottom-sheet layout.
 
 ### Basic Auth Injects Reverse-Proxy Upstream Credentials
 
@@ -216,7 +220,7 @@ None of these features changes the fact that the Host is the primary routing key
 - Host routing and static responses work on fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows. A static path must be readable from the gateway process's filesystem; actual public reachability still depends on each platform's published ports and network path.
 - Automatic host-firewall changes and Smart Connect are provided only by the standard fnOS FPK runtime with the matching capabilities. Docker, OpenWrt, Linux, macOS, Synology, and Windows do not provide them.
 - Protocol mappings appear only in direct-public `Subdomain mode`. Even if extra ports are published for a Docker container, fn-knock does not manage the host firewall.
-- OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, Smart Connect, SSH Security, or in-app FPK updates there. Web Terminal can still connect to an administrator-configured remote SSH target, but it does not open a local OpenWrt shell.
+- OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, Smart Connect, SSH Security, or in-app FPK updates there. Web Terminal can connect to administrator-configured remote SSH targets and can also enable a local OpenWrt PTY that is off by default and inherits the fn-knock service identity.
 - fn-knock does not automatically close an upstream service's existing public listener and cannot replace upstream updates, backups, or least-privilege configuration.
 
 ## Verification and Troubleshooting

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Linux 部署（systemd / OpenRC）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
+translationSourceHash: 5d878fefa5145ece7068c64abf63584a843bfa133357423e92d976958e5f9cd9
 ---
 
 # Linux 部署（systemd / OpenRC）
@@ -105,6 +105,12 @@ sudo knock logs --follow
 ```bash
 sudo knock rollback
 ```
+
+## Web 終端機
+
+Linux 主機版同時支援連線管理員設定並確認主機指紋的遠端 SSH 目標，以及預設關閉的本機 PTY。本機 PTY 直接繼承 fn-knock 服務的有效 UID / GID，不會降權、切換使用者或透過 `localhost` SSH 建立連線；預設安裝的服務通常以 root 執行，應以啟用頁面顯示的實際執行身分為準。
+
+啟用本機終端機前，必須核對頁面顯示的執行身分、Shell 與初始目錄並完成風險確認。關閉瀏覽器只會中斷頁面連線，服務仍在執行時工作階段會繼續；服務重新啟動、Shell 結束、主動結束工作階段或停用本機終端機會終止工作階段。完整操作與安全邊界請參閱 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 ## 資料與備份
 

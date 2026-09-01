@@ -3,7 +3,7 @@ lang: en-US
 title: "NAT Traversal and Tunnels"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: baec212f5c1e0405344d0502a1b06be59dedf2e1896a33f26cc5cca99344b96d
+translationSourceHash: 62450db38b326ff058a57bdfd78160a99f899b9a1d2ea49230ba21774a40f4a0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -66,6 +66,10 @@ The page offers two editing methods:
 - `Custom` edits `frpc.toml` directly. `frpc verify` runs before saving; invalid syntax prevents saving and also prevents a reliable return to the form.
 
 Back up the original text before switching editing methods on an existing custom configuration.
+
+`System settings → FRP` labels the resource as `Not downloaded`, `Outdated`, or `Downloaded` (ready). Update an outdated resource before using it. The download is selected for the current platform and verified against a pinned official SHA-256 digest before extraction. Updating the resource does not automatically stop an older `frpc` process that is already running, avoiding an immediate tunnel interruption. That process may continue running, but an older instance that has stopped cannot start again until the resource is updated.
+
+After the new resource is installed, `Tunnels → FRP` continues to flag instances that are still using the older executable. Stop and start those instances one at a time until the warning disappears, then verify the tunnel from an external network. Installing the resource and switching a running process are separate steps; a ready resource state does not mean that every instance has switched.
 
 ## Cloudflared
 

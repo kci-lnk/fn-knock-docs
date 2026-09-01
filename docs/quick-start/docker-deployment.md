@@ -95,7 +95,7 @@ services:
       - /srv/public-site:/srv/public-site:ro
 ```
 
-管理后台中的 `服务器路径` 填写 `/srv/public-site`。修改 Compose 后运行 `docker compose up -d` 重新创建容器，再点击 `检查路径` 确认类型与读取权限。不要挂载宿主机 `/`、`/etc`、fn-knock 数据卷或包含密钥与系统配置的目录，也不要省略 `:ro`。
+修改 Compose 后运行 `docker compose up -d` 重新创建容器，再在管理后台的 `服务器路径` 旁点击 `浏览`。路径浏览器读取的是容器文件系统，只应看到已挂载到容器内的内容；进入 `/srv/public-site`，点击 `使用当前文件夹`，再保存映射。不要挂载宿主机 `/`、`/etc`、fn-knock 数据卷或包含密钥与系统配置的目录，也不要省略 `:ro`。
 
 ### 05 启动并检查状态
 

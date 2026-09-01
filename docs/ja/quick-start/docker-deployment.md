@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Docker Compose でデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
+translationSourceHash: 04059e2be511cb497765b5a2ddb3cea0a2d56c77c942698fce2d958480940abf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -105,7 +105,7 @@ services:
       - /srv/public-site:/srv/public-site:ro
 ```
 
-管理画面の `サーバーパス` には `/srv/public-site` を入力します。Compose を変更したら `docker compose up -d` でコンテナを再作成し、`パスを確認` をクリックして種類と読み取り権限を確認します。ホストの `/`、`/etc`、fn-knock のデータボリューム、秘密鍵やシステム設定を含むディレクトリはマウントせず、`:ro` も省略しないでください。
+Compose を変更したら `docker compose up -d` でコンテナを再作成し、管理画面の `サーバーパス` の横にある `参照` をクリックします。パスブラウザーが読み取るのはコンテナのファイルシステムであり、コンテナへマウントした内容だけが表示されます。`/srv/public-site` へ移動し、`現在のフォルダーを使用` をクリックしてから、マッピングを保存します。ホストの `/`、`/etc`、fn-knock のデータボリューム、秘密鍵やシステム設定を含むディレクトリはマウントせず、`:ro` も省略しないでください。
 
 ### 05 起動して状態を確認
 

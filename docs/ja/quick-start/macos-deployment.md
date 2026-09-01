@@ -3,7 +3,7 @@ lang: ja-JP
 title: "macOS へデプロイ（Intel / Apple Silicon）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
+translationSourceHash: 6ac73d539d39607a7bc84b7b15f9dcc784442731a4022e1c161d176c33aa73dd
 ---
 
 # macOS へデプロイ（Intel / Apple Silicon）
@@ -122,6 +122,12 @@ macOS は Host / パスのリバースプロキシ、認証、証明書と ACME�
 - Web 画面からの更新導入。`sudo knock update` を使用します。
 
 macOS でもホワイトリストはゲートウェイのアクセスポリシーに使われますが、ホストの元ポートを開放することはできません。
+
+### Web ターミナル
+
+macOS は、管理者が設定してホスト指紋を確認したリモート SSH ターゲットへの接続と、デフォルトでは無効なローカル PTY の両方に対応します。LaunchDaemon が root で動作するため、ローカル PTY もサービスの実効 UID/GID をそのまま継承し、通常は root になります。権限降格やユーザー切り替えは行わず、`localhost` SSH も使いません。
+
+ローカルターミナルを有効にする前に、画面に表示される実行ユーザー、Shell、初期ディレクトリを確認し、リスク確認を完了する必要があります。ブラウザーを閉じてもページとの接続が切れるだけで、サービスが動作している間はセッションが続行します。サービスの再起動、Shell の終了、セッションの明示的な終了、ローカルターミナルの無効化によってセッションが終了します。操作方法とセキュリティ境界については [Web ターミナル](/ja/guide/web-terminal)を参照してください。
 
 ## アンインストール
 

@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fnOS 앱 스토어 Lite와 표준 FPK 비교"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
+translationSourceHash: a6f6ac360433f1a35d62d48dedde52243ef0b7d7121de043ce629698dfcd54e1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -32,6 +32,7 @@ translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c
 - fnOS 인증서 저장소 동기화.
 - FN Connect 트래픽을 WAF로 전달하는 기능.
 - 앱 내 업데이트.
+- 웹 터미널에서 fnOS 호스트의 로컬 PTY를 직접 열고 표준 FPK 서비스 계정에 따른 권한 위험을 감수해야 하는 경우.
 - 공인 `80 / 443` 포트에 접근 가능한 환경에서 표준 포트 직접 연결과 자동 HTTPS 사용.
 
 ## 기능 비교
@@ -52,9 +53,11 @@ translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c
 | 자동 HTTPS | 미지원 | 지원 | 공인 `80 / 443`에 접근 가능한 경우 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 HTTPS를 지원하지 않는다는 뜻이 아닙니다 |
 | fnOS 인증서 저장소 동기화 | 미지원 | 지원 | Lite의 인증서는 fnOS 시스템 인증서 레코드에 자동으로 기록되지 않습니다 |
 | fnOS 네트워크 튜닝 | 미지원 | 지원 | BBR 및 TCP MTU 탐색은 호스트 `sysctl` 변경이 필요합니다 |
-| 웹 터미널 | 지원 | 지원 | 두 버전 모두 지문을 확인한 원격 SSH 대상에만 연결하며 호스트 Shell은 제공하지 않습니다 |
+| 웹 터미널 | 원격 SSH만 | 원격 SSH + 선택적 로컬 PTY | Lite는 호스트 Shell을 제공하지 않으며 표준 FPK의 로컬 PTY는 기본적으로 비활성화되어 있습니다 |
 | FN Connect 트래픽의 WAF 연결 | 미지원 | 지원 | 이 엔드포인트는 호스트 네트워크와 방화벽 권한이 필요합니다 |
 | 앱 내 업데이트 | 미지원 | 지원 | Lite는 앱 스토어 또는 수동 패키지 설치로 업데이트하고, 표준 FPK는 관리 패널에서 업데이트할 수 있습니다 |
+
+표준 FPK의 로컬 PTY는 fn-knock 서비스의 유효 UID/GID를 직접 상속합니다. 표준 FPK 서비스가 root로 실행되므로 로컬 PTY도 root 권한을 가지며 권한을 낮추거나 사용자를 전환하거나 `localhost` SSH를 사용하지 않습니다. 활성화하기 전에 화면에 표시된 실행 계정, Shell 및 초기 디렉터리를 확인하고 위험을 승인해야 합니다. 브라우저를 닫으면 페이지 연결만 끊기고 세션은 계속 실행됩니다. 서비스 재시작, Shell 종료, 세션 직접 종료 또는 로컬 터미널 비활성화가 있어야 세션이 끝납니다. 자세한 내용은 [웹 터미널](/ko/guide/web-terminal)을 참고합니다.
 
 ## 자동 HTTPS와 HTTPS 지원은 서로 다릅니다
 

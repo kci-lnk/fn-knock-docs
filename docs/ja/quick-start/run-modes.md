@@ -3,7 +3,7 @@ lang: ja-JP
 title: "実行モードを選ぶ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
+translationSourceHash: 2e6c629a776a2fa656349a609134a99b200ba7f77869ec17794281bee8405ce7
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,7 +16,7 @@ Web サービスには Host ルーティングを基本とします。パスモ�
 
 このページにあるアプリ内トンネルの手順は、管理画面から実際に FRP または Cloudflared を利用できるデプロイ方式だけが対象です。Windows の `7999` はデフォルトで全インターフェースを待ち受けるため、グローバル IP からの直接公開や自前で管理するトンネルのオリジンにできます。ただし、FRP、Cloudflared、直接接続の IP 許可、ホストファイアウォールの動的管理は内蔵していません。外部から到達できるかどうかは、Windows ファイアウォールのプロファイル、ルーター / NAT、IPv6、ISP のポリシーにも依存します。詳しくは [Windows x86_64 へのデプロイ](/ja/quick-start/windows-deployment)を参照してください。
 
-macOS は内蔵 FRP / Cloudflared とリモート SSH Web ターミナルを提供しますが、直接接続の許可、`iptables`、macOS ホストファイアウォール管理、スマート接続、SSH セキュリティには対応しません。更新には `sudo knock update` を使用します。[macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
+macOS は内蔵 FRP / Cloudflared、リモート SSH Web ターミナル、デフォルトでは無効なローカル PTY を提供しますが、直接接続の許可、`iptables`、macOS ホストファイアウォール管理、スマート接続、SSH セキュリティには対応しません。更新には `sudo knock update` を使用します。[macOS へのデプロイ](/ja/quick-start/macos-deployment)を参照してください。
 
 ## 1. ネットワーク構成を選ぶ
 
@@ -106,6 +106,6 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - Windows は、直接接続の IP 許可、アプリ内からのホストファイアウォール管理、スマート接続、内蔵 FRP / Cloudflared、SSH セキュリティに対応していません。Web の更新画面から Windows 版を更新することもできません。
 - Synology DSM 7 SPK は内蔵 FRP / Cloudflared に対応しますが、直接接続の IP 許可、ホストのファイアウォール管理、スマート接続、SSH セキュリティ、Web 画面からの更新には対応していません。
 
-すべての配布パッケージの Web ターミナルは、設定済みリモート SSH ターゲットだけへ接続し、ローカル Shell は公開しません。
+すべての配布プラットフォームで、管理者が設定してホスト指紋を確認したリモート SSH ターゲットへ接続できます。完全な標準 FPK、Linux、macOS、OpenWrt はデフォルトでは無効なローカル PTY も提供します。Lite、Docker、Synology、Windows、開発環境はリモート SSH だけを提供します。ローカル PTY は fn-knock サービスの実効 UID/GID をそのまま継承し、権限降格や `localhost` SSH は行いません。有効にする前に、実行ユーザー、Shell、初期ディレクトリを確認し、リスク確認を完了してください。ブラウザーを閉じてもページとの接続が切れるだけです。サービスの再起動、Shell の終了、セッションの明示的な終了、ローカルターミナルの無効化によってセッションが終了します。詳しくは [Web ターミナル](/ja/guide/web-terminal)を参照してください。
 
 切り替え後は、画面が開くかどうかだけで済ませず、実際の外部ネットワークから入口、Host、クライアント IP、許可の種類、上流の転送先を確認してください。

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ab5b86cc9e4721620aa52f26f1dcca452db55894ec984baf72a39d585fea9a82
+translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b09ae08e2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -84,7 +84,7 @@ docs.example.com -> 目錄 /srv/docs
 | `Host／子網域名稱` | 比對請求的 Host；已儲存根網域時可只填 `nas` |
 | `回應類型` | 選擇反向代理、單一檔案或目錄；驗證服務固定使用反向代理 |
 | `Target` | 僅供反向代理使用；HTTP、HTTPS、WS 或 WSS 上游 URL，可包含 Base Path，且必須能從 fn-knock 所在環境連線 |
-| `伺服器路徑` | 僅供靜態回應使用；填入 fn-knock Runtime 環境可讀取的檔案或目錄絕對路徑 |
+| `伺服器路徑` | 僅供靜態回應使用；可手動填入絕對路徑，或按一下 `瀏覽`，從 fn-knock 閘道程序可見的檔案系統中選取檔案／目錄；確認後仍須儲存映射 |
 | `目標路徑用法` | Target 含非根路徑時選擇 `僅作為入口` 或 `固定前綴`；驗證服務固定使用入口模式 |
 | `要求登入` | 尚未登入時導向身分驗證 Host，完成後返回原始 URL |
 | `停用`／`排程啟用或停用` | 手動下線，或依伺服器本機時間每天控制開放時段 |
@@ -118,6 +118,10 @@ docs.example.com -> 目錄 /srv/docs
 群組順序與 Host 順序會同步到登入後的傳送門及內建 `/__select__` 選擇頁；匯出瀏覽器書籤時也會建立對應的群組資料夾。切回清單檢視後，群組歸屬仍會保留，但傳送門、選擇頁及新匯出的書籤會使用扁平順序。搜尋時只顯示命中的群組與 Host，並暫時展開結果；收合狀態只儲存在目前瀏覽器。
 
 群組只會改變導覽與管理順序，不會修改驗證、可見性、WAF 或 Target。身分驗證服務永遠位於群組之外，憑據的 Host 服務範圍仍依實際存取權限判斷。
+
+窄螢幕裝置會將映射顯示為卡片清單，不再要求橫向捲動桌面表格。每張卡片保留標題、Host、回應目標（反向代理位址或伺服器路徑）、狀態、即時流量與更多操作；群組仍可收合或整組選取，拖曳左側把手可在群組內或群組之間排序。進入多選模式後，可以全選目前結果或選取單一群組。
+
+在手機上編輯映射並將焦點移至輸入欄位時，對話框會依軟體鍵盤的可見區域調整高度，並將目前輸入欄位捲入可見範圍；底部的取消、儲存或路徑選取操作仍可使用。軟體鍵盤收起後，對話框會恢復底部面板版面。
 
 ### Basic Auth 是反向代理的上游憑據注入
 
@@ -216,7 +220,7 @@ docs.example.com -> 目錄 /srv/docs
 - Host 路由與靜態回應可在飛牛 FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK 及 Windows 上使用；靜態路徑必須能從閘道處理程序所在的檔案系統讀取，實際能否從公網連線，仍取決於各平台的 Port Publishing 與網路路徑。
 - 自動寫入 Host 防火牆及智慧連線，只由具備對應 Runtime 能力的飛牛標準 FPK 提供；Docker、OpenWrt、Linux、macOS、Synology 與 Windows 均不提供。
 - 協定映射只會顯示在公網直連子網域模式中。即使 Docker 額外 Publish Port，也不會由 fn-knock 管理 Host 防火牆。
-- OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理、智慧連線、SSH 安全性或應用程式內 FPK 更新。Web 終端機仍可連線管理員設定的遠端 SSH 目標，但不會開啟 OpenWrt 本機 Shell。
+- OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理、智慧連線、SSH 安全性或應用程式內 FPK 更新。Web 終端機可連線管理員設定的遠端 SSH 目標，也可啟用預設關閉、繼承 fn-knock 服務身分的 OpenWrt 本機 PTY。
 - fn-knock 不會自動關閉 Upstream Service 原有的公網監聽，也無法取代 Upstream 更新、備份及最小權限設定。
 
 ## 驗證與疑難排解

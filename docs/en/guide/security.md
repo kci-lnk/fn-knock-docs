@@ -3,7 +3,7 @@ lang: en-US
 title: "Security Model and Baseline"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d230c595c28eab13387328c443de0dfca85aedb802ec7a708f3063f57d1521b6
+translationSourceHash: 43214c248b0a547cbb262032545017f3f42943309fef4bea18478ae45aa87990
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -64,11 +64,19 @@ The admin panel can change authentication, certificates, proxies, blacklists, an
 1. Configure the `Admin panel` access scope separately under `Auth`.
 2. Prefer limiting it to the LAN, a VPN, or a fixed trusted CIDR.
 3. Do not share weak credentials with a public application.
-4. On platforms that provide the terminal, account for the host privileges of the service process.
+4. Before enabling a local terminal, check the host privileges of the fn-knock service process.
 5. Keep a second administrator credential and a local-console recovery path.
 6. Regularly review active sessions, IP drift records, and Login backoff.
 
 Hiding the admin panel or changing its path is not access control. The entry point still needs authentication, network restrictions, and valid HTTPS.
+
+### High-Privilege Boundary of Web Terminal
+
+The standard fnOS FPK, Linux service, macOS, and OpenWrt can enable a local PTY, which is disabled by default. Knock Lite, Docker, Synology, Windows, and development runtimes provide remote SSH only. Enabling the local PTY requires acknowledging the risk and verifying the displayed service identity, shell, and initial directory.
+
+The local PTY directly inherits the effective UID and GID of the fn-knock management service. It does not drop privileges, switch users, or connect through SSH to `localhost`; if the service runs as root, the terminal is a root shell. Closing or refreshing the browser only detaches from the shell. A service restart, shell exit, administrator ending the session, or disabling the local terminal terminates it. Disabling while local sessions are active requires another confirmation and ends them first.
+
+Event Center records local-terminal enable and disable actions and session lifecycle, including the effective identity and whether it was privileged, but it does not record individual commands. Remote SSH likewise provides no command-level audit. Deploy host-side or remote-target auditing separately when compliance requires it. See [Web Terminal](/en/guide/web-terminal).
 
 ## Restrict Upstream Ports
 

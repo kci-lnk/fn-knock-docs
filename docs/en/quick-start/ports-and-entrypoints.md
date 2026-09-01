@@ -3,7 +3,7 @@ lang: en-US
 title: "Ports, Endpoints, and URL Paths"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0338720ed05a1f70e8321d06a0538ca91bf0c7b489993027169f3055e7cc154d
+translationSourceHash: a3dd053ab9db2b2f8b062f4ea15e11fbb3e583821c3909f51aa4007cbbd413ba
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -25,6 +25,8 @@ Ports `7998`, `7997`, and `7996` are internal component ports and must not be ex
 | `7999` | Gateway endpoint | Accepts web application traffic and applies authentication and routing |
 
 Ports can be changed during installation. When troubleshooting, use the deployed configuration and the endpoint shown in the admin interface rather than assuming that every installation uses the defaults.
+
+On the standard fnOS FPK, the desktop admin page and Web Terminal requests pass through `index.cgi` to the Rust management entry on `127.0.0.1` (using `7998` by default). This path does not traverse the fnOS unified gateway, Go gateway, gRPC, or WebSocket; terminal interaction reuses the management entry's HTTP long polling.
 
 ## Externally reachable ports by deployment
 
@@ -71,7 +73,7 @@ As a result:
 - The macOS admin panel is loopback-only, while `7999` can serve application traffic. It does not invoke `iptables`, manage the macOS firewall, or support Direct mode, Smart Connect, or SSH security. Manually allow protocol-mapping ports.
 - On Windows, `7999` listens on all interfaces by default. The installer's static `FnKnock Gateway` application rule applies only to the Domain and Private Windows Firewall profiles. Windows still does not support Direct mode, in-app host firewall management, Smart Connect, built-in tunnels, or SSH security. Before enabling public access, check the router or NAT, IPv6 firewall, ISP policy, and third-party security software.
 
-Web Terminal is available on all of these platforms, but connects only to administrator-configured remote SSH targets after host-fingerprint confirmation; it never opens a local shell on the fn-knock host.
+Web Terminal can connect to administrator-configured remote SSH targets after host-fingerprint confirmation on every package. The standard fnOS FPK, OpenWrt, Linux, and macOS also support an optional local PTY, while Knock Lite, Docker, Synology, Windows, and development runtimes remain remote-SSH only. The local PTY opens no additional public port and does not use SSH to `localhost`; the Rust management service starts it directly with the effective fn-knock service UID and GID. Verify the identity, shell, and initial directory and acknowledge the risk before enabling it. See [Web Terminal](/en/guide/web-terminal) for its lifecycle and privilege boundary.
 
 With Host or path routing, `fn-knock` protects only requests that actually pass through the gateway. If an upstream service still listens on an address reachable from the internet or LAN, users may bypass the gateway and connect to it directly. Direct mode is the exception: on a supported host firewall, it temporarily opens original ports only for a source IP authorized after sign-in. Do not add a separate broad public allow rule.
 

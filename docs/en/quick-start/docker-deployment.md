@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy with Docker Compose"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
+translationSourceHash: 04059e2be511cb497765b5a2ddb3cea0a2d56c77c942698fce2d958480940abf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -105,7 +105,7 @@ services:
       - /srv/public-site:/srv/public-site:ro
 ```
 
-Enter `/srv/public-site` as the `Server path` in the admin panel. After changing the Compose file, run `docker compose up -d` to recreate the container, then select `Check path` to verify the type and read permission. Do not mount the host root, `/etc`, the fn-knock data volume, or a directory containing keys or system configuration, and do not omit `:ro`.
+After changing the Compose file, run `docker compose up -d` to recreate the container, then select `Browse` next to `Server path` in the admin console. The path browser reads the container filesystem and should show only content mounted into the container. Enter `/srv/public-site`, select `Use current folder`, and save the mapping. Do not mount the host root, `/etc`, the fn-knock data volume, or a directory containing keys or system configuration, and do not omit `:ro`.
 
 ### 05 Start and verify
 

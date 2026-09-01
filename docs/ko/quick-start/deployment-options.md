@@ -3,7 +3,7 @@ lang: ko-KR
 title: "배포 및 접근 방식 선택"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 442bfa970135a6bed02b970bbe424fdd37a2b2fc87beaffe313a113198820aab
+translationSourceHash: 2545e789130b89c155985e30770af3836744343af92b484ec9e12a830ef9e64b
 ---
 
 # 배포 및 접근 방식 선택
@@ -26,7 +26,11 @@ fn-knock는 외부 엔드포인트를 한곳으로 모으고 서비스 앞단에
 
 Docker, OpenWrt, Linux, macOS, Windows의 관리 엔드포인트에는 별도의 패널 비밀번호를 설정합니다. 이 비밀번호는 관리 패널을 보호하며, 게이트웨이 엔드포인트에서 사용하는 TOTP, 사용자 이름과 비밀번호 또는 패스키와는 별개의 자격 증명입니다.
 
-fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네이티브 비 root 경량 패키지이며 표의 표준 FPK가 가진 완전한 호스트 권한은 없습니다. Lite는 Host 프록시, 인증, DDNS, 인증서, WAF, 내장 FRP / Cloudflared, 모니터링 및 원격 SSH 웹 터미널을 지원합니다. 직접 연결과 호스트 방화벽, Smart Connect, 시스템 시간 동기화, 자동 HTTPS, fnOS 인증서 저장소 동기화, FN Connect WAF 연결 또는 앱 내 업데이트는 지원하지 않습니다. 여기서 “자동 HTTPS”는 ISP와 인바운드 경로가 TCP `80 / 443`을 허용할 때 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 인증서나 HTTPS를 지원하지 않는다는 뜻이 아닙니다. 모든 배포 패키지의 웹 터미널은 관리자가 설정하고 호스트 지문을 확인한 원격 SSH 대상에만 연결하며 배포 호스트의 로컬 Shell은 열지 않습니다. 전체 범위와 마이그레이션 방법은 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
+fnOS 기기의 앱 이름이 `Knock Lite`라면 Docker 배포가 아니라 네이티브 비 root 경량 패키지이며 표의 표준 FPK가 가진 완전한 호스트 권한은 없습니다. Lite는 Host 프록시, 인증, DDNS, 인증서, WAF, 내장 FRP / Cloudflared, 모니터링 및 원격 SSH 웹 터미널을 지원합니다. 직접 연결과 호스트 방화벽, Smart Connect, 시스템 시간 동기화, 자동 HTTPS, fnOS 인증서 저장소 동기화, FN Connect WAF 연결 또는 앱 내 업데이트는 지원하지 않습니다. 여기서 “자동 HTTPS”는 ISP와 인바운드 경로가 TCP `80 / 443`을 허용할 때 사용하는 표준 포트 직접 연결 보조 기능이며, Lite가 인증서나 HTTPS를 지원하지 않는다는 뜻이 아닙니다. 전체 범위와 마이그레이션 방법은 [앱 스토어 Lite와 표준 FPK 비교](/ko/quick-start/fpk-lite-vs-standard)를 참고하세요.
+
+모든 배포 플랫폼은 관리자가 설정하고 호스트 지문을 확인한 SSH 대상에 연결하는 원격 SSH 웹 터미널을 제공합니다. 정식 표준 FPK, Linux, macOS 및 OpenWrt에서는 배포 호스트의 로컬 PTY도 지원하지만 기본적으로 비활성화되어 있습니다. Lite, Docker, Synology, Windows 및 개발 환경은 원격 SSH만 제공하며 로컬 Shell을 열지 않습니다.
+
+로컬 PTY는 `localhost`에 연결하는 SSH 세션이 아니라 fn-knock 서비스의 유효 UID/GID를 직접 상속하며 자동으로 권한을 낮추거나 사용자를 전환하지 않습니다. 활성화하기 전에 위험을 확인하고 화면에 표시된 실행 계정, Shell 및 초기 디렉터리를 점검해야 합니다. 서비스가 특권 계정으로 실행되면 터미널 명령도 같은 권한을 가집니다. 브라우저를 닫으면 페이지 연결만 끊기고 세션은 계속 실행됩니다. 서비스 재시작, Shell 종료, 세션 직접 종료 또는 로컬 터미널 비활성화가 있어야 세션이 끝납니다. 자세한 내용은 [웹 터미널](/ko/guide/web-terminal)을 참고합니다.
 
 설치 문서:
 

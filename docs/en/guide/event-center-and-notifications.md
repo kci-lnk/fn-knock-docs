@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e60924f514c60d465735ddf93c5df9047f2c35992b4828b340c75c1f04297d8c
+translationSourceHash: 4ea4e8abb6f58e02c343977deca442df34629cc2a95be0f9d82802a50740bbea
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -33,7 +33,7 @@ The Events page recognizes system events including:
 - SSH: `SSH login success`, `SSH login failure`, and `SSH IP blocked`;
 - Network: `DDNS updated`, FRP connected/disconnected, and Cloudflared connected/disconnected;
 - Wake-on-LAN: WOL broadcast completed from an administrator, the portal, Blinker, or Bemfa;
-- Terminal: SSH target changes, host-fingerprint confirmation, connection tests, and session creation or termination;
+- Terminal: local-terminal enable or disable, SSH target changes, host-fingerprint confirmation, connection tests, and local or SSH session creation, termination, exit, or loss;
 - System: `App update available`, CPU alert/recovered, and memory alert/recovered;
 - Runtime: component started, stopped, restarted, health check failed, recovered, and exited abnormally.
 
@@ -50,6 +50,8 @@ The page lets you:
 `Clear events` deletes every event stored in the Event Center. The count shown in parentheses describes how many events match the current view; it does not mean that only filtered results will be cleared. This operation cannot be undone, but it does not clear notification rules or delivery records.
 
 Depending on the event type, the details can include credential, authentication method, session, IP and location, failure count, block duration, DDNS address changes, Trace ID, WAF rule, tunnel PID, WOL target and delivery source, resource threshold, and other fields. A Gateway visibility block also records the request Host, path, method, and whether the effective scope was global or a custom Host rule. When troubleshooting, copy the details and compare them with request logs, WAF logs, tunnel logs, or device online status.
+
+Local-terminal changes and sessions identify the terminal backend, the effective service identity, and whether it was root. Terminal events do not record each command entered; use operating-system or SSH-side command auditing when that level of evidence is required.
 
 Use `Trace ID lookup` at the top of the page with a complete ID from a response header, block page, request log, or notification. Full-chain trace associates the request with WAF, system events, notification triggers, and deliveries. Older events or disabled collection can produce a partial chain.
 
@@ -176,7 +178,7 @@ A rule can contain multiple providers, but each provider can be added to that ru
 
 High-frequency events such as login success and SSH login success can generate many notifications when the threshold is 1. Tune the window, trigger count, and cooldown for your actual traffic.
 
-An app-update event and the notification it triggers include release notes only for the current latest version. They no longer concatenate notes from several older versions. To review earlier releases, use `Version and updates` or the project release history; treat the notification body as a summary of the version currently being offered.
+When an app-update event contains release notes, it writes a bounded summary for the currently offered release into both the plain-text and Markdown message bodies. Providers that display only one body format therefore still receive the summary instead of finding it only in structured details. The event does not concatenate notes from older releases. To review complete or earlier release notes, use `Version and updates` or the project release history.
 
 ## Review Delivery Results
 

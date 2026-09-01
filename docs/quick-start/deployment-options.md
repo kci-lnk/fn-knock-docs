@@ -20,7 +20,9 @@ Docker、OpenWrt、Linux、macOS 与 Windows 的管理入口需要单独设置�
 
 飞牛设备中若应用名称为 `敲门 knock Lite`，它是原生非 root 精简包，不是 Docker 部署，也不具备表中标准 FPK 的完整宿主机权限。Lite 支持 Host 反代、认证、DDNS、证书、WAF、内置 FRP / Cloudflared、监控和远程 SSH Web 终端；不支持直连与宿主机防火墙、智能连接、系统时钟同步、自动 HTTPS、飞牛证书库同步、FN Connect WAF 接入或应用内更新。这里的“自动 HTTPS”特指运营商和入站链路允许 TCP `80 / 443` 时的标准端口直达辅助能力，不代表 Lite 不能使用证书和 HTTPS。完整边界与迁移方法见[应用商店 Lite 与官网标准 FPK 的区别](/quick-start/fpk-lite-vs-standard)。
 
-各发行平台的 Web 终端都连接管理员配置并确认主机指纹的远程 SSH 目标，不打开部署主机的本机 Shell。
+所有发行平台都保留远程 SSH Web 终端，用于连接管理员配置并确认主机指纹的 SSH 目标。完整的标准 FPK、Linux、macOS 与 OpenWrt 还支持部署主机的本机 PTY，且默认关闭；Lite、Docker、群晖、Windows 与开发环境仅提供远程 SSH，不会打开本机 Shell。
+
+本机 PTY 不是连接 `localhost` 的 SSH 会话，而是直接继承 fn-knock 服务的有效 UID / GID，不会自动降权或切换用户。启用前必须完成风险确认，并核对页面显示的执行身份、Shell 与初始目录；若服务以特权身份运行，终端命令也具有相同权限。关闭浏览器只会断开页面连接，会话仍会继续；服务重启、Shell 退出、主动结束会话或禁用本机终端才会终止会话。完整说明见 [Web 终端](/guide/web-terminal)。
 
 安装说明：
 

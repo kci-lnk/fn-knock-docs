@@ -6,7 +6,7 @@ Web 服务以 Host 路由为主线。路径模式保留给已有路径入口或�
 
 本页的应用内隧道步骤只适用于后台实际提供 FRP 或 Cloudflared 的部署。Windows 的 `7999` 默认监听全部接口，可作为公网直达或自管隧道的回源，但没有内置 FRP、Cloudflared、直连授权或动态宿主机防火墙管理；外部可达性仍取决于 Windows 防火墙配置文件、路由器/NAT、IPv6 与运营商策略。详见 [Windows x86_64 部署](/quick-start/windows-deployment)。
 
-macOS 提供内置 FRP / Cloudflared 和远程 SSH Web 终端，但不提供直连授权、`iptables`、macOS 主机防火墙管理、智能连接或 SSH 安全；更新使用 `sudo knock update`。详见 [macOS 部署](/quick-start/macos-deployment)。
+macOS 提供内置 FRP / Cloudflared、远程 SSH Web 终端和默认关闭的本机 PTY，但不提供直连授权、`iptables`、macOS 主机防火墙管理、智能连接或 SSH 安全；更新使用 `sudo knock update`。详见 [macOS 部署](/quick-start/macos-deployment)。
 
 ## 1. 选择网络拓扑
 
@@ -96,6 +96,6 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - Windows 不支持直连授权、应用内宿主机防火墙管理、智能连接、内置 FRP / Cloudflared 或 SSH 安全；网页更新页也不能安装 Windows 更新。
 - 群晖 DSM 7 SPK 支持内置 FRP / Cloudflared，但不支持直连授权、宿主机防火墙管理、智能连接、SSH 安全或网页内更新。
 
-所有发行平台的 Web 终端都只连接管理员配置并确认主机指纹的远程 SSH 目标，不提供本机 Shell。
+所有发行平台都可以连接管理员配置并确认主机指纹的远程 SSH 目标。完整的标准 FPK、Linux、macOS 与 OpenWrt 还提供默认关闭的本机 PTY；Lite、Docker、群晖、Windows 与开发环境仅提供远程 SSH。本机 PTY 直接继承 fn-knock 服务的有效 UID / GID，不做降权或 `localhost` SSH，启用前应核对执行身份、Shell 与初始目录并完成风险确认。关闭浏览器只会断开页面连接；服务重启、Shell 退出、主动结束会话或禁用本机终端才会终止会话。详见 [Web 终端](/guide/web-terminal)。
 
 切换后应从真实外部网络检查入口、Host、客户端 IP、授权类型和上游目标，而不只检查页面是否能打开。

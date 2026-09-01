@@ -3,7 +3,7 @@ lang: zh-TW
 title: "選擇執行模式"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c43f74cab3653d2ad10b66dadd235a2fee3f2c7fcaabd85e6793f66a329a8afa
+translationSourceHash: 2e6c629a776a2fa656349a609134a99b200ba7f77869ec17794281bee8405ce7
 ---
 
 # 選擇執行模式
@@ -14,7 +14,7 @@ Web 服務以 Host 路由為主要方案。路徑模式保留給既有的路徑�
 
 本頁的應用程式內 Tunnel 步驟，只適用於管理後台確實提供 FRP 或 Cloudflared 的部署方式。Windows 的 `7999` 預設監聽所有介面，可作為公網直連或自管 Tunnel 的回源端點，但不內建 FRP、Cloudflared、直連授權或動態主機防火牆管理；是否能從外部連線，仍取決於 Windows Firewall Profile、路由器／NAT、IPv6 與 ISP 原則。詳情請參閱 [Windows x86_64 部署](/zh-tw/quick-start/windows-deployment)。
 
-macOS 提供內建 FRP / Cloudflared 與遠端 SSH Web 終端機，但不提供直連授權、`iptables`、macOS 主機防火牆管理、智慧連線或 SSH 安全性；更新使用 `sudo knock update`。詳見 [macOS 部署](/zh-tw/quick-start/macos-deployment)。
+macOS 提供內建 FRP / Cloudflared、遠端 SSH Web 終端機，以及預設關閉的本機 PTY，但不提供直連授權、`iptables`、macOS 主機防火牆管理、智慧連線或 SSH 安全性；更新使用 `sudo knock update`。詳見 [macOS 部署](/zh-tw/quick-start/macos-deployment)。
 
 ## 1. 選擇網路拓撲
 
@@ -104,6 +104,6 @@ https://example.com/fnos  -> http://127.0.0.1:5666
 - Windows 不支援直連授權、應用程式內主機防火牆管理、智慧連線、內建 FRP / Cloudflared 或 SSH 安全性；網頁版更新頁面也無法安裝 Windows 更新。
 - Synology DSM 7 SPK 支援內建 FRP / Cloudflared，但不支援直連授權、主機防火牆管理、智慧連線、SSH 安全性或網頁內更新。
 
-所有發行平台的 Web 終端機都只連線已設定的遠端 SSH 目標，不提供本機 Shell。
+所有發行平台都可以連線管理員設定並確認主機指紋的遠端 SSH 目標。完整標準 FPK、Linux、macOS 與 OpenWrt 還提供預設關閉的本機 PTY；Lite、Docker、Synology、Windows 與開發環境僅提供遠端 SSH。本機 PTY 直接繼承 fn-knock 服務的有效 UID / GID，不會降權或透過 `localhost` SSH，啟用前應核對執行身分、Shell 與初始目錄並完成風險確認。關閉瀏覽器只會中斷頁面連線；只有服務重新啟動、Shell 結束、主動結束工作階段或停用本機終端機才會終止工作階段。詳見 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 切換後，請從真正的外部網路檢查入口、Host、Client IP、授權類型與上游目標，不要只確認頁面是否能開啟。

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "macOS 部署（Intel / Apple Silicon）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
+translationSourceHash: 6ac73d539d39607a7bc84b7b15f9dcc784442731a4022e1c161d176c33aa73dd
 ---
 
 # macOS 部署（Intel / Apple Silicon）
@@ -122,6 +122,12 @@ macOS 支援 Host / Path Reverse Proxy、身分驗證、憑證與 ACME、WAF、�
 - Web UI 安裝更新；請使用 `sudo knock update`。
 
 macOS 的白名單仍參與閘道存取規則，但不能用來開啟主機原始連接埠。
+
+### Web 終端機
+
+macOS 同時支援連線管理員設定並確認主機指紋的遠端 SSH 目標，以及預設關閉的本機 PTY。由於 LaunchDaemon 以 root 執行，本機 PTY 也會直接繼承該服務的有效 UID / GID，通常就是 root；它不會降權、切換使用者或透過 `localhost` SSH 建立連線。
+
+啟用本機終端機前，必須核對頁面顯示的執行身分、Shell 與初始目錄並完成風險確認。關閉瀏覽器只會中斷頁面連線，服務仍在執行時工作階段會繼續；服務重新啟動、Shell 結束、主動結束工作階段或停用本機終端機會終止工作階段。完整操作與安全邊界請參閱 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 ## 解除安裝
 

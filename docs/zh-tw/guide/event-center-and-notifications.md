@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e60924f514c60d465735ddf93c5df9047f2c35992b4828b340c75c1f04297d8c
+translationSourceHash: 4ea4e8abb6f58e02c343977deca442df34629cc2a95be0f9d82802a50740bbea
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -33,7 +33,7 @@ translationSourceHash: e60924f514c60d465735ddf93c5df9047f2c35992b4828b340c75c1f0
 - SSH：登入成功、登入失敗、IP 封鎖；
 - 網路：DDNS 更新、FRP 連線／中斷、Cloudflared 連線／中斷；
 - 遠端喚醒：WOL 廣播完成（管理員、傳送門、點燈科技或巴法雲）；
-- 終端機：SSH 目標變更、主機指紋確認、連線測試、工作階段建立與結束；
+- 終端機：SSH 目標變更、主機指紋確認、連線測試、本機終端機啟用／停用，以及本機或遠端工作階段的建立、結束、退出與遺失；
 - 系統：應用程式更新提示、CPU 告警／恢復、記憶體告警／恢復；
 - Runtime：元件啟動、停止、重新啟動、健康檢查失敗、恢復與異常結束。
 
@@ -50,6 +50,8 @@ translationSourceHash: e60924f514c60d465735ddf93c5df9047f2c35992b4828b340c75c1f0
 「清除事件」會刪除事件中心保存的所有事件；括號中的數量只代表目前 View 符合的筆數，並不表示只清除目前的篩選結果。此操作無法復原，但不會清除通知規則與投遞記錄。
 
 事件詳細資訊會依類型顯示憑據、驗證方式、工作階段、IP 與地理位置、失敗次數、封鎖時間、DDNS IP 變化、Trace ID、WAF 規則、Tunnel PID、WOL 目標與投遞來源、資源 Threshold 等欄位。閘道可見性攔截還會記錄請求 Host、路徑、方法，以及生效的是閘道全域或 Host 自訂範圍。進行疑難排解時，可複製詳細資訊，並與請求記錄、WAF Log、Tunnel Log 或裝置上線狀態交叉比對。
+
+本機終端機事件會標明終端機後端、執行身分及是否為特權身分，方便確認工作階段實際以誰的權限執行。終端機事件只稽核設定變更與工作階段生命週期，不會保存管理員在 Shell 中輸入的每一條命令；需要命令層級留存記錄時，應在主機或遠端 SSH 目標另外設定稽核。
 
 頁面頂端的 `Trace ID 查詢` 可貼上 Response Header、攔截頁、Request Log 或通知中的完整 ID。完整鏈路追蹤會關聯同一 Request 的 WAF、系統事件、通知觸發與投遞；舊事件或未啟用對應收集時可能只有部分鏈路。
 
@@ -176,7 +178,7 @@ Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，�
 
 登入成功、SSH 登入成功等高頻事件若臨界值設為 1，可能產生大量通知。請依實際存取量調整時間窗、臨界值與 Cooldown。
 
-應用程式更新事件及其通知只會附上目前最新版本的 Release Notes，不再連續串接多個舊版本的說明。需要回顧更早版本時，請前往 `版本與更新` 或專案 Release History；通知正文應視為「本次可更新版本」的摘要。
+應用程式更新事件包含 Release Notes 時，系統會將目前可更新版本的說明摘要同時寫入純文字與 Markdown 內文，因此只顯示內文的推播管道也能收到，而不只存在於結構化詳細資訊中。通知不會連續串接多個歷史版本的說明。需要查看完整或更早的內容時，請前往 `版本與更新` 頁面或專案 Release History。
 
 ## 查看投遞結果
 

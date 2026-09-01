@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透與隧道"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: baec212f5c1e0405344d0502a1b06be59dedf2e1896a33f26cc5cca99344b96d
+translationSourceHash: 62450db38b326ff058a57bdfd78160a99f899b9a1d2ea49230ba21774a40f4a0
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -66,6 +66,10 @@ PROXY Protocol v2 用來將公網 Client 位址一路傳遞到閘道。如果 fr
 - `自訂` 可直接編輯 `frpc.toml`。儲存前會執行 `frpc verify`；語法有誤時無法儲存，也無法可靠地切回表單模式。
 
 如果已有自訂設定，請先備份原始內容，再切換編輯方式。
+
+`系統設定 → FRP` 會將資源狀態區分為未下載、版本過舊與已下載（已就緒）。偵測到舊資源時請先執行更新；下載套件會依目前平台選擇，並在解壓縮前驗證固定的官方 SHA-256 摘要。資源更新不會自動停止執行中的舊 `frpc`，以免立即中斷 Tunnel；舊程序可以繼續執行，但已停止的舊執行個體必須先更新資源才能再次啟動。
+
+新資源安裝完成後，`內網穿透 → FRP` 仍會提示正在使用舊執行檔的執行個體。請逐一停止並重新啟動這些執行個體，直到提示消失，再從外網驗證 Tunnel。安裝新檔案與切換執行中程序是兩個步驟，不要將「資源已就緒」視為所有執行個體都已完成切換。
 
 ## Cloudflared
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: db96422dd023bf446af2b987ce9fad42923d765e90c8ac875a0778d99fde7550
+translationSourceHash: 0d751b10526e903270a261f16985d4b361ce8d8fec6e9c04eea7bb5f6357abaf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -14,23 +14,23 @@ translationSourceHash: db96422dd023bf446af2b987ce9fad42923d765e90c8ac875a0778d99
 
 ## Deployment Capability Differences
 
-| Capability | Native fnOS FPK | Docker | OpenWrt | Linux service | Synology DSM 7 SPK | Windows x86_64 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Direct mode and host firewall | Supported; the process needs host permissions | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Web Terminal | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets | Remote SSH targets |
-| Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Not supported |
-| SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Automatic HTTPS | Supported | Not supported | Not supported | Supported; requires an available port `80` | Not supported | Supported; the Windows inbound path must still be opened |
-| ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported; uses the built-in client |
-| System clock sync | Supported | Not supported | Supported | Not supported | Not supported | Not supported |
-| fnOS SSL certificate store sync | Supported | Not supported | Not supported | Not supported | Not supported | Not supported |
-| Update installation | Update in the web UI | Pull a new image | Install an IPK or APK matching the firmware | Update manually according to the installation method | Install the SPK in DSM Package Center | Windows manager |
-| Separate admin panel password | Uses the fnOS/CGI entry point | Supported | Supported | Supported | Uses the DSM desktop CGI entry point | Supported; local `127.0.0.1` admin entry only |
+| Capability | Native fnOS FPK | Docker | OpenWrt | Linux service | macOS | Synology DSM 7 SPK | Windows x86_64 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Direct mode and host firewall | Supported; the process needs host permissions | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Smart Connect | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Web Terminal | Remote SSH + optional local PTY | Remote SSH only | Remote SSH + optional local PTY | Remote SSH + optional local PTY | Remote SSH + optional local PTY | Remote SSH only | Remote SSH only |
+| Built-in FRP / Cloudflared | Supported | Supported | Supported | Supported | Supported | Supported | Not supported |
+| SSH Security | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Automatic HTTPS | Supported | Not supported | Not supported | Supported; requires an available port `80` | Supported; firewall and inbound access remain manual | Not supported | Supported; the Windows inbound path must still be opened |
+| ACME DNS-01 | Supported | Supported | Supported | Supported | Supported | Supported | Supported; uses the built-in client |
+| System clock sync | Supported | Not supported | Supported | Not supported | Not supported | Not supported | Not supported |
+| fnOS SSL certificate store sync | Supported | Not supported | Not supported | Not supported | Not supported | Not supported | Not supported |
+| Update installation | Update in the web UI | Pull a new image | Install an IPK or APK matching the firmware | Update manually according to the installation method | `sudo knock update` | Install the SPK in DSM Package Center | Windows manager |
+| Separate admin panel password | Uses the fnOS/CGI entry point | Supported | Supported | Supported | Supported; local `127.0.0.1` admin entry only | Uses the DSM desktop CGI entry point | Supported; local `127.0.0.1` admin entry only |
 
-The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. OpenWrt no longer provides Direct mode, host-firewall management, or Smart Connect. It can still run Host routing, Protocol mappings, and built-in tunnels, but OpenWrt's own firewall must allow the ports. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, or SSH Security. Web Terminal on every platform connects only to administrator-configured remote SSH targets and never opens a local shell.
+The table reflects runtime capabilities reported by the server. Some unavailable features remain visible with an explanation, while others are hidden entirely. OpenWrt no longer provides Direct mode, host-firewall management, or Smart Connect. It can still run Host routing, Protocol mappings, and built-in tunnels, but OpenWrt's own firewall must allow the ports. Windows does not provide direct mode, built-in FRP / Cloudflared, Smart Connect, or SSH Security. Its gateway listens on all interfaces at `7999` by default, but public reachability still depends on firewall rules, NAT, and network policy. Synology DSM 7 SPK also does not provide direct mode, host-firewall management, Smart Connect, or SSH Security. Remote SSH targets remain available on every platform. A local PTY is available, disabled by default, on the standard fnOS FPK, OpenWrt, Linux, and macOS; it runs with the fn-knock service identity. Docker, Synology, Windows, development runtimes, and Knock Lite provide remote SSH only.
 
-If the app on an fnOS device is named `Knock Lite`, it is a native non-root package rather than the full FPK shown in the table. It supports Host proxying, authentication, DDNS, certificates, WAF, built-in tunnels, monitoring, and remote-SSH Web Terminal, but not Direct mode and the host firewall, network optimization, fnOS certificate-store sync, or in-app updates. To gain full host integration, export a Lite backup and stop Lite before installing the standard FPK from the official website and importing the archive. Do not let both instances compete for the same ports.
+If the app on an fnOS device is named `Knock Lite`, it is a native non-root package rather than the full FPK shown in the table. It supports Host proxying, authentication, DDNS, certificates, WAF, built-in tunnels, monitoring, and remote-SSH Web Terminal, but not a local PTY, Direct mode and the host firewall, network optimization, fnOS certificate-store sync, or in-app updates. To gain full host integration, export a Lite backup and stop Lite before installing the standard FPK from the official website and importing the archive. Do not let both instances compete for the same ports.
 
 ## Settings Map
 
@@ -45,7 +45,7 @@ If the app on an fnOS device is named `Knock Lite`, it is a native non-root pack
 | `Features` | Controls date/time display, home-page entry status, the fnOS console application bar, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, Wake-on-LAN, sidebar ordering, and the Smart Connect entry | [Wake-on-LAN](/en/guide/wake-on-lan) and the corresponding feature documentation |
 | `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
 | `WAF`, `Logs` | Manages HTTP rule protection and structured request logs | [Web Application Firewall (WAF)](/en/guide/waf), [Request Logs](/en/guide/request-logs) |
-| `Terminal` | Visible on every package; manages remote SSH targets and sessions | [Web Terminal](/en/guide/web-terminal) |
+| `Terminal` | Visible on every package; manages remote SSH targets and sessions, plus the optional local PTY where supported | [Web Terminal](/en/guide/web-terminal) |
 | `Sessions` | Manages standard sessions, Remember me, post-login IP authorization, and IP drift | [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) |
 | `Panel` | Visible on Docker, OpenWrt, Linux, and Windows; changes or resets the separate admin panel password | See below |
 | `Challenge` | Uses PoW or Cloudflare Turnstile before sign-in | [Challenge](/en/guide/captcha) |

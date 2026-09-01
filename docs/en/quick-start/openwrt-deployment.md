@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on OpenWrt"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65f4b972fd2f3eca7a0c48ed574481f22047d74e369bd36a2848fb64248c277f
+translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -160,8 +160,10 @@ Then return to the admin panel from LuCI and follow the prompt to set a new pass
 | Direct mode and host firewall management | Not supported; use OpenWrt's own firewall, a VPN, or an upstream gateway to control original ports |
 | Smart Connect | Not supported; configure split DNS yourself in OpenWrt's `dnsmasq`, DHCP settings, or another local resolver |
 | SSH security | Not supported; use OpenWrt's own SSH logs, firewall, or security packages |
-| Web terminal | Connects to administrator-configured remote SSH targets after host-fingerprint confirmation; it does not open a local OpenWrt shell |
+| Web terminal | Supports remote SSH targets and an optional local PTY; the local target is disabled by default and runs as the fn-knock service identity |
 | Automatic HTTPS | Not supported by the current OpenWrt package |
+
+The local PTY directly inherits the effective UID and GID of the fn-knock service; it neither drops privileges, switches users, nor connects through SSH to `localhost`. Before enabling it, verify the displayed identity, shell, and initial directory and acknowledge the risk. Closing the browser only detaches from the page while the session continues with the service. A service restart, shell exit, explicit session termination, or disabling the local terminal ends it. See [Web Terminal](/en/guide/web-terminal).
 
 `fn-knock` does not replace OpenWrt firmware updates, router backups, or a minimal-exposure firewall policy.
 

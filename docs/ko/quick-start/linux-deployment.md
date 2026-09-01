@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Linux 배포(systemd / OpenRC)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: e90b21ae59103a44858cf77355da8ae1c08bd5d08c064f9dd16d6518234919d4
+translationSourceHash: 5d878fefa5145ece7068c64abf63584a843bfa133357423e92d976958e5f9cd9
 ---
 
 # Linux 배포(systemd / OpenRC)
@@ -105,6 +105,12 @@ systemd에서는 두 명령 모두 `journalctl`을 읽고 OpenRC에서는 `/var/
 ```bash
 sudo knock rollback
 ```
+
+## 웹 터미널
+
+Linux 호스트 버전은 관리자가 설정하고 호스트 지문을 확인한 원격 SSH 대상과 기본적으로 비활성화된 로컬 PTY를 모두 지원합니다. 로컬 PTY는 fn-knock 서비스의 유효 UID/GID를 직접 상속하며 권한을 낮추거나 사용자를 전환하거나 `localhost` SSH로 연결하지 않습니다. 기본 설치 서비스는 일반적으로 root로 실행되지만 실제 권한은 활성화 화면에 표시된 실행 계정을 기준으로 판단해야 합니다.
+
+로컬 터미널을 활성화하기 전에 화면에 표시된 실행 계정, Shell 및 초기 디렉터리를 확인하고 위험을 승인해야 합니다. 브라우저를 닫으면 페이지 연결만 끊기고 서비스가 실행되는 동안 세션은 계속됩니다. 서비스 재시작, Shell 종료, 세션 직접 종료 또는 로컬 터미널 비활성화가 있어야 세션이 끝납니다. 전체 절차와 보안 경계는 [웹 터미널](/ko/guide/web-terminal)을 참고합니다.
 
 ## 데이터 및 백업
 

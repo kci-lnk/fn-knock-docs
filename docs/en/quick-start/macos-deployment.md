@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on macOS (Intel / Apple Silicon)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdb6661248524bb399b42da958fb29b85f36da32c59ffecac28bf102f2abf34a
+translationSourceHash: 6ac73d539d39607a7bc84b7b15f9dcc784442731a4022e1c161d176c33aa73dd
 ---
 
 # Deploy on macOS (Intel / Apple Silicon)
@@ -139,7 +139,9 @@ macOS supports Host and path reverse proxying, authentication, certificates and 
 
 A feature hidden or rejected by the backend is an intentional platform boundary. Whitelist entries still participate in gateway access policy, but cannot open original host ports on macOS.
 
-Web Terminal can connect to administrator-configured remote SSH targets after host-fingerprint confirmation, but it never opens a local shell on this Mac.
+Web Terminal can connect to administrator-configured remote SSH targets after host-fingerprint confirmation and can enable a local PTY that is disabled by default. Because the LaunchDaemon runs as root, the local PTY directly inherits that service's effective UID and GID and is normally root; it neither drops privileges, switches users, nor connects through SSH to `localhost`.
+
+Before enabling it, verify the displayed identity, shell, and initial directory and acknowledge the risk. Closing the browser only detaches from the page while the session continues with the service. A service restart, shell exit, explicit session termination, or disabling the local terminal ends it. See [Web Terminal](/en/guide/web-terminal) for the complete workflow and security boundary.
 
 ## Uninstall
 

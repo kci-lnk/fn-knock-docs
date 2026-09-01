@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Docker Compose로 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0920f74eb95e066c9af339909e181f3311fb1121df19502fb17b559c5bd6e42d
+translationSourceHash: 04059e2be511cb497765b5a2ddb3cea0a2d56c77c942698fce2d958480940abf
 ---
 
 # Docker Compose로 배포
@@ -103,7 +103,7 @@ services:
       - /srv/public-site:/srv/public-site:ro
 ```
 
-관리 패널의 `서버 경로`에 `/srv/public-site`를 입력합니다. Compose를 수정한 뒤 `docker compose up -d`를 실행하여 컨테이너를 다시 만들고 `경로 확인`을 눌러 유형과 읽기 권한을 확인합니다. 호스트의 `/`, `/etc`, fn-knock 데이터 볼륨 또는 키와 시스템 설정이 포함된 디렉터리를 마운트하지 말고 `:ro`도 생략하지 마십시오.
+Compose를 수정한 뒤 `docker compose up -d`를 실행하여 컨테이너를 다시 만들고, 관리 화면의 `서버 경로` 옆에서 `찾아보기`를 누릅니다. 경로 브라우저는 컨테이너 파일 시스템을 읽으므로 컨테이너 안에 마운트된 내용만 보여야 합니다. `/srv/public-site`로 들어가 `현재 폴더 사용`을 누른 뒤 매핑을 저장합니다. 호스트의 `/`, `/etc`, fn-knock 데이터 볼륨 또는 키와 시스템 설정이 포함된 디렉터리를 마운트하지 말고 `:ro`도 생략하지 마십시오.
 
 ### 05 시작 및 상태 확인
 

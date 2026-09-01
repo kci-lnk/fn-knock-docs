@@ -3,7 +3,7 @@ lang: ja-JP
 title: "fnOS アプリストア Lite と標準 FPK の違い"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c5ddd67d
+translationSourceHash: a6f6ac360433f1a35d62d48dedde52243ef0b7d7121de043ce629698dfcd54e1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -32,6 +32,7 @@ translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c
 - fnOS 証明書ストア同期。
 - FN Connect トラフィックの WAF 経由化。
 - アプリ内更新。
+- Web ターミナルから fnOS ホストのローカル PTY を直接開き、標準 FPK のサービス実行ユーザーに対応する権限上のリスクを受け入れる必要がある。
 - 公開ポート `80 / 443` に到達できる環境での標準ポート直結と自動 HTTPS。
 
 ## 機能比較
@@ -52,9 +53,11 @@ translationSourceHash: 03cff927796ad1fc80adc5d7b2198661498a288636afd34e5be3d785c
 | 自動 HTTPS | 非対応 | 対応 | 公開 `80 / 443` に到達できる場合の標準ポート直結支援です。Lite が HTTPS 非対応という意味ではありません |
 | fnOS 証明書ストア同期 | 非対応 | 対応 | Lite 内の証明書は fnOS の証明書レコードへ自動反映されません |
 | fnOS ネットワーク最適化 | 非対応 | 対応 | BBR や TCP MTU プロービングにはホストの `sysctl` 変更が必要です |
-| Web ターミナル | 対応 | 対応 | どちらも確認済みリモート SSH ターゲットだけへ接続し、ホスト Shell は提供しません |
+| Web ターミナル | リモート SSH のみ | リモート SSH + オプションのローカル PTY | Lite はホストの Shell を提供しない。標準 FPK のローカル PTY はデフォルトでは無効 |
 | FN Connect トラフィックの WAF 接続 | 非対応 | 対応 | この入口にはホストネットワークとファイアウォールの権限が必要です |
 | アプリ内更新 | 非対応 | 対応 | Lite はアプリストアまたはパッケージの手動インストールで更新し、標準 FPK は管理画面から更新できます |
+
+標準 FPK のローカル PTY は fn-knock サービスの実効 UID/GID をそのまま継承します。標準 FPK のサービスは root で動作するため、ローカル PTY も root 権限を持ちます。権限降格やユーザー切り替えは行わず、`localhost` SSH も使いません。有効にする前に、画面に表示される実行ユーザー、Shell、初期ディレクトリを確認し、リスク確認を完了してください。ブラウザーを閉じてもページとの接続が切れるだけで、セッションは続行します。サービスの再起動、Shell の終了、セッションの明示的な終了、ローカルターミナルの無効化によってセッションが終了します。詳しくは [Web ターミナル](/ja/guide/web-terminal)を参照してください。
 
 ## 自動 HTTPS と HTTPS 対応は別のもの
 

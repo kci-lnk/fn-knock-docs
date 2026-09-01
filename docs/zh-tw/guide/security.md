@@ -3,7 +3,7 @@ lang: zh-TW
 title: "資安邊界與基準"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d230c595c28eab13387328c443de0dfca85aedb802ec7a708f3063f57d1521b6
+translationSourceHash: 43214c248b0a547cbb262032545017f3f42943309fef4bea18478ae45aa87990
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -64,11 +64,19 @@ fn-knock 只能控管經過閘道入口的流量。下列情況必須在閘道�
 1. 在驗證設定中單獨設定管理介面的可存取範圍；
 2. 優先限制在區域網路、VPN 或固定可信任 CIDR；
 3. 不要與公開服務共用弱密碼憑據；
-4. 支援 Terminal 的平台，還必須考量服務處理程序在 Host 上的權限；
+4. 啟用本機終端機前，核對 fn-knock 服務程序在 Host 上的權限；
 5. 保留第二組管理員憑據與本機 Console 復原方式；
 6. 定期檢查有效工作階段、IP 漂移記錄與登入退避。
 
 隱藏管理介面或修改路徑並不等於存取控制。入口仍需要身分驗證、網路限制與正式 HTTPS。
+
+### Web 終端機的高權限邊界
+
+完整標準 FPK、Linux 服務、macOS 與 OpenWrt 可以啟用本機 PTY，且預設為關閉。Lite、Docker、Synology、Windows 與開發環境只提供遠端 SSH。啟用本機 PTY 前必須完成風險確認，並核對頁面顯示的執行身分、Shell 與初始目錄。
+
+本機 PTY 會直接繼承 fn-knock 管理服務的有效 UID / GID，不會自動降權、切換使用者或透過 `localhost` SSH 連線。服務以 root 執行時，終端機也是 root Shell。關閉或重新整理瀏覽器只會中斷瀏覽器連線，Shell 仍會繼續執行；只有服務重新啟動、Shell 結束、管理員結束工作階段或停用本機終端機才會終止它。停用時若仍有作用中的工作階段，系統會要求再次確認並先結束這些工作階段。
+
+事件中心會記錄本機終端機的啟用、停用與工作階段生命週期，並標明執行身分與特權狀態，但不會記錄每一條命令。遠端 SSH 同樣不提供命令層級稽核；有合規需求時，應在主機或遠端目標另外部署稽核機制。完整說明請參閱 [Web 終端機](/zh-tw/guide/web-terminal)。
 
 ## 限縮上游連接埠
 
