@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TCP / UDP 通訊協定映射"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998e0b80ab
+translationSourceHash: 57742c6204b4d9cf415678c116565161baf69c7ae010bbb57cd6aac3b8afc61a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998
 `通訊協定映射` 可替 SSH、資料庫、DNS 等非 HTTP 服務新增 TCP／UDP Listen Port。它不會讀取網域 Host 或 URL Path，而是將特定對外連接埠的 Byte Stream 轉送至 `host:port`。
 
 此功能只作為公網直連 `子網域模式` 的補充。Web 服務仍應使用[子網域映射](/zh-tw/guide/subdomain-proxy)；路徑相容規則請參閱[路徑映射](/zh-tw/guide/reverse-proxy)。
+
+在 `映射管理 → 協議` 管理 TCP / UDP 規則；分頁是否顯示取決於目前模式及協議映射功能開關。
 
 ## 生效條件
 

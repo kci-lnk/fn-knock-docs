@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b09ae08e2
+translationSourceHash: 3a7bca9b89220ecd45f86325b23e0d370fb7fb4c9313513aa4baf32fe4ce9129
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,6 +16,8 @@ translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b0
 - `Reverse proxy mode → Subdomain mapping`: FRP or Cloudflared carries requests for each subdomain to the gateway.
 
 Both topologies use `auth.example.com` as the sign-in entry point and share one gateway across application Hosts such as `nas.example.com` and `alist.example.com`. Path mapping is a compatibility option for older deployments, not a prerequisite for subdomain mapping.
+
+Manage Host mappings under `Mappings → Subdomains`; the `Protocols` tab on the same page manages TCP / UDP mappings.
 
 ## Request Flow
 

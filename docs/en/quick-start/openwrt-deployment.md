@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on OpenWrt"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
+translationSourceHash: a9403c8346cd7ee29c71ec6540c04aef9cc3d1a10b36c789999deede981f9af1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,12 +18,12 @@ First identify both the package format and target architecture used by your firm
 
 ### The firmware determines the package format
 
-| Firmware package manager | Package format | Typical OpenWrt release | Install command |
-| --- | --- | --- | --- |
-| `opkg` | `.ipk` | `24.10` and earlier | `opkg install /tmp/<file-name>.ipk` |
-| `apk` | `.apk` | `25.12` and later | `apk add --allow-untrusted /tmp/<file-name>.apk` |
+| Firmware package manager | Package format | Install command |
+| --- | --- | --- |
+| `opkg` | `.ipk` | `opkg install /tmp/<file-name>.ipk` |
+| `apk` | `.apk` | `apk add --allow-untrusted /tmp/<file-name>.apk` |
 
-OpenWrt `25.12` and later generally use `apk`, while `24.10` and earlier generally use `opkg`. Forks and systems in the middle of an upgrade may differ, so always use the package manager actually present on the router. Do not guess from the version number or filename extension; check the router first:
+Choose the format using the package manager actually installed on the router; derivative firmware may differ. Check first:
 
 ```bash
 ubus call system board
@@ -38,7 +38,7 @@ fi
 
 Use the target reported by the commands above, then download the matching package format directly from the table. These are the same stable download endpoints used by the official website, with the format and architecture already selected; you do not need to edit the URL.
 
-| Target architecture | Typical devices | APK (OpenWrt 25.12+) | IPK (OpenWrt 24.10 and earlier) |
+| Target architecture | Typical devices | APK | IPK |
 | --- | --- | --- | --- |
 | `x86_64` | Intel / AMD 64-bit router appliances and virtual machines | [Download APK](https://get.fnknock.cn/?type=apk&arch=x86_64) | [Download IPK](https://get.fnknock.cn/?type=ipk&arch=x86_64) |
 | `aarch64_cortex-a53` | IPQ60xx, Cortex-A53, and ImmortalWrt `qualcommax/ipq60xx` | [Download APK](https://get.fnknock.cn/?type=apk&arch=aarch64_cortex-a53) | [Download IPK](https://get.fnknock.cn/?type=ipk&arch=aarch64_cortex-a53) |
@@ -108,9 +108,11 @@ A reachable admin panel proves only that the local service has started. After co
 
 ### Open the Gateway Port Manually
 
-For direct public access, manually create a traffic rule under `Network → Firewall` that allows TCP from `wan` only to the current gateway port, restricting address families and source ranges as needed. An upstream router, VPN, Cloudflare Tunnel, or another ingress may mean that no direct WAN rule is needed.
+For direct public access, first save and apply the gateway port in LuCI under `Services → Knock`. Choose the firewall source zone and click the allow-firewall action. It defaults to the existing rule's zone, otherwise `wan`; without `wan`, select a zone explicitly. A VPN, Cloudflare Tunnel or upstream ingress may make direct WAN access unnecessary.
 
-fn-knock does not update this rule when its service starts or stops, the gateway port changes, or the package is upgraded or removed. Update or delete the old rule after a port change, and remove an unused allowance during uninstall. Never expose the admin or internal ports; verify the effective scope in the firewall UI and test from a real external network.
+The action allows only TCP to the router's gateway port from that zone, for both IPv4 and IPv6. It does not expose admin or internal ports or create upstream port forwarding. Click again after changing the port or zone; repeated actions update the same `Allow-FnKnock-Gateway` rule.
+
+Installation, upgrades, service lifecycle, configuration saves and uninstall do not automatically add or remove the rule. It persists across reboot. Remove it in LuCI's native firewall page and apply to revoke access. Resolve conflicts or pending firewall edits first; if the rule was saved but reload failed, retry the action. The displayed status describes saved configuration only. Verify the domain, certificate and authentication from a mobile network.
 
 ## Data and upgrades
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "TCP / UDP ストリームプロキシ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998e0b80ab
+translationSourceHash: 57742c6204b4d9cf415678c116565161baf69c7ae010bbb57cd6aac3b8afc61a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998
 `プロトコルマッピング` は、SSH、データベース、DNS など HTTP 以外のサービス用に TCP / UDP のリッスンポートを追加します。ドメインの Host や URL パスは読み取らず、外部ポートのバイトストリームを `host:port` へ転送します。
 
 この機能は、インターネットから直接到達する `サブドメインモード` を補完するものです。Web サービスには引き続き[サブドメインマッピング](/ja/guide/subdomain-proxy)を使用し、パス互換ルールについては[パスマッピング](/ja/guide/reverse-proxy)を参照してください。
+
+マッピング管理のプロトコルタブで TCP / UDP ルールを管理します。表示は現在のモードとプロトコルマッピング機能の有効状態によります。
 
 ## 有効になる条件
 

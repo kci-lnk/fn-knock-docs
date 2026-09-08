@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Web 終端機"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb09924c5075
+translationSourceHash: d5949684fa7e6ea78db41d6857655b58c8966b9da6356bf0efd68b99d79f5ae3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -11,6 +11,10 @@ translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb099
 # Web 終端機
 
 Web 終端機適合查看狀態、執行短指令與緊急除錯。它提供兩類目標：所有發行平台都可以連線管理員設定的遠端 SSH 目標；完整標準 FPK、Linux 服務、macOS 與 OpenWrt 還可選擇 fn-knock 所在主機的本機 PTY。
+
+## 開啟或關閉 Web 終端
+
+在 `系統設定 → 功能 → Web 終端` 管理總開關，預設開啟，沿用管理後台驗證。關閉並儲存會立即結束所有 SSH 與本機終端工作階段並關閉入口；重新開啟不會恢復已結束的 Shell。此總開關與預設關閉的本機 PTY 開關分別控制，啟用 Web 終端不會自動啟用本機 PTY。
 
 ## 平台邊界
 

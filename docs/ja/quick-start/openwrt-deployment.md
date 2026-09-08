@@ -3,7 +3,7 @@ lang: ja-JP
 title: "OpenWrt へデプロイ"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
+translationSourceHash: a9403c8346cd7ee29c71ec6540c04aef9cc3d1a10b36c789999deede981f9af1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,12 +18,12 @@ OpenWrt 向けの `fn-knock` パッケージには、LuCI 設定画面、管理�
 
 ### パッケージ形式はファームウェアで決まる
 
-| ファームウェアのパッケージマネージャー | パッケージ形式 | 主な OpenWrt バージョン | インストールコマンド |
-| --- | --- | --- | --- |
-| `opkg` | `.ipk` | `24.10` 以前 | `opkg install /tmp/<ファイル名>.ipk` |
-| `apk` | `.apk` | `25.12` 以降 | `apk add --allow-untrusted /tmp/<ファイル名>.apk` |
+| ファームウェアのパッケージマネージャー | パッケージ形式 | インストールコマンド |
+| --- | --- | --- |
+| `opkg` | `.ipk` | `opkg install /tmp/<ファイル名>.ipk` |
+| `apk` | `.apk` | `apk add --allow-untrusted /tmp/<ファイル名>.apk` |
 
-OpenWrt `25.12` 以降では通常 `apk`、`24.10` 以前では通常 `opkg` を使用します。ただし、派生ファームウェアやアップグレード途中の機器では、実際に入っているパッケージマネージャーを基準にしてください。バージョン番号や拡張子から推測せず、先にルーター上で確認してください。
+ルーターに実際にインストールされたパッケージマネージャーで形式を選びます。派生ファームウェアでは異なるため、先に確認してください。
 
 ```bash
 ubus call system board
@@ -38,7 +38,7 @@ fi
 
 上記コマンドの出力からターゲット名を確認し、下表の該当パッケージを直接ダウンロードしてください。各リンクは公式サイトと同じ安定したダウンロード URL で、形式とアーキテクチャが指定済みのため、URL を手作業で変更する必要はありません。
 
-| ターゲットアーキテクチャ | 主な機器 | APK（OpenWrt 25.12 以降） | IPK（OpenWrt 24.10 以前） |
+| ターゲットアーキテクチャ | 主な機器 | APK | IPK |
 | --- | --- | --- | --- |
 | `x86_64` | Intel / AMD 64 ビットのソフトウェアルーター、仮想マシン | [APK をダウンロード](https://get.fnknock.cn/?type=apk&arch=x86_64) | [IPK をダウンロード](https://get.fnknock.cn/?type=ipk&arch=x86_64) |
 | `aarch64_cortex-a53` | IPQ60xx、Cortex-A53、ImmortalWrt `qualcommax/ipq60xx` | [APK をダウンロード](https://get.fnknock.cn/?type=apk&arch=aarch64_cortex-a53) | [IPK をダウンロード](https://get.fnknock.cn/?type=ipk&arch=aarch64_cortex-a53) |
@@ -108,9 +108,11 @@ logread -e fn-knock
 
 ### ゲートウェイポートを手動で開放する
 
-直接公開が必要な場合は、`ネットワーク → ファイアウォール → トラフィックルール` で `wan` から現在のゲートウェイポートへの TCP だけを許可し、必要に応じて IP バージョンと送信元を制限します。上位ルーター、VPN、Cloudflare Tunnel などを入口にする場合、WAN の直接許可が不要なこともあります。
+直接公開する場合は LuCI の `サービス → fn-knock` で先にゲートウェイポートを保存・適用し、ファイアウォールの送信元ゾーンを選んで許可ボタンを押します。既存ルールのゾーン、なければ `wan` が初期選択されます。`wan` がなければ手動で選びます。VPN、Cloudflare Tunnel、上位の入口を使う場合は WAN 開放が不要な場合があります。
 
-fn-knock はサービスの開始・停止、ポート変更、パッケージ更新・削除時にこのルールを変更しません。ポート変更後は旧ルールを更新または削除し、アンインストール時も不要な許可を消してください。管理・内部ポートは公開せず、ファイアウォール画面と外部ネットワークから実効範囲を確認します。
+ボタンは選択ゾーンからルーター自身のゲートウェイ TCP ポートへの IPv4 / IPv6 接続だけを許可します。管理用・内部ポートの開放や上位ルーターの転送は行いません。ポートやゾーン変更後は再度押します。同じ `Allow-FnKnock-Gateway` ルールを更新します。
+
+インストール、更新、サービスの起動停止、設定保存、アンインストールでは自動的にルールを追加・削除しません。再起動後も残ります。取り消すには LuCI 標準のファイアウォール画面で削除して適用します。競合や未確定の変更を先に解決し、保存済みで再読み込みに失敗した場合は再試行します。表示状態は保存済み設定だけを表すため、モバイル回線からドメイン、証明書、認証を検証してください。
 
 ## データとアップグレード
 

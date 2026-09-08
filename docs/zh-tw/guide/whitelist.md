@@ -3,7 +3,7 @@ lang: zh-TW
 title: "IP 允許清單"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af486ad36dc
+translationSourceHash: 6b8fa09a594af1dbe70b91bb9676c074b12cd9ff1da2ed70fcd8778dd0e8d3cb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -11,6 +11,8 @@ translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af48
 # IP 允許清單
 
 允許清單保存可存取的來源：單一 IP、CIDR、定期解析的 CNAME，以及依地區產生的 CIDR Group。它既可用於直連模式中的 Host 防火牆放行，也能為登入後 IP 授權及歷史映射規則提供來源資料。
+
+在 `工作階段管理 → IP 允許清單` 管理來源授權。
 
 ## 三種來源
 

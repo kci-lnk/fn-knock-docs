@@ -3,7 +3,7 @@ lang: zh-TW
 title: "OpenWrt 部署"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
+translationSourceHash: a9403c8346cd7ee29c71ec6540c04aef9cc3d1a10b36c789999deede981f9af1
 ---
 
 # OpenWrt 部署
@@ -16,12 +16,12 @@ translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984
 
 ### 套件格式取決於韌體
 
-| 韌體的 Package Manager | 套件格式 | 常見 OpenWrt 版本 | 安裝指令 |
-| --- | --- | --- | --- |
-| `opkg` | `.ipk` | `24.10` 以下版本 | `opkg install /tmp/<檔名>.ipk` |
-| `apk` | `.apk` | `25.12` 以上版本 | `apk add --allow-untrusted /tmp/<檔名>.apk` |
+| 韌體的 Package Manager | 套件格式 | 安裝指令 |
+| --- | --- | --- |
+| `opkg` | `.ipk` | `opkg install /tmp/<檔名>.ipk` |
+| `apk` | `.apk` | `apk add --allow-untrusted /tmp/<檔名>.apk` |
 
-OpenWrt `25.12` 以上版本通常使用 `apk`，`24.10` 以下版本通常使用 `opkg`；衍生韌體或升級中的裝置仍應以實際的 Package Manager 為準。請勿根據系統版本或副檔名猜測，應先在路由器上確認：
+請依路由器實際安裝的套件管理器選擇格式；衍生韌體可能不同，請先確認：
 
 ```bash
 ubus call system board
@@ -36,7 +36,7 @@ fi
 
 請以上方指令輸出的 Target Architecture 為準，再從下表直接下載對應格式的套件。這些連結與官網使用相同的穩定下載入口，已指定套件格式與架構，不需要手動修改網址。
 
-| Target Architecture | 常見裝置 | APK（OpenWrt 25.12 以上） | IPK（OpenWrt 24.10 以下） |
+| Target Architecture | 常見裝置 | APK | IPK |
 | --- | --- | --- | --- |
 | `x86_64` | Intel / AMD 64 位元軟路由與虛擬機器 | [下載 APK](https://get.fnknock.cn/?type=apk&arch=x86_64) | [下載 IPK](https://get.fnknock.cn/?type=ipk&arch=x86_64) |
 | `aarch64_cortex-a53` | IPQ60xx、Cortex-A53、ImmortalWrt `qualcommax/ipq60xx` | [下載 APK](https://get.fnknock.cn/?type=apk&arch=aarch64_cortex-a53) | [下載 IPK](https://get.fnknock.cn/?type=ipk&arch=aarch64_cortex-a53) |
@@ -106,9 +106,11 @@ logread -e fn-knock
 
 ### 手動開放閘道連接埠
 
-需要公網直達時，請在 `網路 → 防火牆 → 通訊規則` 手動新增只允許 TCP 從 `wan` 到目前閘道連接埠的規則，並依需要限制 IP 版本與來源。若入口是上級路由器、VPN、Cloudflare Tunnel 或其他服務，可能不需直接開放 WAN。
+需要公網直達時，在 LuCI 的 `服務 → 敲門 Knock` 先儲存並套用閘道連接埠，再選取防火牆來源區域並按放行按鈕。預設沿用既有規則區域，否則選擇 `wan`；沒有 `wan` 時需手動選擇。使用 VPN、Cloudflare Tunnel 或上級入口時可能不需直接開放 WAN。
 
-fn-knock 服務啟停、連接埠變更、套件升級或解除安裝都不會同步修改此規則。變更連接埠後須更新或刪除舊規則，解除安裝時也要清除不再需要的放行。不得開放管理與內部連接埠；請在防火牆頁面確認實際範圍，並從外部網路驗證。
+按鈕只允許所選區域透過 TCP 存取路由器本身的閘道連接埠，同時適用 IPv4 / IPv6，不開放管理或內部連接埠，也不建立上級轉送。修改連接埠或區域後需再次點選；重複操作會更新同一條 `Allow-FnKnock-Gateway` 規則。
+
+安裝、升級、服務啟停、儲存設定及解除安裝不會自動增刪規則。規則在重新開機後仍保留；撤銷時到 LuCI 原生防火牆頁面刪除並套用。遇到衝突或尚未提交的防火牆修改時先處理提示；已儲存但重新載入失敗時可重試。狀態僅反映已儲存設定，仍需從行動網路驗證網域、憑證與驗證流程。
 
 ## 資料與升級
 

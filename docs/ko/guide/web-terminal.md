@@ -3,7 +3,7 @@ lang: ko-KR
 title: "웹 터미널"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb09924c5075
+translationSourceHash: d5949684fa7e6ea78db41d6857655b58c8966b9da6356bf0efd68b99d79f5ae3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -11,6 +11,10 @@ translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb099
 # 웹 터미널
 
 웹 터미널은 상태 확인, 짧은 명령 및 긴급 문제 해결에 적합합니다. 모든 배포 플랫폼에서 관리자가 설정한 원격 SSH 대상에 연결할 수 있으며, 정식 표준 FPK, Linux 서비스, macOS 및 OpenWrt에서는 fn-knock가 실행되는 호스트의 로컬 PTY도 선택할 수 있습니다.
+
+## Web 터미널 켜기와 끄기
+
+`시스템 설정 → 기능 → Web 터미널`에서 전체 스위치를 관리합니다. 기본적으로 켜져 있으며 관리 패널 인증을 사용합니다. 끄고 저장하면 모든 SSH 및 로컬 터미널 세션이 즉시 종료되고 터미널 접근도 비활성화됩니다. 다시 켜도 종료된 Shell은 복원되지 않습니다. 기본적으로 꺼져 있는 로컬 PTY 스위치와 별개이므로 Web 터미널을 켜도 로컬 PTY가 자동으로 활성화되지 않습니다.
 
 ## 플랫폼 경계
 

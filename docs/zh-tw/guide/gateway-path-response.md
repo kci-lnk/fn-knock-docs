@@ -3,7 +3,7 @@ lang: zh-TW
 title: "路徑回應"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4db611fe9787c0be17207bbc16ac5bccba30fa3ed5082b86ccd2b26fe3c8990f
+translationSourceHash: 168f3272d500129a990cfef35d32f8dc757906c747b7c2cd5ed02097d2da90af
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -38,7 +38,7 @@ api.example.com/其他路徑 -> Host 預設 Target
 | --- | --- | --- |
 | `比對方式` | 完全符合／Prefix | 只比對完整路徑，或比對該 Prefix 及其子路徑 |
 | `動作` | 反向 Proxy／固定回應 | 轉送至另一個上游，或直接由閘道回應 |
-| `驗證行為` | 繼承 Host／公開存取 | 沿用 Host 驗證原則，或只讓此路徑規則免登入 |
+| `驗證行為` | 繼承 Host／公開存取 / 要求登入 | 沿用 Host、公開目前路徑，或要求此路徑通過驗證 |
 | `Target URL` | HTTP / HTTPS URL | 只供反向 Proxy 動作使用 |
 | `移除比對路徑` | 開／關 | 將 `/api/users` 以 `/users` 送出，或保留原始路徑 |
 | `Rewrite HTML 路徑` | 開／關 | 替頁面資源補上 Path Prefix；純 API 通常不需要 |
@@ -48,6 +48,10 @@ api.example.com/其他路徑 -> Host 預設 Target
 ## 路徑驗證行為
 
 規則預設使用 `繼承 Host`，沿用目前 Host 的 `要求登入` 與既有嚴格允許清單。選擇 `公開存取` 後，只有命中此路徑規則的請求略過登入；同一 Host 的其他路徑仍使用 Host 原則。
+
+選擇 `要求登入` 可保護公開 Host 下的指定路徑，沿用該 Host 的允許清單與進階驗證原則。包含此類路徑的 Host 也會出現在憑證服務範圍及 Cookie 網域相容性檢查中；授權範圍以 Host 為單位，不分配單一路徑。
+
+例如公開 Host 的 `/admin` 前綴要求登入時，一般頁面仍公開，`/admin` 及其子路徑需通過驗證。精確比對優先於前綴，前綴採最長匹配；應同時驗證受保護路徑與相鄰公開路徑。
 
 公開路徑適合 Health Check、Webhook Callback 或確實需要匿名存取的固定內容。此選項涵蓋整個完全符合或 Prefix 範圍；將 `/api` Prefix 設為公開，也會公開其命中的子路徑。請縮小比對範圍，並確認 Upstream 仍執行必要的權限檢查。
 

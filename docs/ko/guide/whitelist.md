@@ -3,12 +3,14 @@ lang: ko-KR
 title: "IP 허용 목록"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af486ad36dc
+translationSourceHash: 6b8fa09a594af1dbe70b91bb9676c074b12cd9ff1da2ed70fcd8778dd0e8d3cb
 ---
 
 # IP 허용 목록
 
 허용 목록에는 접근을 허용할 출발지를 저장합니다. 단일 IP, CIDR, 주기적으로 조회하는 CNAME 및 지역별로 생성한 CIDR 그룹을 사용할 수 있습니다. 직접 연결 모드에서 호스트 방화벽 접근을 허용하는 데 쓰이며 로그인 후 IP 접근 권한과 이전 매핑 규칙에도 출발지 데이터를 제공합니다.
+
+`세션 및 보안 → IP 허용 목록`에서 출발지 접근 권한을 관리합니다.
 
 ## 세 가지 출발지 유형
 

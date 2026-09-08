@@ -3,7 +3,7 @@ lang: zh-TW
 title: "WAF"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443e4e4632
+translationSourceHash: 584075a40f7f24f65180127aa9366e10818f3db6405b08073703d4c5e203803b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443
 WAF 會檢查所有經過 fn-knock 的 HTTP Request，並依已啟用的規則記錄或阻擋可疑內容。它適合用來補強閘道驗證與應用程式安全性，但無法保護繞過閘道的連接埠、TCP/UDP 流量或 Host 上的服務。
 
 fn-knock 使用 Coraza 載入系統規則與自訂規則。全域開關、防護強度、規則啟停及規則更新，都會同步至 Go 閘道。
+
+在 `請求分析 → WAF 記錄` 查看防護事件，並可切換至分析與請求記錄分頁。
 
 ## 啟用前檢查
 

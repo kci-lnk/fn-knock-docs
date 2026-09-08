@@ -3,7 +3,7 @@ lang: ja-JP
 title: "IP 許可リスト"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af486ad36dc
+translationSourceHash: 6b8fa09a594af1dbe70b91bb9676c074b12cd9ff1da2ed70fcd8778dd0e8d3cb
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -11,6 +11,8 @@ translationSourceHash: bbae1aa31ddb74d24432182a68228760be9707058ea904b1aae35af48
 # IP 許可リスト
 
 ホワイトリストには、アクセスを許可する送信元として、単一の IP、CIDR、定期的に名前解決する CNAME、地域から生成した CIDR グループを保存します。直接接続モードでホストのファイアウォールを開放するために使用するほか、ログイン後の IP 許可や従来のマッピングルールに送信元データを提供します。
+
+`セッション管理 → IP 許可リスト` で送信元の許可を管理します。
 
 ## 3 種類の送信元
 

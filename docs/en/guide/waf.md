@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443e4e4632
+translationSourceHash: 584075a40f7f24f65180127aa9366e10818f3db6405b08073703d4c5e203803b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443
 WAF inspects HTTP requests that pass through fn-knock and logs or blocks suspicious content according to the enabled rules. It supplements gateway authentication and application security, but cannot protect ports that bypass the gateway, TCP/UDP traffic, or host services.
 
 fn-knock uses Coraza to load system and custom rules. The global switch, protection level, rule status, and rule updates all synchronize to the Go gateway.
+
+Review security events under `Request Analysis → WAF logs`, alongside the `Analysis` and request `Logs` tabs.
 
 ## Checks Before Enabling WAF
 

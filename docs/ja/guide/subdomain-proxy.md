@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b09ae08e2
+translationSourceHash: 3a7bca9b89220ecd45f86325b23e0d370fb7fb4c9313513aa4baf32fe4ce9129
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,6 +16,8 @@ translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b0
 - `リバースプロキシモード → サブドメインマッピング`：FRP または Cloudflared が、各サブドメインのリクエストをゲートウェイへ送る。
 
 どちらの構成でも `auth.example.com` をログイン用エントリーポイントとして使用し、`nas.example.com`、`alist.example.com` などのサービス用 Host で同じゲートウェイを共有します。パスマッピングは以前のデプロイとの互換性を保つための方式であり、サブドメインマッピングの前提条件ではありません。
+
+マッピング管理のサブドメインタブで Host を管理し、同じ画面のプロトコルタブで TCP / UDP を管理します。
 
 ## リクエスト経路
 

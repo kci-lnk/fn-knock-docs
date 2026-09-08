@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b09ae08e2
+translationSourceHash: 3a7bca9b89220ecd45f86325b23e0d370fb7fb4c9313513aa4baf32fe4ce9129
 ---
 
 # 서브도메인 라우팅
@@ -14,6 +14,8 @@ translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b0
 - `리버스 프록시 모드 → 서브도메인 매핑`: FRP 또는 Cloudflared가 각 서브도메인의 요청을 게이트웨이로 전달합니다.
 
 두 방식 모두 `auth.example.com`을 로그인 진입점으로 사용하고 `nas.example.com`, `alist.example.com` 같은 서비스 Host가 하나의 게이트웨이를 공유합니다. 경로 매핑은 이전 배포와의 호환을 위한 방식이며 서브도메인 매핑의 사전 조건이 아닙니다.
+
+매핑 관리의 서브도메인 탭에서 Host를 관리하고 같은 페이지의 프로토콜 탭에서 TCP / UDP를 관리합니다.
 
 ## 요청 경로
 

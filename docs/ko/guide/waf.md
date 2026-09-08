@@ -3,7 +3,7 @@ lang: ko-KR
 title: "웹 애플리케이션 방화벽(WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443e4e4632
+translationSourceHash: 584075a40f7f24f65180127aa9366e10818f3db6405b08073703d4c5e203803b
 ---
 
 # 웹 애플리케이션 방화벽(WAF)
@@ -11,6 +11,8 @@ translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443
 WAF는 fn-knock를 거치는 HTTP 요청을 검사하고 활성화된 규칙에 따라 의심스러운 내용을 기록하거나 차단합니다. 게이트웨이 인증과 애플리케이션 보안을 보완하는 데 적합하지만, 게이트웨이를 우회하는 포트, TCP/UDP 트래픽 또는 호스트 서비스는 보호할 수 없습니다.
 
 fn-knock는 Coraza로 시스템 규칙과 사용자 지정 규칙을 불러옵니다. 전역 스위치, 보호 수준, 규칙 활성화 상태 및 규칙 업데이트는 모두 Go 게이트웨이에 동기화됩니다.
+
+요청 분석의 WAF 로그 탭에서 보안 이벤트를 확인하며 분석 및 요청 로그 탭으로 전환할 수 있습니다.
 
 ## 활성화 전 확인 사항
 

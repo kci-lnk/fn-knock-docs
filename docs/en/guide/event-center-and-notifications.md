@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4ea4e8abb6f58e02c343977deca442df34629cc2a95be0f9d82802a50740bbea
+translationSourceHash: 43bebc7df46d45d2b7bb0f65e067c2aad486ff789976942a8cad1765cc69c46a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -73,6 +73,14 @@ Core diagnostic logs have a combined `6 MiB` cap. At the cap, files rotate or lo
 
 Common secret fields are redacted, but a diagnostic archive can still expose versions, platform details, paths, component state, and incident timestamps. Review it before sharing. Export request details from Request Logs or WAF Logs separately; these are different log classes.
 
+### Rust runtime diagnostics
+
+Under `Event Center → Status → Runtime diagnostics`, select `Start 60-second capture` to sample the current Rust admin process once per second, including resources, background tasks and SQLite operation statistics. Opening the dialog does not start capture. You can stop early and retain results; closing the dialog lets server-side capture finish automatically.
+
+`Collect memory details` creates a separate on-demand snapshot without reclaiming memory. Export JSON to retain samples, operation statistics and memory details; the status page's diagnostic export also includes the current report. A new capture replaces the previous one and restarting the service discards reports, so export first.
+
+CPU uses one fully loaded logical core as `100%`; the first sample lacks a baseline and is not zero. Task elapsed time includes waiting and is not CPU time. Linux offers fuller resource data, macOS primarily process CPU and RSS, and Windows primarily the process working set. Unavailable fields are not zero. Reports exclude other instances and the Go gateway; a single RSS increase does not establish a memory leak.
+
 ### Go gateway memory
 
 The memory button on the Go gateway process card controls garbage-collection aggressiveness and the Go runtime soft memory limit, and can trigger an immediate reclaim. Heap, RSS, GC count, active requests, and connection counts on the status card help reveal trends. The soft limit constrains memory managed by the Go runtime; it is not a hard process RSS cap.
@@ -126,6 +134,16 @@ When creating a provider, set its name, type, enabled state, and connection conf
 You can test the draft configuration before saving, and test it again from the provider list afterward. When editing, sensitive fields display `Already configured. Leave blank to keep it.` Do not paste an old secret again just to preserve it.
 
 Webhook URLs, Tokens, SMTP passwords, and recipient identifiers are sensitive configuration and must not be included in public logs or screenshots. The backend prevents a provider from being deleted while a rule references it; adjust or delete those rules first.
+
+## Custom Webhook content
+
+Webhook providers support custom headers and standard, JSON or text bodies. A rule's Webhook target can inherit provider settings or override the body. Preview first, then send a test request to verify the third-party format.
+
+The editor lists insertable fields by event under notification details, plus common event type, risk level, source, occurrence time and aggregation fields. Use stable names such as <code v-pre>{{message.fact_values.login_ip}}</code> and <code v-pre>{{message.fact_values.credential_name}}</code>. Names do not change with language or detail order; values retain the notification's formatting. Use `event.payload.*` for raw event data.
+
+<code v-pre>{{message.fact_values}}</code> references the entire object. A JSON string containing only one variable preserves its type; mixed text becomes a string. Fields absent from an event are flagged in preview and become `null` as standalone JSON variables or empty strings within text, without blocking delivery.
+
+An empty sample Context uses the server sample. Populate sample JSON and edit it for the target event to preview or test standard and custom bodies. It is not saved and does not affect live delivery. Retries use the original message snapshot; historical messages may lack `fact_values`.
 
 ## HarmonyOSMeoW
 

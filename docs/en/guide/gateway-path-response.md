@@ -3,7 +3,7 @@ lang: en-US
 title: "Static Path Responses"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4db611fe9787c0be17207bbc16ac5bccba30fa3ed5082b86ccd2b26fe3c8990f
+translationSourceHash: 168f3272d500129a990cfef35d32f8dc757906c747b7c2cd5ed02097d2da90af
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -38,7 +38,7 @@ Each Host can have only one rule for the same match mode and path.
 | --- | --- | --- |
 | `Match` | Exact / Prefix match | Matches only the complete path, or that prefix and its subpaths |
 | `Action` | Reverse proxy / Fixed response | Forwards to another upstream, or lets the gateway respond directly |
-| `Authentication behavior` | Inherit Host / Public access | Applies the Host authentication policy or skips sign-in only for this path rule |
+| `Authentication behavior` | Inherit Host / Public access / Require login | Inherit Host policy, allow public access, or require authentication for this path |
 | `Target` | HTTP / HTTPS URL | Used only for a reverse-proxy action |
 | `Strip matched path` | On / Off | Sends `/api/users` as `/users`, or keeps the original path |
 | `Rewrite HTML paths` | On / Off | Adds the path prefix to page assets; a pure API usually does not need this |
@@ -48,6 +48,10 @@ For a fixed response, you can set a status code from `100` to `599`, `Content-Ty
 ## Path Authentication Behavior
 
 Rules use `Inherit Host` by default and apply the current Host's `Require sign-in` setting and existing strict-allowlist rules. With `Public access`, only requests matching this path rule skip sign-in; other paths on the same Host keep the Host policy.
+
+Choose `Require login` to protect selected paths on a public Host while retaining its allowlist and advanced authentication policies. Hosts with such paths also appear in credential service scopes and Cookie domain compatibility checks. Authorization scopes select the Host, not individual paths.
+
+For example, a public Host with a protected `/admin` prefix keeps ordinary pages public while `/admin` and its subpaths require authentication. Exact matches take priority over prefixes; the longest matching prefix wins. Test both protected paths and adjacent public paths.
 
 Use a public path for a health check, webhook callback, or deliberately anonymous fixed content. The choice covers the rule's entire exact or prefix match: making `/api` public also makes its matched subpaths public. Keep the match narrow and verify that the upstream still enforces its own permissions where required.
 

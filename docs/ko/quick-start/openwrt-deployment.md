@@ -3,7 +3,7 @@ lang: ko-KR
 title: "OpenWrt 배포"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984616d7ca
+translationSourceHash: a9403c8346cd7ee29c71ec6540c04aef9cc3d1a10b36c789999deede981f9af1
 ---
 
 # OpenWrt 배포
@@ -16,12 +16,12 @@ translationSourceHash: bbd2bf984a59efd68a94e27ace3c766ad2153ffee4a5246598d44a984
 
 ### 패키지 형식은 펌웨어에 따라 결정
 
-| 펌웨어 패키지 관리자 | 패키지 형식 | 일반적인 OpenWrt 버전 | 설치 명령 |
-| --- | --- | --- | --- |
-| `opkg` | `.ipk` | `24.10` 이하 | `opkg install /tmp/<파일명>.ipk` |
-| `apk` | `.apk` | `25.12` 이상 | `apk add --allow-untrusted /tmp/<파일명>.apk` |
+| 펌웨어 패키지 관리자 | 패키지 형식 | 설치 명령 |
+| --- | --- | --- |
+| `opkg` | `.ipk` | `opkg install /tmp/<파일명>.ipk` |
+| `apk` | `.apk` | `apk add --allow-untrusted /tmp/<파일명>.apk` |
 
-OpenWrt `25.12` 이상은 일반적으로 `apk`를 사용하고 `24.10` 이하는 일반적으로 `opkg`를 사용합니다. 파생 펌웨어나 업그레이드 중인 기기는 버전이 아니라 실제 설치된 패키지 관리자를 기준으로 판단합니다. 시스템 버전 번호나 파일 확장자만 보고 추측하지 말고 라우터에서 먼저 확인합니다.
+라우터에 실제 설치된 패키지 관리자를 기준으로 형식을 선택합니다. 파생 펌웨어는 다를 수 있으므로 먼저 확인합니다.
 
 ```bash
 ubus call system board
@@ -36,7 +36,7 @@ fi
 
 위 명령의 출력에서 정확한 대상 아키텍처를 확인한 다음 아래 표에서 해당 패키지를 바로 다운로드합니다. 각 링크는 공식 웹사이트에서 사용하는 직접 다운로드 URL이며 패키지 형식과 아키텍처가 이미 지정되어 있으므로 URL을 수정할 필요가 없습니다.
 
-| 대상 아키텍처 | 일반적인 기기 | APK(OpenWrt 25.12 이상) | IPK(OpenWrt 24.10 이하) |
+| 대상 아키텍처 | 일반적인 기기 | APK | IPK |
 | --- | --- | --- | --- |
 | `x86_64` | Intel / AMD 64비트 라우터 및 가상 머신 | [APK 다운로드](https://get.fnknock.cn/?type=apk&arch=x86_64) | [IPK 다운로드](https://get.fnknock.cn/?type=ipk&arch=x86_64) |
 | `aarch64_cortex-a53` | IPQ60xx, Cortex-A53, ImmortalWrt `qualcommax/ipq60xx` | [APK 다운로드](https://get.fnknock.cn/?type=apk&arch=aarch64_cortex-a53) | [IPK 다운로드](https://get.fnknock.cn/?type=ipk&arch=aarch64_cortex-a53) |
@@ -106,9 +106,11 @@ logread -e fn-knock
 
 ### 게이트웨이 포트 수동 개방
 
-직접 공개가 필요하면 `네트워크 → 방화벽 → 트래픽 규칙`에서 `wan`으로부터 현재 게이트웨이 포트로 향하는 TCP만 수동 허용하고 필요한 IP 버전과 출발지 범위를 제한합니다. 상위 라우터, VPN, Cloudflare Tunnel 또는 다른 인그레스를 사용하면 WAN 직접 허용이 필요하지 않을 수 있습니다.
+직접 공개해야 한다면 LuCI의 `서비스 → Knock`에서 게이트웨이 포트를 먼저 저장하고 적용한 뒤 방화벽 출발지 영역을 선택하고 허용 버튼을 누릅니다. 기존 규칙의 영역을 우선 사용하고 없으면 `wan`을 선택합니다. `wan`이 없으면 직접 선택합니다. VPN, Cloudflare Tunnel 또는 상위 진입점을 사용하면 WAN 개방이 필요하지 않을 수 있습니다.
 
-fn-knock는 서비스 시작·중지, 포트 변경, 패키지 업그레이드·삭제 때 이 규칙을 변경하지 않습니다. 포트 변경 뒤 이전 규칙을 수정 또는 삭제하고 제거할 때 불필요한 허용도 정리합니다. 관리 및 내부 포트는 공개하지 말고 방화벽 화면과 외부 네트워크에서 실제 범위를 검증합니다.
+버튼은 선택 영역에서 라우터 자체의 게이트웨이 TCP 포트로 들어오는 IPv4 / IPv6 연결만 허용합니다. 관리·내부 포트를 열거나 상위 라우터 포워딩을 만들지 않습니다. 포트나 영역 변경 후 다시 눌러야 하며 같은 `Allow-FnKnock-Gateway` 규칙을 갱신합니다.
+
+설치, 업데이트, 서비스 시작·중지, 설정 저장, 제거는 규칙을 자동으로 추가하거나 삭제하지 않습니다. 규칙은 재부팅 후에도 유지됩니다. 취소하려면 LuCI 기본 방화벽 페이지에서 삭제하고 적용합니다. 충돌이나 미확정 방화벽 변경을 먼저 처리하고, 저장 후 다시 로드에 실패했다면 재시도합니다. 표시 상태는 저장된 설정만 의미하므로 모바일 네트워크에서 도메인, 인증서, 인증을 검증합니다.
 
 ## 데이터 및 업그레이드
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b09ae08e2
+translationSourceHash: 3a7bca9b89220ecd45f86325b23e0d370fb7fb4c9313513aa4baf32fe4ce9129
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -16,6 +16,8 @@ translationSourceHash: 51427edc99f4fda244bbed8ed3bdc713687072adf8ebc57b20b69c5b0
 - `內網穿透 → 子網域映射`：FRP 或 Cloudflared 將各子網域請求送進閘道。
 
 兩者都使用 `auth.example.com` 作為登入入口，並讓 `nas.example.com`、`alist.example.com` 等服務 Host 共用同一個閘道。路徑映射是舊部署的相容方案，不是子網域映射的先決條件。
+
+在 `映射管理 → 子域` 管理 Host 映射；同頁的 `協議` 分頁用於 TCP / UDP 映射。
 
 ## 請求流程
 

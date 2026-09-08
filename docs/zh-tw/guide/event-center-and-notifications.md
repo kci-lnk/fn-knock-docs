@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4ea4e8abb6f58e02c343977deca442df34629cc2a95be0f9d82802a50740bbea
+translationSourceHash: 43bebc7df46d45d2b7bb0f65e067c2aad486ff789976942a8cad1765cc69c46a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -73,6 +73,14 @@ translationSourceHash: 4ea4e8abb6f58e02c343977deca442df34629cc2a95be0f9d82802a50
 
 診斷 Log 會遮蔽常見密鑰欄位，但診斷包仍可能揭露版本、平台、路徑、元件狀態與故障時間。對外分享前請先檢查內容；Request 明細應另從 Request Log 或 WAF Log 匯出，三者並非同一類型的記錄。
 
+### Rust 執行診斷
+
+在 `事件中心 → 狀態 → 執行診斷` 點選 `開始 60 秒取樣`，每秒收集目前 Rust 管理程序的資源、背景工作及 SQLite 操作統計。開啟視窗不會自動取樣；可提前停止並保留結果，關閉視窗後伺服器仍會自動完成。
+
+`收集記憶體詳情` 是獨立的按需快照，不會回收記憶體。匯出 JSON 可保留逐秒樣本、操作統計與記憶體詳情，狀態頁診斷匯出也包含目前報告。新一輪會取代上一輪，服務重新啟動後報告會遺失，應先匯出。
+
+CPU 以一個邏輯核心滿載為 `100%`，首個缺少基準的樣本不等於零；工作經過時間包含等待，不是 CPU 時間。Linux 提供較完整的資訊，macOS 主要提供程序 CPU 與 RSS，Windows 主要提供程序工作集；不可用欄位不等於零。報告不含其他實例或 Go 閘道的資源，單次 RSS 升高不足以確認記憶體洩漏。
+
 ### Go 閘道記憶體
 
 Go 閘道程序卡右下角的記憶體按鈕可調整 Garbage Collection 強度與 Go Runtime 軟性記憶體上限，也可立即執行一次回收。狀態卡中的 Heap、RSS、GC 次數、Active Request 與連線數可用來判斷趨勢；軟性上限只限制 Go Runtime 管理的記憶體，不是 Process RSS 的硬上限。
@@ -126,6 +134,16 @@ Docker 中顯示的是 Container Runtime 可見的 CPU 與記憶體限制；若�
 儲存前可測試表單中的草稿設定；儲存後也能從清單再次測試。編輯敏感欄位時會顯示「已設定，留空則維持不變」；不需要為了保留金鑰而再次貼上舊值。
 
 Webhook URL、Token、SMTP 密碼與接收識別碼等都屬於敏感設定，不可貼至公開 Log 或截圖。供應商已被規則引用時，後端會阻止刪除；請先調整或刪除對應規則。
+
+## Webhook 自訂內容
+
+Webhook 供應商可設定自訂標頭與標準、JSON 或文字本文；規則的 Webhook 目標可繼承供應商設定或覆寫本文。先預覽，再傳送測試請求以確認第三方格式。
+
+編輯器的通知詳情依事件列出可插入欄位，公共詳情提供事件類型、風險、來源、發生時間與彙總統計。使用 <code v-pre>{{message.fact_values.login_ip}}</code>、<code v-pre>{{message.fact_values.credential_name}}</code> 等固定名稱；名稱不隨語言或排列改變，值仍是通知中的格式化內容。原始事件資料使用 `event.payload.*`。
+
+<code v-pre>{{message.fact_values}}</code> 可引用整個物件；JSON 字串只含單一變數時保留型別，混合文字則轉成字串。事件缺少的欄位會在預覽標示，獨立 JSON 變數為 `null`，嵌入文字時為空字串，不阻止投遞。
+
+樣例 Context 留空時使用伺服器樣例；填入樣例 JSON 後可修改為目標事件資料，用於標準與自訂本文的預覽及測試，不會儲存或影響實際投遞。重試使用原訊息快照，歷史訊息可能沒有 `fact_values`。
 
 ## HarmonyOS MeoW
 

@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Web ターミナル"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb09924c5075
+translationSourceHash: d5949684fa7e6ea78db41d6857655b58c8966b9da6356bf0efd68b99d79f5ae3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -11,6 +11,10 @@ translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb099
 # Web ターミナル
 
 Web ターミナルは、状態確認、短いコマンドの実行、緊急時のトラブルシューティングに適しています。ターゲットは 2 種類あります。すべての配布プラットフォームで、管理者が設定したリモート SSH ターゲットへ接続できます。完全な標準 FPK、Linux サービス、macOS、OpenWrt では、fn-knock が動作するホストのローカル PTY も選択できます。
+
+## Web ターミナルの有効化と無効化
+
+`システム設定 → 機能 → Web ターミナル` で全体のスイッチを管理します。デフォルトで有効で、管理画面の認証を使用します。無効にして保存すると、すべての SSH とローカルのセッションが直ちに終了し、ターミナルへのアクセスも無効になります。再度有効にしても終了した Shell は復元しません。デフォルトで無効のローカル PTY スイッチとは独立しており、Web ターミナルの有効化でローカル PTY が自動的に有効になることはありません。
 
 ## プラットフォーム境界
 

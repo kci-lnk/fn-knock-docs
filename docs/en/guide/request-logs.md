@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a4033658a3d18e821bbd8998d179009cb19a780c5b076eba52b255f5f73767e5
+translationSourceHash: 9ec6638f3305dd73ba06aadab723141455842337af2eddf8932b6a57d5465fd4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -12,13 +12,23 @@ translationSourceHash: a4033658a3d18e821bbd8998d179009cb19a780c5b076eba52b255f5f
 
 `Request Analysis` turns HTTP requests that pass through the gateway into traffic, performance, source, and security views while retaining individual log records for troubleshooting. It analyzes gateway request logs, not sign-in events, and does not include connections to original ports that never enter the HTTP gateway.
 
+Use the `Analysis`, `Logs`, and `WAF logs` tabs in `Request Analysis` to switch between statistics, request details and security events.
+
 ## Enable data collection
 
-Under `System settings → Logs`, enable gateway request logging and set a retention period of at least 1 day. The Go gateway writes daily structured JSON files to the `logs` directory under its runtime directory, and the `Request Analysis` page reads those files directly. Disabling logging stops new analysis data. Files removed after the retention period are no longer available for historical analysis. Logging adds storage and write overhead, so choose a suitable retention period.
+Under `System settings → Logs`, enable gateway request logging and set a retention period of at least 1 day. The Go gateway writes daily structured JSON files by default to the `logs` directory under its runtime directory, and the `Request Analysis` page reads those files directly. Disabling logging stops new analysis data. Files removed after the retention period are no longer available for historical analysis. Logging adds storage and write overhead, so choose a suitable retention period.
 
 `Log requests from local loopback 127.0.0.1` is disabled by default. As a result, local health checks, same-host reverse proxies, and other requests entering the gateway through `127.0.0.1` normally do not appear in the list. Enable it only while tracing a local request path; it changes what is logged, not the access permissions granted to loopback sources.
 
 Writes use an asynchronous queue. If the settings page shows a cumulative dropped count, the queue was congested and some requests were not written to disk. This number is not a count of requests rejected by the gateway. Requests disconnected immediately by gateway reverse-proxy throttling are also absent from the access log.
+
+## Change the log directory
+
+In `System settings → Logs`, enter a log directory or use `Browse folders` to select a folder accessible to the gateway, then save. The request log tab also links to the directory setting. The page shows actual and default directories separately. Save an empty value or use restore default to return to the default location.
+
+The browser shows the gateway server's filesystem; in Docker these are container paths, so mount storage first. The log directory picker can browse protected directories hidden by the static-content browser. This does not make them eligible for public static hosting. Saving validates the path and write access; on failure, read the error and reload the actual directory.
+
+Changing directories does not move old logs. Queries, analysis and retention cleanup use only the current directory after saving; retain or clean up the old directory separately. Logs in memory-backed directories disappear after reboot. External persistent storage can reduce internal FLASH writes. Send an external request after saving and verify the actual directory and a new log entry.
 
 ## Use the Analysis tab
 

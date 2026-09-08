@@ -7,6 +7,8 @@
 
 两者都使用 `auth.example.com` 作为登录入口，并让 `nas.example.com`、`alist.example.com` 等业务 Host 共用同一网关。路径映射是旧部署的兼容方案，不是子域映射的前置条件。
 
+在 `映射管理 → 子域` 管理 Host 映射；同页的 `协议` 页签用于 TCP / UDP 映射。
+
 ## 请求链路
 
 ```text

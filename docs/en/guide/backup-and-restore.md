@@ -3,7 +3,7 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0560545e6a16ccdbd05c665e966cac1b6199a6ff77f445ac8e24fc84444255a2
+translationSourceHash: 4161ccbf5da845a6191bd5ea1249c4934758e89690e47df3e6f66dabf19e43bf
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -52,6 +52,20 @@ Enabling the feature for the first time creates a backup immediately, followed b
 Automatic and manual archives have the same contents, compatibility rules, and security boundary. Automatic copies live on the current server data disk or container volume, so they do not protect against disk failure, volume loss, or complete host failure. Regularly copy important archives to another device or controlled off-site storage.
 
 During restore, select `Choose automatic backup` to read an archive directly from the server-side directory without first downloading it to the browser device. Restore preserves the current automatic-backup schedule so an older archive cannot unexpectedly replace it. After `Clear all data`, existing automatic-backup files remain in the server directory, but the schedule configuration is reset to disabled. Review old-file retention before enabling it again.
+
+## Backup email
+
+Under `System settings → Maintenance → Automatic backups`, open `Backup email`, enable delivery, configure SMTP, sender and recipients, then save. This page uses independent settings, not the notification center's email provider. The local schedule and retention settings remain on the maintenance page.
+
+Delivery is off by default. Connection defaults are port `465`, TLS and a `30`-second timeout; the attachment limit defaults to `20 MiB` and accepts `1–100 MiB`. `Send test email` uses the current form and saved password to send a small test attachment. It neither saves the form nor creates a backup. Save after testing and check local backup and email delivery status separately.
+
+- After a local backup succeeds, the background worker emails the same `.knock` file. Failed delivery does not remove the local copy.
+- Temporary errors retry after `1, 5, 30` minutes, with at most `4` attempts. Authentication failures, permanent rejection, invalid addresses, missing files and oversized attachments do not retry.
+- The size limit applies to the original file; email encoding can exceed the provider's limit. An oversized attachment triggers an attempt to send an explanation without the attachment, while attachment delivery remains failed.
+- Pending jobs expire after `24` hours and temporarily protect their attachments from retention cleanup. Unfinished jobs resume after restart. An interruption after SMTP acceptance but before the local success record can cause duplicate mail.
+- Disabling automatic backups or email, or changing email settings, cancels old jobs that have not started. Submitted mail cannot be recalled.
+
+Email settings, SMTP credentials and jobs are excluded from `.knock` backups. Restore preserves the destination's email settings and status; configure email again on a new machine. Clearing all data removes email credentials. Attachments remain sensitive configuration archives: built-in delivery adds no separate strong encryption, so use controlled mailboxes and restrict attachment access.
 
 ## Export a backup
 

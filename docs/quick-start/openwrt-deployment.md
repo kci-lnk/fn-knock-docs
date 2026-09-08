@@ -8,12 +8,12 @@
 
 ### 格式取决于固件
 
-| 固件的包管理器 | 软件包格式 | 常见 OpenWrt 版本 | 安装命令 |
-| --- | --- | --- | --- |
-| `opkg` | `.ipk` | `24.10` 及更早版本 | `opkg install /tmp/<文件名>.ipk` |
-| `apk` | `.apk` | `25.12` 及更高版本 | `apk add --allow-untrusted /tmp/<文件名>.apk` |
+| 固件的包管理器 | 软件包格式 | 安装命令 |
+| --- | --- | --- |
+| `opkg` | `.ipk` | `opkg install /tmp/<文件名>.ipk` |
+| `apk` | `.apk` | `apk add --allow-untrusted /tmp/<文件名>.apk` |
 
-OpenWrt `25.12` 及更高版本通常使用 `apk`，`24.10` 及更早版本通常使用 `opkg`；衍生固件或升级中的设备仍以实际包管理器为准。不要因为系统版本号或文件扩展名猜测，先在路由器上确认：
+以路由器实际安装的包管理器为准选择软件包；衍生固件可能不同，请先确认：
 
 ```bash
 ubus call system board
@@ -28,7 +28,7 @@ fi
 
 以上方命令输出的目标架构为准，再从下表直接下载对应格式的软件包。这里的链接与官网使用同一套稳定下载入口，已包含软件包格式和架构，不需要手动修改 URL。
 
-| 目标架构 | 常见设备 | APK（OpenWrt 25.12+） | IPK（OpenWrt 24.10 及更早） |
+| 目标架构 | 常见设备 | APK | IPK |
 | --- | --- | --- | --- |
 | `x86_64` | Intel / AMD 64 位软路由、虚拟机 | [下载 APK](https://get.fnknock.cn/?type=apk&arch=x86_64) | [下载 IPK](https://get.fnknock.cn/?type=ipk&arch=x86_64) |
 | `aarch64_cortex-a53` | IPQ60xx、Cortex-A53、ImmortalWrt `qualcommax/ipq60xx` | [下载 APK](https://get.fnknock.cn/?type=apk&arch=aarch64_cortex-a53) | [下载 IPK](https://get.fnknock.cn/?type=ipk&arch=aarch64_cortex-a53) |
@@ -89,11 +89,11 @@ LuCI 页面可以修改这些端口、数据目录和网关配置目录。提交
 
 ### 手动开放网关端口
 
-确需公网直达时，在 `网络 → 防火墙 → 通信规则` 中手动添加只允许 TCP 到当前网关端口的 WAN 入站规则，并按实际需要限制地址族和来源。使用上级路由器、VPN、Cloudflare Tunnel 或其他入口时，可能不需要在 OpenWrt 的 WAN 区直接放行。
+确需公网直达时，在 LuCI 的 `服务 → 敲门 Knock` 中先保存并应用网关端口，再选择 `防火墙来源区域`，点击 `放行防火墙`。默认沿用已有规则的来源区域，否则选择 `wan`；没有 `wan` 时需手动选择。使用 VPN、Cloudflare Tunnel 或上级入口时，可能不需要直接放行 WAN。
 
-fn-knock 服务启停、端口修改、软件包升级或卸载都不会同步修改这条规则。更改网关端口后应同时更新或删除旧规则；卸载前也应手工清理不再需要的 WAN 放行，避免留下无服务监听但仍暴露的入口。
+按钮只放行所选区域到路由器自身的网关 TCP 端口，同时适用于 IPv4 / IPv6；不开放管理或内部端口，也不创建上级路由器的端口转发。更改端口或区域后需再次点击，重复操作更新同一条 `Allow-FnKnock-Gateway` 规则。
 
-不要开放管理端口或内部服务端口。保存规则后从移动网络验证域名、证书和认证流程，并在防火墙页面确认实际生效范围。
+安装、升级、服务启停、保存配置和卸载都不会自动增删此规则。规则会在重启后保留；撤销时在 LuCI 原生防火墙页面删除该规则并应用。出现配置冲突或未提交的防火墙修改时先处理提示；若规则已保存但重载失败，可再次点击重试。页面状态只反映已保存配置，仍需从移动网络验证域名、证书和鉴权。
 
 服务和日志检查：
 
@@ -149,7 +149,7 @@ fn-knock-reset-panel-password
 | 能力 | OpenWrt 软件包中的状态 |
 | --- | --- |
 | 应用内 FPK 更新 | 不支持；使用 `opkg` 或 `apk` 安装匹配的新包 |
-| 直连模式、宿主机防火墙管理 | 不支持；网关 WAN 入站规则也需在 OpenWrt 防火墙、VPN 或上级网关中自行维护 |
+| 直连模式、宿主机防火墙管理 | 不支持；LuCI 可手动放行网关 TCP 入口，其他入站规则由 OpenWrt 防火墙、VPN 或上级网关管理 |
 | 智能连接 | 不支持；需要分流时在 OpenWrt 的 `dnsmasq`、DHCP 或其他本地 DNS 中自行配置 |
 | SSH 安全 | 不支持；使用 OpenWrt 自身的 SSH 日志、防火墙或安全插件 |
 | Web 终端 | 支持远程 SSH，以及默认关闭的 OpenWrt 本机 PTY |

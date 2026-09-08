@@ -3,7 +3,7 @@ lang: ja-JP
 title: "Web Application Firewall（WAF）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443e4e4632
+translationSourceHash: 584075a40f7f24f65180127aa9366e10818f3db6405b08073703d4c5e203803b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: fa35e1319c3b3b6430d63239f51af37189de10f5f6ba2f3f127550443
 WAF は fn-knock を経由する HTTP リクエストを検査し、有効なルールに基づいて不審な内容を記録またはブロックします。ゲートウェイ認証やアプリケーション側のセキュリティを補完する機能であり、ゲートウェイを迂回するポート、TCP／UDP トラフィック、ホスト上のサービスは保護できません。
 
 fn-knock は Coraza を使用して、システムルールとカスタムルールを読み込みます。全体の有効／無効、保護レベル、ルールの有効／無効、ルール更新はすべて Go ゲートウェイへ同期されます。
+
+リクエスト分析の WAF ログタブで防御イベントを確認し、分析やリクエストログのタブへ切り替えられます。
 
 ## 有効にする前の確認
 

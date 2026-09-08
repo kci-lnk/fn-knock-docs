@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Terminal"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5138571d3061f8831ff295f4e8c1cb0017000eb5ce15c85f0bcbfb09924c5075
+translationSourceHash: d5949684fa7e6ea78db41d6857655b58c8966b9da6356bf0efd68b99d79f5ae3
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -18,6 +18,10 @@ Web Terminal provides two backends for status checks, short commands, and emerge
 Remote SSH targets are available on every package. The optional local PTY is available only on the standard fnOS FPK, Linux service, macOS, and OpenWrt packages. It is unavailable on Knock Lite, Docker, Synology, Windows, and development runtimes. The server-reported capability is authoritative; an unsupported package does not show an enable control.
 
 For SSH, the fn-knock runtime must be able to reach the target host and port. Web Terminal does not change Docker port publishing, OpenWrt firewall rules, or other platform networking. A local PTY does not require an SSH server and does not detour through SSH to `localhost`.
+
+## Enable or disable Web Terminal
+
+Manage the global switch under `System settings → Features → Web Terminal`. It is enabled by default and uses admin authentication. Disabling and saving immediately ends all SSH and local terminal sessions and disables terminal access. Re-enabling does not restore ended shells. This switch is separate from the local PTY switch, which remains off by default; enabling Web Terminal does not enable local PTY.
 
 ## Security boundary
 

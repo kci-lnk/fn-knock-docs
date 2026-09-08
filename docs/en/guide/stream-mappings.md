@@ -3,7 +3,7 @@ lang: en-US
 title: "TCP/UDP Stream Proxying"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998e0b80ab
+translationSourceHash: 57742c6204b4d9cf415678c116565161baf69c7ae010bbb57cd6aac3b8afc61a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998
 `Protocol mappings` add TCP or UDP listening ports for non-HTTP services such as SSH, databases, and DNS. They do not inspect a domain Host or URL path; each rule forwards the byte stream on one external port to a `host:port`.
 
 This feature is available only as an addition to direct public `Subdomain mode`. Continue to use [Subdomain Routing](/en/guide/subdomain-proxy) for web services, or see [Path-based Reverse Proxy (Compatibility Mode)](/en/guide/reverse-proxy) for legacy path rules.
+
+Manage TCP / UDP rules under `Mappings → Protocols`. The tab depends on the current mode and whether protocol mapping is enabled.
 
 ## Requirements
 

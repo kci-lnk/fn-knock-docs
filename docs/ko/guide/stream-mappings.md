@@ -3,7 +3,7 @@ lang: ko-KR
 title: "TCP/UDP 스트림 프록시"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998e0b80ab
+translationSourceHash: 57742c6204b4d9cf415678c116565161baf69c7ae010bbb57cd6aac3b8afc61a
 ---
 
 # TCP/UDP 스트림 프록시
@@ -11,6 +11,8 @@ translationSourceHash: 90af68dbf1759b08626d9b4260b04dc1bae83b1938855650bec163998
 `프로토콜 매핑`은 SSH, 데이터베이스, DNS 같은 비 HTTP 서비스에 TCP / UDP 수신 포트를 추가합니다. 도메인 Host나 URL 경로를 읽지 않고 외부 포트의 바이트 스트림을 `host:port`로 전달합니다.
 
 이 기능은 공인 IP 직접 연결 `서브도메인 모드`를 보완하는 용도로만 사용합니다. 웹 서비스에는 계속 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 사용하고 경로 호환 규칙은 [경로 매핑](/ko/guide/reverse-proxy)을 참고합니다.
+
+매핑 관리의 프로토콜 탭에서 TCP / UDP 규칙을 관리합니다. 탭 표시는 현재 모드와 프로토콜 매핑 기능의 활성화 상태에 따라 달라집니다.
 
 ## 활성화 조건
 
