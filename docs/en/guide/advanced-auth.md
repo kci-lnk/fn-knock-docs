@@ -3,7 +3,7 @@ lang: en-US
 title: "Advanced Authentication for Subdomains"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ba7c0993dac5fc997c473049a16eabc9cd8a3dbc1de3db9cebb40661c90b1fb6
+translationSourceHash: 36a93c0bf586d0b4adcabe858862981c9688b4dc567b6bd921179038e9239988
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -33,7 +33,7 @@ Apps, scripts, and other clients that do not return Cookies create no persistent
 
 For example, a rule that matches only `/health` does not limit a persistent grant to `/health`. After the browser completes the probe, the entire current Host is allowed for the lifetime of the temporary grant. To expose only a few fixed paths, use [Static Path Responses](/en/guide/gateway-path-response), split them onto a separate Host, or continue enforcing permissions in the upstream application.
 
-Protective denials such as the general blacklist, WAF, and a legacy strict allowlist still take precedence. Advanced authentication cannot bypass these security boundaries.
+The general blacklist and legacy strict allowlist still enforce their denials. A request carrying a valid probe Cookie or persistent temporary credential for the current Host can skip WAF and scanner checks after validation. Matching a rule without an existing valid Cookie does not grant this exemption. Forged, expired, cross-Host, or outdated-policy credentials do not qualify; validation failures do not automatically allow access.
 
 ## Configure the validity period
 
@@ -98,6 +98,10 @@ Region selections are expanded and stored as fixed CIDRs when saved. If the CIDR
 The header name cannot be a credential, forwarding, or client-IP-related header such as `Host`, `Cookie`, `Authorization`, `X-Forwarded-*`, `X-Real-IP`, or `X-Reauth-*`. When using an upstream proxy, configure it to remove or overwrite any header that an external client could forge.
 
 Header, Query, and path match values are stored in plaintext in the configuration and backups. The system does not include these configured values in advanced-authentication logs, metrics, or error details; `Request Logs` records only the matching rule-group ID and temporary-grant state, without echoing configuration values. Do not place a long-lived, high-value secret directly in a Query parameter, and handle exported backups as sensitive files.
+
+## Recovery of damaged policies
+
+During startup or configuration restoration, unrecoverable advanced authentication policies are removed while other Host authentication settings remain unchanged. Hosts explicitly quarantined by an earlier policy repair are restored; ordinary manually disabled Hosts stay disabled. If advanced authentication settings disappear, verify the login requirement and actual access behavior before recreating the rules.
 
 ## Example rule
 

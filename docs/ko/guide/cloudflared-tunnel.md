@@ -3,7 +3,7 @@ lang: ko-KR
 title: "cloudflared 기반 Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
+translationSourceHash: 499de7529083adccb4d0fb417e7eea83cd0468e1d6da1dd6e557caa8e2d7a6dc
 ---
 
 # cloudflared 기반 Cloudflare Tunnel
@@ -149,7 +149,7 @@ IP 등록 기관 또는 GeoIP에 “미국”이라고 표시되어도 요청이
 
 관리 모드는 루프백에서만 수신하는 전용 Tunnel 진입점을 사용합니다. 게이트웨이는 이 제어된 경로에서만 Cloudflare의 `CF-Connecting-IP`를 신뢰하고 방문자가 직접 보낸 `X-Forwarded-For`는 신뢰하지 않습니다. EdgeOne/ESA 실제 IP 옵션은 Cloudflared에 적용되지 않으며 현재 모드에서 사용할 수 없으면 숨겨집니다.
 
-Cloudflare의 `Pseudo IPv4`를 `Overwrite Headers`로 설정하면 IPv6 방문자의 `CF-Connecting-IP`가 `240.0.0.0/4`의 Class E 주소로 바뀝니다. 전용 관리 진입점은 단일 값 헤더를 엄격히 검증하고 `CF-Connecting-IPv6`에서 유효한 공인 IPv6를 복원하여 세션, 접근 범위, WAF 및 요청 로그에 사용합니다. 헤더가 없거나 중복되었거나 사설 주소이거나 형식이 잘못되면 Pseudo IPv4를 유지하고 다른 전달 헤더를 신뢰하지 않습니다. 이 복원은 fn-knock 관리 진입점에만 적용됩니다. 수동 Cloudflare 오리진에서는 Pseudo IPv4를 `Off` 또는 `Add Header`로 설정합니다.
+전용 Cloudflare 오리진은 같은 호스트의 관리 모드 및 수동 Tunnel을 지원합니다. `Pseudo IPv4 → Overwrite Headers`는 IPv6 방문자의 `CF-Connecting-IP`를 `240.0.0.0/4` 주소로 바꿉니다. 엔드포인트는 단일하고 유효한 공인 `CF-Connecting-IPv6`에서 IPv6를 복원합니다. IPv6 헤더가 없거나 중복, 사설 주소, 잘못된 형식이면 Pseudo IPv4를 유지하고 다른 전달 헤더는 신뢰하지 않습니다. 로그에 Class E가 남으면 전용 오리진과 두 헤더를 확인하거나 Pseudo IPv4를 `Off` / `Add Header`로 설정합니다. 해당 대역을 허용 목록에 추가하지 않습니다.
 
 모바일 네트워크에서 로그인이 필요한 서비스 Host를 열고 요청 로그에서 다음을 확인합니다.
 
@@ -161,7 +161,7 @@ Cloudflare의 `Pseudo IPv4`를 `Overwrite Headers`로 설정하면 IPv6 방문�
 
 고급 사용자는 `수동 Tunnel Token`을 펼쳐 Cloudflare에서 받은 Tunnel Token과 전송 프로토콜을 설정할 수 있습니다. `자동`은 QUIC를 먼저 시도하고 실패하면 HTTP/2로 전환합니다. UDP `7844`가 확실히 차단된 경우에만 HTTP/2로 고정합니다.
 
-수동 모드는 Tunnel, DNS 또는 Ingress를 만들지 않습니다. Cloudflare에서 Public Hostname과 오리진 Service를 직접 설정합니다. 직접 관리하는 프로세스 또는 Windows 설치도 수동 구성입니다. 실제 게이트웨이 포트를 오리진으로 사용할 수 있지만 설치, Token, 로그 및 수명 주기는 관리 모드의 대상이 아닙니다.
+수동 모드는 Tunnel, DNS, Ingress를 만들지 않으므로 Cloudflare에서 Public Hostname을 설정합니다. HTTP Service URL에는 화면에 표시되는 전용 오리진을 사용합니다. 일반 배포는 `http://127.0.0.1:17999`, FPK Lite는 `http://127.0.0.1:18999`이며 cloudflared와 게이트웨이가 같은 호스트에 있는 경우입니다. 일반 포트 `7999`를 가리키던 설정은 변경합니다. 일반 게이트웨이는 `CF-Connecting-IP`를 신뢰하지 않습니다. 전용 엔드포인트는 해당 헤더에 유효한 IP 하나만 있어야 하며 그렇지 않으면 HTTP 400을 반환합니다. XFF나 로컬 주소로 대체하지 않으며 다른 출처에 공개 포워딩하지 않습니다. 직접 관리하는 프로세스와 Windows의 설치, Token, 로그와 수명 주기는 계속 별도로 관리합니다.
 
 ## 연결 해제 및 정리
 
@@ -187,7 +187,7 @@ API Token을 삭제하면 이후 원격 관리만 중지되며 Cloudflare 리소
 | 모든 후보 호스트 이름 해석 실패 | 최근 리졸버 진단을 펼쳐 확인. 공식 범위를 허용했다면 자동 폴백 여부를 확인하고, 아니라면 공식 범위를 켠 뒤 다시 스캔 |
 | 사용자 지정 우선 IP가 선택되지 않음 | Cloudflare 공식 IPv4 범위 안인지 확인하고 지연 시간, 다운로드, 서비스 도메인 TLS, SNI 및 Ray ID 검증 결과를 점검 |
 | IP 위치가 미국으로 표시됨 | 스캔의 Cloudflare colo 코드를 확인. Anycast 등록 위치는 연결 도착지가 아님 |
-| 로그의 IPv6가 `240.0.0.0/4`로 표시됨 | 관리 모드를 Pseudo IPv4 복원 지원 버전으로 업그레이드. 수동 오리진에서는 Cloudflare Pseudo IPv4를 `Off` 또는 `Add Header`로 변경 |
+| 로그의 IPv6가 `240.0.0.0/4`로 표시됨 |전용 오리진과 `CF-Connecting-IPv6`를 확인하고 필요하면 Pseudo IPv4를 `Off` 또는 `Add Header`로 설정|
 | 모든 요청이 로컬처럼 보임 | 요청 로그의 클라이언트 IP와 잘못된 수동 오리진 대신 전용 관리 진입점을 사용하는지 확인 |
 
 전체 실행 상태는 [터널](/ko/guide/tunnel), Host 설정은 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 참고합니다.

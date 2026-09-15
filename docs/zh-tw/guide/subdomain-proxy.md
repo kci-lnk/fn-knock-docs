@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3a7bca9b89220ecd45f86325b23e0d370fb7fb4c9313513aa4baf32fe4ce9129
+translationSourceHash: cdc9eb02ca221547194e4ce5cafd4dba5d352116a0bbdfe8a1d50628e9ef6a3b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -224,6 +224,12 @@ docs.example.com -> 目錄 /srv/docs
 - 協定映射只會顯示在公網直連子網域模式中。即使 Docker 額外 Publish Port，也不會由 fn-knock 管理 Host 防火牆。
 - OpenWrt 的連接埠放行與區域網路 DNS 分流由 OpenWrt 自行管理；fn-knock 不提供直連、Host 防火牆管理、智慧連線、SSH 安全性或應用程式內 FPK 更新。Web 終端機可連線管理員設定的遠端 SSH 目標，也可啟用預設關閉、繼承 fn-knock 服務身分的 OpenWrt 本機 PTY。
 - fn-knock 不會自動關閉 Upstream Service 原有的公網監聽，也無法取代 Upstream 更新、備份及最小權限設定。
+
+## 批次編輯映射
+
+點擊 `多選`，選取業務 Host 後開啟 `批次編輯`，逐列修改顯示標題、網域與目標。反向代理填寫上游 URL，單檔或目錄回應填寫伺服器絕對路徑；回應類型保持不變，驗證服務不能參與批次編輯。
+
+儲存前修正重複或無效的 Host、目標與靜態路徑。重新命名會保留其他設定並遷移相關閘道 Host 設定。發生設定衝突時，保留需要的輸入再重新開啟編輯器。若映射已儲存但閘道設定尚未同步，可在原對話框重試未完成的同步，不會重複提交已儲存的映射。完成後透過外部網路驗證新 Host、驗證策略與上游回應。
 
 ## 驗證與疑難排解
 

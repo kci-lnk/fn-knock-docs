@@ -3,7 +3,7 @@ lang: en-US
 title: "Event Center and Notifications"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 43bebc7df46d45d2b7bb0f65e067c2aad486ff789976942a8cad1765cc69c46a
+translationSourceHash: becd27ae6a14a9bf6c2845ad951b2a42535b1eff1ddb2041a004b2e44a797cde
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -196,7 +196,7 @@ A rule can contain multiple providers, but each provider can be added to that ru
 
 High-frequency events such as login success and SSH login success can generate many notifications when the threshold is 1. Tune the window, trigger count, and cooldown for your actual traffic.
 
-When an app-update event contains release notes, it writes a bounded summary for the currently offered release into both the plain-text and Markdown message bodies. Providers that display only one body format therefore still receive the summary instead of finding it only in structured details. The event does not concatenate notes from older releases. To review complete or earlier release notes, use `Version and updates` or the project release history.
+When an app-update event contains release notes, it writes a bounded summary for the currently offered release into both the plain-text and Markdown message bodies. Providers that display only one body format therefore still receive the summary instead of finding it only in structured details. The event does not concatenate notes from older releases. To review complete or earlier release notes, use `System settings → Update` or the project release history.
 
 ## Review Delivery Results
 

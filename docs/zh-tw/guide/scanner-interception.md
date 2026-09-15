@@ -3,7 +3,7 @@ lang: zh-TW
 title: "自動化掃描攔截"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d385cac4
+translationSourceHash: ff7c268b57b8796698e7e9df88c79983ee1f63845eaa4c42d4f8a0c1e9ec8215
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d
 掃描攔截會依短時間內的可疑存取行為，將來源加入獨立的掃描器封鎖清單。此功能適合降低重複探測造成的雜訊；它不能取代 WAF、全域封鎖清單或登入退避。
 
 請在 `系統設定 → 攔截` 中設定啟用狀態、統計時間窗、觸發臨界值與封鎖清單有效期限。統計時間窗最短為 5 分鐘；臨界值最低為 1 次，封鎖清單有效期限至少為 1 天。建議先採用較寬鬆的臨界值，觀察一段時間後再收緊。Health Check、自動化 Script、反向 Proxy 探測與行動網路重試，都可能產生看似頻繁的請求。
+
+目前 Host 的有效進階驗證探測 Cookie 或持久臨時憑證，經驗證後可豁免 WAF 與掃描器檢查；通用封鎖清單及舊版嚴格允許清單仍有效。首次符合規則不等於取得豁免，見[進階驗證](/zh-tw/guide/advanced-auth)。
 
 ## 觸發與記錄
 

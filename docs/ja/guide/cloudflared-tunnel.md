@@ -3,7 +3,7 @@ lang: ja-JP
 title: "cloudflared による Cloudflare Tunnel"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
+translationSourceHash: 499de7529083adccb4d0fb417e7eea83cd0468e1d6da1dd6e557caa8e2d7a6dc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -151,7 +151,7 @@ IP レジストリや GeoIP に「米国」と表示されても、通信が米�
 
 管理モードはループバックだけで待ち受ける専用 Tunnel 入口を使います。ゲートウェイが Cloudflare の `CF-Connecting-IP` を信頼するのはこの管理経路だけで、訪問者が送信した `X-Forwarded-For` は信頼しません。EdgeOne / ESA の実クライアント IP 設定は Cloudflared には適用されず、現在のモードで利用できない場合は非表示になります。
 
-Cloudflare の `Pseudo IPv4` を `Overwrite Headers` に設定すると、IPv6 訪問者の `CF-Connecting-IP` は `240.0.0.0/4` の Class E アドレスになります。専用管理入口では単一値ヘッダーを厳密に検証し、`CF-Connecting-IPv6` の有効な公開 IPv6 をセッション、公開範囲、WAF、リクエストログに使用します。ヘッダーが欠落、重複、プライベート、または不正な形式の場合は Pseudo IPv4 を維持し、別の転送ヘッダーを信頼しません。この復元は fn-knock 管理入口だけに適用されます。手動 Cloudflare オリジンでは Pseudo IPv4 を `Off` または `Add Header` にしてください。
+専用 Cloudflare オリジンは同じホスト上の管理モードと手動 Tunnel に対応します。`Pseudo IPv4 → Overwrite Headers` は IPv6 訪問者の `CF-Connecting-IP` を `240.0.0.0/4` のアドレスに変更します。入口は単一の有効な公開 `CF-Connecting-IPv6` から IPv6 を復元します。IPv6 ヘッダーの欠落、重複、プライベート値、不正形式では Pseudo IPv4 を保持し、他の転送ヘッダーは信頼しません。ログに Class E が残る場合は専用オリジンと両ヘッダーを確認するか、Pseudo IPv4 を `Off` / `Add Header` にします。このサブネットを許可リストに追加しないでください。
 
 モバイル回線からログインが必要なサービス Host を開き、リクエストログで次を確認します。
 
@@ -163,7 +163,7 @@ Cloudflare の `Pseudo IPv4` を `Overwrite Headers` に設定すると、IPv6 �
 
 上級者は `手動 Tunnel Token` を展開し、Cloudflare で取得した Tunnel Token と転送プロトコルを設定できます。`自動`は QUIC を先に試し、失敗すると HTTP/2 へ戻ります。UDP `7844` が明確にブロックされている場合だけ HTTP/2 に固定してください。
 
-手動モードでは Tunnel、DNS、Ingress は作成されません。Cloudflare で Public Hostname とオリジン Service を自分で設定します。独自プロセスや Windows 版も手動構成であり、実際のゲートウェイポートをオリジンにできますが、インストール、Token、ログ、ライフサイクルは管理モードの対象外です。
+手動モードは Tunnel、DNS、Ingress を作成しないため、Cloudflare で Public Hostname を設定します。HTTP Service URL には画面の専用オリジンを指定します。通常は `http://127.0.0.1:17999`、FPK Lite は `http://127.0.0.1:18999` で、cloudflared とゲートウェイが同じホストにある場合の設定です。通常ポート `7999` を向く設定は変更してください。通常の入口は `CF-Connecting-IP` を信頼しません。専用入口はこのヘッダーに有効な IP が 1 つだけあることを要求し、不正なら HTTP 400 を返します。XFF やローカルアドレスにはフォールバックしません。他の送信元向けに公開転送しないでください。独自プロセスと Windows のインストール、Token、ログ、起動管理は引き続き手動で行います。
 
 ## 切断とクリーンアップ
 
@@ -189,7 +189,7 @@ API Token を削除しても、今後のリモート管理が止まるだけで 
 | すべての候補ホスト名の解決に失敗 | 直近のリゾルバー診断を展開する。公式範囲を許可している場合は自動フォールバックを確認し、それ以外は公式範囲を有効にして再スキャンする |
 | 優先 IP が選択されない | Cloudflare 公式 IPv4 範囲内か確認し、遅延、ダウンロード、業務ドメイン TLS、SNI、Ray ID の検証結果を見る |
 | IP 所在地が米国 | スキャンの Cloudflare 拠点コードを確認する。Anycast の登録地は接続先ではない |
-| ログの IPv6 が `240.0.0.0/4` になる | 管理モードを Pseudo IPv4 復元対応版へ更新する。手動オリジンでは Cloudflare Pseudo IPv4 を `Off` または `Add Header` にする |
+| ログの IPv6 が `240.0.0.0/4` になる |専用オリジンと `CF-Connecting-IPv6` を確認し、必要なら Pseudo IPv4 を `Off` または `Add Header` にする|
 | すべてローカルアクセスに見える | リクエストログのクライアント IP と、誤った手動オリジンではなく専用管理入口を使っているか |
 
 全体の実行状態は[トンネル](/ja/guide/tunnel)、Host 設定は[サブドメインマッピング](/ja/guide/subdomain-proxy)を参照してください。

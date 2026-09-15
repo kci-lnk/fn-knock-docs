@@ -3,7 +3,7 @@ lang: zh-TW
 title: "事件中心與通知"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 43bebc7df46d45d2b7bb0f65e067c2aad486ff789976942a8cad1765cc69c46a
+translationSourceHash: becd27ae6a14a9bf6c2845ad951b2a42535b1eff1ddb2041a004b2e44a797cde
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -196,7 +196,7 @@ Webhook 供應商可設定自訂標頭與標準、JSON 或文字本文；規則�
 
 登入成功、SSH 登入成功等高頻事件若臨界值設為 1，可能產生大量通知。請依實際存取量調整時間窗、臨界值與 Cooldown。
 
-應用程式更新事件包含 Release Notes 時，系統會將目前可更新版本的說明摘要同時寫入純文字與 Markdown 內文，因此只顯示內文的推播管道也能收到，而不只存在於結構化詳細資訊中。通知不會連續串接多個歷史版本的說明。需要查看完整或更早的內容時，請前往 `版本與更新` 頁面或專案 Release History。
+應用程式更新事件包含 Release Notes 時，系統會將目前可更新版本的說明摘要同時寫入純文字與 Markdown 內文，因此只顯示內文的推播管道也能收到，而不只存在於結構化詳細資訊中。通知不會連續串接多個歷史版本的說明。需要查看完整或更早的內容時，請前往 `系統設定 → 更新` 頁面或專案 Release History。
 
 ## 查看投遞結果
 

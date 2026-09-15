@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求分析"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9ec6638f3305dd73ba06aadab723141455842337af2eddf8932b6a57d5465fd4
+translationSourceHash: bc65f022d256dd9cca906308f5a01a5dbd8995729cb214ec0e5ebdba992841d6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,6 +21,12 @@ translationSourceHash: 9ec6638f3305dd73ba06aadab723141455842337af2eddf8932b6a57d
 `記錄來自127.0.0.1本機回環的記錄` 預設關閉，因此本機健康檢查、同機反向 Proxy 或其他經由 `127.0.0.1` 進入閘道的請求，通常不會出現在清單中。需要排查本機呼叫鏈時再開啟；此選項只改變記錄範圍，不會變更回環來源的存取權限。
 
 寫入作業採用非同步 Queue。設定頁面顯示累計捨棄數時，代表 Queue 曾經壅塞，部分請求未寫入磁碟；此數字不是遭閘道拒絕的請求數量。閘道因反向 Proxy Rate Limit 而直接中斷的請求，也不會寫入 Access Log。
+
+## 容量與滾動保留
+
+在 `系統設定 → Log` 設定每日容量、總容量與保留天數。容量以 MiB 填寫，總容量不能小於每日容量。超過容量或保留期限會刪除最舊記錄並繼續寫入。調低上限會立即清理既有記錄且無法復原，需留存的日誌應先備份。
+
+清理以分片為單位，實際保留量可能低於上限；查詢與統計只涵蓋保留資料。用量在載入或儲存時更新，並非即時監控。游標因清理失效時，重新整理後再查詢；容量或儲存異常造成的未寫入數量，需與非同步佇列丟棄數分別檢查。
 
 ## 修改記錄儲存目錄
 
@@ -84,7 +90,7 @@ Trace ID 也可能出現在閘道 Response Header、攔截頁或通知中。分�
 
 如果只有部分請求缺少記錄，請檢查閘道 Rate Limit 是否直接中斷連線，以及記錄設定頁面是否出現 Queue 捨棄警告。若 Status Code 來自閘道而非上游，請繼續檢查身分驗證、可見性、WAF 與映射；若已顯示正確的上游 Target，再轉往應用程式本身的 Log。
 
-託管 Cloudflare Tunnel 開啟 `Pseudo IPv4 → Overwrite Headers` 時，IPv6 訪客的初始邊緣 Header 可能是 `240.0.0.0/4`。支援此模式的 fn-knock 會在託管專用入口驗證 `CF-Connecting-IPv6`，並將「Client IP」還原為真實公網 IPv6；「Connection source IP」仍反映本機 Tunnel 路徑。升級後若仍記錄 Class E 位址，請檢查是否使用手動 Origin，或 Header 是否缺少／重複；手動 Origin 建議將 Pseudo IPv4 改為 `Off` 或 `Add Header`。不要把 `240.0.0.0/4` 加入允許清單來繞過問題。
+專用 Cloudflare 回源入口支援同機的託管及手動 Tunnel。`Pseudo IPv4 → Overwrite Headers` 會把 IPv6 訪客的 `CF-Connecting-IP` 改為 `240.0.0.0/4` 位址；入口從單一且有效的公網 `CF-Connecting-IPv6` 還原 IPv6。該 IPv6 Header 缺失、重複、屬私網或格式錯誤時，會保留 Pseudo IPv4，不信任其他轉送 Header。日誌仍顯示 Class E 位址時，核對專用回源與兩個 Header，或將 Pseudo IPv4 改為 `Off` / `Add Header`；勿將該網段加入允許清單。
 
 啟用子網域進階驗證後，驗證結果 `子網域規則放行` 代表請求已透過進階驗證放行。詳細資訊中的規則組 ID 可用來定位觸發設定；`單次請求放行` 表示本次請求命中規則但未建立持久憑據，常見於首次 Cookie 探測、不儲存 Cookie 的用戶端、WebSocket Upgrade 或持久化降級；`已簽發` 表示本次建立持久憑據，`已續期` 表示重新計算閒置有效期，`已重複使用` 表示繼續沿用既有憑據。規則行為請參閱[子網域進階驗證](/zh-tw/guide/advanced-auth)。
 

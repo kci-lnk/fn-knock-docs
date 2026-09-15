@@ -3,7 +3,7 @@ lang: ja-JP
 title: "自動スキャンの遮断"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d385cac4
+translationSourceHash: ff7c268b57b8796698e7e9df88c79983ee1f63845eaa4c42d4f8a0c1e9ec8215
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d
 スキャナーのブロック機能は、短時間に発生した不審なアクセス動作に基づいて、送信元を独立したスキャナーのブラックリストへ追加します。繰り返し行われる探索のノイズを抑える用途に適していますが、WAF、共通ブラックリスト、ログイン試行制限の代わりにはなりません。
 
 `システム設定 → ブロック` で、有効／無効、集計期間、ブロックしきい値、ブロックの有効期間を設定します。集計期間は 5 分以上、しきい値は 1 回以上、ブロックの有効期間は 1 日以上です。最初は余裕のあるしきい値に設定し、しばらく監視してから厳しくしてください。ヘルスチェック、自動化スクリプト、リバースプロキシの探索、モバイルネットワークの再試行によって、頻度が高く見えるリクエストが発生することもあります。
+
+現在の Host に対する有効な高度な認証の確認用 Cookie または永続的な一時認証情報は、検証後に WAF とスキャナー検査の免除に使われます。共通ブラックリストと従来の厳格な許可リストは引き続き有効です。初回のルール一致だけでは免除されません。[高度な認証](/ja/guide/advanced-auth)を参照してください。
 
 ## トリガーと記録
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Application Firewall (WAF)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 584075a40f7f24f65180127aa9366e10818f3db6405b08073703d4c5e203803b
+translationSourceHash: d0d1834bc688b3859d0f9fe67d95e9411fad07182826540d994023473f79cecd
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -15,6 +15,8 @@ WAF inspects HTTP requests that pass through fn-knock and logs or blocks suspici
 fn-knock uses Coraza to load system and custom rules. The global switch, protection level, rule status, and rule updates all synchronize to the Go gateway.
 
 Review security events under `Request Analysis → WAF logs`, alongside the `Analysis` and request `Logs` tabs.
+
+A validated advanced-authentication probe Cookie or persistent temporary credential for the current Host can exempt a request from WAF and scanner checks. The general blacklist and legacy strict allowlist still apply. A first rule match alone is not an exemption; see [advanced authentication](/en/guide/advanced-auth).
 
 ## Checks Before Enabling WAF
 
@@ -59,6 +61,12 @@ Scanner blocking has its own independent common-location exemption. Changing the
 ### LAN Exemption Boundary
 
 The disabled-by-default LAN exemption skips all WAF checks for private, loopback, link-local, and carrier-grade NAT client addresses. Enable it only when those networks are trusted, and first verify the real client IP in request logs: a front proxy that makes public visitors appear private would bypass WAF. This setting is independent of login local exemptions, common-location exemptions, and per-Host WAF controls.
+
+## Automatic bans for repeated violations
+
+Under `System settings → WAF`, choose Off, Strict, Normal, or Relaxed for automatic violation bans. Repeated security blocks are counted per client IP; this setting is independent of WAF protection strength. A triggered ban adds the IP to the general blacklist and requires manual removal. Turning automatic bans off does not remove existing entries.
+
+Verify the real client IP before enabling this to avoid banning shared exits or proxy nodes. For false bans, inspect WAF logs by Trace ID, release the IP from the general blacklist, and adjust the offending rule or ban preset.
 
 ## System Rules
 

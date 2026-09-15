@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Cloudflare Tunnel（cloudflared）設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
+translationSourceHash: 499de7529083adccb4d0fb417e7eea83cd0468e1d6da1dd6e557caa8e2d7a6dc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -151,7 +151,7 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 
 託管模式使用只監聽 Loopback 的專用 Tunnel 入口。閘道只在這條受控路徑信任 Cloudflare 的 `CF-Connecting-IP`，不會把訪客自行傳送的 `X-Forwarded-For` 當成可信來源。EdgeOne / ESA 的真實 IP 開關不適用於 Cloudflared，在目前模式不可用時介面會隱藏。
 
-若 Cloudflare 的 `Pseudo IPv4` 設為 `Overwrite Headers`，IPv6 訪客的 `CF-Connecting-IP` 會變成 `240.0.0.0/4` 的 Class E 位址。託管專用入口會嚴格驗證單值 Header，並從 `CF-Connecting-IPv6` 還原有效的公網 IPv6，用於 Session、可見性、WAF 與 Request Log；Header 缺少、重複、屬於私有位址或格式異常時會保留 Pseudo IPv4，不會信任其他轉送 Header。此還原只適用 fn-knock 託管入口；手動 Cloudflare Origin 建議將 Pseudo IPv4 設為 `Off` 或 `Add Header`。
+專用 Cloudflare 回源入口支援同機的託管及手動 Tunnel。`Pseudo IPv4 → Overwrite Headers` 會把 IPv6 訪客的 `CF-Connecting-IP` 改為 `240.0.0.0/4` 位址；入口從單一且有效的公網 `CF-Connecting-IPv6` 還原 IPv6。該 IPv6 Header 缺失、重複、屬私網或格式錯誤時，會保留 Pseudo IPv4，不信任其他轉送 Header。日誌仍顯示 Class E 位址時，核對專用回源與兩個 Header，或將 Pseudo IPv4 改為 `Off` / `Add Header`；勿將該網段加入允許清單。
 
 從行動網路開啟一個要求登入的服務 Host，並在 Request Log 確認：
 
@@ -163,7 +163,7 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 
 進階使用者仍可展開 `手動 Tunnel Token`，貼上從 Cloudflare 取得的 Tunnel Token 並選擇傳輸 Protocol。`自動`會先嘗試 QUIC，失敗時回退 HTTP/2；只有 UDP `7844` 明確遭封鎖時才固定 HTTP/2。
 
-手動模式不會自動建立 Tunnel、DNS 或 Ingress，需要自行在 Cloudflare 設定 Public Hostname 與 Origin Service。自管 Process 或 Windows 版本也屬於此類；可以回源實際閘道 Port，但其安裝、Token、Log 與生命週期不由託管流程負責。
+手動模式不會建立 Tunnel、DNS 或 Ingress，需自行在 Cloudflare 設定 Public Hostname。HTTP Service URL 使用頁面顯示的專用回源位址：一般部署為 `http://127.0.0.1:17999`，FPK Lite 為 `http://127.0.0.1:18999`，適用於 cloudflared 與閘道同機執行。原本指向一般 `7999` Port 的設定應改用專用入口；一般閘道不信任 `CF-Connecting-IP`。專用入口要求該 Header 存在且包含單一有效 IP，否則回傳 HTTP 400，不回退至 XFF 或本機位址。不可將專用入口公開轉送給其他來源。自管程序與 Windows 的安裝、Token、日誌及生命週期仍需自行管理。
 
 ## 中斷連線與清理
 
@@ -189,7 +189,7 @@ IP 註冊機構或 GeoIP 顯示「美國」，不代表 Request 落地在美國�
 | 所有候選網域都解析失敗 | 展開最近一次解析器診斷；允許官方網段時確認是否已自動回退，否則啟用官方網段後重新測速 |
 | 自訂優選 IP 未被採用 | 確認位於 Cloudflare 官方 IPv4 網段內，並查看延遲、下載、業務網域 TLS、SNI 與 Ray ID 驗證結果 |
 | IP 歸屬地顯示美國 | 查看測速中的 Cloudflare 機房代碼；Anycast 註冊地不是連線落點 |
-| Log 中的 IPv6 變成 `240.0.0.0/4` | 託管模式升級至支援 Pseudo IPv4 還原的版本；手動 Origin 將 Cloudflare Pseudo IPv4 改為 `Off` 或 `Add Header` |
+| Log 中的 IPv6 變成 `240.0.0.0/4` |檢查專用回源與 `CF-Connecting-IPv6`；必要時將 Pseudo IPv4 改為 `Off` 或 `Add Header`|
 | 所有存取都像本機來源 | 查看 Request Log 的 Client IP，並使用託管專用入口而非錯誤的手動 Origin |
 
 整體執行狀態請參閱[內網穿透](/zh-tw/guide/tunnel)，Host 設定請參閱[子網域映射](/zh-tw/guide/subdomain-proxy)。

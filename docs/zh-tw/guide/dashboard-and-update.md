@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6c4b7fc8cf627df111f7c2ca6ca81bc7c740574b2b668931c095651c8f55da9b
+translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c993616399bde6e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -38,13 +38,17 @@ translationSourceHash: 6c4b7fc8cf627df111f7c2ca6ca81bc7c740574b2b668931c095651c8
 
 本機或區域網路流量無法證明公網入口有效。涉及身分驗證、反向 Proxy 或 Tunnel 時，請透過行動網路等真實外部連線路徑重新測試。
 
+## 查看線上使用者 IP
+
+從控制台的線上使用者入口，可依 IP 查看近期活躍的已登入身分、歸屬地與最後活動時間，並排序、分頁或手動重新整理。同一 IP 可能對應多個身分，IP 數不等於使用者數，也不是所有訪客或裝置數。重新整理失敗時會保留上次成功的快照並提示過期，不應視為即時結果。
+
 ## 管理後台配色
 
 控制台右上角可選擇預設色、愛馬仕橙、普魯士藍或動態白。此設定會儲存為管理後台的系統層級主題色，與淺色／深色外觀切換彼此獨立，也不會影響身分驗證頁面或上游應用程式的樣式。
 
 ## 更新頁面依部署型態運作
 
-路徑：`版本與更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes，並提供官方網站、使用文件與 GitHub 專案的快捷連結。Release Notes 會安全呈現 Markdown 標題、清單、強調、HTTPS Link，以及 GitHub 風格的 `NOTE`、`TIP`、`IMPORTANT`、`WARNING`、`CAUTION` 提示區塊；它不是任意 HTML 頁面，遠端圖片與不安全通訊協定不會變成可執行內容。管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
+路徑：`系統設定 → 更新`。所有部署方式都會顯示目前版本、最新版本、檢查結果與 Release Notes，並提供官方網站、使用文件與 GitHub 專案的快捷連結。Release Notes 會安全呈現 Markdown 標題、清單、強調、HTTPS Link，以及 GitHub 風格的 `NOTE`、`TIP`、`IMPORTANT`、`WARNING`、`CAUTION` 提示區塊；它不是任意 HTML 頁面，遠端圖片與不安全通訊協定不會變成可執行內容。管理後台載入後，也會在側邊欄顯示目前版本並定期檢查更新。發現新版本時，頁面頂端會顯示提示，可進入更新頁查看 Release Notes；只有飛牛原生 FPK 會在提示中提供 Web UI 安裝操作。群暉 DSM 7 SPK 需透過 DSM 套件中心安裝，Windows 原生版則由獨立的 `Knock 敲門 · Windows 管理程式` 負責安裝，兩者都不會在網頁更新頁面執行。
 
 | 部署型態 | 更新頁面提供的功能 | 實際升級方式 |
 | --- | --- | --- |
@@ -60,7 +64,7 @@ translationSourceHash: 6c4b7fc8cf627df111f7c2ca6ca81bc7c740574b2b668931c095651c8
 
 ## 飛牛原生 FPK 更新
 
-請在 `版本與更新` 中檢查新版本。偵測到更新後，頁面會下載符合裝置架構的 FPK 與 Checksum 檔案，再透過飛牛應用程式中心安裝並重新啟動應用程式。下載、驗證與安裝期間會顯示進度；進入安裝階段後請勿關閉頁面。
+請在 `系統設定 → 更新` 中檢查新版本。偵測到更新後，頁面會下載符合裝置架構的 FPK 與 Checksum 檔案，再透過飛牛應用程式中心安裝並重新啟動應用程式。下載、驗證與安裝期間會顯示進度；進入安裝階段後請勿關閉頁面。
 
 更新期間，管理後台與閘道會短暫無法使用。頁面會等待新後端回報已就緒，再透過隔離快取的網址載入新前端；若瀏覽器仍要求已替換的舊 JavaScript 分塊，管理後台最多自動重新整理一次，避免空白頁或重新整理迴圈。只有自動復原仍失敗時，才會顯示手動重新載入提示。自動重新連線逾時不代表安裝一定失敗，請從飛牛桌面重新開啟並檢查執行狀態。
 
@@ -135,7 +139,7 @@ apk add --allow-untrusted /tmp/fn-knock_*.apk
 
 ## 更新群暉 DSM 7 SPK
 
-在 `版本與更新` 查看版本與 Release Notes 後，下載符合群暉機型架構的 SPK，再透過 DSM 套件中心完成手動更新。網頁不會代替 DSM 安裝或重新啟動套件。
+在 `系統設定 → 更新` 查看版本與 Release Notes 後，下載符合群暉機型架構的 SPK，再透過 DSM 套件中心完成手動更新。網頁不會代替 DSM 安裝或重新啟動套件。
 
 更新前請先匯出應用程式備份。套件資料位於 `/var/packages/fn-knock-synology/var`；升級後從 DSM 桌面的套件入口重新進入，檢查版本、身分驗證設定與閘道存取是否恢復正常。
 
@@ -143,7 +147,7 @@ Synology 套件已加固冷啟動時的閘道就緒與設定同步。Instance �
 
 ## 更新 Windows x86_64
 
-開啟 `Knock 敲門 · Windows 管理程式`，按一下「檢查更新」，或從系統匣選單執行相同操作。管理程式下載 Windows 安裝套件時，會核對下載來源、檔案大小與 SHA-256，接著啟動安裝程式；網頁中的 `版本與更新` 只用來查看版本與說明。
+開啟 `Knock 敲門 · Windows 管理程式`，按一下「檢查更新」，或從系統匣選單執行相同操作。管理程式下載 Windows 安裝套件時，會核對下載來源、檔案大小與 SHA-256，接著啟動安裝程式；網頁中的 `系統設定 → 更新` 只用來查看版本與說明。
 
 安裝程式會暫時停止服務。若新版本未能通過 Readiness Check 並啟動，安裝程式會還原原有程式與執行資料；這不等同於備份，更新前仍應匯出應用程式備份。Windows 解除安裝或升級後會保留 `%ProgramData%\FnKnock`，其中包含設定、SQLite 與憑證等敏感資料。
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 9ec6638f3305dd73ba06aadab723141455842337af2eddf8932b6a57d5465fd4
+translationSourceHash: bc65f022d256dd9cca906308f5a01a5dbd8995729cb214ec0e5ebdba992841d6
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,6 +21,12 @@ Under `System settings → Logs`, enable gateway request logging and set a reten
 `Log requests from local loopback 127.0.0.1` is disabled by default. As a result, local health checks, same-host reverse proxies, and other requests entering the gateway through `127.0.0.1` normally do not appear in the list. Enable it only while tracing a local request path; it changes what is logged, not the access permissions granted to loopback sources.
 
 Writes use an asynchronous queue. If the settings page shows a cumulative dropped count, the queue was congested and some requests were not written to disk. This number is not a count of requests rejected by the gateway. Requests disconnected immediately by gateway reverse-proxy throttling are also absent from the access log.
+
+## Capacity and rolling retention
+
+Under `System settings → Logs`, set daily capacity, total capacity, and retention days. Capacities use MiB; total capacity cannot be smaller than daily capacity. Exceeding capacity or retention deletes the oldest logs while recording continues. Lowering a limit immediately cleans existing records and cannot be undone; back up logs that must be retained first.
+
+Cleanup works by segment, so retained data may fall below the limit. Queries and statistics cover only retained records. Usage updates on load or save, not continuously. If a cursor expires after cleanup, refresh the list and query again. Check capacity/storage write failures separately from asynchronous queue drops.
 
 ## Change the log directory
 
@@ -84,7 +90,7 @@ If no request appears at all, first check whether the test traffic came from `12
 
 If only some requests are missing, check whether gateway throttling disconnected them immediately and whether the log settings page reports a dropped-queue warning. If the status code came from the gateway rather than the upstream, continue with authentication, Visibility, WAF, and mapping checks. If the correct Upstream target is already shown, move on to the application's own logs.
 
-With managed Cloudflare Tunnel and `Pseudo IPv4 → Overwrite Headers`, an IPv6 visitor's initial edge header can be in `240.0.0.0/4`. A supporting fn-knock release validates `CF-Connecting-IPv6` on the dedicated managed entry and restores `Client IP` to the real public IPv6; `Connection source IP` still reflects the local Tunnel path. If a Class E address remains after upgrading, check whether the origin is manual or whether the header is missing or duplicated. For a manual origin, set Pseudo IPv4 to `Off` or `Add Header`. Do not work around this by adding `240.0.0.0/4` to an allowlist.
+The dedicated Cloudflare origin supports managed and manually configured Tunnels on the same host. With `Pseudo IPv4 → Overwrite Headers`, Cloudflare replaces an IPv6 visitor's `CF-Connecting-IP` with an address in `240.0.0.0/4`. The entry restores IPv6 from a single valid public `CF-Connecting-IPv6` value. Missing, duplicate, private, or malformed IPv6 values retain Pseudo IPv4 without trusting other forwarding headers. If logs still show Class E addresses, check the dedicated origin and both headers, or use `Off` / `Add Header` for Pseudo IPv4. Do not allowlist that subnet.
 
 With subdomain advanced authentication enabled, an Auth result of `Allowed by subdomain rule` means that advanced authentication allowed the request. Use `Subdomain rule group ID` to locate the triggering configuration. `One-request access` means the request matched a rule but created no persistent grant, which commonly occurs during the initial Cookie probe, with a client that does not store Cookies, during a WebSocket upgrade, or when persistence falls back. `Issued` means this request created a persistent grant, `Renewed` refreshed its idle lifetime, and `Reused` continued to use an existing grant. See [Advanced Authentication for Subdomains](/en/guide/advanced-auth) for rule behavior.
 

@@ -137,7 +137,7 @@ https://nas.example.com/
 
 托管模式使用只监听回环地址的专用 Tunnel 入口。网关只在这条受控链路上信任 Cloudflare 的 `CF-Connecting-IP`，不会把访客自行发送的 `X-Forwarded-For` 当成可信来源。EdgeOne / ESA 的真实 IP 开关不适用于 Cloudflared，在当前模式不可用时界面会隐藏该设置。
 
-如果 Cloudflare 的 `Pseudo IPv4` 设置为 `Overwrite Headers`，IPv6 访客的 `CF-Connecting-IP` 会变成 `240.0.0.0/4` 的 Class E 地址。托管专用入口会严格校验单值头，并从 `CF-Connecting-IPv6` 恢复有效的公网 IPv6，用于会话、可见性、WAF 和请求日志；缺失、重复、私网或格式异常时会保留 Pseudo IPv4，不会信任其他转发头。这个恢复只适用于 fn-knock 托管入口；手动 Cloudflare 回源建议把 Pseudo IPv4 设为 `Off` 或 `Add Header`。
+专用 Cloudflare 回源入口适用于托管和手动配置的同机 Tunnel。Cloudflare 的 `Pseudo IPv4 → Overwrite Headers` 会把 IPv6 访客的 `CF-Connecting-IP` 改写为 `240.0.0.0/4` 地址；入口会从单值、有效的公网 `CF-Connecting-IPv6` 恢复真实 IPv6。该 IPv6 头缺失、重复、私网或格式异常时保留 Pseudo IPv4，不信任其他转发头。若日志仍显示 Class E 地址，核对专用回源地址和两个请求头，或将 Pseudo IPv4 设为 `Off` / `Add Header`；不要把该网段加入白名单。
 
 从移动网络访问一条要求登录的业务 Host，并在请求日志确认：
 
@@ -149,7 +149,7 @@ https://nas.example.com/
 
 高级用户仍可展开 `手动 Tunnel Token`，粘贴从 Cloudflare 取得的 Tunnel Token，并选择传输协议。`自动`会优先尝试 QUIC，失败时回退 HTTP/2；只有 UDP `7844` 明确被阻断时才固定 HTTP/2。
 
-手动模式不会自动创建 Tunnel、DNS 或 Ingress，需要自行在 Cloudflare 配置 Public Hostname 和回源 Service。自管进程或 Windows 版本也属于这一类；它们可以回源实际网关端口，但其安装、Token、日志和生命周期不由托管流程负责。
+手动模式不会自动创建 Tunnel、DNS 或 Ingress，需要自行在 Cloudflare 配置 Public Hostname。HTTP Service URL 使用页面显示的专用回源地址：常规部署为 `http://127.0.0.1:17999`，FPK Lite 为 `http://127.0.0.1:18999`，适用于 cloudflared 与网关同机运行。旧配置若回源普通 `7999` 端口，应改为专用入口；普通网关不会信任 `CF-Connecting-IP`。专用入口要求该头存在且为单个有效 IP，否则返回 HTTP 400，不回退到 XFF 或本机地址，也不要将该入口公开转发给其他来源。自管进程和 Windows 的安装、Token、日志及生命周期仍需自行管理。
 
 ## 删除与清理
 
@@ -176,7 +176,7 @@ https://nas.example.com/
 | 候选域名全部解析失败 | 展开最近一次解析器诊断；允许官方网段时确认是否已自动回退，否则启用官方网段后重新测速 |
 | 自定义优选 IP 未被采用 | 确认属于 Cloudflare 官方 IPv4 网段，并查看延迟、下载、业务域名 TLS、SNI 与 Ray ID 验证结果 |
 | IP 归属地显示美国 | 查看测速结果中的 Cloudflare 机房代码；Anycast IP 的注册地不是连接落地点 |
-| 日志中的 IPv6 变成 `240.0.0.0/4` | 托管模式升级到支持 Pseudo IPv4 恢复的版本；手动回源将 Cloudflare Pseudo IPv4 改为 `Off` 或 `Add Header` |
+| 日志中的 IPv6 变成 `240.0.0.0/4` |检查专用回源地址与 `CF-Connecting-IPv6`；必要时将 Pseudo IPv4 改为 `Off` 或 `Add Header`|
 | 所有访问都像本地来源 | 查看请求日志中的客户端 IP，并确认使用托管专用入口而非错误的自管回源 |
 
 整体运行状态见[内网穿透](/guide/tunnel)，Host 配置见[子域映射](/guide/subdomain-proxy)。

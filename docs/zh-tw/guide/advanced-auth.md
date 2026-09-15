@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域進階驗證"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: ba7c0993dac5fc997c473049a16eabc9cd8a3dbc1de3db9cebb40661c90b1fb6
+translationSourceHash: 36a93c0bf586d0b4adcabe858862981c9688b4dc567b6bd921179038e9239988
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -33,7 +33,7 @@ translationSourceHash: ba7c0993dac5fc997c473049a16eabc9cd8a3dbc1de3db9cebb40661c
 
 例如，規則只比對 `/health`，並不代表持久憑據只開放 `/health`；瀏覽器完成探測後，在臨時憑據有效期間，整個目前 Host 都會放行。若只需要開放少數固定路徑，請使用[路徑回應](/zh-tw/guide/gateway-path-response)、拆分成獨立 Host，或繼續由上游應用程式執行權限檢查。
 
-通用封鎖清單、WAF 與舊版嚴格允許清單等防護性拒絕規則仍具有較高優先順序。進階驗證不能用來繞過這些安全邊界。
+通用封鎖清單與舊版嚴格允許清單的拒絕仍然有效。請求攜帶目前 Host 的有效探測 Cookie 或持久臨時憑證，經驗證後可略過 WAF 與掃描器檢查。只符合規則但尚無有效 Cookie，不代表已取得豁免。偽造、過期、跨 Host 或策略已變更的憑證不適用，驗證失敗也不會自動放行。
 
 ## 設定有效時間
 
@@ -98,6 +98,10 @@ translationSourceHash: ba7c0993dac5fc997c473049a16eabc9cd8a3dbc1de3db9cebb40661c
 Header 名稱不得使用 `Host`、`Cookie`、`Authorization`、`X-Forwarded-*`、`X-Real-IP`、`X-Reauth-*` 等與憑據、轉送或用戶端 IP 有關的 Header。使用前置 Proxy 時，也應由 Proxy 移除或改寫外部用戶端可偽造的 Header。
 
 Header、Query 與路徑比對內容會以明文保存在設定與備份中，但系統不會將這些設定值當作進階驗證的診斷內容寫入 Log、Metrics 或錯誤詳細資訊；請求記錄只會記下命中的規則組 ID 與臨時憑據狀態，不會回顯設定值。請勿將可長期使用的高價值金鑰直接放進 Query；匯出的備份也應視為敏感檔案妥善保存。
+
+## 損壞策略的復原
+
+啟動或還原設定時，無法復原的進階驗證策略會移除，其他 Host 驗證設定保持不變。先前明確因策略修復而隔離的 Host 會解除隔離；一般手動停用的 Host 不會因此啟用。進階驗證設定消失後，先確認登入要求與實際存取結果，再重建規則。
 
 ## 規則範例
 

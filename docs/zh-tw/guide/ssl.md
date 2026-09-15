@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TLS 憑證與 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cddb69852f11453dc5b08108ba213d554c21116f5bc38075becf1cb2b341bb86
+translationSourceHash: cd918446305b4da72c1f0d22978e8feb53ac749fce524396deaf0daad290e015
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -309,11 +309,14 @@ Windows x86_64 版請在 `SSL / HTTPS → DNS-01 憑證` 中申請憑證。安�
 
 ## 飛牛 SSL 憑證庫同步（僅原生 FPK）
 
-飛牛原生 FPK 可在 `系統設定 → 飛牛 → 飛牛 SSL 憑證庫同步` 中，將 fn-knock 憑證庫內容同步至飛牛系統既有的憑證記錄。
+標準原生 FPK 可在 `系統設定 → 飛牛 → 飛牛 SSL 憑證庫同步` 中，以 fn-knock 本機憑證庫為來源建立、更新與刪除受管飛牛憑證。Lite 與其他部署不支援。
 
-同步只會更新網域與 SAN 集合完全相符的既有飛牛憑證；不會新增或刪除飛牛系統中的憑證記錄。因此，請先確認兩邊涵蓋的網域集合一致，再執行單筆或全部同步。若沒有相符項目，請先調整憑證記錄，而不是期待同步功能代為建立。
+1. 檢查待建立、更新、納管與刪除項目，確認網域與 SAN 集合相符。
+2. 執行單筆或一鍵同步。新增與相符憑證會納管；納管時關閉飛牛自動續期，由 fn-knock 提供後續更新。
+3. 刪除本機憑證後，只會連動刪除未使用的受管憑證；系統憑證與未納管憑證保留。使用中的憑證會阻止刪除，需先調整服務綁定。
+4. 可啟用自動同步，在本機憑證庫變動後合併同步，並每 5 分鐘重新核對。
 
-可視需求手動同步，也可啟用自動同步。自動模式會在本機憑證庫變更後短暫等待並合併作業，再集中同步相符項目，並重新整理一次飛牛服務。若目標憑證同時啟用了飛牛本身的自動續期，後續續期可能覆寫同步結果，應明確指定由哪一側負責續期。
+遇到外部修改衝突、fnOS 資料異常或同步失敗時，先核對兩側記錄與服務綁定，處理後再重試。略過或失敗不代表完成。同步後檢查項目狀態，並從實際 fnOS HTTPS 入口確認回傳憑證。
 
 ## 建議設定順序
 
@@ -336,7 +339,7 @@ Windows x86_64 版請在 `SSL / HTTPS → DNS-01 憑證` 中申請憑證。安�
 - 上傳失敗：確認 PEM 內容、私密金鑰配對與憑證鏈順序；不要將 PKCS#12 檔案內容上傳至 PEM 文字欄位。
 - ACME 失敗：檢查 DNS Provider 憑據、DNS API Rate Limit 與 TXT Record Propagation。目前申請流程只使用 DNS-01，不要朝 HTTP-01 方向排查。
 - ACME 簽發成功但未生效：檢查憑證庫關聯，以及單一有效憑證模式下是否已執行 `設為目前憑證`。
-- Cloudflared 使用 `https://localhost:7999` 失敗：該上游 TLS Name 必須與憑證相符；無法相符時，請先改用已驗證的 HTTP Origin 方案，或調整 Tunnel TLS 設定。
+- Cloudflared 回源失敗：使用[隧道頁面](/zh-tw/guide/cloudflared-tunnel)的專用 HTTP 回源位址，並檢查日誌與用戶端 IP Header，勿繼續使用一般閘道 Port。
 - 服務頁面正常，但 Passkey 無法使用：檢查身分驗證 Host 是否透過有效 HTTPS 與正確 RP Domain 存取。
 
 - [DDNS 管理](/zh-tw/guide/ddns)

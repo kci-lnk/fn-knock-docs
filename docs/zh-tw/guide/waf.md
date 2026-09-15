@@ -3,7 +3,7 @@ lang: zh-TW
 title: "WAF"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 584075a40f7f24f65180127aa9366e10818f3db6405b08073703d4c5e203803b
+translationSourceHash: d0d1834bc688b3859d0f9fe67d95e9411fad07182826540d994023473f79cecd
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -15,6 +15,8 @@ WAF 會檢查所有經過 fn-knock 的 HTTP Request，並依已啟用的規則�
 fn-knock 使用 Coraza 載入系統規則與自訂規則。全域開關、防護強度、規則啟停及規則更新，都會同步至 Go 閘道。
 
 在 `請求分析 → WAF 記錄` 查看防護事件，並可切換至分析與請求記錄分頁。
+
+目前 Host 的有效進階驗證探測 Cookie 或持久臨時憑證，經驗證後可豁免 WAF 與掃描器檢查；通用封鎖清單及舊版嚴格允許清單仍有效。首次符合規則不等於取得豁免，見[進階驗證](/zh-tw/guide/advanced-auth)。
 
 ## 啟用前檢查
 
@@ -59,6 +61,12 @@ Scanner 攔截也有獨立的常用地豁免開關；變更 WAF 開關不會連�
 ### 區域網路豁免的邊界
 
 預設關閉的區域網路豁免會讓私有、迴環、鏈路本地與電信級 NAT 客戶端位址略過全部 WAF 檢查。只有這些網路可信時才開啟，並先在請求記錄確認真實客戶端 IP；若前置代理把公網訪客錯認為私網，就會繞過 WAF。此設定獨立於登入本地豁免、常用地豁免與單一 Host WAF 開關。
+
+## 違規自動封鎖
+
+在 `系統設定 → WAF` 選擇關閉、嚴格、普通或寬鬆的違規自動封鎖檔位。系統依同一用戶端 IP 的重複安全攔截累計違規，與 WAF 防護強度分開設定。觸發後加入通用封鎖清單，需手動解除；關閉自動封鎖不會移除既有記錄。
+
+啟用前確認真實用戶端 IP，避免封鎖共用出口或代理節點。誤封時先依 Trace ID 檢查 WAF 日誌，再從通用封鎖清單放行該 IP，並調整誤報規則或封鎖檔位。
 
 ## 系統規則
 

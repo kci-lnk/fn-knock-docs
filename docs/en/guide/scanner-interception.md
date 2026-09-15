@@ -3,7 +3,7 @@ lang: en-US
 title: "Automated Scan Blocking"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d385cac4
+translationSourceHash: ff7c268b57b8796698e7e9df88c79983ee1f63845eaa4c42d4f8a0c1e9ec8215
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -13,6 +13,8 @@ translationSourceHash: c9071219872d22c36a61de192607b20dc5c291d310b34efe350e3f28d
 Automated scan blocking adds a source to a separate Scanner blacklist based on suspicious access behavior within a short period. It is useful for reducing repeated probing noise, but it is not a replacement for the WAF, General blacklist, or Login backoff.
 
 Under `System settings → Blocking`, configure the enabled state, Statistics window, Trigger threshold, and Blacklist retention. The Statistics window has a minimum of 5 minutes, the Trigger threshold a minimum of 1 hit, and Blacklist retention a minimum of 1 day. Start with a more forgiving threshold and tighten it only after observing traffic for a while. Health checks, automation scripts, reverse-proxy probes, and retries from mobile networks can all produce seemingly frequent requests.
+
+A validated advanced-authentication probe Cookie or persistent temporary credential for the current Host can exempt a request from WAF and scanner checks. The general blacklist and legacy strict allowlist still apply. A first rule match alone is not an exemption; see [advanced authentication](/en/guide/advanced-auth).
 
 ## Triggers and Records
 

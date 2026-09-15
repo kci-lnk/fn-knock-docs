@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6c4b7fc8cf627df111f7c2ca6ca81bc7c740574b2b668931c095651c8f55da9b
+translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c993616399bde6e
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -38,13 +38,17 @@ When troubleshooting, check the Dashboard in this order:
 
 Traffic from the local device or LAN does not prove that the public entry point works. When testing authentication, reverse proxying, or tunnels, retry through a genuine external connection such as a mobile network.
 
+## View online user IPs
+
+Open the online-user entry on the dashboard to see recently active signed-in identities grouped by IP, location, and last activity. You can sort by activity, browse pages, and refresh manually. One IP may represent several identities; IP counts are not user counts or a count of all visitors or devices. Failed refreshes retain the last successful snapshot with a stale-data warning.
+
 ## Change the Admin Console Color
 
 From the upper-right corner of the Dashboard, you can choose `Default`, `Hermes orange`, `Prussian blue`, or `Dynamic white`. This is saved as the system-wide theme color for the admin console. It is independent of the light/dark appearance setting and does not change the authentication page or upstream applications.
 
 ## How the Update Page Varies by Deployment
 
-Path: `Version and updates`. Every deployment shows the current version, latest version, check results, and release notes, plus quick links to the official website, documentation, and GitHub project. Release notes safely render Markdown headings, lists, emphasis, HTTPS links, and GitHub-style `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION` alert blocks. They are not arbitrary HTML pages; remote images and unsafe protocols do not become executable content. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
+Path: `System settings → Update`. Every deployment shows the current version, latest version, check results, and release notes, plus quick links to the official website, documentation, and GitHub project. Release notes safely render Markdown headings, lists, emphasis, HTTPS links, and GitHub-style `NOTE`, `TIP`, `IMPORTANT`, `WARNING`, and `CAUTION` alert blocks. They are not arbitrary HTML pages; remote images and unsafe protocols do not become executable content. After the admin console loads, it also shows the current version in the sidebar and checks for updates periodically. When a new version is found, a banner at the top opens the update page for the release notes; only the native fnOS FPK offers in-browser installation from that banner. Synology DSM 7 SPKs are installed through Package Center, while the native Windows edition is installed by the separate `fn-knock Windows Manager`; neither is updated from the web page.
 
 | Deployment | What the update page can do | How to upgrade |
 | --- | --- | --- |
@@ -60,7 +64,7 @@ Do not try to install an FPK from the update page on Docker, OpenWrt, or Synolog
 
 ## Update a Native fnOS FPK
 
-Check for a new version under `Version and updates`. When an update is available, the page downloads the FPK for the device architecture, verifies the file, and then installs it through fnOS App Center before restarting the app. The page shows progress during download, verification, and installation; do not close it during the installation stage.
+Check for a new version under `System settings → Update`. When an update is available, the page downloads the FPK for the device architecture, verifies the file, and then installs it through fnOS App Center before restarting the app. The page shows progress during download, verification, and installation; do not close it during the installation stage.
 
 The admin console and gateway are briefly unavailable during the update. The page waits until the new backend reports that it is ready, then loads the new frontend through a cache-isolated URL. If the browser still requests an old JavaScript chunk that has been replaced, the console performs at most one guarded automatic refresh, avoiding both a blank page and a reload loop. Only if that automatic recovery fails does it ask you to reload manually. If automatic reconnection times out, the installation has not necessarily failed; reopen the app from the fnOS desktop and inspect its runtime state.
 
@@ -135,7 +139,7 @@ Use `--allow-untrusted` for a local `.apk` only when the package came from a tru
 
 ## Update a Synology DSM 7 SPK
 
-After reviewing the version and release notes under `Version and updates`, download the SPK matching your Synology model's architecture and perform a manual update through DSM Package Center. The web page does not install or restart the package on behalf of DSM.
+After reviewing the version and release notes under `System settings → Update`, download the SPK matching your Synology model's architecture and perform a manual update through DSM Package Center. The web page does not install or restart the package on behalf of DSM.
 
 Export an app backup first. Package data is stored in `/var/packages/fn-knock-synology/var`. After the upgrade, reopen the package from the DSM desktop and check that the version, authentication settings, and gateway access have recovered.
 
@@ -143,7 +147,7 @@ The Synology package hardens gateway readiness and configuration synchronization
 
 ## Update Windows x86_64
 
-Open `fn-knock Windows Manager` and select `Check for updates`, or run the same action from the system tray menu. When the manager downloads the Windows installer, it verifies the download source, file size, and SHA-256 before launching it. The web `Version and updates` page is for viewing version information and release notes only.
+Open `fn-knock Windows Manager` and select `Check for updates`, or run the same action from the system tray menu. When the manager downloads the Windows installer, it verifies the download source, file size, and SHA-256 before launching it. The web `System settings → Update` page is for viewing version information and release notes only.
 
 The installer temporarily stops the service. If the new version does not start during the readiness check, the installer restores the previous program and runtime data. This is not a substitute for a backup, so export an app backup before updating. `%ProgramData%\FnKnock` is retained after a Windows uninstall or upgrade; it contains sensitive data such as configuration, SQLite databases, and certificates.
 

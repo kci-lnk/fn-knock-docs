@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3a7bca9b89220ecd45f86325b23e0d370fb7fb4c9313513aa4baf32fe4ce9129
+translationSourceHash: cdc9eb02ca221547194e4ce5cafd4dba5d352116a0bbdfe8a1d50628e9ef6a3b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -224,6 +224,12 @@ None of these features changes the fact that the Host is the primary routing key
 - Protocol mappings appear only in direct-public `Subdomain mode`. Even if extra ports are published for a Docker container, fn-knock does not manage the host firewall.
 - OpenWrt itself must manage port access and split-horizon LAN DNS. fn-knock does not provide Direct mode, host-firewall management, Smart Connect, SSH Security, or in-app FPK updates there. Web Terminal can connect to administrator-configured remote SSH targets and can also enable a local OpenWrt PTY that is off by default and inherits the fn-knock service identity.
 - fn-knock does not automatically close an upstream service's existing public listener and cannot replace upstream updates, backups, or least-privilege configuration.
+
+## Edit mappings in bulk
+
+Enter selection mode, select business Hosts, and open `Batch edit`. Edit each row's display title, domain, and target. Proxy targets use upstream URLs; file and directory responses use absolute server paths. Response types stay unchanged, and authentication services cannot be selected.
+
+Correct duplicate or invalid Hosts, invalid targets, and invalid static paths before saving. Renames retain other mapping settings and migrate associated gateway Host settings. On a configuration conflict, preserve the input you need and reopen the editor. If mappings were saved but gateway settings are still unsynchronized, retry the remaining synchronization in the same dialog; saved mappings are not submitted again. Verify the new Host, authentication policy, and upstream response from an external network.
 
 ## Verification and Troubleshooting
 

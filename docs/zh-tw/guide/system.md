@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0d751b10526e903270a261f16985d4b361ce8d8fec6e9c04eea7bb5f6357abaf
+translationSourceHash: 3abc244bc28d5c581aaea1b6aa919035b5185a875c215a70f78947727a44ecfe
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,6 +44,7 @@ translationSourceHash: 0d751b10526e903270a261f16985d4b361ce8d8fec6e9c04eea7bb5f6
 | `攔截` | Scanner 防火牆、觸發時間窗、門檻及豁免 | [Scanner 攔截](/zh-tw/guide/scanner-interception) |
 | `功能` | 日期時間顯示、首頁入口狀態、fnOS 控制台應用程式列、Passkey 綁定提示、自動 HTTPS、SSH 安全性、協定映射、遠端喚醒、側邊欄排序及智慧連線入口 | [遠端喚醒](/zh-tw/guide/wake-on-lan)及各功能文件 |
 | `閘道` | 驗證快取、反代節流、Crawler 攔截、Portal、可見性及 Host 層級轉送選項 | 請參考本頁後續章節 |
+| `更新` | 檢查更新與發行說明；安裝方式依部署平台而定 | [控制台與系統更新](/zh-tw/guide/dashboard-and-update) |
 | `WAF`、`Log` | HTTP 規則防護及結構化 Request Log | [WAF](/zh-tw/guide/waf)、[Request Log](/zh-tw/guide/request-logs) |
 | `終端機` | 所有發行平台顯示；管理遠端 SSH 目標與工作階段，並在支援的平台啟用本機 PTY | [Web 終端機](/zh-tw/guide/web-terminal) |
 | `工作階段` | 一般工作階段、記住我、登入後 IP 授權及 IP 漂移 | [工作階段與 IP 軌跡](/zh-tw/guide/session-management) |
@@ -142,6 +143,12 @@ translationSourceHash: 0d751b10526e903270a261f16985d4b361ce8d8fec6e9c04eea7bb5f6
 `系統設定 → 維護 → 清理 → 清空所有資料` 用於將目前 Instance 徹底初始化。操作前必須輸入 `清空所有資料` 確認；系統會清除後端設定、帳號、工作階段、Log 及其他應用程式儲存資料，並清空目前瀏覽器的本機資料後重新載入頁面。
 
 資料庫結構及已匯出的備份檔不會自動替你還原內容。此操作無法復原：只有在確認備份可用，且確定要重新初始化 Instance 時才可執行。
+
+## HTTP/3
+
+在 `系統設定 → 閘道 → HTTP/3` 啟用，預設關閉。需有有效 TLS 憑證，且用戶端能透過 UDP 到達閘道。預設需額外開放 `7999/udp` 並保留 TCP。Docker 需發布 UDP Port，OpenWrt、路由器與主機防火牆需各自設定；開關不會完成整條入站路徑。
+
+公網通告 Port 填寫用戶端實際連接的 UDP Port，`0` 表示使用本機 Port。此欄只改變通告，不建立轉送。畫面的本機監聽狀態與連線統計不能證明公網 UDP 可達。使用 CDN 或 Cloudflare Tunnel 時，瀏覽器到邊緣的 HTTP/3 也不代表回源使用 HTTP/3。應透過外部網路查看瀏覽器網路面板的協定並核對監聽狀態。
 
 ## 管理面板密碼
 

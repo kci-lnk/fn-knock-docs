@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Terminal"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: d5949684fa7e6ea78db41d6857655b58c8966b9da6356bf0efd68b99d79f5ae3
+translationSourceHash: 2e692e1a3b0df203e0b6267b2bf03bc3834f56b9d943834cd0e5950de898408f
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -60,6 +60,14 @@ Only one browser controls input for a session at a time. Other browsers can watc
 ## Mobile use
 
 Narrow screens provide common control keys, modifiers, navigation keys, and font controls. If the browser cannot read the clipboard, paste manually into the `Send to terminal` dialog. Use a local SSH client for long commands, interactive editing, long-running work, or file transfer.
+
+## View target resources
+
+Running sessions show the target machine's CPU, memory, usage of the filesystem mounted at `/`, and uptime. SSH shows the remote machine; local PTY shows the service host. Availability depends on the target OS and commands. CPU needs a second sample; missing, estimated, or stale values are labeled and must not be read as zero usage.
+
+Hover over `Disk /`, focus it with the keyboard, or tap it to open disk and mount details: filesystem, mount point, capacity, used space, and available space. Only mounted filesystems are listed. Shared storage appears separately for each mount and must not be summed as physical disk capacity. Collection of details stops when the panel closes or the connection ends.
+
+Metrics use a separate collection channel without typing into the interactive shell. If SSH rejects that channel, a command is missing, or sampling times out, check the reported target-side cause. Unavailable metrics do not mean the shell has exited.
 
 ## Audit and credentials
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 0d751b10526e903270a261f16985d4b361ce8d8fec6e9c04eea7bb5f6357abaf
+translationSourceHash: 3abc244bc28d5c581aaea1b6aa919035b5185a875c215a70f78947727a44ecfe
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -44,6 +44,7 @@ If the app on an fnOS device is named `Knock Lite`, it is a native non-root pack
 | `Blocking` | Configures the scanner firewall, trigger window, thresholds, and exemptions | [Automated Scan Blocking](/en/guide/scanner-interception) |
 | `Features` | Controls date/time display, home-page entry status, the fnOS console application bar, Passkey binding prompts, automatic HTTPS, SSH Security, protocol mappings, Wake-on-LAN, sidebar ordering, and the Smart Connect entry | [Wake-on-LAN](/en/guide/wake-on-lan) and the corresponding feature documentation |
 | `Gateway` | Manages authentication caching, reverse-proxy throttling, crawler blocking, the portal, visibility, and Host-level forwarding options | See below |
+| `Update` | Check updates and release notes; installation depends on the deployment | [Dashboard and updates](/en/guide/dashboard-and-update) |
 | `WAF`, `Logs` | Manages HTTP rule protection and structured request logs | [Web Application Firewall (WAF)](/en/guide/waf), [Request Logs](/en/guide/request-logs) |
 | `Terminal` | Visible on every package; manages remote SSH targets and sessions, plus the optional local PTY where supported | [Web Terminal](/en/guide/web-terminal) |
 | `Sessions` | Manages standard sessions, Remember me, post-login IP authorization, and IP drift | [Sessions, Source-IP Authorization, and IP Changes](/en/guide/session-management) |
@@ -142,6 +143,12 @@ See [Backup, Restore, and Data Cleanup](/en/guide/backup-and-restore) for archiv
 `System settings → Maintenance → Cleanup → Clear all data` completely reinitializes the current instance. You must enter `Clear all data` to confirm. The operation clears server-side configuration, accounts, sessions, logs, and other application storage, then clears local data in the current browser and reloads the page.
 
 The database schema and previously exported backup files do not restore content automatically. This action cannot be undone; use it only after verifying that a usable backup exists and intentionally deciding to reinitialize the instance.
+
+## HTTP/3
+
+Enable HTTP/3 under `System settings → Gateway → HTTP/3`; it is off by default. A valid TLS certificate and a reachable UDP gateway port are required. With the default gateway, allow `7999/udp` while retaining TCP. Publish UDP in Docker and configure OpenWrt, router, and host firewall rules as needed; the switch does not configure the entire incoming path.
+
+Set the advertised public port to the UDP port clients actually reach, or `0` to use the local port. This changes advertisement only, not port forwarding. Local listener status and connection statistics do not prove public UDP reachability. With a CDN or Cloudflare Tunnel, browser-to-edge HTTP/3 does not prove edge-to-fn-knock HTTP/3. Verify the protocol in browser network tools from an external network and check listener status.
 
 ## Admin Panel Password
 

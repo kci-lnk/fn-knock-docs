@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cddb69852f11453dc5b08108ba213d554c21116f5bc38075becf1cb2b341bb86
+translationSourceHash: cd918446305b4da72c1f0d22978e8feb53ac749fce524396deaf0daad290e015
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -309,11 +309,14 @@ Automatic renewal is enabled by default on a new request item, and successful is
 
 ## fnOS SSL Certificate Library Sync (Native FPK Only)
 
-The native fnOS FPK can update existing fnOS certificate records from the fn-knock certificate library under `System settings → FNOS → FNOS SSL certificate sync`.
+The standard native FPK can create, update, and delete managed fnOS certificates from the local fn-knock library under `System settings → FNOS → FNOS SSL certificate sync`. Lite and other deployments do not support this.
 
-Synchronization updates only existing fnOS certificates whose domain and SAN sets match exactly. It never creates or deletes certificate records in fnOS. Confirm that both sides cover the same domain set before synchronizing one item or all items. If there is no match, adjust the certificate records rather than expecting synchronization to create one.
+1. Review pending creation, update, adoption, and deletion, checking matching domain and SAN sets.
+2. Synchronize one item or all items. Created and matched certificates become managed; adoption disables fnOS automatic renewal so fn-knock supplies subsequent certificate updates.
+3. Deleting a local certificate deletes its managed fnOS counterpart only when unused. System and unmanaged certificates are preserved. An in-use certificate blocks deletion; adjust service bindings first.
+4. Optionally enable automatic synchronization. It coalesces local library changes and reconciles every 5 minutes.
 
-You can synchronize manually or enable automatic synchronization. Automatic mode briefly coalesces changes after the local certificate library is updated, then synchronizes matching items in a batch and refreshes fnOS services once. If the target certificate also uses fnOS automatic renewal, a later fnOS renewal can overwrite the synchronized result. Decide explicitly which side owns renewal.
+Resolve external modification conflicts, invalid fnOS data, or synchronization errors by checking both records and service bindings before retrying. Skipped or failed items are not completed synchronization. Check item status and the certificate returned by the actual fnOS HTTPS entry.
 
 ## Recommended Configuration Order
 
@@ -336,7 +339,7 @@ Automatic HTTPS concerns only the gateway's HTTP-to-HTTPS redirect and enabling 
 - **Upload fails:** Check the PEM content, matching private key, and certificate-chain order. Do not paste PKCS#12 file content into a PEM text field.
 - **ACME fails:** Check DNS provider credentials, DNS API rate limiting, and TXT propagation. The current request flow uses DNS-01 only, so do not troubleshoot it as HTTP-01.
 - **ACME issuance succeeds but is not live:** Check the certificate-library link and whether `Set as current certificate` was run in Single active certificate mode.
-- **Cloudflared fails with `https://localhost:7999`:** The upstream TLS name must match the certificate. If it cannot, use a verified HTTP-origin setup first or adjust the Tunnel TLS settings.
+- Cloudflared origin failure: use the dedicated HTTP origin shown on the [Tunnel page](/en/guide/cloudflared-tunnel) and inspect Tunnel logs and client IP headers. Replace ordinary gateway-port origins.
 - **Application pages work, but Passkey does not:** Confirm that the authentication Host is opened with valid HTTPS and the correct RP domain.
 
 - [Dynamic DNS (DDNS)](/en/guide/ddns)

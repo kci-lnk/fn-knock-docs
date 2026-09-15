@@ -3,7 +3,7 @@ lang: en-US
 title: "Cloudflare Tunnel with cloudflared"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 12c944b0ab2343cccd6025a2fc93390db62d55ab484daf52dc60c1f92b73c8c9
+translationSourceHash: 499de7529083adccb4d0fb417e7eea83cd0468e1d6da1dd6e557caa8e2d7a6dc
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -151,7 +151,7 @@ Do not manually point a proxied application A record directly to a Cloudflare ed
 
 Managed mode uses a dedicated Tunnel entry bound to loopback. The gateway trusts Cloudflare's `CF-Connecting-IP` only on this controlled path and does not treat a visitor-supplied `X-Forwarded-For` as authoritative. EdgeOne / ESA client-IP controls do not apply to Cloudflared and are hidden when unavailable in the current mode.
 
-When Cloudflare `Pseudo IPv4` is set to `Overwrite Headers`, an IPv6 visitor's `CF-Connecting-IP` becomes a Class E address in `240.0.0.0/4`. On the dedicated managed entry, fn-knock strictly validates single-value headers and restores a valid public IPv6 from `CF-Connecting-IPv6` for sessions, Visibility, WAF, and request logs. If that header is missing, duplicated, private, or malformed, fn-knock keeps the Pseudo IPv4 and does not trust another forwarding header. This recovery applies only to the managed entry; for a manual Cloudflare origin, set Pseudo IPv4 to `Off` or `Add Header`.
+The dedicated Cloudflare origin supports managed and manually configured Tunnels on the same host. With `Pseudo IPv4 → Overwrite Headers`, Cloudflare replaces an IPv6 visitor's `CF-Connecting-IP` with an address in `240.0.0.0/4`. The entry restores IPv6 from a single valid public `CF-Connecting-IPv6` value. Missing, duplicate, private, or malformed IPv6 values retain Pseudo IPv4 without trusting other forwarding headers. If logs still show Class E addresses, check the dedicated origin and both headers, or use `Off` / `Add Header` for Pseudo IPv4. Do not allowlist that subnet.
 
 From a mobile network, open an application Host that requires sign-in and confirm in request logs:
 
@@ -163,7 +163,7 @@ From a mobile network, open an application Host that requires sign-in and confir
 
 Advanced users can still expand `Manual Tunnel Token`, paste a Tunnel Token obtained from Cloudflare, and select a transport protocol. `Auto` tries QUIC first and falls back to HTTP/2; force HTTP/2 only when UDP `7844` is known to be blocked.
 
-Manual mode does not create the Tunnel, DNS, or Ingress. Configure the Public Hostname and origin Service yourself in Cloudflare. A self-managed process or Windows installation is also manual: it may target the actual gateway port, but managed setup does not control its installation, Token, logs, or lifecycle.
+Manual mode does not create Tunnel, DNS, or Ingress resources; configure Public Hostname in Cloudflare. Set HTTP Service URL to the dedicated origin shown on the page: normally `http://127.0.0.1:17999`, or `http://127.0.0.1:18999` for FPK Lite, with cloudflared on the same host as the gateway. Replace origins pointing at ordinary port `7999`; ordinary gateway ports do not trust `CF-Connecting-IP`. The dedicated entry requires exactly one valid IP in that header or returns HTTP 400, without falling back to XFF or localhost. Do not publicly forward this entry for other sources. Self-managed processes and Windows still require separate installation, Token, log, and lifecycle management.
 
 ## Disconnecting and cleanup
 
@@ -189,7 +189,7 @@ Deleting the API Token only stops future remote management; it does not delete C
 | Every candidate hostname fails to resolve | Expand the latest resolver diagnostics; if official ranges are allowed, confirm automatic fallback, otherwise enable official ranges and scan again |
 | The Preferred IP is not selected | Confirm it is inside Cloudflare's official IPv4 ranges and inspect latency, download, application-domain TLS, SNI, and Ray ID validation |
 | IP geolocation says United States | Use the Cloudflare colo code from the scan; Anycast registration location is not the connection landing point |
-| An IPv6 visitor appears as `240.0.0.0/4` in logs | Upgrade managed mode to a release that restores Pseudo IPv4; for a manual origin, set Cloudflare Pseudo IPv4 to `Off` or `Add Header` |
+| An IPv6 visitor appears as `240.0.0.0/4` in logs |Check the dedicated origin and `CF-Connecting-IPv6`; if needed, set Pseudo IPv4 to `Off` or `Add Header`|
 | Every request appears local | Check the request-log client IP and use the dedicated managed entry instead of an incorrect manual origin |
 
 See [Tunnels](/en/guide/tunnel) for overall runtime behavior and [Subdomain Mapping](/en/guide/subdomain-proxy) for Host configuration.
