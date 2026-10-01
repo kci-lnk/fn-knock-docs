@@ -39,6 +39,8 @@ https://example.com/alist -> 隧道 -> fn-knock -> 路径 /alist -> AList
 
 ## FRP
 
+FRP 子域模式还需在子域配置中将 `鉴权服务公网 HTTPS 端口` 填为访客实际使用的 HTTPS 端口。例如 frps 对外 HTTPS 端口为 `8443`、本地网关为 `7999` 时，公开地址应为 `https://nas.example.com:8443`；登录跳转、OIDC 回调和应用入口使用公网 HTTPS 端口，不能填成本地端口或 HTTP 端口。标准 HTTPS 端口可使用 `443`。这些字段只生成外部 URL，不会修改 frpc 转发或创建端口映射。保存后从外网核对业务链接与登录回跳地址。
+
 先在 `系统设置 → FRP` 下载资源，再进入 `内网穿透 → FRP`。默认生成的代理通常包含：
 
 ```toml

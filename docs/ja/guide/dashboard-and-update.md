@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダッシュボードとシステム更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c993616399bde6e
+translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -41,6 +41,8 @@ translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c9936163
 ## オンラインユーザーの IP を確認する
 
 ダッシュボードのオンラインユーザー欄から、最近活動したログイン済みの識別情報を IP 別に確認できます。所在地、最終活動時刻を表示し、時刻順の並べ替え、ページ切り替え、手動更新に対応します。同じ IP に複数の識別情報が対応する場合があり、IP 数はユーザー数や全訪問者・端末数ではありません。更新失敗時は前回のスナップショットを警告付きで保持します。
+
+各 IP 行には Windows、macOS、iPhone、Android などのクライアント種別ごとにアイコンと件数が表示されます。同じ種別が複数ある場合は `×件数` が付き、ホバーまたはキーボードフォーカスで説明を確認できます。種別はクライアント情報に基づく最近のアクセス元の目安で、物理デバイス一覧や個別ユーザー数ではありません。判別できない場合は不明なデバイスとして表示されます。
 
 ## 管理画面のテーマカラー
 

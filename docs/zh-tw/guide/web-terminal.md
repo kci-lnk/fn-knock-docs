@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Web 終端機"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2e692e1a3b0df203e0b6267b2bf03bc3834f56b9d943834cd0e5950de898408f
+translationSourceHash: 9c68d6c4b975d67c3059eda9376a7f62c04df5fc51e53c96e1c4712ab7e3ac34
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -61,7 +61,9 @@ Shell 會依可執行檔依序選擇 `zsh`、目前帳號的 Shell、`bash`、`a
 
 ## 目標與工作階段
 
-本機目標與每個 SSH 目標都可以建立多個獨立 Shell 工作階段。終端機服務持續執行時，重新整理頁面、關閉瀏覽器或短暫斷線只會中斷瀏覽器連線，不會立即結束 Shell。fn-knock 服務重新啟動、Shell 自行退出或管理員結束工作階段時，會終止對應工作階段；停用本機終端機還會結束所有本機工作階段。這些已結束的工作階段無法復原。
+本機與每個 SSH 目標都可建立多個獨立 Shell 工作階段。新增或編輯 SSH 目標的連線表單中，`持久化連線` 預設勾選，套用至該連線現有與新建的所有工作階段。勾選後，重新整理、關閉瀏覽器或暫時斷線不會立即結束終端程序，可重新連接仍在執行的工作階段。
+
+取消勾選後，重新整理、關閉或離開終端頁面會結束程序；同一工作階段由多個頁面使用時，最後一個頁面離開才結束，異常斷線則在逾時後清理。持久化保留的是終端程序，無法跨越終端服務重啟。服務重啟、Shell 退出、管理員結束工作階段或停用本機終端後，已結束的工作階段無法復原。
 
 頁面提供：
 

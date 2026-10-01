@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TLS 憑證與 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cd918446305b4da72c1f0d22978e8feb53ac749fce524396deaf0daad290e015
+translationSourceHash: 5c074921852ce8baa7d3976d7a2b06f1e76faf10762356aec4c5ac78d7a28da1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -298,6 +298,16 @@ Server Certificate 有效期限為 20 年。長期有效不代表可以忽略私
 - 自動續期失敗或遭停止後，預設進入 6 小時重試退避，避免每次掃描立即再次呼叫 DNS API 與 CA；編輯該申請項目後，下一輪即可重新嘗試。
 
 頁面沒有獨立的「下次掃描時間」開關；應從申請項目的最近工作狀態、憑證到期時間與 Log 判斷是否成功，而不是反覆點擊手動申請。
+
+### 將憑證儲存至伺服器目錄
+
+新增或編輯申請項目時，可開啟 `儲存至目錄`，填入伺服器目錄的絕對路徑，或瀏覽選取。目錄不存在時會建立，但管理服務仍須具備寫入權限。Docker 路徑屬於容器檔案系統，主機或其他容器需透過掛載磁碟區讀取。路徑不可包含父層跳轉，也不可使用 fn-knock 內部 SSL 或 ACME 儲存目錄。
+
+申請與續期成功後會自動輸出完整憑證鏈及私鑰；已有憑證時，啟用功能或修改目錄並儲存也會立即輸出。檔名依主網域生成，例如 `example.com.cert.pem` 與 `example.com.key.pem`；`*.example.com` 使用 `wildcard.example.com` 前綴，依頁面預覽為準。每次輸出會取代這兩個同名檔案，不同申請項目不可使用相同輸出檔案。
+
+查看檔案儲存狀態與最後儲存時間；失敗時檢查路徑、寫入權限與檔案衝突，再重試儲存，也可立即重新輸出。簽發、憑證庫或閘道部署與檔案儲存是不同結果，不能只憑簽發成功判斷檔案已更新。外部服務讀取檔案後若需重新載入，須由該服務的維運流程處理。
+
+關閉儲存、修改目錄、刪除憑證或申請項目都不會清除已輸出的檔案。私鑰應限制讀取權限，廢棄副本須自行安全清理，不可將輸出目錄設為公開靜態檔案目錄。Windows DNS-01 申請項目也支援輸出，請使用伺服器可寫入的 Windows 絕對路徑。
 
 ## Windows 原生版：DNS-01 憑證
 

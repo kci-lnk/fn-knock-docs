@@ -3,7 +3,7 @@ lang: zh-TW
 title: "內網穿透與隧道"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 62450db38b326ff058a57bdfd78160a99f899b9a1d2ea49230ba21774a40f4a0
+translationSourceHash: 7fc3b0e85b4b6058b6002b10bdf471041e0448c876edf76849356203de4c60dd
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -48,6 +48,8 @@ https://example.com/alist -> Tunnel -> fn-knock -> Path /alist -> AList
 這種模式可以保留舊 URL，但應用程式可能需要移除 Prefix、改寫 HTML 或切換成 Root Path 模式。不要只因為使用 Tunnel，就讓新服務預設採用 Path-based Routing。
 
 ## FRP
+
+FRP 子網域模式還需在子網域設定將鑑權服務公網 HTTPS 連接埠設為訪客實際使用的 HTTPS 連接埠。例如 frps 對外 HTTPS 為 `8443`、本機閘道為 `7999`，公開位址應為 `https://nas.example.com:8443`。登入跳轉、OIDC 回呼與應用程式入口使用公網 HTTPS 連接埠，不可填成本機或 HTTP 連接埠。標準 HTTPS 可填 `443`。這些欄位只生成外部 URL，不會修改 frpc 轉送或建立連接埠映射。儲存後從外網核對服務連結與登入返回位址。
 
 先到 `系統設定 → FRP` 下載資源，再進入 `內網穿透 → FRP`。預設產生的 Proxy 通常包含：
 

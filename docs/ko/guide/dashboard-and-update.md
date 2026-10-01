@@ -3,7 +3,7 @@ lang: ko-KR
 title: "대시보드 및 시스템 업데이트"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c993616399bde6e
+translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
 ---
 
 # 대시보드 및 시스템 업데이트
@@ -39,6 +39,8 @@ translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c9936163
 ## 온라인 사용자 IP 확인
 
 대시보드의 온라인 사용자 항목에서 최근 활동한 로그인 사용자의 식별 정보를 IP별로 확인합니다. 위치와 마지막 활동 시간이 표시되며 정렬, 페이지 이동, 수동 새로 고침을 지원합니다. 하나의 IP에 여러 식별 정보가 연결될 수 있어 IP 수는 사용자 수나 전체 방문자·장치 수가 아닙니다. 새로 고침에 실패하면 마지막 성공 스냅샷과 오래된 데이터 경고를 표시합니다.
+
+각 IP 행은 Windows, macOS, iPhone, Android 등 클라이언트 플랫폼별 장치 아이콘과 개수를 표시합니다. 같은 유형이 여러 개면 `×개수`가 표시되며 마우스를 올리거나 키보드로 포커스하면 설명을 볼 수 있습니다. 유형은 클라이언트 정보에 기반한 최근 활동 출처의 참고 정보이며 실제 장치 목록이나 고유 사용자 수가 아닙니다. 식별할 수 없으면 알 수 없는 장치로 표시됩니다.
 
 ## 관리 화면 테마 색상
 

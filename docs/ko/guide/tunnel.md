@@ -3,7 +3,7 @@ lang: ko-KR
 title: "NAT 통과 및 터널"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 62450db38b326ff058a57bdfd78160a99f899b9a1d2ea49230ba21774a40f4a0
+translationSourceHash: 7fc3b0e85b4b6058b6002b10bdf471041e0448c876edf76849356203de4c60dd
 ---
 
 # NAT 통과 및 터널
@@ -46,6 +46,8 @@ https://example.com/alist -> 터널 -> fn-knock -> 경로 /alist -> AList
 기존 URL을 유지할 수 있지만 애플리케이션에 접두사 제거, HTML 다시 작성 또는 루트 모드가 필요할 수 있습니다. 터널을 사용한다는 이유만으로 새 서비스에 경로 라우팅을 기본 선택하지 않습니다.
 
 ## FRP
+
+FRP 하위 도메인 모드는 하위 도메인 설정의 인증 서비스 공용 HTTPS 포트에 방문자가 실제 사용하는 HTTPS 포트를 입력해야 합니다. frps의 공용 HTTPS가 `8443`이고 로컬 게이트웨이가 `7999`이면 공개 URL은 `https://nas.example.com:8443`입니다. 로그인 리디렉션, OIDC 콜백, 앱 링크는 공용 HTTPS 포트를 사용하므로 로컬 또는 HTTP 포트를 입력하지 마세요. 표준 HTTPS는 `443`을 사용할 수 있습니다. 이 필드는 외부 URL을 생성하며 frpc 전달이나 포트 매핑은 변경하지 않습니다. 저장 후 외부 네트워크에서 서비스 링크와 로그인 복귀 주소를 확인하세요.
 
 먼저 `시스템 설정 → FRP`에서 리소스를 다운로드한 뒤 `리버스 프록시 모드 → FRP`로 이동합니다. 자동 생성되는 기본 프록시에는 일반적으로 다음 설정이 포함됩니다.
 

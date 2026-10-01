@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cd918446305b4da72c1f0d22978e8feb53ac749fce524396deaf0daad290e015
+translationSourceHash: 5c074921852ce8baa7d3976d7a2b06f1e76faf10762356aec4c5ac78d7a28da1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -298,6 +298,16 @@ Request items with automatic renewal enabled are checked immediately after the s
 - After an automatic renewal fails or is stopped, a 6-hour retry backoff applies by default so every scan does not immediately call the DNS API and CA again. Editing that request item allows the next scan to retry.
 
 The page has no separate “next scan” switch. Verify renewal from the request item's latest task state, certificate expiration, and logs instead of repeatedly starting manual issuance.
+
+### Save certificates to a server directory
+
+When adding or editing an application, enable `Save to directory` and enter an absolute `Server directory`, or browse for one. Missing directories are created, but the admin service must have write permission. Docker paths refer to the container filesystem; use a volume mount for host or other-container access. Parent traversal and fn-knock internal SSL or ACME storage directories are not allowed.
+
+Successful issuance and renewal export the full certificate chain and private key. Enabling output or changing the directory also exports an existing certificate immediately when saved. Filenames use the primary domain, such as `example.com.cert.pem` and `example.com.key.pem`; `*.example.com` uses the `wildcard.example.com` stem. Check the preview. Exports replace these two files; applications cannot share the same output files.
+
+Check the file status and last saved time. On failure, check paths, permissions, and conflicts, then retry file saving; `Save files now` can export again. Issuance, library or gateway deployment, and file output have separate outcomes. Successful issuance alone does not prove the files were updated. Reloading an external service that consumes the files is part of that service's operations.
+
+Disabling output, changing directories, or deleting a certificate or application leaves exported files in place. Restrict private-key access and securely remove obsolete copies yourself. Keep exports outside public static-file directories. Windows DNS-01 applications also support output to a writable absolute Windows path.
 
 ## Native Windows: DNS-01 Certificates
 

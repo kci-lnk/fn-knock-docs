@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c993616399bde6e
+translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -41,6 +41,8 @@ translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c9936163
 ## 查看線上使用者 IP
 
 從控制台的線上使用者入口，可依 IP 查看近期活躍的已登入身分、歸屬地與最後活動時間，並排序、分頁或手動重新整理。同一 IP 可能對應多個身分，IP 數不等於使用者數，也不是所有訪客或裝置數。重新整理失敗時會保留上次成功的快照並提示過期，不應視為即時結果。
+
+每個 IP 列還會依用戶端平台顯示裝置圖示與數量，例如 Windows、macOS、iPhone 或 Android；同類多筆顯示 `×數量`，懸停或鍵盤聚焦可查看說明。類型來自用戶端資訊，僅協助辨識近期活躍來源，不能視為實體裝置清單或獨立使用者數量；無法辨識時顯示未知裝置。
 
 ## 管理後台配色
 

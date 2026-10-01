@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65e2b719301ff377e33bd26948a7744fced8dc381352dc645c993616399bde6e
+translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -41,6 +41,8 @@ Traffic from the local device or LAN does not prove that the public entry point 
 ## View online user IPs
 
 Open the online-user entry on the dashboard to see recently active signed-in identities grouped by IP, location, and last activity. You can sort by activity, browse pages, and refresh manually. One IP may represent several identities; IP counts are not user counts or a count of all visitors or devices. Failed refreshes retain the last successful snapshot with a stale-data warning.
+
+Each IP row also groups device icons and counts by client platform, such as Windows, macOS, iPhone, or Android. Multiple entries of the same type show `×count`; hover or focus the icon for details. Types come from client information and help identify recent activity. They are not an inventory of physical devices or a count of distinct users. Unrecognized clients appear as unknown devices.
 
 ## Change the Admin Console Color
 

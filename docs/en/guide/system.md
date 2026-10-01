@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3abc244bc28d5c581aaea1b6aa919035b5185a875c215a70f78947727a44ecfe
+translationSourceHash: 03e5147fe3357f9835a65aa54ef1bdd7f06813399430c4161fe66b51bc2a7178
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -85,7 +85,9 @@ On the standard fnOS FPK with Smart Connect support, if the local IP or `dnsmasq
 
 The standard fnOS FPK with host-firewall capability can preserve ports outside fn-knock's automatically managed set under `System settings → Mode → Actions → Additional allowed ports`. Docker, OpenWrt, Linux, Synology, Windows, and `fn-knock Lite` do not show this action; manage their ports in the host, router, or cloud firewall instead.
 
-The dialog separates ports opened automatically for the current mode—such as gateway, protocol-mapping, or Smart Connect ports—from user-added ports. The additional list accepts at most `128` unique integers from `1` through `65535`. Each port opens both TCP and UDP and cannot be split by protocol. Add only services that must be reachable from outside the firewall.
+The dialog shows automatically allowed ports, custom entries, and the effective allowlist. Choose `Add port` or `Add port range`; single ports and ranges share a limit of `128` entries. Ports must be integers from `1–65535`. Ranges include both endpoints and require the start to be lower than the end. Single ports must be unique; ranges cannot overlap each other or contain manually added single ports. Each entry allows both TCP and UDP.
+
+For FTP, add control port `21` and the passive range configured on the server, such as `50000–51000`. After `Save and apply`, check the effective allowlist. Unsaved additions and deletions only change the draft. Automatically allowed ports need no duplicate entry; only add service ports that require external access.
 
 Saving follows the runtime mode currently saved by the backend:
 

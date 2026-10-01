@@ -3,7 +3,7 @@ lang: ja-JP
 title: "NAT 越えとトンネル"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 62450db38b326ff058a57bdfd78160a99f899b9a1d2ea49230ba21774a40f4a0
+translationSourceHash: 7fc3b0e85b4b6058b6002b10bdf471041e0448c876edf76849356203de4c60dd
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -48,6 +48,8 @@ https://example.com/alist -> トンネル -> fn-knock -> パス /alist -> AList
 この方式では以前の URL を維持できますが、アプリケーションによってはプレフィックスの除去、HTML の書き換え、ルートディレクトリモードが必要です。トンネルを使用するという理由だけで、新しいサービスにパスルーティングを選ばないでください。
 
 ## FRP
+
+FRP のサブドメインモードでは、認証サービスの公開 HTTPS ポートに訪問者が実際に使用する HTTPS ポートを入力します。frps の公開 HTTPS が `8443`、ローカルゲートウェイが `7999` なら、公開 URL は `https://nas.example.com:8443` です。ログインのリダイレクト、OIDC コールバック、アプリのリンクは公開 HTTPS ポートを使用します。ローカルや HTTP のポートを入力しないでください。標準 HTTPS は `443` を指定できます。この設定は外部 URL の生成に使われ、frpc 転送やポートマッピングは変更しません。保存後、外部ネットワークでリンクとログイン後の戻り先を確認してください。
 
 先に `システム設定 → FRP` でリソースをダウンロードし、その後 `トンネル → FRP` を開きます。デフォルトで生成されるプロキシには、通常、次の内容が含まれます。
 

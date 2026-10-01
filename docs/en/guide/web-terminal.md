@@ -3,7 +3,7 @@ lang: en-US
 title: "Web Terminal"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2e692e1a3b0df203e0b6267b2bf03bc3834f56b9d943834cd0e5950de898408f
+translationSourceHash: 9c68d6c4b975d67c3059eda9376a7f62c04df5fc51e53c96e1c4712ab7e3ac34
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -51,7 +51,9 @@ Editing and deletion both start in the target's `Edit SSH target` dialog; on a t
 
 ## Targets and sessions
 
-Each local or SSH target can have multiple independent shell sessions. A session remains alive while the terminal service is running, so closing the page, refreshing, or briefly losing the network does not immediately end its shell. It cannot be recovered after the fn-knock service restarts, the shell exits, or an administrator ends it.
+Each local or SSH target can have multiple independent shell sessions. In the SSH target connection form, `Persistent connection` is enabled by default and applies to all existing and new sessions for that connection. When enabled, refreshing, closing the browser, or a temporary network interruption does not immediately stop the terminal process; a running session can be reconnected.
+
+When disabled, refreshing, closing, or leaving the terminal page ends the process. If several pages use the same session, it ends when the last page leaves; abnormal disconnections are cleaned up after a timeout. Persistence keeps the terminal process running within the terminal service lifetime. Service restarts, shell exits, an administrator ending the session, or disabling the local terminal make the ended sessions unrecoverable.
 
 The page can create, switch, rename, and reconnect sessions; maximize the terminal; change font size; copy, paste, select all, and send text verbatim; and show connection phases. Remote SSH phases include name resolution, host-key verification, authentication, and PTY allocation, while local phases include opening the PTY and starting the shell.
 

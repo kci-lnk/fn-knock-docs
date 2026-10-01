@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3abc244bc28d5c581aaea1b6aa919035b5185a875c215a70f78947727a44ecfe
+translationSourceHash: 03e5147fe3357f9835a65aa54ef1bdd7f06813399430c4161fe66b51bc2a7178
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -85,7 +85,9 @@ translationSourceHash: 3abc244bc28d5c581aaea1b6aa919035b5185a875c215a70f78947727
 
 具備 Host 防火牆能力的飛牛標準 FPK，可在 `系統設定 → 模式 → 操作 → 額外放行的連接埠` 保留 fn-knock 自動管理範圍之外的連接埠。Docker、OpenWrt、Linux、Synology、Windows 與 `敲門 knock Lite` 不會顯示此操作；這些部署應改在 Host、路由器或 Cloud Firewall 管理連接埠。
 
-對話框會分開顯示目前模式自動放行的閘道、協定映射或智慧連線連接埠，以及使用者額外加入的連接埠。額外清單最多可填 `128` 個 `1–65535` 的不重複整數；每個連接埠都會同時放行 TCP 與 UDP，不能依協定拆分。只新增確實需要從防火牆外側存取的服務。
+視窗分別顯示系統自動放行項目、使用者額外放行項目與目前有效清單。點選 `新增連接埠` 或 `新增連接埠範圍`，單一連接埠與範圍合計最多 `128` 筆。連接埠必須是 `1–65535` 的整數，範圍包含兩端，起始值必須小於結束值；單一連接埠不可重複，範圍不可互相重疊或涵蓋手動新增的單一連接埠。每筆同時放行 TCP 與 UDP。
+
+例如 FTP 可新增控制連接埠 `21`，以及與伺服器設定一致的被動範圍 `50000–51000`。點選 `儲存並套用` 後核對有效清單；未儲存的新增或刪除僅修改草稿。系統自動放行項目不必重複新增，只新增確實需要對外開放的服務連接埠。
 
 儲存行為依後端目前已儲存的執行模式決定：
 
