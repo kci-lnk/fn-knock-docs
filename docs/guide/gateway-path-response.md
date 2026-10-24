@@ -29,11 +29,13 @@ api.example.com/其他路径 -> Host 默认 Target
 | `匹配方式` | 精确 / 前缀 | 只匹配完整路径，或匹配该前缀及子路径 |
 | `动作` | 反代 / 固定响应 | 转给另一个上游，或由网关直接响应 |
 | `认证行为` | 继承 Host / 公开访问 / 要求登录 | 沿用 Host、公开当前路径，或对当前路径要求鉴权 |
-| `目标地址` | HTTP / HTTPS URL | 仅反代动作使用 |
+| `目标地址` | HTTP / HTTPS / WS / WSS URL | 仅反代动作使用 |
 | `剥离匹配路径` | 开 / 关 | `/api/users` 发送为 `/users`，或保留原路径 |
 | `改写 HTML 路径` | 开 / 关 | 为页面资源补路径前缀；纯 API 通常不需要 |
 
 固定响应可设置 `100` 到 `599` 的状态码、`Content-Type`、正文和自定义响应头。`Connection`、`Content-Length`、`Content-Type`、`Transfer-Encoding`、`Upgrade` 等传输级头不能在自定义头中覆盖；内容类型使用专门字段设置。
+
+目标 URL 的格式要求见[子域映射](/guide/subdomain-proxy)。WebSocket 目标不使用 HTML 路径改写。
 
 ## 路径认证行为
 
@@ -74,7 +76,7 @@ API 单独回源：
 
 ## 平台边界
 
-路径响应可在飞牛 FPK、Docker、OpenWrt、Linux、群晖 DSM 7 SPK 和 Windows 的 Host 路由子域模式中使用，包括 `内网穿透 → 子域映射`。它不会开放防火墙端口、创建 DNS 记录或发布 Docker 端口，也不会让不可达的 Target 变得可达。
+路径响应可在飞牛 FPK、Docker、OpenWrt、Linux、macOS、群晖 DSM 7 SPK 和 Windows 的 Host 路由子域模式中使用，包括 `内网穿透 → 子域映射`。它不会开放防火墙端口、创建 DNS 记录或发布 Docker 端口，也不会让不可达的 Target 变得可达。
 
 ## 排错
 

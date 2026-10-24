@@ -3,7 +3,7 @@ lang: ko-KR
 title: "경로별 고정 응답"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 168f3272d500129a990cfef35d32f8dc757906c747b7c2cd5ed02097d2da90af
+translationSourceHash: 80802fd43b8c0238669da34c1eef4d7d202ea29888909cf1b14995e913d88544
 ---
 
 # 경로별 고정 응답
@@ -37,11 +37,13 @@ Host 하나에는 같은 일치 방식과 같은 경로의 규칙을 하나만 �
 | `일치 방식` | 정확히 일치 / 접두사 일치 | 전체 경로만 일치시키거나 해당 접두사와 하위 경로를 함께 일치 |
 | `동작` | 리버스 프록시 / 고정 응답 | 다른 업스트림으로 전달하거나 게이트웨이가 직접 응답 |
 | `인증 동작` | Host 상속 / 공개 접근 / 로그인 필수 | Host 상속, 공개 또는 이 경로의 인증 필수 설정 |
-| `대상 주소` | HTTP / HTTPS URL | 리버스 프록시 동작에만 사용 |
+| `대상 주소` | HTTP / HTTPS / WS / WSS URL | 리버스 프록시 동작에만 사용 |
 | `일치한 경로 제거` | 켜기 / 끄기 | `/api/users`를 `/users`로 전달하거나 원래 경로 유지 |
 | `HTML 경로 다시 쓰기` | 켜기 / 끄기 | 페이지 리소스에 경로 접두사를 추가. 일반 API에는 대개 불필요 |
 
 고정 응답에는 `100`부터 `599`까지의 상태 코드, `Content-Type`, 본문 및 사용자 지정 응답 헤더를 설정할 수 있습니다. `Connection`, `Content-Length`, `Content-Type`, `Transfer-Encoding`, `Upgrade` 같은 전송 수준 헤더는 사용자 지정 헤더에서 덮어쓸 수 없습니다. 콘텐츠 유형은 전용 필드에서 설정합니다.
+
+대상 URL 형식은 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 참고하세요. WebSocket 대상에는 HTML 경로 재작성을 사용하지 않습니다.
 
 ## 경로 인증 동작
 
@@ -82,7 +84,7 @@ API를 별도 오리진으로 전달:
 
 ## 플랫폼별 제한
 
-경로 응답은 fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK 및 Windows의 Host 라우트 서브도메인 모드에서 사용할 수 있으며 `리버스 프록시 모드 → 서브도메인 매핑`도 포함됩니다. 방화벽 포트, DNS 레코드 또는 Docker 포트를 공개하지 않으며 접속할 수 없는 대상(타깃)을 접속 가능한 상태로 바꾸지도 않습니다.
+경로 응답은 fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK 및 Windows의 Host 라우트 서브도메인 모드에서 사용할 수 있으며 `리버스 프록시 모드 → 서브도메인 매핑`도 포함됩니다. 방화벽 포트, DNS 레코드 또는 Docker 포트를 공개하지 않으며 접속할 수 없는 대상(타깃)을 접속 가능한 상태로 바꾸지도 않습니다.
 
 ## 문제 해결
 

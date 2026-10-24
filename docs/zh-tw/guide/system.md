@@ -3,7 +3,7 @@ lang: zh-TW
 title: "系統設定與維護"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a011714889998374270fe7f5a207a45cf8774582c0333a50100fb6a105c7c581
+translationSourceHash: 8a0195423ae356fd937dcc474e7daf988e05f15d5807e0d6cb61a2f4229f2a60
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -102,7 +102,9 @@ translationSourceHash: a011714889998374270fe7f5a207a45cf8774582c0333a50100fb6a10
 
 ## 閘道基本設定
 
-`系統設定 → 閘道` 頂端的設定會直接同步到 Go 閘道。Host 層級編輯器僅能在採用 Host 路由的子網域模式中使用；驗證服務 Host 不會出現在可編輯清單中。
+`系統設定 → 閘道` 頂端的設定儲存後會同步到 Go 閘道。Host 層級編輯器僅能在採用 Host 路由的子網域模式中使用；驗證服務 Host 不會出現在可編輯清單中。
+
+這些頂端選項須點擊 `儲存設定` 才會生效，包括映射選擇頁及停用網域後行為；傳送門設定內的開關則在變更時個別儲存。
 
 | 設定 | 行為與注意事項 |
 | --- | --- |

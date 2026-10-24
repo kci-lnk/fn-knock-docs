@@ -3,7 +3,7 @@ lang: ja-JP
 title: "パス単位の固定レスポンス"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 168f3272d500129a990cfef35d32f8dc757906c747b7c2cd5ed02097d2da90af
+translationSourceHash: 80802fd43b8c0238669da34c1eef4d7d202ea29888909cf1b14995e913d88544
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -39,11 +39,13 @@ api.example.com/other-path -> Host のデフォルト Target
 | `一致方法` | 完全一致 / 前方一致 | パス全体が一致する場合だけ、または指定したプレフィックスとその配下のパスに一致します |
 | `アクション` | リバースプロキシ / 固定レスポンス | 別のアップストリームへ転送するか、ゲートウェイから直接応答します |
 | `認証動作` | Host を継承 / 公開アクセス / ログイン必須 | Host を継承、公開、またはこのパスの認証を必須にします |
-| `転送先` | HTTP / HTTPS URL | リバースプロキシアクションでのみ使用します |
+| `転送先` | HTTP / HTTPS / WS / WSS URL | リバースプロキシアクションでのみ使用します |
 | `一致したパスを除去` | オン / オフ | `/api/users` を `/users` として転送するか、元のパスを維持します |
 | `HTML 内のパスを書き換え` | オン / オフ | ページリソースのパスにプレフィックスを補います。通常、API だけの場合は不要です |
 
 固定レスポンスには、`100`～`599` のステータスコード、`Content-Type`、本文、カスタムレスポンスヘッダーを設定できます。`Connection`、`Content-Length`、`Content-Type`、`Transfer-Encoding`、`Upgrade` など、転送処理に関わるヘッダーはカスタムヘッダーで上書きできません。コンテンツタイプは専用のフィールドで設定してください。
+
+ターゲット URL の書式は[サブドメインマッピング](/ja/guide/subdomain-proxy)を参照してください。WebSocket ターゲットでは HTML パスを書き換えません。
 
 ## パスの認証動作
 
@@ -84,7 +86,7 @@ API だけを別のアップストリームへ転送：
 
 ## プラットフォーム上の制約
 
-パス別応答は、fnOS FPK、Docker、OpenWrt、Linux、Synology DSM 7 SPK、Windows で、Host ルーティングのサブドメインモードを使用している場合に利用できます。これには `トンネル → サブドメインマッピング` も含まれます。この機能がファイアウォールのポートを開放したり、DNS レコードを作成したり、Docker ポートを公開したりすることはありません。到達不能な Target が到達可能になることもありません。
+パス別応答は、fnOS FPK、Docker、OpenWrt、Linux、macOS、Synology DSM 7 SPK、Windows で、Host ルーティングのサブドメインモードを使用している場合に利用できます。これには `トンネル → サブドメインマッピング` も含まれます。この機能がファイアウォールのポートを開放したり、DNS レコードを作成したり、Docker ポートを公開したりすることはありません。到達不能な Target が到達可能になることもありません。
 
 ## トラブルシューティング
 

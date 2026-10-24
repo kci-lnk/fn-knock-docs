@@ -3,7 +3,7 @@ lang: ja-JP
 title: "システム設定とメンテナンス"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a011714889998374270fe7f5a207a45cf8774582c0333a50100fb6a105c7c581
+translationSourceHash: 8a0195423ae356fd937dcc474e7daf988e05f15d5807e0d6cb61a2f4229f2a60
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -102,7 +102,9 @@ FTP では制御ポート `21` と、サーバー設定に一致するパッシ�
 
 ## ゲートウェイの基本設定
 
-`システム設定 → ゲートウェイ` の上部にある設定は、Go ゲートウェイへ直接同期されます。Host 単位の編集機能は、Host ルーティングを使用するサブドメインモードでのみ利用でき、認証サービスの Host は編集対象の一覧に表示されません。
+`システム設定 → ゲートウェイ` の上部にある設定は、保存後に Go ゲートウェイへ同期されます。Host 単位の編集機能は、Host ルーティングを使用するサブドメインモードでのみ利用でき、認証サービスの Host は編集対象の一覧に表示されません。
+
+上部の項目は設定を保存してから有効になります。マッピング選択ページと無効ドメインの動作も対象です。ポータル設定内のスイッチは変更時に個別に保存されます。
 
 | 設定 | 動作と注意事項 |
 | --- | --- |

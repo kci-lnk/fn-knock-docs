@@ -3,7 +3,7 @@ lang: ja-JP
 title: "パスベースのリバースプロキシ（互換モード）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a5c2d2d14d03659b1798f2dbf1496082ee3d8cc398978d44caa41e811a4e7aaf
+translationSourceHash: 63e14a318bc21de5fe9cd5fc55b02fc75dd6d6a19a2594f1beb72f761f11518b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -39,6 +39,8 @@ https://example.com/jellyfin -> http://127.0.0.1:8096
 | `ルートモードを使用` | 一致したマッピングを記録した後、ブラウザを `/` へ移動させ、ルートパスでの動作が必要なアプリに対応します |
 
 転送先には、fn-knock の実行環境からアクセスできるアドレスを指定する必要があります。通常はループバックアドレスまたは LAN 内のアドレスを使用します。Docker 内の `127.0.0.1` はコンテナ自身を指すため、ホスト上のサービスにはコンテナから到達できるアドレスを使用してください。
+
+ターゲット URL の書式は[サブドメインマッピング](/ja/guide/subdomain-proxy)を参照してください。
 
 サービス検出で提示される認証、書き換え、プレフィックス削除の設定は推奨値にすぎません。保存前に、対象アプリがベースパスへ対応しているかに応じて調整してください。
 

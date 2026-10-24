@@ -3,7 +3,7 @@ lang: ko-KR
 title: "경로 기반 리버스 프록시(호환 모드)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a5c2d2d14d03659b1798f2dbf1496082ee3d8cc398978d44caa41e811a4e7aaf
+translationSourceHash: 63e14a318bc21de5fe9cd5fc55b02fc75dd6d6a19a2594f1beb72f761f11518b
 ---
 
 # 경로 기반 리버스 프록시(호환 모드)
@@ -37,6 +37,8 @@ https://example.com/jellyfin -> http://127.0.0.1:8096
 | `루트 모드` | 일치한 매핑을 기록한 뒤 브라우저를 `/`로 보내 루트 디렉터리 실행만 지원하는 서비스와 호환 |
 
 대상 주소에는 fn-knock 실행 환경에서 접근 가능한 주소를 입력합니다. 보통 루프백이나 LAN 주소를 사용합니다. Docker에서 `127.0.0.1`은 컨테이너 자체를 가리키므로 호스트에서 실행되는 서비스에는 컨테이너가 접근할 수 있는 주소를 사용합니다.
+
+대상 URL 형식은 [서브도메인 매핑](/ko/guide/subdomain-proxy)을 참고하세요.
 
 서비스 검색에서 제안하는 인증, 다시 쓰기 및 접두사 제거 옵션은 권장값일 뿐입니다. 저장하기 전에 대상 애플리케이션의 기본 경로 지원 여부에 맞게 조정합니다.
 

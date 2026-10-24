@@ -3,7 +3,7 @@ lang: zh-TW
 title: "路徑型反向代理（相容模式）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a5c2d2d14d03659b1798f2dbf1496082ee3d8cc398978d44caa41e811a4e7aaf
+translationSourceHash: 63e14a318bc21de5fe9cd5fc55b02fc75dd6d6a19a2594f1beb72f761f11518b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -39,6 +39,8 @@ Path Prefix 會出現在瀏覽器 URL 中。若應用程式將 `/`、Callback UR
 | `根目錄模式` | 記錄命中的映射後，將瀏覽器導向 `/`，以相容必須在根目錄執行的應用程式 |
 
 Target URL 必須能從 fn-knock 的 Runtime 環境連線。通常使用 Loopback 或區域網路 IP；Docker 中的 `127.0.0.1` 代表 Container 本身，Host Service 必須使用 Container 可連線的位址。
+
+目標 URL 格式要求見[子網域映射](/zh-tw/guide/subdomain-proxy)。
 
 一鍵探索提供的驗證、Rewrite 與移除 Prefix 選項只供參考。儲存前仍需依目標應用程式對 Base Path 的支援能力調整。
 

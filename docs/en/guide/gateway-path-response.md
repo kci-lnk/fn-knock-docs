@@ -3,7 +3,7 @@ lang: en-US
 title: "Static Path Responses"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 168f3272d500129a990cfef35d32f8dc757906c747b7c2cd5ed02097d2da90af
+translationSourceHash: 80802fd43b8c0238669da34c1eef4d7d202ea29888909cf1b14995e913d88544
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -39,11 +39,13 @@ Each Host can have only one rule for the same match mode and path.
 | `Match` | Exact / Prefix match | Matches only the complete path, or that prefix and its subpaths |
 | `Action` | Reverse proxy / Fixed response | Forwards to another upstream, or lets the gateway respond directly |
 | `Authentication behavior` | Inherit Host / Public access / Require login | Inherit Host policy, allow public access, or require authentication for this path |
-| `Target` | HTTP / HTTPS URL | Used only for a reverse-proxy action |
+| `Target` | HTTP / HTTPS / WS / WSS URL | Used only for a reverse-proxy action |
 | `Strip matched path` | On / Off | Sends `/api/users` as `/users`, or keeps the original path |
 | `Rewrite HTML paths` | On / Off | Adds the path prefix to page assets; a pure API usually does not need this |
 
 For a fixed response, you can set a status code from `100` to `599`, `Content-Type`, a body, and custom response headers. Transport-level headers such as `Connection`, `Content-Length`, `Content-Type`, `Transfer-Encoding`, and `Upgrade` cannot be overridden through custom headers; use the dedicated field for the content type.
+
+See [Subdomain Mapping](/en/guide/subdomain-proxy) for target URL format requirements. WebSocket targets do not use HTML path rewriting.
 
 ## Path Authentication Behavior
 
@@ -84,7 +86,7 @@ Strip matched path On
 
 ## Platform Boundaries
 
-Path responses work with Host-based subdomain routing on the native fnOS FPK, Docker, OpenWrt, Linux, Synology DSM 7 SPK, and Windows, including `Reverse proxy mode → Subdomain mapping`. They do not open firewall ports, create DNS records, publish Docker ports, or make an unreachable Target reachable.
+Path responses work with Host-based subdomain routing on the native fnOS FPK, Docker, OpenWrt, Linux, macOS, Synology DSM 7 SPK, and Windows, including `Reverse proxy mode → Subdomain mapping`. They do not open firewall ports, create DNS records, publish Docker ports, or make an unreachable Target reachable.
 
 ## Troubleshooting
 

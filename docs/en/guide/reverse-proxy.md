@@ -3,7 +3,7 @@ lang: en-US
 title: "Path-based Reverse Proxy (Compatibility Mode)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a5c2d2d14d03659b1798f2dbf1496082ee3d8cc398978d44caa41e811a4e7aaf
+translationSourceHash: 63e14a318bc21de5fe9cd5fc55b02fc75dd6d6a19a2594f1beb72f761f11518b
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -39,6 +39,8 @@ Open `Path mappings`. You can use `Discover` to generate candidate rules or ente
 | `Use root mode` | Records the matched mapping, then directs the browser to `/` for an application that must run at the root |
 
 The Target address must be reachable from the fn-knock runtime environment. A loopback or LAN address is typical. In Docker, `127.0.0.1` refers to the container itself; use an address reachable from the container for a service on the host.
+
+See [Subdomain Mapping](/en/guide/subdomain-proxy) for target URL format requirements.
 
 The authentication, rewriting, and prefix-stripping options suggested by `Discover` are only recommendations. Adjust them for the target application's base-path support before saving.
 

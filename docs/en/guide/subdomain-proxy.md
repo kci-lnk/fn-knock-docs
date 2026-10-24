@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1e6fce2885b82eca137f29238fa6755aee31bc420644f709b5c6afafd6a964c4
+translationSourceHash: 5cea477483234aa442d5aa5fd39a497fe9e0b828a38c701ac8cd84d4e5537d03
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -101,6 +101,8 @@ docs.example.com -> Directory /srv/docs
 Editing the Host / subdomain of a saved mapping is treated as a rename and preserves its sign-in policy, visibility, and advanced authentication. A reverse-proxy mapping also preserves Basic Auth credential injection. Do not create another alias with the same Target or server path as a substitute for renaming; an alias is an independent mapping and does not inherit the original Host's protected configuration.
 
 Whenever possible, bind reverse-proxied application services only to a loopback or private address so that clients cannot bypass the gateway. In Docker, `127.0.0.1` refers to the container itself; to proxy a service on the host, use a host address reachable from the container. On Docker deployments, the Target field suggests detected reachable LAN IP candidates, but a suggestion does not change container networking, published ports, or the upstream listener.
+
+A reverse-proxy target must combine `http`, `https`, `ws`, or `wss` with a valid hostname or IP, optionally followed by a port and path. For example, `http://127.0.0.1:8080/music/` is valid; `/music/` alone or `http:///music/` without a host is not. Enclose IPv6 addresses in brackets, as in `ws://[::1]:8080/socket`. An explicit port must be valid; a trailing colon alone is invalid. URLs cannot contain whitespace, control characters, or backslashes; encode spaces in paths as `%20`. If the form provides a separate protocol selector, select the protocol there and enter the corresponding address.
 
 Static responses need no upstream service. A single-file response serves the selected file only at the Host root; a directory response supports index files, directory listings, and safe README rendering. See [Static File and Directory Responses](/en/guide/static-host-mapping) for server paths, security boundaries, and read-only Docker mounts.
 

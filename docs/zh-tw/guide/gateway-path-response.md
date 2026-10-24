@@ -3,7 +3,7 @@ lang: zh-TW
 title: "路徑回應"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 168f3272d500129a990cfef35d32f8dc757906c747b7c2cd5ed02097d2da90af
+translationSourceHash: 80802fd43b8c0238669da34c1eef4d7d202ea29888909cf1b14995e913d88544
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -39,11 +39,13 @@ api.example.com/其他路徑 -> Host 預設 Target
 | `比對方式` | 完全符合／Prefix | 只比對完整路徑，或比對該 Prefix 及其子路徑 |
 | `動作` | 反向 Proxy／固定回應 | 轉送至另一個上游，或直接由閘道回應 |
 | `驗證行為` | 繼承 Host／公開存取 / 要求登入 | 沿用 Host、公開目前路徑，或要求此路徑通過驗證 |
-| `Target URL` | HTTP / HTTPS URL | 只供反向 Proxy 動作使用 |
+| `Target URL` | HTTP / HTTPS / WS / WSS URL | 只供反向 Proxy 動作使用 |
 | `移除比對路徑` | 開／關 | 將 `/api/users` 以 `/users` 送出，或保留原始路徑 |
 | `Rewrite HTML 路徑` | 開／關 | 替頁面資源補上 Path Prefix；純 API 通常不需要 |
 
 固定回應可設定 `100` 至 `599` 的 Status Code、`Content-Type`、Response Body 與自訂 Response Header。`Connection`、`Content-Length`、`Content-Type`、`Transfer-Encoding`、`Upgrade` 等 Transport-level Header 無法在自訂 Header 中覆寫；Content Type 請使用專用欄位設定。
+
+目標 URL 格式要求見[子網域映射](/zh-tw/guide/subdomain-proxy)。WebSocket 目標不使用 HTML 路徑改寫。
 
 ## 路徑驗證行為
 
@@ -84,7 +86,7 @@ Target      http://127.0.0.1:8080
 
 ## 平台限制
 
-路徑回應可用於飛牛 FPK、Docker、OpenWrt、Linux、群暉 DSM 7 SPK 與 Windows 採用 Host 路由的子網域模式，包括 `內網穿透 → 子網域映射`。它不會開放防火牆連接埠、建立 DNS Record 或發布 Docker Port，也無法讓原本無法連線的 Target 變成可達。
+路徑回應可用於飛牛 FPK、Docker、OpenWrt、Linux、macOS、群暉 DSM 7 SPK 與 Windows 採用 Host 路由的子網域模式，包括 `內網穿透 → 子網域映射`。它不會開放防火牆連接埠、建立 DNS Record 或發布 Docker Port，也無法讓原本無法連線的 Target 變成可達。
 
 ## 疑難排解
 

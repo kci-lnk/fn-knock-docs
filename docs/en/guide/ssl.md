@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1827d696d9a5efb78d8bda9225c1d4aaaf4390018bafe0e63626590a8616d291
+translationSourceHash: 04443aa53cf0fd468db1b2807828c2698532c2b44ef02b17fe563624c34b877a
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -274,7 +274,7 @@ Each ACME request item independently stores:
 - The Automatic renewal switch;
 - The current certificate, certificate-library link, and latest task state.
 
-`Save` updates only the request item. `Save and apply` immediately submits an issuance task. After successful issuance, the certificate synchronizes to the library automatically, but does not necessarily become the current certificate. In Single active certificate mode, you can then select `Set as current certificate`. In Multi-certificate SNI mode, confirm that it entered the gateway certificate set.
+`Save` updates the request without starting issuance. If a certificate already exists, enabling directory output or changing its directory also exports the certificate and private key immediately. `Save and apply` immediately submits an issuance task. After successful issuance, the certificate synchronizes to the library automatically, but does not necessarily become the current certificate. In Single active certificate mode, you can then select `Set as current certificate`. In Multi-certificate SNI mode, confirm that it entered the gateway certificate set.
 
 When the same request item renews or reissues a certificate, the system replaces the linked library record in place and preserves its label and active/default deployment role, avoiding duplicate entries. If a task fails or is stopped after its domains were changed, the previous usable issuance result is retained. If sending the new certificate to the gateway fails, the system tries to restore and resend the previous SSL configuration. If a newer concurrent configuration already exists, it preserves and sends that newer configuration instead. The task still ends as failed; use its logs to confirm whether the previous configuration was restored, a newer configuration was preserved, or even the safe configuration could not be recovered.
 

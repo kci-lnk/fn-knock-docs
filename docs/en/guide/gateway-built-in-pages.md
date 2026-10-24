@@ -3,7 +3,7 @@ lang: en-US
 title: "Built-in Gateway Pages"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4caeb5458b75820414d58e382cd0813d67caae1cbcba5675bb9c5f9ab4e29053
+translationSourceHash: 65e14a1848acc90f40df8a8b0f86622bb14df64cb0862a277dd2b26c5d3e3de6
 ---
 
 # Built-in Gateway Pages
@@ -19,9 +19,9 @@ The path must match exactly: `/__select__/` and `/__wol__/` are not built-in pag
 
 ## Application selection: `/__select__`
 
-`System Settings → Gateway → Mapping selection page` is enabled by default. When disabled, `/__select__` and requests that would otherwise open the selection page follow the unmatched-route policy: an error page or a connection abort, without listing mappings. This switch is independent of the portal switch and does not change mappings or their access permissions.
+`System Settings → Gateway → Mapping selection page` is enabled by default. When disabled, `/__select__` and requests that would otherwise open the selection page follow the unmatched-route policy: an error page or a connection abort, without listing mappings. This switch is independent of the portal switch and does not change mappings or their access permissions. After changing this switch, click `Save settings` on the gateway page.
 
-Open `https://any-gateway-subdomain/__select__` to show the application selection page. Visitors sign in first when needed; after sign-in, only services available to the current credential are shown.
+With the mapping selection page enabled, open `https://any-gateway-subdomain/__select__` to show the application selection page. Visitors sign in first when needed; after sign-in, only services available to the current credential are shown.
 
 ![Application selection page](/images/gateway-built-in-pages/service-selection.webp)
 

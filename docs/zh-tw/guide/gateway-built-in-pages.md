@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道內建頁面"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4caeb5458b75820414d58e382cd0813d67caae1cbcba5675bb9c5f9ab4e29053
+translationSourceHash: 65e14a1848acc90f40df8a8b0f86622bb14df64cb0862a277dd2b26c5d3e3de6
 ---
 
 # 閘道內建頁面
@@ -19,9 +19,9 @@ https://nas.example.com/__wol__
 
 ## 應用程式選擇頁：`/__select__`
 
-`系統設定 → 閘道 → 映射選擇頁` 預設開啟。關閉後，`/__select__` 與原本進入選擇頁的請求依未匹配路由政策顯示錯誤頁或中斷連線，不再顯示映射清單。此開關與傳送門開關獨立，不會修改映射的啟用狀態或存取權限。
+`系統設定 → 閘道 → 映射選擇頁` 預設開啟。關閉後，`/__select__` 與原本進入選擇頁的請求依未匹配路由政策顯示錯誤頁或中斷連線，不再顯示映射清單。此開關與傳送門開關獨立，不會修改映射的啟用狀態或存取權限。變更此開關後須點擊閘道頁面的 `儲存設定`。
 
-開啟 `https://任意已接入閘道的子網域/__select__` 即可進入應用程式選擇頁。未登入時會先跳轉登入；登入後只顯示目前憑證可存取的服務。
+映射選擇頁啟用時，開啟 `https://任意已接入閘道的子網域/__select__` 即可進入應用程式選擇頁。未登入時會先跳轉登入；登入後只顯示目前憑證可存取的服務。
 
 ![應用程式選擇頁](/images/gateway-built-in-pages/service-selection.webp)
 

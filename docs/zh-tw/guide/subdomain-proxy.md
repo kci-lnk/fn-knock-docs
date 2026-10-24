@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 1e6fce2885b82eca137f29238fa6755aee31bc420644f709b5c6afafd6a964c4
+translationSourceHash: 5cea477483234aa442d5aa5fd39a497fe9e0b828a38c701ac8cd84d4e5537d03
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -101,6 +101,8 @@ docs.example.com -> 目錄 /srv/docs
 直接編輯已儲存映射的 Host／子網域會視為重新命名，並保留該映射的登入策略、可見性與進階驗證；反向代理映射還會保留 Basic Auth 憑據注入。不要用新增相同 Target 或伺服器路徑的別名來取代重新命名；別名是獨立映射，不會繼承原 Host 的受保護設定。
 
 反向代理的服務應盡量只 Listen 在 Loopback 或內網 IP，避免繞過閘道。在 Docker 中，`127.0.0.1` 代表 Container 本身；反向 Proxy 至 Host Service 時，應使用 Container 可連線的 Host IP。Docker 部署的 Target 欄位會提示偵測到且可連線的區域網路 IP 候選，但提示不會修改 Container Network、Port Publishing 或上游 Listen 範圍。
+
+反向 Proxy 目標須包含 `http`、`https`、`ws` 或 `wss` 協定與有效主機名稱或 IP，可附加連接埠及路徑。例如 `http://127.0.0.1:8080/music/` 有效，單獨的 `/music/` 或缺少主機的 `http:///music/` 無效。IPv6 位址須加方括號，例如 `ws://[::1]:8080/socket`。明確指定的連接埠必須有效，不可只留冒號；位址內不可包含空白、控制字元或反斜線，路徑空格應編碼為 `%20`。若表單提供獨立的協定選擇器，選取協定後填寫對應位址即可。
 
 靜態回應不需要上游服務。單一檔案只會在 Host 根路徑回傳指定檔案；目錄回應支援預設文件、目錄列表與安全轉譯 README。伺服器路徑、安全邊界與 Docker 唯讀掛載請參閱[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)。
 

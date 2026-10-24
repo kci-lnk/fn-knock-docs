@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: a011714889998374270fe7f5a207a45cf8774582c0333a50100fb6a105c7c581
+translationSourceHash: 8a0195423ae356fd937dcc474e7daf988e05f15d5807e0d6cb61a2f4229f2a60
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -102,7 +102,9 @@ Saving rebuilds fn-knock's managed chain as a whole. It does not replace router 
 
 ## Basic Gateway Settings
 
-Settings at the top of `System settings → Gateway` are synchronized directly to the Go gateway. The Host-level editor is available only for Host routing in subdomain mode, and the auth service Host does not appear in the editable list.
+Settings at the top of `System settings → Gateway` are synchronized to the Go gateway after saving. The Host-level editor is available only for Host routing in subdomain mode, and the auth service Host does not appear in the editable list.
+
+These top-level options take effect after clicking `Save settings`, including the mapping selection page and disabled-domain behavior. Switches inside portal settings are saved separately when changed.
 
 | Setting | Behavior and considerations |
 | --- | --- |
