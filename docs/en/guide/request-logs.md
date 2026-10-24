@@ -3,7 +3,7 @@ lang: en-US
 title: "Request Analysis"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bc65f022d256dd9cca906308f5a01a5dbd8995729cb214ec0e5ebdba992841d6
+translationSourceHash: a8f63bef869180cc200269f0ddeb2a99c558573690ffb41d80b593d2bac61496
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -55,6 +55,10 @@ Averages, P95, and error rates help reveal trends; they are not a replacement fo
 
 ## Use the Logs tab
 
+Set the start and end dates, then apply the range. Queries cover at most 30 consecutive calendar days and cannot end after the server's current date. Visit-time ordering supports newest or oldest first. Switch between individual requests and grouping by IP; the IP view aggregates all retained matching requests in the selected range and lets you open one IP's requests within that same range.
+
+Log deletion is available only for a single-day range. It removes that date's logs, not just filtered results, and does not delete an entire multi-day range. Widening a query cannot recover deleted or rotated data.
+
 ### Read a Record
 
 | Field | Purpose |
@@ -96,7 +100,7 @@ With subdomain advanced authentication enabled, an Auth result of `Allowed by su
 
 ### Act on a Suspicious IP
 
-After confirming that an address is the actual attack source, you can open General blacklist or IP Allowlist actions from the log. First rule out a shared egress address or preceding proxy, and preserve context such as time, Host, and path.
+After confirmation, blacklist a source from an individual request or IP-group row, or remove an existing blacklist entry. You can also select the current page or multiple rows for bulk actions. First compare client and connection-source IPs to avoid blocking shared exits, CDNs, or upstream proxies, and retain the time, Host, and path as context.
 
 - [Security Model and Baseline](/en/guide/security)
 - [Global Blocklist](/en/guide/general-blacklist)

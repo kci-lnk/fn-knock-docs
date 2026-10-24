@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道內建頁面"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2a965da8ae338020a10c85ef93b02e978cf6541fa3e850aeb7cfb0458bdf315f
+translationSourceHash: 4caeb5458b75820414d58e382cd0813d67caae1cbcba5675bb9c5f9ab4e29053
 ---
 
 # 閘道內建頁面
@@ -18,6 +18,8 @@ https://nas.example.com/__wol__
 路徑必須完全一致；`/__select__/` 與 `/__wol__/` 不是內建頁面。子網域必須實際指向閘道入口，且憑證、CDN、反向 Proxy 或通道能正確處理該網域與 `Host`。
 
 ## 應用程式選擇頁：`/__select__`
+
+`系統設定 → 閘道 → 映射選擇頁` 預設開啟。關閉後，`/__select__` 與原本進入選擇頁的請求依未匹配路由政策顯示錯誤頁或中斷連線，不再顯示映射清單。此開關與傳送門開關獨立，不會修改映射的啟用狀態或存取權限。
 
 開啟 `https://任意已接入閘道的子網域/__select__` 即可進入應用程式選擇頁。未登入時會先跳轉登入；登入後只顯示目前憑證可存取的服務。
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "子網域路由"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdc9eb02ca221547194e4ce5cafd4dba5d352116a0bbdfe8a1d50628e9ef6a3b
+translationSourceHash: 1e6fce2885b82eca137f29238fa6755aee31bc420644f709b5c6afafd6a964c4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -193,6 +193,12 @@ docs.example.com -> 目錄 /srv/docs
 單一 Host 的流量詳細資料可查看即時流量與有效 IP，並將異常來源加入[通用封鎖清單](/zh-tw/guide/general-blacklist)。
 
 `同步到導覽面板` 可將已啟用的應用 Host 發佈到 Sun-Panel、OneNav 或 Van-Nav，但不匯出內部 Target。預覽、資源所有權、清理與自動同步邊界見[導覽面板同步](/zh-tw/guide/panel-sync)。
+
+### 批次設定登入要求
+
+進入多選模式，選取業務 Host 後選擇要求登入或公開存取。確認視窗會列出影響範圍，確認後統一修改所選 Host 的預設登入要求；鑑權服務不參與操作。若設定已被其他操作修改，請重新核對選取範圍後重試。
+
+路徑獨立鑑權仍然有效：公開存取後部分路徑仍可能要求登入，要求登入也不會自動收緊既有公開路徑。停用狀態、每日開放時間窗、可見性、其他安全規則與歷史嚴格允許清單均保留。儲存後須從真實外網分別測試 Host 根路徑與獨立鑑權路徑。
 
 ### 最佳化 Target 位址
 

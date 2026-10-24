@@ -3,7 +3,7 @@ lang: en-US
 title: "Subdomain Routing"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdc9eb02ca221547194e4ce5cafd4dba5d352116a0bbdfe8a1d50628e9ef6a3b
+translationSourceHash: 1e6fce2885b82eca137f29238fa6755aee31bc420644f709b5c6afafd6a964c4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -193,6 +193,12 @@ List actions include:
 Traffic details for an individual Host show live traffic and active IPs, and let you add suspicious sources to the [Global Blocklist](/en/guide/general-blacklist).
 
 The `Sync to navigation panel` action publishes enabled application Hosts to Sun-Panel, OneNav, or Van-Nav without exporting internal Targets. See [Navigation Panel Sync](/en/guide/panel-sync) for preview, ownership, cleanup, and automatic-sync boundaries.
+
+### Set sign-in requirements in bulk
+
+Enter multi-select mode, select application Hosts, and choose `Require sign-in` or `Public access`. Review the affected mappings in the confirmation dialog before applying the default sign-in requirement to all selected Hosts. Authentication-service Hosts are excluded. If the configuration has changed, review the current selection before retrying.
+
+Independent path authentication still applies: public Hosts may retain protected paths, and requiring sign-in does not automatically protect existing public paths. Disabled state, daily availability windows, visibility, other security rules, and legacy strict-allowlist settings remain unchanged. Test both the Host root and paths with independent authentication from an external network.
 
 ### Optimize Target Addresses
 

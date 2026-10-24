@@ -3,7 +3,7 @@ lang: en-US
 title: "Dynamic DNS (DDNS)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 3e154d83516c4287c91030fbcdcdce2cc480bcb3a627d6a70e661b4ccccc2668
+translationSourceHash: 39bfefb0651286f99e8152f98cafa304ecc24bfa74399105a8899bdb19a2aada
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -58,7 +58,7 @@ If the log still fails at record lookup, do not create a placeholder record firs
 
 `Primary domain config` is the default update target. Its status card shows the current IPv4 and IPv6 addresses, last check, and last successful update. Under `Additional domains`, you can add independent targets, each with its own provider, credentials, IP source, update scope, and enabled state.
 
-Additional domains do not inherit the primary domain name or provider configuration. The page can, however, recognize credentials saved for the same provider in another module or target and fill only fields that are currently empty. After filling them, verify the Zone, root domain, and least-privilege permissions.
+Additional domains do not inherit the primary domain or provider configuration. For supported providers, credential suggestions can fill empty fields from a saved ACME application; ACME forms can likewise use credentials from primary or additional DDNS targets. Choose explicitly when several sources exist. Conflicting existing fields must be reviewed and cleared before filling. Suggestions only change the draft: save the form and verify domain scope and provider permissions.
 
 For an individual additional domain, you can run `Update now`, disable it, enable it, edit it, or delete it. Disabling only pauses that target; deleting also removes its runtime status. Clearing the primary configuration does not delete additional domains, but the primary domain cannot participate in automatic updates until it is configured again.
 
@@ -105,6 +105,22 @@ DDNS public-address detection can use `Built-in HTTP (default)` or the system `c
 The detection settings can also select a public DNS resolver: `Do not use`, Alibaba DNS, Tencent DNS, Cloudflare DNS, or Google DNS. Alibaba DNS is the default. This resolver is used only to resolve public-address detection services. It does not change the DDNS provider or records being updated, and it does not modify DNS for your application domains.
 
 You can maintain multiple IPv4 and IPv6 detection sources separately. A source may be an HTTP(S) URL that returns a plain IP address, or a resolvable domain. Before changing the configuration, select `Test sources` and verify the status code, response preview, and detected IP for each source. `Restore factory sources` replaces only the draft in the dialog; you must still save it for the change to take effect.
+
+## Proxy for DDNS updates
+
+Open the settings button beside the DDNS title and configure `Update proxy` with an address reachable from the server running DDNS. HTTP, HTTPS, and SOCKS5 are supported. SOCKS5 requires an explicit port and resolves provider names through the proxy. Enter username and password separately, not in the URL. Saved passwords are not returned; leaving the field blank retains the password, while the clear-password option removes it on save.
+
+The default proxy switch controls the global behavior. The primary target and each additional target also have an `Update connection` choice:
+
+| Option | Behavior |
+| --- | --- |
+| Follow global | Uses the global default proxy switch |
+| Direct | Queries and updates the provider directly through the selected outbound interface |
+| Use proxy | Uses the configured proxy even when the global default switch is off; a proxy address must be configured first |
+
+Only provider queries and DNS updates use this proxy. Public IP detection always connects directly so the proxy's exit address is not published. Proxy connections use system routing rather than the target's outbound-interface binding. Proxy failures return errors without falling back to direct access. In Docker, loopback refers to the container itself; the proxy must be reachable from the container network.
+
+`Test proxy` uses the current draft and selected request transport to access `https://www.cloudflare.com/cdn-cgi/trace`. It neither saves settings nor changes DNS, and does not verify provider API permissions. After a successful test, save the settings, update the target, and check its logs and DNS record.
 
 ## Automatic Sync and Logs
 

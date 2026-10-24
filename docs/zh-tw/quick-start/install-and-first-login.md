@@ -3,7 +3,7 @@ lang: zh-TW
 title: "fnOS 原生 FPK 安裝與初始設定"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 67d700a6ffb0691e5f7518b6b297368d8939e5b518361df88dbc52bae0b654d2
+translationSourceHash: 7daa6e5f701423bb9f3a558996a6d48745d84201170a1129cf62d164fa0e5617
 ---
 
 # fnOS 原生 FPK 安裝與初始設定
@@ -35,6 +35,16 @@ translationSourceHash: 67d700a6ffb0691e5f7518b6b297368d8939e5b518361df88dbc52bae
 `7998`、`7997` 與 `7996` 不應轉送為公網入口。需要對外提供服務時，只需規劃閘道連接埠及其網域名稱；實際開放方式取決於所選模式。
 
 Lite 的預設連接埠為 `8998 / 8997 / 8996 / 8999`，安裝精靈只允許 `1024`～`65535`。本頁後續步驟與預設 `799x` 連接埠均針對官網標準 FPK；請先確認應用程式名稱，再依對應連接埠排查。
+
+## 透過 Moo 應用程式來源取得標準 FPK
+
+在 Moo 的設定中開啟應用程式來源設定並新增來源，填入以下位址；也可貼到首頁搜尋框預覽：
+
+```text
+https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/moo.json
+```
+
+此來源提供標準完整版的穩定 FPK，包含下載位址、SHA-256、大小與更新說明。Moo 依裝置架構選擇安裝包。標準 FPK 以 root 執行；Lite 與其他平台仍使用各自發行管道。安裝或更新前先備份，完成後依下文確認管理入口與公網服務。
 
 ## 在 fnOS 中安裝
 

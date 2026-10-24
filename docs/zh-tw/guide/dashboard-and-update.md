@@ -3,7 +3,7 @@ lang: zh-TW
 title: "控制台與系統更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
+translationSourceHash: 93454c050fe00c4ebed1bdd9ffae1d7f723ea9e8eb71aff8fccd14513d97dbe2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -151,7 +151,7 @@ Synology 套件已加固冷啟動時的閘道就緒與設定同步。Instance �
 
 開啟 `Knock 敲門 · Windows 管理程式`，按一下「檢查更新」，或從系統匣選單執行相同操作。管理程式下載 Windows 安裝套件時，會核對下載來源、檔案大小與 SHA-256，接著啟動安裝程式；網頁中的 `系統設定 → 更新` 只用來查看版本與說明。
 
-安裝程式會暫時停止服務。若新版本未能通過 Readiness Check 並啟動，安裝程式會還原原有程式與執行資料；這不等同於備份，更新前仍應匯出應用程式備份。Windows 解除安裝或升級後會保留 `%ProgramData%\FnKnock`，其中包含設定、SQLite 與憑證等敏感資料。
+安裝程式會暫停服務並驗證程式與資料的復原快照。新程式未就緒時會嘗試還原原有程式與執行資料；復原失敗會保留快照及診斷記錄，請先處理儲存或權限問題，不要刪除復原資料後反覆安裝。更新前仍須匯出應用程式備份。解除安裝或升級後保留 `%ProgramData%\FnKnock`，其中包含設定、SQLite 與憑證等敏感資料；診斷方式見 [Windows 部署](/zh-tw/quick-start/windows-deployment)。
 
 ## 每次更新後的檢查
 

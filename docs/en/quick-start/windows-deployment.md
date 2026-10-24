@@ -3,7 +3,7 @@ lang: en-US
 title: "Deploy on Windows (x86_64)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65578d7ceca924bab60159d1c521692e2a9f144696ad04b44f51c09667d1a8bf
+translationSourceHash: e74a1ecface5070d915ae8660377133ab6b9b486e02f042fafa9243cfa67cde2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -71,7 +71,7 @@ If an independent tunnel or reverse proxy on the same Windows host provides exte
 
 Closing the manager window only minimizes it to the system tray. Quitting the manager completely from its tray menu still does not stop the `FnKnock` service or affect gateway traffic. Use the tray menu or main window to open the admin panel, start/stop/restart the service, change ports, clear the admin password, or check for updates.
 
-Run **Check for updates** in the `Knock Windows Manager`. It downloads the installer from the official channel, verifies its size and SHA-256 digest, then launches it. The web panel's `About / Updates` page only shows version details and release notes. The installer briefly stops the service during an upgrade and restores the previous program and data if the new version fails to become ready. Export an application backup before updating.
+Run **Check for updates** in the `Knock Windows Manager`. It downloads the installer from the official channel, verifies its size and SHA-256 digest, then launches it. The web panel's `About / Updates` page only shows version details and release notes. The installer briefly stops the service during an upgrade and attempts to restore the previous program and data if the new version fails to become ready. Export an application backup before updating.
 
 | Location | Contents |
 | --- | --- |
@@ -81,6 +81,20 @@ Run **Check for updates** in the `Knock Windows Manager`. It downloads the insta
 Uninstalling removes the service, program files, and related rules, but preserves `%ProgramData%\FnKnock` for reinstallation or recovery. This directory contains sensitive data. Remove it separately with administrator privileges only after confirming that you no longer need to recover the installation.
 
 Plan both an application `.knock` archive and a backup of `%ProgramData%\FnKnock`: the former makes configuration migration easier, while the latter preserves SQLite, certificates, and Windows runtime data. See [Backup, Restore, and Data Cleanup](/en/guide/backup-and-restore) for supported import versions, sensitive-data boundaries, and the verification procedure.
+
+## Startup failures and offline storage diagnostics
+
+Check `%ProgramData%\FnKnock\logs\service.log` and `state\status.json` for the failure stage, cause, and retryability. For installation or rollback failures, also check `logs\installer.log`. Non-retryable storage failures such as permission errors or database corruption stop automatic recovery. Consecutive retryable failures trigger at most three automatic restarts.
+
+To inspect storage, stop the `FnKnock` service and any other database writers, then run from the installation directory in an administrator PowerShell:
+
+```powershell
+.\fn-knock-service.exe diagnose-storage --json
+```
+
+The command copies the database and any WAL/journal files and checks a temporary copy. SQLite never opens the original database, and the command does not repair or migrate it. Use `--database <path>` for another database whose writers have stopped. The report uses the caller's identity; success does not verify access for `NT SERVICE\FnKnock`.
+
+The installer validates recovery snapshots before upgrading and retains recovery material if rollback fails. Preserve the rollback directory and logs under `%ProgramData%\FnKnock`, and diagnose storage and permissions before reinstalling. Do not repeatedly delete data or snapshots. Treat diagnostic reports and backups as sensitive operational data.
 
 ## Windows edition capabilities
 

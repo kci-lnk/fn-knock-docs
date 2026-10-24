@@ -3,7 +3,7 @@ lang: ja-JP
 title: "サブドメインルーティング"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdc9eb02ca221547194e4ce5cafd4dba5d352116a0bbdfe8a1d50628e9ef6a3b
+translationSourceHash: 1e6fce2885b82eca137f29238fa6755aee31bc420644f709b5c6afafd6a964c4
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -193,6 +193,12 @@ fn-knock のアカウントを作成する機能ではなく、`auth.example.com
 各 Host のトラフィック詳細では、リアルタイムトラフィックとアクティブ IP を確認し、不審な送信元を[グローバルブロックリスト](/ja/guide/general-blacklist)へ追加できます。
 
 `ナビゲーションパネルへ同期` は、有効なアプリ Host を Sun-Panel、OneNav、Van-Nav へ公開し、内部 Target は送信しません。プレビュー、所有権、クリーンアップ、自動同期の境界は[ナビゲーションパネル同期](/ja/guide/panel-sync)を参照してください。
+
+### ログイン要件の一括設定
+
+複数選択モードでサービス Host を選び、ログイン必須または公開アクセスを選択します。確認画面で対象を確認すると、選択した Host の既定のログイン要件をまとめて変更します。認証サービスは対象外です。設定が変更されていた場合は現在の選択を確認して再試行してください。
+
+パス独自の認証は維持されます。Host を公開しても保護されたパスは残り、ログイン必須にしても既存の公開パスが自動的に保護されるわけではありません。無効状態、日次公開時間帯、公開範囲、その他の安全規則、既存の厳格な許可リストも変わりません。保存後に外部ネットワークからルートと独自認証のパスを確認してください。
 
 ### Target アドレスの最適化
 

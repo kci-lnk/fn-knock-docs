@@ -3,7 +3,7 @@ lang: zh-TW
 title: "請求分析"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: bc65f022d256dd9cca906308f5a01a5dbd8995729cb214ec0e5ebdba992841d6
+translationSourceHash: a8f63bef869180cc200269f0ddeb2a99c558573690ffb41d80b593d2bac61496
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -55,6 +55,10 @@ translationSourceHash: bc65f022d256dd9cca906308f5a01a5dbd8995729cb214ec0e5ebdba9
 
 ## 使用「記錄」頁籤
 
+設定開始與結束日期後套用，可查詢最多 30 個連續自然日，結束日期不得晚於伺服器今天。存取時間可依最新或最早排序。切換逐筆請求與依 IP 檢視，可查看明細或來源彙總；IP 檢視統計所選範圍內符合篩選的全部保留記錄，並可開啟單一 IP 在相同範圍內的請求。
+
+刪除記錄只適用單日範圍，不提供跨日整段刪除。刪除會移除該日期的記錄，而非僅刪除篩選結果；擴大查詢範圍無法復原已刪除或輪替清理的資料。
+
 ### 解讀一筆記錄
 
 | 欄位 | 用途 |
@@ -96,7 +100,7 @@ Trace ID 也可能出現在閘道 Response Header、攔截頁或通知中。分�
 
 ### 處理可疑 IP
 
-確認為實際攻擊來源後，可從記錄直接前往全域封鎖清單或 IP 允許清單進行處置。操作前請先排除共用出口與前置 Proxy IP，並保留時間、Host、路徑等 Context。
+可從單筆請求或 IP 彙總列確認後加入通用封鎖清單，也可解除既有封鎖；選取目前頁面或多筆記錄後可批次操作。操作前核對用戶端與連線來源 IP，排除共用出口、CDN 與前置代理位址，並保留時間、Host、路徑等資訊。
 
 - [安全邊界與基準設定](/zh-tw/guide/security)
 - [全域封鎖清單](/zh-tw/guide/general-blacklist)

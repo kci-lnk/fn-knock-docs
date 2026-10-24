@@ -3,7 +3,7 @@ lang: en-US
 title: "Install and Set Up the Native fnOS FPK"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 67d700a6ffb0691e5f7518b6b297368d8939e5b518361df88dbc52bae0b654d2
+translationSourceHash: 7daa6e5f701423bb9f3a558996a6d48745d84201170a1129cf62d164fa0e5617
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -37,6 +37,16 @@ Do not install the ARM64 package on a 32-bit ARM device, and do not try to insta
 Do not forward `7998`, `7997`, or `7996` as public endpoints. To publish services, expose only the gateway port and its domain names. The exact ingress setup depends on the run mode you choose.
 
 Lite defaults to ports `8998 / 8997 / 8996 / 8999`, and its setup wizard accepts only `1024`–`65535`. The remaining steps and default `799x` ports on this page describe the standard FPK from the official website. Confirm the app name before troubleshooting against either port set.
+
+## Get the standard FPK through Moo
+
+In Moo, open `Settings → App sources → Add app source` and enter the following URL. You can also paste it into the home-page search box to preview it:
+
+```text
+https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/moo.json
+```
+
+This source provides the stable, full standard FPK with download URLs, SHA-256, sizes, and release notes. Moo selects the package for the device architecture. The standard FPK runs as root; Lite and other platforms retain their own distribution channels. Back up before installation or updates, then verify the admin entry and public service as described below.
 
 ## Install on fnOS
 

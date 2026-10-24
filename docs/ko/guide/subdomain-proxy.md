@@ -3,7 +3,7 @@ lang: ko-KR
 title: "서브도메인 라우팅"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: cdc9eb02ca221547194e4ce5cafd4dba5d352116a0bbdfe8a1d50628e9ef6a3b
+translationSourceHash: 1e6fce2885b82eca137f29238fa6755aee31bc420644f709b5c6afafd6a964c4
 ---
 
 # 서브도메인 라우팅
@@ -191,6 +191,12 @@ fn-knock 계정을 만들거나 `auth.example.com` 로그인을 대신하지 않
 Host별 트래픽 세부 정보에서 실시간 트래픽과 활성 IP를 확인하고 비정상 출발지를 [일반 차단 목록](/ko/guide/general-blacklist)에 추가할 수 있습니다.
 
 `내비게이션 패널로 동기화`는 활성 앱 Host를 Sun-Panel, OneNav 또는 Van-Nav에 게시하지만 내부 Target은 내보내지 않습니다. 미리보기, 소유권, 정리, 자동 동기화 경계는 [내비게이션 패널 동기화](/ko/guide/panel-sync)를 참고하세요.
+
+### 로그인 요구 일괄 설정
+
+다중 선택 모드에서 서비스 Host를 선택하고 로그인 필요 또는 공개 접근을 선택합니다. 확인 창에서 영향 범위를 확인하면 선택한 Host의 기본 로그인 요구를 함께 변경합니다. 인증 서비스 Host는 제외됩니다. 설정이 변경되었다는 메시지가 나오면 현재 선택을 다시 확인한 후 재시도하세요.
+
+경로별 독립 인증은 유지됩니다. 공개 접근으로 설정해도 일부 경로는 로그인이 필요하며, 로그인 필요로 바꿔도 기존 공개 경로가 자동 보호되지는 않습니다. 비활성 상태, 일일 개방 시간, 가시성, 다른 보안 규칙과 기존 엄격한 허용 목록도 유지됩니다. 저장 후 외부 네트워크에서 루트와 독립 인증 경로를 각각 확인하세요.
 
 ### 대상 주소 최적화
 

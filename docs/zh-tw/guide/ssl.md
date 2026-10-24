@@ -3,7 +3,7 @@ lang: zh-TW
 title: "TLS 憑證與 HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5c074921852ce8baa7d3976d7a2b06f1e76faf10762356aec4c5ac78d7a28da1
+translationSourceHash: 1827d696d9a5efb78d8bda9225c1d4aaaf4390018bafe0e63626590a8616d291
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -287,6 +287,8 @@ Server Certificate 有效期限為 20 年。長期有效不代表可以忽略私
 
 工作執行中或自動續期時，仍可編輯並儲存申請項目的 DNS 設定；再次申請、部署、刪除等會與目前工作衝突的操作仍會鎖定。工作 Log 會提示 DNS 憑據、DNS API Rate Limit 或 ACME Rate Limit 等排查方向。停止工作會先要求取消並終止由該工作擁有的 Process Group，等 Executor 與 Runtime Lock 都結束後才回報成功。若頁面仍顯示 PID 或停止錯誤，不要立即啟動第二個工作；應先確認舊 Process 已退出。
 
+填寫 DNS 認證資訊時，可從已儲存的主網域或更多網域 DDNS 目標選擇建議來源；DDNS 表單也能反向使用 ACME 申請項目。僅支援頁面辨識的服務商與相容欄位。多個來源須手動選擇，只補齊空欄位；有衝突時先核對並清空衝突欄位。填入後仍須儲存表單，重用金鑰不代表已驗證簽發權限。
+
 ### 自動續期排程與復原
 
 啟用自動續期的申請項目會在服務啟動後立即檢查，之後預設每 6 小時掃描一次。憑證距離到期不超過 30 天時會進入續期佇列；多個申請項目會依到期時間由近到遠循序處理，避免同時呼叫 DNS API 與 ACME Client。
@@ -313,7 +315,7 @@ Server Certificate 有效期限為 20 年。長期有效不代表可以忽略私
 
 Windows x86_64 版請在 `SSL / HTTPS → DNS-01 憑證` 中申請憑證。安裝套件已內建憑證 Client，不需要初始化或下載 ACME.sh；此流程固定使用 Let's Encrypt，只接受 DNS-01 驗證，不提供 HTTP-01，也無法切換至其他 Certificate Authority。
 
-請在頁面中選擇支援的 DNS 供應商，並以最低必要權限儲存其 API 憑據。目前支援阿里雲 DNS、Baidu Cloud DNS、Cloudflare、DNSPod、騰訊雲 DNSPod、DuckDNS、Dynu、dynv6、GoDaddy、華為雲 DNS 與 Porkbun。Cloudflare 支援 API Token 與 Global API Key 兩種憑據，應優先使用限制於指定 Zone 的 Token。
+請在頁面中選擇支援的 DNS 供應商，並以最低必要權限儲存其 API 憑據。目前支援阿里雲 DNS、Baidu Cloud DNS、Cloudflare、DNSPod、騰訊雲 DNSPod、DuckDNS、Dynu、dynv6、GoDaddy、華為雲 DNS、Porkbun 與西部數碼（West.cn）。Cloudflare 支援 API Token 與 Global API Key 兩種憑據，應優先使用限制於指定 Zone 的 Token。
 
 新申請項目預設啟用自動續期；簽發成功後會進入憑證庫。單一有效憑證模式下，第一次簽發後仍需手動設為目前憑證。Windows 頁面不要求初始化 `acme.sh`，也不提供 CA 切換。
 
@@ -327,6 +329,8 @@ Windows x86_64 版請在 `SSL / HTTPS → DNS-01 憑證` 中申請憑證。安�
 4. 可啟用自動同步，在本機憑證庫變動後合併同步，並每 5 分鐘重新核對。
 
 遇到外部修改衝突、fnOS 資料異常或同步失敗時，先核對兩側記錄與服務綁定，處理後再重試。略過或失敗不代表完成。同步後檢查項目狀態，並從實際 fnOS HTTPS 入口確認回傳憑證。
+
+同步失敗後的復原會核對憑證檔案、權限、共用索引引用及飛牛閘道映射。清理舊交易不會直接刪除仍被服務引用的記錄。遇到復原或外部修改衝突時保留診斷記錄，檢查飛牛目前 HTTPS 連接埠與實際回傳憑證，修正服務綁定後重試；不要刪除仍被引用的憑證目錄或交易檔案來略過錯誤。
 
 ## 建議設定順序
 

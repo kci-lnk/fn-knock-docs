@@ -3,7 +3,7 @@ lang: en-US
 title: "System Settings and Maintenance"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 03e5147fe3357f9835a65aa54ef1bdd7f06813399430c4161fe66b51bc2a7178
+translationSourceHash: a011714889998374270fe7f5a207a45cf8774582c0333a50100fb6a105c7c581
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -58,6 +58,8 @@ Under `System settings → Features → Sidebar menu order`, drag menu items to 
 
 The page lists only entries visible under the current runtime mode and feature switches. Temporarily hidden entries keep their place in the full order and return to the same relative position when the feature is enabled or the mode changes; they are not appended arbitrarily. This setting changes navigation order only and does not enable, disable, or grant access to any feature.
 
+The desktop sidebar can collapse to an icon rail. Its state is saved in the instance display settings and survives refreshes. Failed saves show an error and restore the previous state.
+
 ## Date and Time Display
 
 `System settings → Features → Date and time display` controls time fields that use the shared display component in the admin console:
@@ -69,11 +71,11 @@ The selection is stored in instance configuration and applied throughout the adm
 
 ## fnOS Console Application Bar
 
-The standard fnOS FPK and `Knock Lite` can enable `Show application list at the top of the console` under `System settings → Features`. It is off by default. When enabled, a horizontally scrollable shortcut bar appears above the admin content and opens each gateway application in a new tab. Docker, OpenWrt, Linux, Synology, and Windows do not show this switch.
+The standard fnOS FPK and `Knock Lite` can enable `Show application list at the top of the console` under `System settings → Features`. It is off by default. When enabled, a horizontally scrollable shortcut bar appears above the admin content and opens each service in a new tab. Docker, OpenWrt, Linux, Synology, and Windows do not show this switch.
 
-With Host routing, the bar lists enabled, non-authentication Host mappings and follows the portal's application labels, icon-display setting, and group order. If no eligible Host item exists, a path-mode configuration falls back to saved path mappings. Links are generated from the current admin-page protocol and configured public entry port. They are shortcuts only and do not replace DNS, port forwarding, or certificate configuration.
+With Host routing, the bar lists enabled non-authentication Hosts using portal names, icon settings, and group order. In path mode, saved path mappings supply entries when no Host entries are available. Public links use the gateway's configured public scheme and port, independently of the admin page's HTTP/HTTPS scheme. FRP uses the public HTTPS port; managed tunnels and edge entries omit the relevant standard port. When smart LAN detection is enabled, the bar also selects eligible upstream links according to the source; loopback, invalid targets, and static mappings retain gateway links.
 
-The switch does not enable, publish, or alter a mapping, nor does it bypass login or service scope. If the bar is empty, confirm that the current mode has eligible mappings. If a link opens but access is denied, troubleshoot the corresponding mapping's authentication and entry path.
+The bar switch does not enable or publish mappings. Gateway links retain mapping authentication and service scopes; direct LAN targets use the upstream application's authentication. If the bar is empty, check available mappings. If links fail, check the public entry or LAN routing; see [Gateway Portal](/en/guide/gateway-portal).
 
 ## Runtime mode switching and Smart Connect fallback
 
@@ -123,6 +125,12 @@ The initial reverse-proxy throttling configuration allows `100` requests per sec
 Unmatched routes default to `Show error page`, which returns a welcome, selection, or error page. With `Reset connection`, HTTP/1.x connections are reset and the current HTTP/2 stream is aborted. Default-domain fallback is temporarily disabled, but its saved configuration is retained and resumes when you switch back to the error page. Request logs label these requests as unmatched-route blocks.
 
 `Show error information when the upstream fails` defaults to `Show less`: visitors see only that the upstream is unavailable, without its internal IP, port, or connection failure. `Show more` returns the complete connection error and can expose network topology, so use it only briefly in a controlled environment. With `Block connection`, an upstream connection failure produces no error page: the gateway resets HTTP/1.x connections or aborts the current HTTP/2 stream. This suits an entry point that should not reveal a gateway page to probes, but clients will see an abrupt disconnect.
+
+### Responses for manually disabled domains
+
+`System Settings → Gateway → Disabled domain behavior` defaults to a blocking page indicating that the service is unavailable. Selecting connection abort returns no page: HTTP/1 closes the connection, while HTTP/2 and HTTP/3 abort the current stream. This affects manually disabled subdomains only. It does not change out-of-schedule messages or replace unmatched-route and upstream-error policies.
+
+The selection page has its own switch; see [Built-in Gateway Pages](/en/guide/gateway-built-in-pages). When disabled, requests that would open it also follow the unmatched-route policy.
 
 ## Verification Order After Changing Settings
 

@@ -3,7 +3,7 @@ lang: zh-TW
 title: "Windows 部署（x86_64）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 65578d7ceca924bab60159d1c521692e2a9f144696ad04b44f51c09667d1a8bf
+translationSourceHash: e74a1ecface5070d915ae8660377133ab6b9b486e02f042fafa9243cfa67cde2
 ---
 
 # Windows 部署（x86_64）
@@ -69,7 +69,7 @@ Windows 版本採用原生開發，不依賴 WebView 或 WebView2，也不會在
 
 關閉管理程式視窗只會將其縮至系統匣；即使從系統匣選單完全結束管理程式，也不會停止 `FnKnock` Service 或影響閘道業務。系統匣選單與主視窗可用於開啟管理後台、啟動／停止／重新啟動服務、修改連接埠、清除管理密碼及檢查更新。
 
-更新應在 `fn-knock Windows 管理程式`中執行「檢查更新」。管理程式會從官方管道下載安裝程式、核對檔案大小與 SHA-256，再啟動安裝；網頁中的 `關於／更新` 只會顯示版本與 Release Notes。安裝程式升級期間會短暫停止 Service，若新版本無法就緒，則還原原有程式與資料。更新前仍應先匯出應用程式備份。
+更新應在 `fn-knock Windows 管理程式`中執行「檢查更新」。管理程式會從官方管道下載安裝程式、核對檔案大小與 SHA-256，再啟動安裝；網頁中的 `關於／更新` 只會顯示版本與 Release Notes。安裝程式升級期間會短暫停止 Service，若新版本無法就緒，則嘗試還原原有程式與資料。更新前仍應先匯出應用程式備份。
 
 | 位置 | 內容 |
 | --- | --- |
@@ -79,6 +79,20 @@ Windows 版本採用原生開發，不依賴 WebView 或 WebView2，也不會在
 解除安裝會移除 Service、程式檔案與相關規則，但會保留 `%ProgramData%\FnKnock`，以便重新安裝或還原。此目錄含有敏感資料；確認不再需要還原後，再以系統管理員權限另行清除。
 
 應同時規劃應用程式 `.knock` 封存檔與 `%ProgramData%\FnKnock` 目錄備份：前者方便移轉設定，後者保留 SQLite、憑證與 Windows 執行資料。匯入版本範圍、敏感資料邊界與驗收流程請參閱[備份、還原與資料清理](/zh-tw/guide/backup-and-restore)。
+
+## 服務啟動失敗與離線儲存診斷
+
+先查看 `%ProgramData%\FnKnock\logs\service.log` 與 `state\status.json` 中的失敗階段、原因及是否可重試；安裝或回復問題另查看 `logs\installer.log`。權限、資料庫損壞等不可重試的儲存錯誤會停止自動復原；可重試的連續失敗最多自動重新啟動三次。
+
+檢查資料庫前，先停止 `FnKnock` 服務與其他可能寫入資料庫的程序，再於安裝目錄以系統管理員 PowerShell 執行：
+
+```powershell
+.\fn-knock-service.exe diagnose-storage --json
+```
+
+命令複製資料庫與存在的 WAL / journal，再檢查暫存副本；不以 SQLite 開啟原資料庫，也不修復或遷移原檔案。可用 `--database <path>` 指定已停止寫入的其他資料庫。報告依目前呼叫者身分產生，成功不代表 `NT SERVICE\FnKnock` 服務帳號具有正確權限。
+
+安裝程式會先驗證復原快照，回復失敗時保留復原資料。請保留 `%ProgramData%\FnKnock` 下的回復目錄與記錄，先排查儲存與權限，不要反覆刪除資料或快照後重新安裝。診斷報告與備份須視為敏感維運資料。
 
 ## Windows 版本的功能限制
 

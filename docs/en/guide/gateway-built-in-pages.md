@@ -3,7 +3,7 @@ lang: en-US
 title: "Built-in Gateway Pages"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 2a965da8ae338020a10c85ef93b02e978cf6541fa3e850aeb7cfb0458bdf315f
+translationSourceHash: 4caeb5458b75820414d58e382cd0813d67caae1cbcba5675bb9c5f9ab4e29053
 ---
 
 # Built-in Gateway Pages
@@ -18,6 +18,8 @@ https://nas.example.com/__wol__
 The path must match exactly: `/__select__/` and `/__wol__/` are not built-in pages. The subdomain must reach the gateway, and its certificate, CDN, reverse proxy, or tunnel must correctly handle the domain and `Host`.
 
 ## Application selection: `/__select__`
+
+`System Settings → Gateway → Mapping selection page` is enabled by default. When disabled, `/__select__` and requests that would otherwise open the selection page follow the unmatched-route policy: an error page or a connection abort, without listing mappings. This switch is independent of the portal switch and does not change mappings or their access permissions.
 
 Open `https://any-gateway-subdomain/__select__` to show the application selection page. Visitors sign in first when needed; after sign-in, only services available to the current credential are shown.
 

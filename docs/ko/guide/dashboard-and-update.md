@@ -3,7 +3,7 @@ lang: ko-KR
 title: "대시보드 및 시스템 업데이트"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
+translationSourceHash: 93454c050fe00c4ebed1bdd9ffae1d7f723ea9e8eb71aff8fccd14513d97dbe2
 ---
 
 # 대시보드 및 시스템 업데이트
@@ -149,7 +149,7 @@ Synology 패키지는 콜드 부팅 중 게이트웨이 준비 상태와 설정 
 
 `Knock Windows 관리 프로그램`을 열어 ‘업데이트 확인’을 누르거나 시스템 트레이 메뉴에서 같은 작업을 실행합니다. 관리 프로그램은 Windows 설치 패키지를 내려받을 때 다운로드 출처, 파일 크기 및 SHA-256을 확인한 뒤 설치 관리자를 시작합니다. 웹의 `시스템 설정 → 업데이트`에서는 버전과 릴리스 노트만 확인할 수 있습니다.
 
-설치 관리자는 서비스를 잠시 중지합니다. 새 버전이 준비 상태 확인 중에 시작되지 않으면 기존 프로그램과 런타임 데이터를 복원합니다. 이 동작은 백업을 대신하지 않으므로 업데이트 전에 fn-knock 설정 백업을 내보냅니다. Windows를 제거하거나 업그레이드해도 `%ProgramData%\FnKnock`는 유지되며 여기에는 설정, SQLite 및 인증서 같은 민감한 데이터가 들어 있습니다.
+설치 관리자는 서비스를 잠시 중지하고 프로그램·데이터 복구 스냅샷을 검증합니다. 새 프로그램이 준비되지 않으면 이전 프로그램과 런타임 데이터 복원을 시도합니다. 복구 실패 시 스냅샷과 진단 로그를 보존하므로 삭제해 재설치를 반복하지 말고 저장소나 권한 문제를 먼저 해결하세요. 업데이트 전 앱 백업도 내보내야 합니다. 제거하거나 업그레이드해도 `%ProgramData%\FnKnock`에 설정, SQLite, 인증서가 남습니다. 진단은 [Windows 배포](/ko/quick-start/windows-deployment)를 참고하세요.
 
 ## 업데이트 후 매번 확인할 항목
 

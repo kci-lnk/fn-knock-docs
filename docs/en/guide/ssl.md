@@ -3,7 +3,7 @@ lang: en-US
 title: "TLS Certificates and HTTPS"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5c074921852ce8baa7d3976d7a2b06f1e76faf10762356aec4c5ac78d7a28da1
+translationSourceHash: 1827d696d9a5efb78d8bda9225c1d4aaaf4390018bafe0e63626590a8616d291
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -287,6 +287,8 @@ The request item's menu can also show task logs, download the certificate, updat
 
 During a task or automatic renewal, you can still edit and save the request item's DNS configuration; conflicting actions such as another issuance, deployment, or deletion remain locked. Task logs point to issues such as DNS credentials, DNS API rate limiting, or ACME rate limits. `Stop task` first requests cancellation and terminates the process group owned by that task. It reports success only after both the executor and runtime lock finish. If the page still reports a PID or a stop error, do not immediately start a second task; confirm that the old process has exited first.
 
+When entering DNS credentials, use credential suggestions to select a saved primary or additional DDNS target. DDNS forms can also use saved ACME applications. Only recognized providers and compatible fields are offered. Select explicitly when several sources exist; only empty fields are filled, and conflicting fields must be reviewed and cleared first. Save the form afterward. Reusing credentials does not verify certificate-issuance permissions.
+
 ### Automatic renewal scheduling and recovery
 
 Request items with automatic renewal enabled are checked immediately after the service starts and then every 6 hours by default. A certificate enters the renewal queue when no more than 30 days remain. When several items qualify, they run sequentially from the earliest expiration to the latest, avoiding concurrent calls to the DNS API and ACME client.
@@ -313,7 +315,7 @@ Disabling output, changing directories, or deleting a certificate or application
 
 The Windows x86_64 edition requests certificates under `SSL / HTTPS → DNS-01 certificate`. Its bundled certificate client requires no ACME.sh initialization or download. This path always uses Let's Encrypt and accepts only DNS-01 validation; it offers neither HTTP-01 nor switching to another certificate authority.
 
-Select a supported DNS provider and store its API credentials with least privilege. Current providers are Alibaba Cloud DNS, Baidu Cloud DNS, Cloudflare, DNSPod, Tencent Cloud DNSPod, DuckDNS, Dynu, dynv6, GoDaddy, Huawei Cloud DNS, and Porkbun. Cloudflare supports both API Token and Global API Key credentials; prefer a Token restricted to the required Zone.
+Select a supported DNS provider and store its API credentials with least privilege. Current providers are Alibaba Cloud DNS, Baidu Cloud DNS, Cloudflare, DNSPod, Tencent Cloud DNSPod, DuckDNS, Dynu, dynv6, GoDaddy, Huawei Cloud DNS, Porkbun, and West.cn. Cloudflare supports both API Token and Global API Key credentials; prefer a Token restricted to the required Zone.
 
 Automatic renewal is enabled by default on a new request item, and successful issuance adds the certificate to the library. In Single active certificate mode, you must still set the first issued certificate as current manually. The Windows page does not initialize `acme.sh` or provide CA switching.
 
@@ -327,6 +329,8 @@ The standard native FPK can create, update, and delete managed fnOS certificates
 4. Optionally enable automatic synchronization. It coalesces local library changes and reconciles every 5 minutes.
 
 Resolve external modification conflicts, invalid fnOS data, or synchronization errors by checking both records and service bindings before retrying. Skipped or failed items are not completed synchronization. Check item status and the certificate returned by the actual fnOS HTTPS entry.
+
+Recovery after a failed sync checks certificate files, permissions, shared index references, and related fnOS gateway mappings. Retiring old transactions does not simply delete records still referenced by a service. Preserve diagnostics when recovery or external-change conflicts occur. Verify the configured fnOS HTTPS port and the certificate actually served, fix service bindings, then retry; do not delete referenced certificate directories or transaction files to bypass errors.
 
 ## Recommended Configuration Order
 

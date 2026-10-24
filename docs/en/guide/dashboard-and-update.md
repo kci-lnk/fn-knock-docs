@@ -3,7 +3,7 @@ lang: en-US
 title: "Dashboard and System Updates"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
+translationSourceHash: 93454c050fe00c4ebed1bdd9ffae1d7f723ea9e8eb71aff8fccd14513d97dbe2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -151,7 +151,7 @@ The Synology package hardens gateway readiness and configuration synchronization
 
 Open `fn-knock Windows Manager` and select `Check for updates`, or run the same action from the system tray menu. When the manager downloads the Windows installer, it verifies the download source, file size, and SHA-256 before launching it. The web `System settings → Update` page is for viewing version information and release notes only.
 
-The installer temporarily stops the service. If the new version does not start during the readiness check, the installer restores the previous program and runtime data. This is not a substitute for a backup, so export an app backup before updating. `%ProgramData%\FnKnock` is retained after a Windows uninstall or upgrade; it contains sensitive data such as configuration, SQLite databases, and certificates.
+The installer temporarily stops the service and validates program and data recovery snapshots. If the new program is not ready, it attempts to restore the previous program and runtime data. Failed recovery preserves snapshots and diagnostics: resolve storage or permission errors before retrying, and do not delete recovery material. Export an app backup before updating. `%ProgramData%\FnKnock` survives uninstall or upgrade and contains sensitive configuration, SQLite, and certificates. See [Windows Deployment](/en/quick-start/windows-deployment) for diagnostics.
 
 ## Check Every Update
 

@@ -3,7 +3,7 @@ lang: en-US
 title: "Gateway Portal"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6ff923066b34843edc5b8abed4018811d41d044fadc9bfe9c237579a2193e2ee
+translationSourceHash: 0875d79a4e32eca718ff905bd268557cdabbdebe8ddb8a4da9bb08c2e547be96
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -48,6 +48,14 @@ If the display is incorrect, check in this order:
 5. If grouping or ordering is incorrect, confirm that subdomain mappings currently use `Grouped view`, then inspect the order under `Manage groups`.
 6. Compare the credential's service scope. Seeing an entry in the list does not mean the credential can access it.
 7. If Wake-on-LAN is missing, check the WOL feature, the portal shortcut, and whether the current credential includes the built-in WOL page.
+
+## LAN navigation
+
+Enable `Smart LAN detection` under `System Settings → Gateway → Portal`; it is off by default. Clients identified by the gateway as private-network or VPN sources open the existing proxy target URL directly. Public or unknown sources use the original domain or gateway path. The built-in selection page and fnOS console application bar also use this setting.
+
+Detection uses the client IP identified by the gateway and does not probe target reachability. Loopback, invalid or unsuitable browser targets, and static file or directory mappings retain the gateway URL. Test the same service from LAN and mobile networks and check the final address. With a CDN, reverse proxy, or tunnel, first verify real-client-IP handling.
+
+Direct target access bypasses fn-knock gateway authentication and uses the target application's own sign-in and permissions. The target must be reachable from the visitor's device. This option does not establish a VPN, open ports, or repair local routing.
 
 - [Authentication, Sessions, and Service Scopes](/en/guide/auth)
 - [Subdomain Routing](/en/guide/subdomain-proxy)

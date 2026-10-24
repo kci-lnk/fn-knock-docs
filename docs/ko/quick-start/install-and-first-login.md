@@ -3,7 +3,7 @@ lang: ko-KR
 title: "fnOS 네이티브 FPK 설치 및 초기 설정"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 67d700a6ffb0691e5f7518b6b297368d8939e5b518361df88dbc52bae0b654d2
+translationSourceHash: 7daa6e5f701423bb9f3a558996a6d48745d84201170a1129cf62d164fa0e5617
 ---
 
 # fnOS 네이티브 FPK 설치 및 초기 설정
@@ -35,6 +35,16 @@ ARM64 패키지를 32비트 ARM 기기에 설치하거나, 다른 배포 방식�
 `7998`, `7997`, `7996`은 인터넷에 포트 포워딩해서는 안 됩니다. 서비스를 외부에 공개할 때는 게이트웨이 포트와 해당 도메인만 구성합니다. 실제 공개 방식은 선택한 실행 모드에 따라 달라집니다.
 
 Lite의 기본 포트는 `8998 / 8997 / 8996 / 8999`이며 설치 마법사는 `1024`～`65535`만 허용합니다. 이 페이지의 이후 단계와 기본 `799x` 포트는 공식 웹사이트의 표준 FPK를 기준으로 합니다. 문제를 해결하기 전에 앱 이름을 확인하고 해당 포트 구성을 사용합니다.
+
+## Moo 앱 소스로 표준 FPK 받기
+
+Moo 설정에서 앱 소스 설정을 열고 소스를 추가한 뒤 다음 URL을 입력합니다. 홈 검색창에 붙여 넣어 미리 볼 수도 있습니다.
+
+```text
+https://raw.githubusercontent.com/kci-lnk/fn-knock-turborepo/main/moo.json
+```
+
+표준 전체 기능 안정 FPK와 다운로드 주소, SHA-256, 크기, 업데이트 설명을 제공합니다. Moo는 기기 아키텍처에 맞는 패키지를 선택합니다. 표준 FPK는 root로 실행되며 Lite와 다른 플랫폼은 각자의 배포 경로를 사용합니다. 설치나 업데이트 전에 백업하고 아래 절차로 관리 입구와 공개 서비스를 확인하세요.
 
 ## fnOS에 설치
 

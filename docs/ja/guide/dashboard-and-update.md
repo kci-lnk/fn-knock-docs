@@ -3,7 +3,7 @@ lang: ja-JP
 title: "ダッシュボードとシステム更新"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 5da2bd8deb7ffeab77c2c098e2f03042cd708e29f02f583fdc460dfa1f1639d1
+translationSourceHash: 93454c050fe00c4ebed1bdd9ffae1d7f723ea9e8eb71aff8fccd14513d97dbe2
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -151,7 +151,7 @@ Synology パッケージは、コールドブート時のゲートウェイ準�
 
 `fn-knock Windows 管理アプリ` を開いて「更新を確認」をクリックするか、システムトレイのメニューから同じ操作を実行します。管理アプリは Windows インストーラーのダウンロード元、ファイルサイズ、SHA-256 を確認してからインストーラーを起動します。Web 画面の `システム設定 → 更新` は、バージョンとリリースノートの表示だけに使用します。
 
-インストーラーはサービスを一時停止します。新しいバージョンが準備完了チェックで起動できなかった場合は、以前のプログラムと実行データを復元します。ただし、これはバックアップの代わりではありません。更新前にアプリバックアップをエクスポートしてください。Windows でアンインストールまたはアップグレードした後も `%ProgramData%\FnKnock` は残り、設定、SQLite、証明書などの機密データが含まれます。
+インストーラーはサービスを停止し、プログラムとデータの復元スナップショットを検証します。新しいプログラムが準備完了にならない場合は以前の状態への復元を試みます。復元失敗時はスナップショットと診断ログを残すため、削除して再インストールを繰り返さず、ストレージや権限の問題を解決してください。更新前にはアプリバックアップも必要です。アンインストールや更新後も `%ProgramData%\FnKnock` に設定、SQLite、証明書が残ります。診断は [Windows デプロイ](/ja/quick-start/windows-deployment)を参照してください。
 
 ## 更新後に毎回確認すること
 

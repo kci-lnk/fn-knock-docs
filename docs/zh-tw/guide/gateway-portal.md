@@ -3,7 +3,7 @@ lang: zh-TW
 title: "閘道入口頁"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 6ff923066b34843edc5b8abed4018811d41d044fadc9bfe9c237579a2193e2ee
+translationSourceHash: 0875d79a4e32eca718ff905bd268557cdabbdebe8ddb8a4da9bb08c2e547be96
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -48,6 +48,14 @@ translationSourceHash: 6ff923066b34843edc5b8abed4018811d41d044fadc9bfe9c237579a2
 5. 群組或順序不正確時，確認子網域映射目前是否使用 `群組檢視`，並在 `管理群組` 中檢查順序。
 6. 對照憑據的服務範圍；能在清單中看到入口，不代表具備存取權。
 7. 遠端喚醒入口缺少時，檢查 WOL 功能、傳送門快速入口，以及目前憑據是否包含內建 WOL 頁面。
+
+## 區域網路導覽
+
+在 `系統設定 → 閘道 → 傳送門` 開啟智慧判斷區域網路環境，預設關閉。閘道辨識為私有網路或 VPN 來源時，直接開啟現有代理目標 URL；公網或無法判斷時使用原有網域或閘道路徑。內建選擇頁與飛牛控制台應用程式列也使用這項設定。
+
+判斷依據為閘道辨識的用戶端 IP，不會探測目標是否可達。回環、無效或不適合瀏覽器的目標，以及靜態檔案與目錄映射仍使用閘道入口。啟用後分別從區域網路與行動網路點選同一服務並核對最終位址；經 CDN、反向代理或通道時須先確認真實用戶端 IP。
+
+直接開啟目標時不經過 fn-knock 閘道認證，使用目標應用程式自身的登入與權限。目標須能從訪客裝置到達；此選項不會建立 VPN、開放連接埠或修復內網路由。
 
 - [身分驗證、工作階段與服務範圍](/zh-tw/guide/auth)
 - [子網域映射](/zh-tw/guide/subdomain-proxy)
