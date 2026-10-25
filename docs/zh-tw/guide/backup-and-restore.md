@@ -3,7 +3,7 @@ lang: zh-TW
 title: "備份、還原與資料清理"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4161ccbf5da845a6191bd5ea1249c4934758e89690e47df3e6f66dabf19e43bf
+translationSourceHash: 3c64efce5c7bbd33fc15fb67c79441d53b918fc436233ec8f3df1ff98e488421
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -20,10 +20,13 @@ translationSourceHash: 4161ccbf5da845a6191bd5ea1249c4934758e89690e47df3e6f66dabf
 - 子網域、路徑、閘道、WAF、工作階段原則等應用程式設定；
 - 憑證與私密金鑰、DDNS、通知及 Tunnel 設定；
 - 遠端 SSH 目標及其受保護的密碼、私密金鑰與口令；
+- WOL Relay PSK、點燈裝置金鑰、巴法雲私鑰，以及遠端關機使用的 SSH 密碼、私鑰與口令；
 - 靜態 Host 的回應類型、伺服器路徑、預設文件與目錄列表設定；
 - 其他由 fn-knock 持久化，且可在新執行個體重新套用的物件。
 
-執行記錄、事件、登入工作階段、作用中的終端機工作階段、本機終端機啟用開關、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、WOL 上線狀態、DDNS 最近一次位址，以及其他短期或主機專屬的執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、WOL Relay PSK、點燈裝置金鑰與巴法雲私鑰、Host 防火牆狀態、外部 DNS Record、靜態映射的實際檔案與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API、重新填入手動 Tunnel Token，並重新配對 WOL Relay 或填寫第三方平台憑據；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
+執行記錄、事件、登入工作階段、作用中的終端機工作階段、本機終端機啟用開關、臨時授權、登入退避、鎖定狀態、流量統計、WAF 統計、Tunnel 執行狀態、DDNS 最近一次位址，以及其他短期或主機專屬的執行資料都會排除。下載的 FRP / Cloudflared / `acme.sh` 檔案、Cloudflare API Token 與 Tunnel Token、Host 防火牆狀態、外部 DNS Record、靜態映射的實際檔案與上游應用程式資料，也不包含在應用程式備份內。還原後必須重新連線 Cloudflare API、重新填入手動 Tunnel Token；匯入備份不會自動刪除或重建 Cloudflare 遠端資源。
+
+WOL 已儲存的最近偵測狀態也會備份，但只代表當時的結果；還原後應重新偵測，不能將舊上線狀態視為目前狀態。
 
 匯入會還原遠端 SSH 目標及其憑據，但不會復原匯出時仍在執行的 Shell。本機終端機開關屬於目前主機的安全選擇，還原後會保持關閉；需要使用時，應在新環境重新核對執行身分、Shell 與初始目錄，再完成風險確認並手動啟用。
 
@@ -135,10 +138,14 @@ Schema、版本、項目格式、重複 Key、設定 Migration 或 Cloudflared �
 4. FRP / Cloudflared 資源是否已安裝並重新執行；Cloudflare 託管模式需重新連線 API Token，手動模式需重新填入 Tunnel Token。
 5. DDNS、通知供應商與外部登入憑據是否能通過測試。
 6. 檢查遠端 SSH 目標並重新測試指紋與連線；需要本機終端機時，重新核對執行身分、Shell 與初始目錄後再啟用。
-7. 若使用遠端喚醒，重新配對 Relay、填寫點燈或巴法雲憑據，並驗證裝置 IP、廣播位址與上線偵測。
+7. 若使用遠端喚醒，測試還原的 Relay、SSH、點燈或巴法雲憑據，並驗證裝置 IP、廣播位址與上線偵測；憑據缺失或遠端金鑰已變更時，再重新配對或填寫。
 8. 從行動網路存取身分驗證 Host，以及至少一個受保護的服務 Host。
 9. 確認請求記錄中的真實用戶端 IP、路由與上游狀態正確。
 10. 跨平台移轉時，重新設定連接埠發布、Host 防火牆、智慧連線、系統服務與靜態內容目錄；Docker 還需要重新建立唯讀掛載。
+
+舊歸檔可能沒有終端機或 WOL 的受保護憑據；還原不會保留目標實例原有的這些金鑰，缺失時須重新填寫或配對。導航面板同步憑據不包含在備份中，還原會清除憑據、重設驗證狀態並關閉自動同步，須重新填寫及測試後再啟用，見[導航面板同步](/zh-tw/guide/panel-sync)。
+
+DDNS 更新 Proxy 的位址、使用者名稱及已儲存密碼隨 DDNS 設定備份，移轉後應重新測試連線。ACME 目錄輸出設定也會還原，但已匯出至外部目錄的憑證檔案不會隨歸檔複製；須核對輸出路徑、掛載與寫入權限，並在憑證頁確認輸出狀態。
 
 還原的設定可能引用舊環境的 Loopback 位址、區域網路 IP、檔案路徑或網域。設定存在，不代表這些外部相依項目在新平台上也同樣存在。還原靜態映射後，應逐筆開啟 `瀏覽`，重新定位並選取檔案或目錄，再儲存映射；`.knock` 只會還原路徑與選項，不會複製目錄中的檔案。完整邊界請參閱[靜態檔案與目錄回應](/zh-tw/guide/static-host-mapping)。
 

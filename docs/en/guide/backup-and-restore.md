@@ -3,7 +3,7 @@ lang: en-US
 title: "Backup, Restore, and Data Cleanup"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 4161ccbf5da845a6191bd5ea1249c4934758e89690e47df3e6f66dabf19e43bf
+translationSourceHash: 3c64efce5c7bbd33fc15fb67c79441d53b918fc436233ec8f3df1ff98e488421
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -21,9 +21,12 @@ An export collects restorable configuration and credentials from the fn-knock ap
 - Certificates and private keys, DDNS, notification, and tunnel configuration.
 - Response type, server path, index-file, and directory-listing settings for static Hosts.
 - Remote SSH targets and their protected passwords, private keys, and passphrases.
+- WOL Relay PSKs, Blinker device keys, Bemfa private keys, and SSH passwords, private keys, and passphrases used for remote shutdown;
 - Other objects persisted by fn-knock that can be reapplied on a new instance.
 
-Runtime logs, events, sessions, temporary authorizations, login backoff, locks, traffic statistics, WAF statistics, tunnel runtime state, WOL online status, the last DDNS address, and other short-lived runtime data are excluded. The local-terminal enable switch and all terminal sessions are also excluded; after restore, the local target remains disabled until an administrator explicitly enables it. Downloaded FRP / Cloudflared / `acme.sh` files, Cloudflare API and Tunnel Tokens, WOL Relay PSKs, Blinker device keys, Bemfa private keys, host firewall state, external DNS records, the actual files behind static mappings, and upstream application data are also outside the application backup. After restore, reconnect the Cloudflare API, enter the manual Tunnel Token again, and re-pair WOL Relays or re-enter third-party credentials. Importing a backup does not automatically delete or recreate remote Cloudflare resources.
+Runtime logs, events, sessions, temporary authorizations, login backoff, locks, traffic statistics, WAF statistics, tunnel runtime state, the last DDNS address, and other short-lived runtime data are excluded. The local-terminal enable switch and all terminal sessions are also excluded; after restore, the local target remains disabled until an administrator explicitly enables it. Downloaded FRP / Cloudflared / `acme.sh` files, Cloudflare API and Tunnel Tokens, host firewall state, external DNS records, the actual files behind static mappings, and upstream application data are also outside the application backup. After restore, reconnect the Cloudflare API and enter the manual Tunnel Token again. Importing a backup does not automatically delete or recreate remote Cloudflare resources.
+
+Saved WOL detection status is also backed up, but it only describes the last check. Run a fresh check after restore instead of treating an old online status as current.
 
 An import restores remote SSH targets and credentials but never revives the shells that were running during export. The local-terminal switch is a security choice for the current host and remains off after restore. If it is needed, verify the identity, shell, and initial directory in the new environment, acknowledge the risk, and enable it manually.
 
@@ -135,10 +138,14 @@ Check the system from the admin side through to the public request path:
 4. Confirm that FRP / Cloudflared resources are installed and running again. Managed Cloudflare mode requires reconnecting the API Token; manual mode requires entering the Tunnel Token again.
 5. Test DDNS, notification providers, and external sign-in credentials.
 6. Verify restored SSH targets and retest their fingerprints and connections. If a local terminal is needed, review the service identity, shell, and initial directory again before enabling it.
-7. If you use Wake-on-LAN, re-pair Relays, enter Blinker or Bemfa credentials, and verify device IPs, broadcast addresses, and online checks.
+7. If you use Wake-on-LAN, test restored Relay, SSH, Blinker, or Bemfa credentials and verify device IPs, broadcast addresses, and online checks. Pair again or enter credentials if they are missing or remote keys have changed.
 8. Open the authentication Host and at least one protected application Host over cellular data.
 9. Confirm the real client IP, route, and upstream status in `Request Logs`.
 10. For a cross-platform migration, reconfigure published ports, the host firewall, Smart Connect, system services, and static-content directories. In Docker, also recreate the read-only mounts.
+
+Older archives may lack protected terminal or WOL credentials. Restore does not preserve these previous keys on the destination; enter credentials or pair again if needed. Navigation-panel sync credentials are excluded. Restore clears them, resets verification, and disables automatic sync; enter and test credentials before enabling it again. See [Panel Sync](/en/guide/panel-sync).
+
+The DDNS update proxy address, username, and saved password are backed up with DDNS settings; test proxy connectivity after migration. ACME directory-output settings are restored, but certificate files exported to external directories are not copied by the archive. Check output paths, mounts, write permissions, and output status on the certificate page.
 
 Restored configuration may refer to loopback addresses, LAN IPs, file paths, or domains from the old environment. The presence of a configuration entry does not mean that its external dependency exists on the new platform. Open `Browse` for each static mapping, locate and select its file or folder again, then save; a `.knock` archive restores only the path and options, not the files in that directory. See [Static File and Directory Responses](/en/guide/static-host-mapping) for the full boundary.
 

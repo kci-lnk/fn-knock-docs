@@ -3,7 +3,7 @@ lang: zh-TW
 title: "遠端喚醒（Wake-on-LAN）"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 41a223ca58fec4c7ab27b00142ea69d1e243f1e754436b23ad42d6d70367ca73
+translationSourceHash: 62f0b47ebc94094a73ae694198f62e1d98b4aed5a45f02927ad2bae9f681739c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -133,7 +133,9 @@ SSH 憑據儲存在目前安裝綁定的加密憑據目錄。建議建立最小�
 
 每次喚醒完成都會寫入 `遠端喚醒完成` 事件，記錄目標、投遞方式、來源（管理員、傳送門、點燈科技或巴法雲）、結果與延遲；關機操作會寫入 `SSH 遠端關機完成` 事件，兩者都可在事件中心建立通知規則。喚醒事件表示廣播流程結果，不等於裝置已經啟動；關機事件表示 SSH 指令處理結果，也不保證裝置已關機，兩者都應搭配後續上線狀態判斷。
 
-裝置、Relay 與非敏感串接設定屬於應用程式設定。SSH 密碼與私鑰、Relay PSK、點燈裝置金鑰及巴法雲私鑰儲存在目前安裝綁定的加密憑據目錄，不包含在 `.knock` 應用程式備份中。移轉或還原後，應重新填寫並測試 SSH 憑據、重新配對 Relay、重新填寫第三方憑據，並驗證裝置位址、連接埠、Host Key 與防火牆是否仍適用於新環境。
+裝置、Relay、SSH 與第三方串接設定屬於應用程式設定。Relay PSK、SSH 密碼、私鑰與口令、點燈裝置金鑰及巴法雲私鑰在執行時儲存於安裝綁定的加密憑據目錄；匯出 `.knock` 時會以受保護憑據一併備份，還原時寫入目標實例。歸檔仍須視為敏感憑據檔案保護。
+
+移轉或還原後，先測試 Relay、SSH 與第三方串接，再核對廣播位址、裝置 IP、連接埠、SSH 主機指紋與防火牆。舊歸檔可能不含這些憑據；憑據缺失或遠端金鑰已輪換時，須重新配對或填寫並測試，不能假設還原會保留目標實例原有金鑰。
 
 ## 疑難排解順序
 

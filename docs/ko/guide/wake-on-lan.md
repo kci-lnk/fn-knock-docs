@@ -3,7 +3,7 @@ lang: ko-KR
 title: "Wake-on-LAN(원격 깨우기)"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 41a223ca58fec4c7ab27b00142ea69d1e243f1e754436b23ad42d6d70367ca73
+translationSourceHash: 62f0b47ebc94094a73ae694198f62e1d98b4aed5a45f02927ad2bae9f681739c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -129,7 +129,9 @@ Mi Home과 XiaoAI 명령은 선택한 플랫폼을 통해 전송됩니다. 켜�
 
 각 깨우기 시도는 대상, 전달 방식, 출처(관리자, 포털, Blinker 또는 Bemfa), 결과 및 지연을 포함한 `Wake-on-LAN 완료` 이벤트를 만듭니다. 종료 작업은 `SSH 원격 종료 완료` 이벤트를 만들며 두 이벤트 모두 이벤트 센터에서 알림 규칙을 만들 수 있습니다. 깨우기 이벤트는 브로드캐스트 처리 결과일 뿐 부팅 완료를 뜻하지 않고, 종료 이벤트도 SSH 명령 처리 결과일 뿐 전원 종료를 보장하지 않으므로 이후 온라인 상태를 확인합니다.
 
-장치, Relay 및 민감하지 않은 연동 설정은 애플리케이션 설정에 포함됩니다. SSH 비밀번호와 개인 키, Relay PSK, Blinker 장치 키 및 Bemfa 개인 키는 현재 설치에 연결된 암호화 자격 증명 디렉터리에 저장되며 `.knock` 애플리케이션 백업에는 포함되지 않습니다. 마이그레이션 또는 복원 후 SSH 자격 증명을 다시 입력하고 테스트하고, Relay를 다시 페어링하고 외부 자격 증명을 다시 입력한 뒤 장치 주소, 포트, 호스트 키 및 방화벽을 확인합니다.
+장치, Relay, SSH 및 외부 연동 설정은 애플리케이션 설정입니다. Relay PSK, SSH 비밀번호·개인 키·암호문, Blinker 장치 키 및 Bemfa 개인 키는 실행 시 설치에 연결된 암호화 자격 증명 디렉터리에 저장됩니다. `.knock` 내보내기에는 보호된 자격 증명으로 포함되며 복원 시 대상 인스턴스에 기록됩니다. 보관 파일도 민감한 자격 증명 파일로 보호하세요.
+
+마이그레이션 또는 복원 후 Relay, SSH, 외부 연동을 테스트하고 브로드캐스트 주소, 장치 IP, 포트, SSH 호스트 지문 및 방화벽을 확인하세요. 이전 보관 파일에는 자격 증명이 없을 수 있습니다. 자격 증명이 없거나 원격 키가 교체되었다면 다시 페어링하거나 자격 증명을 입력하고 테스트해야 합니다. 복원 대상에 있던 키가 유지된다고 가정하지 마세요.
 
 ## 문제 해결 순서
 

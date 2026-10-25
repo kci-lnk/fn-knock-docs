@@ -3,7 +3,7 @@ lang: en-US
 title: "Wake-on-LAN"
 sourceLocale: zh-CN
 translationStatus: translated
-translationSourceHash: 41a223ca58fec4c7ab27b00142ea69d1e243f1e754436b23ad42d6d70367ca73
+translationSourceHash: 62f0b47ebc94094a73ae694198f62e1d98b4aed5a45f02927ad2bae9f681739c
 ---
 
 <!-- i18n-source-locale: zh-CN; locale routes and page title are maintained independently. -->
@@ -133,7 +133,9 @@ Both integrations require outbound access from fn-knock to the provider's HTTPS 
 
 Each wake attempt creates a `Wake-on-LAN completed` event with the target, delivery method, source (administrator, portal, Blinker, or Bemfa), result, and latency. A shutdown attempt creates an `SSH remote shutdown completed` event. You can create notification rules for both in the Event Center. A wake event reports the broadcast workflow rather than a completed boot, and a shutdown event reports SSH command handling rather than a guaranteed power-off; confirm either result with the later online state.
 
-Devices, Relays, and non-sensitive integration settings are application configuration. SSH passwords and private keys, Relay PSKs, Blinker device keys, and Bemfa private keys are kept in the current installation's encrypted credential directory and are not included in a `.knock` application backup. After migration or restore, re-enter and retest SSH credentials, pair Relays again, re-enter third-party credentials, and verify that device addresses, ports, host keys, and firewall rules still match the new environment.
+Device, Relay, SSH, and third-party integration settings are application configuration. Relay PSKs, SSH passwords, private keys and passphrases, Blinker device keys, and Bemfa private keys are stored in an installation-bound encrypted credential directory at runtime. A `.knock` export includes them as protected credentials, and restore writes them into the destination instance. Treat the archive as a sensitive credential file.
+
+After migration or restore, test Relays, SSH, and integrations, then check broadcast addresses, device IPs, ports, SSH host fingerprints, and firewalls. Older archives may lack these credentials. If credentials are missing or remote keys have rotated, pair again or enter and test the credentials; do not assume restore preserves the destination instance’s previous keys.
 
 ## Troubleshooting order
 
